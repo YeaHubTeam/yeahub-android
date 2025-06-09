@@ -1,4 +1,4 @@
-package com.example.task_1.example.dynamicPreview
+package ru.yeahub.example.dynamicPreview
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement

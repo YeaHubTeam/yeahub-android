@@ -1,4 +1,4 @@
-package com.example.task_1.example.dynamicPreview
+package ru.yeahub.example.dynamicPreview
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableIntStateOf
