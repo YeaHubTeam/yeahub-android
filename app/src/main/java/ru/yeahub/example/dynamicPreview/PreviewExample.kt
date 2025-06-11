@@ -23,7 +23,9 @@ import androidx.compose.ui.unit.sp
 
 @Preview(
     name = "Dynamic Preview",
-    showBackground = true
+    showBackground = true,
+    widthDp = ScreenSize.Standard.WIDTH,
+    heightDp = ScreenSize.Standard.HEIGHT
 )
 @Composable
 fun DynamicPreview(@PreviewParameter(NumbersPreviewProvider::class) numbers: Int) {
@@ -44,24 +46,20 @@ fun ScreenCount(
     buttonModifier: Modifier = Modifier,
     textOnButtonModifier: Modifier = Modifier,
     viewModel: MyViewModel,
-    screenSize: ScreenSize = ScreenSize.STANDARD,
 ) {
     val textState = viewModel.textState.value
 
-    val standardWidth = screenSize.width
-    val standardHeight = screenSize.height
-
     Column(
         modifier = modifier
-            .width(standardWidth)
-            .height(standardHeight),
+            .width(100.dp)
+            .height(100.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         Text(
             modifier = textModifier.padding(bottom = 30.dp),
             text = "Current Count: $textState",
-            fontSize= 30.sp
+            fontSize = 30.sp
         )
         Spacer(modifier = Modifier.height(30.dp))
         Button(
@@ -84,8 +82,14 @@ class NumbersPreviewProvider : PreviewParameterProvider<Int> {
     override val values: Sequence<Int> = sequenceOf(22, 45, 6666, 123563)
 }
 
-enum class ScreenSize(val width: Dp, val height: Dp) {
-    STANDARD(360.dp, 640.dp),
+sealed class ScreenSize() {
+    class Standard() : ScreenSize() {
+        companion object {
+            const val WIDTH = 360
+            const val HEIGHT = 640
+        }
+    }
+
 }
 
 
