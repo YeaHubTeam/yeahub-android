@@ -1,4 +1,4 @@
-package com.example.network_impl
+package ru.yeahub.network_impl
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
