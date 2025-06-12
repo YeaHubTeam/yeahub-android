@@ -6,18 +6,58 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+
+@Preview(
+    name = "Default theme preview",
+    group = "StaticPreviews",
+    uiMode = Configuration.UI_MODE_NIGHT_NO,
+    showBackground = true,
+)
+@Preview(
+    name = "Dark theme preview",
+    group = "StaticPreviews",
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+)
+@Preview(
+    name = "Smart watch preview",
+    group = "StaticPreviews",
+    uiMode = Configuration.UI_MODE_NIGHT_NO,
+    showBackground = true,
+    device = "id:wearos_square",
+)
+annotation class StaticPreviews
+
+@StaticPreviews
+@Composable
+fun ShowPreview() {
+    Column(
+        modifier = Modifier
+            .verticalScroll(rememberScrollState())
+            .fillMaxWidth()
+    ) {
+        TestScreen()
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Text("States preview", style = MaterialTheme.typography.titleLarge)
+        ListOfStatesProvider().values.forEach { state ->
+            StatesPreview(state)
+            Spacer(modifier = Modifier.height(8.dp))
+        }
+    }
+}
 
 @Composable
 fun TestScreen() {
@@ -50,45 +90,6 @@ fun TestScreen() {
     }
 }
 
-// Превью для обычной темы
-@Preview(
-    name = "Default theme preview",
-    group = "StaticPreviews",
-    uiMode = Configuration.UI_MODE_NIGHT_NO,
-    showBackground = true,
-)
-@Composable
-fun DefaultPreview() {
-    TestScreen()
-}
-
-// Превью для темной темы
-@Preview(
-    name = "Dark theme preview",
-    group = "StaticPreviews",
-    uiMode = Configuration.UI_MODE_NIGHT_YES,
-)
-@Composable
-fun DarkThemePreview() {
-    MaterialTheme(colorScheme = darkColorScheme()) {
-        TestScreen()
-    }
-}
-
-// Превью для маленького экрана у смарт-часов
-@Preview(
-    name = "Smart watch preview",
-    group = "StaticPreviews",
-    uiMode = Configuration.UI_MODE_NIGHT_NO,
-    showBackground = true,
-    device = "id:wearos_square",
-)
-@Composable
-fun SmartWatchPreview() {
-    TestScreen()
-}
-
-// Превью с передачей состояний
 class ListOfStatesProvider : PreviewParameterProvider<String> {
     override val values = sequenceOf(
         "First state",
@@ -112,17 +113,4 @@ fun StatesPreview(state: String) {
             }
         }
     }
-}
-
-@Preview(
-    name = "States preview",
-    group = "StaticPreviews",
-    uiMode = Configuration.UI_MODE_NIGHT_NO,
-    showBackground = true,
-)
-@Composable
-fun StatesScreenPreview(
-    @PreviewParameter(ListOfStatesProvider::class) state: String
-) {
-    StatesPreview(state)
 }
