@@ -13,22 +13,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
 
 
-@Preview(
-    name = "Dynamic Preview",
-    showBackground = true,
-    widthDp = ScreenSize.Standard.WIDTH,
-    heightDp = ScreenSize.Standard.HEIGHT
-)
+
+@StandardScreenSizePreview
 @Composable
 fun DynamicPreview(@PreviewParameter(NumbersPreviewProvider::class) numbers: Int) {
+
     val mockViewModel = object : MyViewModel() {
         init {
             increment(numbers)
@@ -36,8 +31,6 @@ fun DynamicPreview(@PreviewParameter(NumbersPreviewProvider::class) numbers: Int
     }
     ScreenCount(viewModel = mockViewModel)
 }
-
-
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun ScreenCount(
@@ -82,14 +75,5 @@ class NumbersPreviewProvider : PreviewParameterProvider<Int> {
     override val values: Sequence<Int> = sequenceOf(22, 45, 6666, 123563)
 }
 
-sealed class ScreenSize() {
-    class Standard() : ScreenSize() {
-        companion object {
-            const val WIDTH = 360
-            const val HEIGHT = 640
-        }
-    }
-
-}
 
 
