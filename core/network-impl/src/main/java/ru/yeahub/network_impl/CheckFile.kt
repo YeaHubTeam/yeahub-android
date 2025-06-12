@@ -3,6 +3,8 @@ package ru.yeahub.network_impl
 import kotlinx.coroutines.runBlocking
 
 val api = ApiFactory.apiService
+val page = 1
+val limit = 10
 
 fun main() {
     runBlocking {
@@ -17,7 +19,7 @@ fun main() {
 
 
 suspend fun getQuestion() {
-    val result = api.getQuestions()
+    val result = api.getQuestions(page, limit)
     println("result for: fun getQuestion()")
     println(result)
     println()
@@ -32,14 +34,14 @@ suspend fun getQuestionById() {
 }
 
 suspend fun getSkills() {
-    val result = api.getSkills()
+    val result = api.getSkills(page, limit)
     println("result for: fun getSkills()")
     println(result)
     println()
 }
 
 suspend fun getAllSpecializations() {
-    val result = api.getAllSpecializations()
+    val result = api.getAllSpecializations(page, limit)
     println("result for: fun getAllSpecializations()")
     println(result)
     println()
