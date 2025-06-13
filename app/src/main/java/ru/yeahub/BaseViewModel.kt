@@ -16,7 +16,7 @@ abstract class BaseViewModel : ViewModel() {
         Timber.e(throwable, "Unhandled exception in ${this.javaClass.simpleName}")
     }
 
-    fun CoroutineScope.withDefaultCEH(): CoroutineScope {
+    protected fun CoroutineScope.withDefaultCEH(): CoroutineScope {
         return CoroutineScope(this.coroutineContext + defaultCEH)
     }
 }
