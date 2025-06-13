@@ -1,62 +1,26 @@
 package ru.yeahub.example.staticPreview
 
-import android.content.res.Configuration
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 
-@Preview(
-    name = "Default theme preview",
-    group = "StaticPreviews",
-    uiMode = Configuration.UI_MODE_NIGHT_NO,
-    showBackground = true,
-)
-@Preview(
-    name = "Dark theme preview",
-    group = "StaticPreviews",
-    uiMode = Configuration.UI_MODE_NIGHT_YES,
-)
-@Preview(
-    name = "Smart watch preview",
-    group = "StaticPreviews",
-    uiMode = Configuration.UI_MODE_NIGHT_NO,
-    showBackground = true,
-    device = "id:wearos_square",
-)
-annotation class StaticPreviews
-
-@StaticPreviews
+@StaticPreview
 @Composable
-fun ShowPreview() {
-    Column(
-        modifier = Modifier
-            .verticalScroll(rememberScrollState())
-            .fillMaxWidth()
-    ) {
-        TestScreen()
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Text("States preview", style = MaterialTheme.typography.titleLarge)
-        ListOfStatesProvider().values.forEach { state ->
-            StatesPreview(state)
-            Spacer(modifier = Modifier.height(8.dp))
-        }
-    }
+fun ShowPreview(
+    @PreviewParameter(ListOfStatesProvider::class) state: String
+) {
+    StatesPreview(state)
 }
 
 @Composable
@@ -102,10 +66,12 @@ class ListOfStatesProvider : PreviewParameterProvider<String> {
 @Composable
 fun StatesPreview(state: String) {
     Column(modifier = Modifier.padding(16.dp)) {
+        TestScreen()
+
         Text("Текущее состояние: $state")
         when (state) {
             "First state" -> Text("Список пуст")
-            "Second state" -> CircularProgressIndicator()
+            "Second state" -> CircularProgressIndicator(strokeWidth = 10.dp)
             "Third state" -> Text("Ошибка загрузки")
             else -> Column {
                 Text("Данные:")
