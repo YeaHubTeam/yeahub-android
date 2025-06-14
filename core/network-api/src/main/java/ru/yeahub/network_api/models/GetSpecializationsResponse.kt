@@ -4,5 +4,5 @@ data class GetSpecializationsResponse(
     val page: Long?,
     val limit: Long?,
     val data: List<NestedSpecializationResponse>,
-    val total: Int
+    val total: Long
 )

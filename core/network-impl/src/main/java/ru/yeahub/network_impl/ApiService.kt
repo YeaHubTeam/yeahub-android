@@ -1,14 +1,13 @@
 package ru.yeahub.network_impl
 
-import ru.yeahub.network_api.models.GetQuestionWithProfileDataResponse
-import ru.yeahub.network_api.models.GetQuestionsResponse
-import ru.yeahub.network_api.models.GetSkillsResponse
-import ru.yeahub.network_api.models.NestedSpecializationResponse
-import ru.yeahub.network_api.models.GetSpecializationsResponse
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
+import ru.yeahub.network_api.models.GetQuestionWithProfileDataResponse
+import ru.yeahub.network_api.models.GetQuestionsResponse
+import ru.yeahub.network_api.models.GetSkillsResponse
 import ru.yeahub.network_api.models.GetSpecializationResponse
+import ru.yeahub.network_api.models.GetSpecializationsResponse
 
 interface ApiService {
 
