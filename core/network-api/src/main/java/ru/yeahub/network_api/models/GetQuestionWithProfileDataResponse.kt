@@ -6,7 +6,7 @@ data class GetQuestionWithProfileDataResponse(
     val description: String,
     val code: String?,
     val imageSrc: String?,
-    val keywords: List<String>,
+    val keywords: List<String>?,
     val longAnswer: String?,
     val shortAnswer: String?,
     val status: String?,
