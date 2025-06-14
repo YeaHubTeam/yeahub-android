@@ -1,13 +1,14 @@
 package ru.yeahub.network_impl
 
-import ru.yeahub.network_api.models.QuestionDto
-import ru.yeahub.network_api.models.QuestionResponseDto
-import ru.yeahub.network_api.models.SkillsResponseDto
-import ru.yeahub.network_api.models.SpecializationDto
-import ru.yeahub.network_api.models.SpecializationResponseDto
+import ru.yeahub.network_api.models.GetQuestionWithProfileDataResponse
+import ru.yeahub.network_api.models.GetQuestionsResponse
+import ru.yeahub.network_api.models.GetSkillsResponse
+import ru.yeahub.network_api.models.NestedSpecializationResponse
+import ru.yeahub.network_api.models.GetSpecializationsResponse
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
+import ru.yeahub.network_api.models.GetSpecializationResponse
 
 interface ApiService {
 
@@ -27,28 +28,28 @@ interface ApiService {
         @Query("orderBy") orderBy: String? = null,
         @Query("order") order: String? = null,
         @Query("random") random: Boolean? = null
-    ): QuestionResponseDto
+    ): GetQuestionsResponse
 
     @GET("questions/public-questions/{id}")
     suspend fun getQuestionById(
         @Path("id") id: Long
-    ): QuestionDto
+    ): GetQuestionWithProfileDataResponse
 
     @GET("skills")
     suspend fun getSkills(
         @Query("page") page: Int,
         @Query("limit") limit: Int,
         @Query("specializations") specializations: List<Int>? = null
-    ): SkillsResponseDto
+    ): GetSkillsResponse
 
     @GET("specializations")
     suspend fun getAllSpecializations(
         @Query("page") page: Int,
         @Query("limit") limit: Int
-    ): SpecializationResponseDto
+    ): GetSpecializationsResponse
 
     @GET("specializations/{id}")
     suspend fun getSpecializationById(
         @Path("id") id: Long
-    ): SpecializationDto
+    ): GetSpecializationResponse
 }

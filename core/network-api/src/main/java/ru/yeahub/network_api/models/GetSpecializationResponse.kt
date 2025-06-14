@@ -1,10 +1,10 @@
 package ru.yeahub.network_api.models
 
-data class SpecializationDto(
-    val id: Int,
+data class GetSpecializationResponse(
+    val id: Long,
     val title: String,
     val description: String,
     val imageSrc: String?,
-    val createdAt: String?,
-    val updatedAt: String?
+    val createdAt: String,
+    val updatedAt: String,
 )
