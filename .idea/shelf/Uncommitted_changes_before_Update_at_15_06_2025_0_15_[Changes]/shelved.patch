@@ -1,0 +1,259 @@
+Index: build.gradle.kts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>// Top-level build file where you can add configuration options common to all sub-projects/modules.\r\nplugins {\r\n    alias(libs.plugins.android.application) apply false\r\n    alias(libs.plugins.kotlin.android) apply false\r\n    alias(libs.plugins.kotlin.compose) apply false\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/build.gradle.kts b/build.gradle.kts
+--- a/build.gradle.kts	(revision c12c81a07c66e6375a6b2ffc8b8de01ca7bb5647)
++++ b/build.gradle.kts	(date 1749550178278)
+@@ -3,4 +3,5 @@
+     alias(libs.plugins.android.application) apply false
+     alias(libs.plugins.kotlin.android) apply false
+     alias(libs.plugins.kotlin.compose) apply false
++    alias(libs.plugins.detekt) apply false
+ }
+\ No newline at end of file
+Index: app/build.gradle.kts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>plugins {\r\n    alias(libs.plugins.android.application)\r\n    alias(libs.plugins.kotlin.android)\r\n    alias(libs.plugins.kotlin.compose)\r\n}\r\n\r\nandroid {\r\n    namespace = \"ru.yeahub\"\r\n    compileSdk = 35\r\n\r\n    defaultConfig {\r\n        applicationId = \"ru.yeahub\"\r\n        minSdk = 24\r\n        targetSdk = 35\r\n        versionCode = 1\r\n        versionName = \"1.0\"\r\n\r\n        testInstrumentationRunner = \"androidx.test.runner.AndroidJUnitRunner\"\r\n    }\r\n\r\n    buildTypes {\r\n        release {\r\n            isMinifyEnabled = false\r\n            proguardFiles(\r\n                getDefaultProguardFile(\"proguard-android-optimize.txt\"),\r\n                \"proguard-rules.pro\"\r\n            )\r\n        }\r\n    }\r\n    compileOptions {\r\n        sourceCompatibility = JavaVersion.VERSION_11\r\n        targetCompatibility = JavaVersion.VERSION_11\r\n    }\r\n    kotlinOptions {\r\n        jvmTarget = \"11\"\r\n    }\r\n    buildFeatures {\r\n        compose = true\r\n    }\r\n}\r\n\r\ndependencies {\r\n\r\n    implementation(libs.androidx.core.ktx)\r\n    implementation(libs.androidx.lifecycle.runtime.ktx)\r\n    implementation(libs.androidx.activity.compose)\r\n    implementation(platform(libs.androidx.compose.bom))\r\n    implementation(libs.androidx.ui)\r\n    implementation(libs.androidx.ui.graphics)\r\n    implementation(libs.androidx.ui.tooling.preview)\r\n    implementation(libs.androidx.material3)\r\n    testImplementation(libs.junit)\r\n    androidTestImplementation(libs.androidx.junit)\r\n    androidTestImplementation(libs.androidx.espresso.core)\r\n    androidTestImplementation(platform(libs.androidx.compose.bom))\r\n    androidTestImplementation(libs.androidx.ui.test.junit4)\r\n    debugImplementation(libs.androidx.ui.tooling)\r\n    debugImplementation(libs.androidx.ui.test.manifest)\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/build.gradle.kts b/app/build.gradle.kts
+--- a/app/build.gradle.kts	(revision c12c81a07c66e6375a6b2ffc8b8de01ca7bb5647)
++++ b/app/build.gradle.kts	(date 1749914748120)
+@@ -1,7 +1,10 @@
++import io.gitlab.arturbosch.detekt.Detekt
++
+ plugins {
+     alias(libs.plugins.android.application)
+     alias(libs.plugins.kotlin.android)
+     alias(libs.plugins.kotlin.compose)
++    alias(libs.plugins.detekt)
+ }
+ 
+ android {
+@@ -39,6 +42,99 @@
+     }
+ }
+ 
++// default lint config - only warnings
++android {
++    lint {
++        checkDependencies = true  // Enable Lint for dependencies
++        htmlOutput = file("${layout.buildDirectory.get()}/reports/lint/lint-report.html")
++    }
++}
++
++detekt {
++    toolVersion = libs.versions.detekt.get()
++    config.setFrom(files()) // Empty = use defaults detekt rules
++    baseline = file("$projectDir/detekt-setting/baseline.xml")
++}
++
++tasks.withType<Detekt>().configureEach {
++    jvmTarget = JavaVersion.VERSION_21.toString()
++
++    // Disable default failure behavior (critical step!)
++    ignoreFailures = false  // Keep false to ensure build fails
++    autoCorrect = false     // Optional: Disable auto-fixing
++
++    reports {
++        html {
++            required.set(true)
++            outputLocation.set(layout.buildDirectory.file("reports/detekt/detekt-report.html"))
++        }
++
++        xml.required.set(false)
++        txt.required.set(false)
++        sarif.required.set(false)
++        md.required.set(false)
++    }
++
++    finalizedBy(detektMessage)
++}
++
++val detektMessage by tasks.register("HOW TO FIX DETEKT FAIL") {
++    doLast {
++        val reportPath = "${layout.buildDirectory.get()}/reports/detekt/detekt-report.html"
++        val reportUrl = "file://${File(reportPath).absolutePath}"
++
++        println("\nDetekt task ended")
++        println("Report address (copy and paste to web-browser):")
++        println(reportUrl)
++
++        if (tasks.named("detekt").get().state.failure != null) {
++            autoOpenHtmlReport(reportPath)
++            throw GradleException("""
++                
++            ________________________________________________________________________________________   
++            📃FULL REPORT (🌐 copy and paste to web-browser):
++            $reportPath
++            ________________________________________________________________________________________
++            🔧 HOW TO FIX? 
++            1. Open the report and fix the listed issues.
++            2. Put changes.
++            3. Re-build project (preferably) OR run locally (terminal/Git Bash)
++                    ./gradlew detekt
++            
++            Optionally (pre-debug mode): Try locally (terminal/Git Bash)
++                    ./gradlew build -x detekt -x lint
++            to see app running without detekt and lint
++
++            ⚠️ The default build will fail until all issues are resolved.
++            ________________________________________________________________________________________
++            
++            """.trimIndent())
++        }
++    }
++}
++
++afterEvaluate {
++    tasks.named("assembleDebug") {
++        finalizedBy("test")
++        finalizedBy("detekt")
++        finalizedBy("lint")
++    }
++}
++
++tasks.withType<Test> {
++    finalizedBy("openTestReportOnFailure")
++}
++
++tasks.register("openTestReportOnFailure") {
++    onlyIf {
++        tasks.withType<Test>().any { it.state.failure != null }
++    }
++    doLast {
++        val reportPath = "${projectDir}/build/reports/tests/testDebugUnitTest/index.html"
++        autoOpenHtmlReport(reportPath)
++    }
++}
++
+ dependencies {
+ 
+     implementation(libs.androidx.core.ktx)
+@@ -56,4 +152,24 @@
+     androidTestImplementation(libs.androidx.ui.test.junit4)
+     debugImplementation(libs.androidx.ui.tooling)
+     debugImplementation(libs.androidx.ui.test.manifest)
++
++    val detekt_version = "1.23.8"
++    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:$detekt_version")
++    testImplementation("io.gitlab.arturbosch.detekt:detekt-test:$detekt_version")
++}
++
++fun autoOpenHtmlReport (reportPath: String) {
++    val reportUrl = "file://${file(reportPath).absolutePath}"
++    try {
++        val os = System.getProperty("os.name").lowercase()
++
++        when {
++            os.contains("win") -> ProcessBuilder("rundll32", "url.dll", "FileProtocolHandler", reportUrl).start()
++            os.contains("mac") -> ProcessBuilder("open", reportUrl).start()
++            os.contains("nix") || os.contains("nux") -> ProcessBuilder("xdg-open", reportUrl).start()
++            else -> println("Unsupported OS for automatic opening")
++        }
++    } catch (e: Exception) {
++        println("Could not open browser automatically: ${e.message}")
++    }
+ }
+\ No newline at end of file
+Index: gradle/libs.versions.toml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>[versions]\r\nagp = \"8.10.0\"\r\nkotlin = \"2.0.21\"\r\ncoreKtx = \"1.10.1\"\r\njunit = \"4.13.2\"\r\njunitVersion = \"1.1.5\"\r\nespressoCore = \"3.5.1\"\r\nlifecycleRuntimeKtx = \"2.6.1\"\r\nactivityCompose = \"1.8.0\"\r\ncomposeBom = \"2024.09.00\"\r\n\r\n[libraries]\r\nandroidx-core-ktx = { group = \"androidx.core\", name = \"core-ktx\", version.ref = \"coreKtx\" }\r\njunit = { group = \"junit\", name = \"junit\", version.ref = \"junit\" }\r\nandroidx-junit = { group = \"androidx.test.ext\", name = \"junit\", version.ref = \"junitVersion\" }\r\nandroidx-espresso-core = { group = \"androidx.test.espresso\", name = \"espresso-core\", version.ref = \"espressoCore\" }\r\nandroidx-lifecycle-runtime-ktx = { group = \"androidx.lifecycle\", name = \"lifecycle-runtime-ktx\", version.ref = \"lifecycleRuntimeKtx\" }\r\nandroidx-activity-compose = { group = \"androidx.activity\", name = \"activity-compose\", version.ref = \"activityCompose\" }\r\nandroidx-compose-bom = { group = \"androidx.compose\", name = \"compose-bom\", version.ref = \"composeBom\" }\r\nandroidx-ui = { group = \"androidx.compose.ui\", name = \"ui\" }\r\nandroidx-ui-graphics = { group = \"androidx.compose.ui\", name = \"ui-graphics\" }\r\nandroidx-ui-tooling = { group = \"androidx.compose.ui\", name = \"ui-tooling\" }\r\nandroidx-ui-tooling-preview = { group = \"androidx.compose.ui\", name = \"ui-tooling-preview\" }\r\nandroidx-ui-test-manifest = { group = \"androidx.compose.ui\", name = \"ui-test-manifest\" }\r\nandroidx-ui-test-junit4 = { group = \"androidx.compose.ui\", name = \"ui-test-junit4\" }\r\nandroidx-material3 = { group = \"androidx.compose.material3\", name = \"material3\" }\r\n\r\n[plugins]\r\nandroid-application = { id = \"com.android.application\", version.ref = \"agp\" }\r\nkotlin-android = { id = \"org.jetbrains.kotlin.android\", version.ref = \"kotlin\" }\r\nkotlin-compose = { id = \"org.jetbrains.kotlin.plugin.compose\", version.ref = \"kotlin\" }\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/gradle/libs.versions.toml b/gradle/libs.versions.toml
+--- a/gradle/libs.versions.toml	(revision c12c81a07c66e6375a6b2ffc8b8de01ca7bb5647)
++++ b/gradle/libs.versions.toml	(date 1749541971315)
+@@ -8,6 +8,7 @@
+ lifecycleRuntimeKtx = "2.6.1"
+ activityCompose = "1.8.0"
+ composeBom = "2024.09.00"
++detekt = "1.23.8"
+ 
+ [libraries]
+ androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+@@ -29,4 +30,4 @@
+ android-application = { id = "com.android.application", version.ref = "agp" }
+ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+ kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+-
++detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+\ No newline at end of file
+Index: .idea/.gitignore
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+># Gradle files\r\n.gradle/\r\nbuild/\r\n\r\n# Local configuration file (sdk path, etc)\r\nlocal.properties\r\n\r\n# Log/OS Files\r\n*.log\r\n\r\n# Android Studio generated files and folders\r\ncaptures/\r\n.externalNativeBuild/\r\n.cxx/\r\n*.apk\r\noutput-metadata.json\r\n\r\n# IntelliJ\r\n*.iml\r\n.idea/\r\nmisc.xml\r\ndeploymentTargetDropDown.xml\r\nrender.experimental.xml\r\n\r\n# Keystore files\r\n*.jks\r\n*.keystore\r\n\r\n# Google Services (e.g. APIs or Firebase)\r\ngoogle-services.json\r\n\r\n# Android Profiling\r\n*.hprof
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/.gitignore b/.idea/.gitignore
+--- a/.idea/.gitignore	(revision c12c81a07c66e6375a6b2ffc8b8de01ca7bb5647)
++++ b/.idea/.gitignore	(date 1749713670546)
+@@ -18,6 +18,7 @@
+ # IntelliJ
+ *.iml
+ .idea/
++!.idea/runConfigurations/
+ misc.xml
+ deploymentTargetDropDown.xml
+ render.experimental.xml
+Index: .gitignore
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>*.iml\r\n.gradle\r\n/local.properties\r\n/.idea/caches\r\n/.idea/libraries\r\n/.idea/modules.xml\r\n/.idea/workspace.xml\r\n/.idea/navEditor.xml\r\n/.idea/assetWizardSettings.xml\r\n.DS_Store\r\n/build\r\n/captures\r\n.externalNativeBuild\r\n.cxx\r\nlocal.properties\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.gitignore b/.gitignore
+--- a/.gitignore	(revision c12c81a07c66e6375a6b2ffc8b8de01ca7bb5647)
++++ b/.gitignore	(date 1749728223407)
+@@ -13,3 +13,4 @@
+ .externalNativeBuild
+ .cxx
+ local.properties
++/detekt-setting/baseline.xml
+Index: gradlew
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>#!/usr/bin/env sh\r\n\r\n#\r\n# Copyright 2015 the original author or authors.\r\n#\r\n# Licensed under the Apache License, Version 2.0 (the \"License\");\r\n# you may not use this file except in compliance with the License.\r\n# You may obtain a copy of the License at\r\n#\r\n#      https://www.apache.org/licenses/LICENSE-2.0\r\n#\r\n# Unless required by applicable law or agreed to in writing, software\r\n# distributed under the License is distributed on an \"AS IS\" BASIS,\r\n# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\r\n# See the License for the specific language governing permissions and\r\n# limitations under the License.\r\n#\r\n\r\n##############################################################################\r\n##\r\n##  Gradle start up script for UN*X\r\n##\r\n##############################################################################\r\n\r\n# Attempt to set APP_HOME\r\n# Resolve links: $0 may be a link\r\nPRG=\"$0\"\r\n# Need this for relative symlinks.\r\nwhile [ -h \"$PRG\" ] ; do\r\n    ls=`ls -ld \"$PRG\"`\r\n    link=`expr \"$ls\" : '.*-> \\(.*\\)$'`\r\n    if expr \"$link\" : '/.*' > /dev/null; then\r\n        PRG=\"$link\"\r\n    else\r\n        PRG=`dirname \"$PRG\"`\"/$link\"\r\n    fi\r\ndone\r\nSAVED=\"`pwd`\"\r\ncd \"`dirname \\\"$PRG\\\"`/\" >/dev/null\r\nAPP_HOME=\"`pwd -P`\"\r\ncd \"$SAVED\" >/dev/null\r\n\r\nAPP_NAME=\"Gradle\"\r\nAPP_BASE_NAME=`basename \"$0\"`\r\n\r\n# Add default JVM options here. You can also use JAVA_OPTS and GRADLE_OPTS to pass JVM options to this script.\r\nDEFAULT_JVM_OPTS='\"-Xmx64m\" \"-Xms64m\"'\r\n\r\n# Use the maximum available, or set MAX_FD != -1 to use that value.\r\nMAX_FD=\"maximum\"\r\n\r\nwarn () {\r\n    echo \"$*\"\r\n}\r\n\r\ndie () {\r\n    echo\r\n    echo \"$*\"\r\n    echo\r\n    exit 1\r\n}\r\n\r\n# OS specific support (must be 'true' or 'false').\r\ncygwin=false\r\nmsys=false\r\ndarwin=false\r\nnonstop=false\r\ncase \"`uname`\" in\r\n  CYGWIN* )\r\n    cygwin=true\r\n    ;;\r\n  Darwin* )\r\n    darwin=true\r\n    ;;\r\n  MINGW* )\r\n    msys=true\r\n    ;;\r\n  NONSTOP* )\r\n    nonstop=true\r\n    ;;\r\nesac\r\n\r\nCLASSPATH=$APP_HOME/gradle/wrapper/gradle-wrapper.jar\r\n\r\n\r\n# Determine the Java command to use to start the JVM.\r\nif [ -n \"$JAVA_HOME\" ] ; then\r\n    if [ -x \"$JAVA_HOME/jre/sh/java\" ] ; then\r\n        # IBM's JDK on AIX uses strange locations for the executables\r\n        JAVACMD=\"$JAVA_HOME/jre/sh/java\"\r\n    else\r\n        JAVACMD=\"$JAVA_HOME/bin/java\"\r\n    fi\r\n    if [ ! -x \"$JAVACMD\" ] ; then\r\n        die \"ERROR: JAVA_HOME is set to an invalid directory: $JAVA_HOME\r\n\r\nPlease set the JAVA_HOME variable in your environment to match the\r\nlocation of your Java installation.\"\r\n    fi\r\nelse\r\n    JAVACMD=\"java\"\r\n    which java >/dev/null 2>&1 || die \"ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH.\r\n\r\nPlease set the JAVA_HOME variable in your environment to match the\r\nlocation of your Java installation.\"\r\nfi\r\n\r\n# Increase the maximum file descriptors if we can.\r\nif [ \"$cygwin\" = \"false\" -a \"$darwin\" = \"false\" -a \"$nonstop\" = \"false\" ] ; then\r\n    MAX_FD_LIMIT=`ulimit -H -n`\r\n    if [ $? -eq 0 ] ; then\r\n        if [ \"$MAX_FD\" = \"maximum\" -o \"$MAX_FD\" = \"max\" ] ; then\r\n            MAX_FD=\"$MAX_FD_LIMIT\"\r\n        fi\r\n        ulimit -n $MAX_FD\r\n        if [ $? -ne 0 ] ; then\r\n            warn \"Could not set maximum file descriptor limit: $MAX_FD\"\r\n        fi\r\n    else\r\n        warn \"Could not query maximum file descriptor limit: $MAX_FD_LIMIT\"\r\n    fi\r\nfi\r\n\r\n# For Darwin, add options to specify how the application appears in the dock\r\nif $darwin; then\r\n    GRADLE_OPTS=\"$GRADLE_OPTS \\\"-Xdock:name=$APP_NAME\\\" \\\"-Xdock:icon=$APP_HOME/media/gradle.icns\\\"\"\r\nfi\r\n\r\n# For Cygwin or MSYS, switch paths to Windows format before running java\r\nif [ \"$cygwin\" = \"true\" -o \"$msys\" = \"true\" ] ; then\r\n    APP_HOME=`cygpath --path --mixed \"$APP_HOME\"`\r\n    CLASSPATH=`cygpath --path --mixed \"$CLASSPATH\"`\r\n\r\n    JAVACMD=`cygpath --unix \"$JAVACMD\"`\r\n\r\n    # We build the pattern for arguments to be converted via cygpath\r\n    ROOTDIRSRAW=`find -L / -maxdepth 1 -mindepth 1 -type d 2>/dev/null`\r\n    SEP=\"\"\r\n    for dir in $ROOTDIRSRAW ; do\r\n        ROOTDIRS=\"$ROOTDIRS$SEP$dir\"\r\n        SEP=\"|\"\r\n    done\r\n    OURCYGPATTERN=\"(^($ROOTDIRS))\"\r\n    # Add a user-defined pattern to the cygpath arguments\r\n    if [ \"$GRADLE_CYGPATTERN\" != \"\" ] ; then\r\n        OURCYGPATTERN=\"$OURCYGPATTERN|($GRADLE_CYGPATTERN)\"\r\n    fi\r\n    # Now convert the arguments - kludge to limit ourselves to /bin/sh\r\n    i=0\r\n    for arg in \"$@\" ; do\r\n        CHECK=`echo \"$arg\"|egrep -c \"$OURCYGPATTERN\" -`\r\n        CHECK2=`echo \"$arg\"|egrep -c \"^-\"`                                 ### Determine if an option\r\n\r\n        if [ $CHECK -ne 0 ] && [ $CHECK2 -eq 0 ] ; then                    ### Added a condition\r\n            eval `echo args$i`=`cygpath --path --ignore --mixed \"$arg\"`\r\n        else\r\n            eval `echo args$i`=\"\\\"$arg\\\"\"\r\n        fi\r\n        i=`expr $i + 1`\r\n    done\r\n    case $i in\r\n        0) set -- ;;\r\n        1) set -- \"$args0\" ;;\r\n        2) set -- \"$args0\" \"$args1\" ;;\r\n        3) set -- \"$args0\" \"$args1\" \"$args2\" ;;\r\n        4) set -- \"$args0\" \"$args1\" \"$args2\" \"$args3\" ;;\r\n        5) set -- \"$args0\" \"$args1\" \"$args2\" \"$args3\" \"$args4\" ;;\r\n        6) set -- \"$args0\" \"$args1\" \"$args2\" \"$args3\" \"$args4\" \"$args5\" ;;\r\n        7) set -- \"$args0\" \"$args1\" \"$args2\" \"$args3\" \"$args4\" \"$args5\" \"$args6\" ;;\r\n        8) set -- \"$args0\" \"$args1\" \"$args2\" \"$args3\" \"$args4\" \"$args5\" \"$args6\" \"$args7\" ;;\r\n        9) set -- \"$args0\" \"$args1\" \"$args2\" \"$args3\" \"$args4\" \"$args5\" \"$args6\" \"$args7\" \"$args8\" ;;\r\n    esac\r\nfi\r\n\r\n# Escape application args\r\nsave () {\r\n    for i do printf %s\\\\n \"$i\" | sed \"s/'/'\\\\\\\\''/g;1s/^/'/;\\$s/\\$/' \\\\\\\\/\" ; done\r\n    echo \" \"\r\n}\r\nAPP_ARGS=`save \"$@\"`\r\n\r\n# Collect all arguments for the java command, following the shell quoting and substitution rules\r\neval set -- $DEFAULT_JVM_OPTS $JAVA_OPTS $GRADLE_OPTS \"\\\"-Dorg.gradle.appname=$APP_BASE_NAME\\\"\" -classpath \"\\\"$CLASSPATH\\\"\" org.gradle.wrapper.GradleWrapperMain \"$APP_ARGS\"\r\n\r\nexec \"$JAVACMD\" \"$@\"\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/gradlew b/gradlew
+--- a/gradlew	(revision c12c81a07c66e6375a6b2ffc8b8de01ca7bb5647)
++++ b/gradlew	(date 1749537380685)
+@@ -30,6 +30,7 @@
+     ls=`ls -ld "$PRG"`
+     link=`expr "$ls" : '.*-> \(.*\)$'`
+     if expr "$link" : '/.*' > /dev/null; then
++
+         PRG="$link"
+     else
+         PRG=`dirname "$PRG"`"/$link"
+Index: .idea/vcs.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"VcsDirectoryMappings\" defaultProject=\"true\" />\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/vcs.xml b/.idea/vcs.xml
+--- a/.idea/vcs.xml	(revision c12c81a07c66e6375a6b2ffc8b8de01ca7bb5647)
++++ b/.idea/vcs.xml	(date 1749920635820)
+@@ -1,4 +1,6 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <project version="4">
+-  <component name="VcsDirectoryMappings" defaultProject="true" />
++  <component name="VcsDirectoryMappings">
++    <mapping directory="" vcs="Git" />
++  </component>
+ </project>
+\ No newline at end of file
