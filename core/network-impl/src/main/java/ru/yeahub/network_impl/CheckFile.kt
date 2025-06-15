@@ -11,7 +11,7 @@ fun main() {
         getQuestion()
         getQuestionById()
         getSkills()
-        getAllSpecializations()
+        getSpecializations()
         getSpecializationById()
     }
     kotlin.system.exitProcess(0)
@@ -40,8 +40,8 @@ suspend fun getSkills() {
     println()
 }
 
-suspend fun getAllSpecializations() {
-    val result = api.getAllSpecializations(page, limit)
+suspend fun getSpecializations() {
+    val result = api.getSpecializations(page, limit)
     println("result for: fun getAllSpecializations()")
     println(result)
     println()

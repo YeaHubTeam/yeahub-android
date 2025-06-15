@@ -3,8 +3,8 @@ package ru.yeahub.network_impl
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
-import ru.yeahub.network_api.models.GetQuestionWithProfileDataResponse
-import ru.yeahub.network_api.models.GetQuestionsResponse
+import ru.yeahub.network_api.models.GetPublicQuestionResponse
+import ru.yeahub.network_api.models.GetPublicQuestionsResponse
 import ru.yeahub.network_api.models.GetSkillsResponse
 import ru.yeahub.network_api.models.GetSpecializationResponse
 import ru.yeahub.network_api.models.GetSpecializationsResponse
@@ -27,12 +27,12 @@ interface ApiService {
         @Query("orderBy") orderBy: String? = null,
         @Query("order") order: String? = null,
         @Query("random") random: Boolean? = null
-    ): GetQuestionsResponse
+    ): GetPublicQuestionsResponse
 
     @GET("questions/public-questions/{id}")
     suspend fun getQuestionById(
         @Path("id") id: Long
-    ): GetQuestionWithProfileDataResponse
+    ): GetPublicQuestionResponse
 
     @GET("skills")
     suspend fun getSkills(
@@ -42,7 +42,7 @@ interface ApiService {
     ): GetSkillsResponse
 
     @GET("specializations")
-    suspend fun getAllSpecializations(
+    suspend fun getSpecializations(
         @Query("page") page: Int,
         @Query("limit") limit: Int
     ): GetSpecializationsResponse

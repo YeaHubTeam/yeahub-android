@@ -1,6 +1,6 @@
 package ru.yeahub.network_api.models
 
-data class GetQuestionWithProfileDataResponse(
+data class GetPublicQuestionResponse(
     val id: Long,
     val title: String,
     val description: String,
@@ -19,10 +19,5 @@ data class GetQuestionWithProfileDataResponse(
     val createdAt: String,
     val updatedAt: String,
     val createdBy: NestedUserReferenceDto,
-    val updatedBy: NestedUserReferenceDto?,
-    val checksCount: Long,
-    val isLearned: Boolean,
-    val isFavorite: Boolean,
-    val profileId: String?,
-    val lastUpdate: String?
+    val updatedBy: NestedUserReferenceDto?
 )
