@@ -5,6 +5,7 @@ style:
       - '**/Color.kt'
       - '**/test/**'
       - '**/ExampleUnitTest.kt'
+      - '**/example/**'
   NewLineAtEndOfFile:
     active: false
 
@@ -16,4 +17,8 @@ formatting:
 
 naming:
   FunctionNaming:
+    active: false
+
+empty-blocks:
+  EmptyDefaultConstructor:
     active: false
