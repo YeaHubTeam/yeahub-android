@@ -1,0 +1,19 @@
+style:
+  MagicNumber:
+    active: true
+    excludes:
+      - '**/Color.kt'
+      - '**/test/**'
+      - '**/ExampleUnitTest.kt'
+  NewLineAtEndOfFile:
+    active: false
+
+formatting:
+  FinalNewline:
+    active: false
+  NewLineAtEndOfFile:
+    active: false
+
+naming:
+  FunctionNaming:
+    active: false

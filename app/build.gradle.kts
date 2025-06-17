@@ -52,7 +52,7 @@ android {
 
 detekt {
     toolVersion = libs.versions.detekt.get()
-    config.setFrom(files()) // Empty = use defaults detekt rules
+    config.setFrom(file("$projectDir/detekt-setting/detekt.yml")) // Empty = use defaults detekt rules
     baseline = file("$projectDir/detekt-setting/baseline.xml")
 }
 
@@ -62,6 +62,7 @@ tasks.withType<Detekt>().configureEach {
     // Disable default failure behavior (critical step!)
     ignoreFailures = false  // Keep false to ensure build fails
     autoCorrect = false     // Optional: Disable auto-fixing
+    buildUponDefaultConfig = true // Respect default rules
 
     reports {
         html {
@@ -161,10 +162,8 @@ dependencies {
     testRuntimeOnly(libs.junit.platform.launcher)
     testImplementation(libs.mockk)
 
-    val detekt_version = "1.23.8"
-    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:$detekt_version")
-    testImplementation("io.gitlab.arturbosch.detekt:detekt-test:$detekt_version")
-
+    detektPlugins(libs.detekt.formatting)
+    testImplementation(libs.detekt.test)
 }
 
 fun autoOpenHtmlReport (reportPath: String) {

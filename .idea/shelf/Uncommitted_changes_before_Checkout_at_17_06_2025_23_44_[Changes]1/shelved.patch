@@ -1,0 +1,149 @@
+Index: gradle/libs.versions.toml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>[versions]\r\nagp = \"8.10.0\"\r\nkotlin = \"2.0.21\"\r\ncoreKtx = \"1.10.1\"\r\njunit = \"5.8.2\"\r\njunitPlatformLauncher = \"1.8.2\"\r\nmockk = \"1.14.2\"\r\nespressoCore = \"3.5.1\"\r\nlifecycleRuntimeKtx = \"2.6.1\"\r\nactivityCompose = \"1.8.0\"\r\ncomposeBom = \"2024.09.00\"\r\nlifecycleViewmodelKtx = \"2.8.0\"\r\ntimber = \"5.0.1\"\r\ndetekt = \"1.23.8\"\r\n\r\n[libraries]\r\nandroidx-core-ktx = { group = \"androidx.core\", name = \"core-ktx\", version.ref = \"coreKtx\" }\r\nandroidx-espresso-core = { group = \"androidx.test.espresso\", name = \"espresso-core\", version.ref = \"espressoCore\" }\r\nandroidx-lifecycle-runtime-ktx = { group = \"androidx.lifecycle\", name = \"lifecycle-runtime-ktx\", version.ref = \"lifecycleRuntimeKtx\" }\r\nandroidx-activity-compose = { group = \"androidx.activity\", name = \"activity-compose\", version.ref = \"activityCompose\" }\r\nandroidx-compose-bom = { group = \"androidx.compose\", name = \"compose-bom\", version.ref = \"composeBom\" }\r\nandroidx-ui = { group = \"androidx.compose.ui\", name = \"ui\" }\r\nandroidx-ui-graphics = { group = \"androidx.compose.ui\", name = \"ui-graphics\" }\r\nandroidx-ui-tooling = { group = \"androidx.compose.ui\", name = \"ui-tooling\" }\r\nandroidx-ui-tooling-preview = { group = \"androidx.compose.ui\", name = \"ui-tooling-preview\" }\r\nandroidx-ui-test-manifest = { group = \"androidx.compose.ui\", name = \"ui-test-manifest\" }\r\nandroidx-material3 = { group = \"androidx.compose.material3\", name = \"material3\" }\r\nandroidx-lifecycle-viewmodel-ktx = { module = \"androidx.lifecycle:lifecycle-viewmodel-ktx\", version.ref = \"lifecycleViewmodelKtx\" }\r\ntimber = { module = \"com.jakewharton.timber:timber\", version.ref = \"timber\" }\r\n\r\njunit-bom = { group = \"org.junit\", name = \"junit-bom\", version.ref = \"junit\" }\r\njunit-jupiter = { group = \"org.junit.jupiter\", name = \"junit-jupiter\", version.ref = \"junit\" }\r\njunit-platform-launcher = { group = \"org.junit.platform\", name = \"junit-platform-launcher\", version.ref = \"junitPlatformLauncher\" }\r\nmockk = { group = \"io.mockk\", name = \"mockk\", version.ref = \"mockk\" }\r\n\r\n[plugins]\r\nandroid-application = { id = \"com.android.application\", version.ref = \"agp\" }\r\nandroid-library = { id = \"com.android.library\", version.ref = \"agp\" }\r\nkotlin-android = { id = \"org.jetbrains.kotlin.android\", version.ref = \"kotlin\" }\r\nkotlin-compose = { id = \"org.jetbrains.kotlin.plugin.compose\", version.ref = \"kotlin\" }\r\ndetekt = { id = \"io.gitlab.arturbosch.detekt\", version.ref = \"detekt\" }
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/gradle/libs.versions.toml b/gradle/libs.versions.toml
+--- a/gradle/libs.versions.toml	(revision efaf5f4a490bea24267b212417bfb3e9bd08541e)
++++ b/gradle/libs.versions.toml	(date 1750172407159)
+@@ -33,6 +33,9 @@
+ junit-platform-launcher = { group = "org.junit.platform", name = "junit-platform-launcher", version.ref = "junitPlatformLauncher" }
+ mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
+ 
++detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
++detekt-test = { module = "io.gitlab.arturbosch.detekt:detekt-test", version.ref = "detekt" }
++
+ [plugins]
+ android-application = { id = "com.android.application", version.ref = "agp" }
+ android-library = { id = "com.android.library", version.ref = "agp" }
+Index: app/src/test/java/ru/yeahub/test/SumCalcTest.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package ru.yeahub.test\r\n\r\nimport org.junit.jupiter.api.Assertions.assertEquals\r\nimport org.junit.jupiter.params.ParameterizedTest\r\nimport org.junit.jupiter.params.provider.ArgumentsSource\r\n\r\n\r\nclass SumCalcTest {\r\n\r\n    data class SumCalcTestCase(\r\n        val dataToTest: Pair<Int, Int>,\r\n        val expectedResult: Int\r\n    )\r\n\r\n    class SumCalcArgumentsProvider : TestArgumentsProvider<SumCalcTestCase>() {\r\n\r\n        override fun testCases(): List<SumCalcTestCase> = listOf(\r\n            SumCalcTestCase(Pair(1, 2), 3),\r\n            SumCalcTestCase(Pair(5, 2), 7),\r\n            SumCalcTestCase(Pair(0, 0), 0),\r\n            SumCalcTestCase(Pair(1, -1), 0),\r\n            SumCalcTestCase(Pair(Int.MAX_VALUE, 0), Int.MAX_VALUE),\r\n            SumCalcTestCase(Pair(Int.MIN_VALUE, 0), Int.MIN_VALUE)\r\n        )\r\n    }\r\n\r\n    @ParameterizedTest\r\n    @ArgumentsSource(SumCalcArgumentsProvider::class)\r\n    fun `should calculate sum correctly`(testCase: SumCalcTestCase) {\r\n        val result = SumCalc().sum(testCase.dataToTest.first, testCase.dataToTest.second)\r\n        assertEquals(testCase.expectedResult, result)\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/test/java/ru/yeahub/test/SumCalcTest.kt b/app/src/test/java/ru/yeahub/test/SumCalcTest.kt
+--- a/app/src/test/java/ru/yeahub/test/SumCalcTest.kt	(revision efaf5f4a490bea24267b212417bfb3e9bd08541e)
++++ b/app/src/test/java/ru/yeahub/test/SumCalcTest.kt	(date 1750178242962)
+@@ -4,7 +4,6 @@
+ import org.junit.jupiter.params.ParameterizedTest
+ import org.junit.jupiter.params.provider.ArgumentsSource
+ 
+-
+ class SumCalcTest {
+ 
+     data class SumCalcTestCase(
+Index: app/src/main/java/ru/yeahub/example/staticPreview/PreviewExample.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package ru.yeahub.example.staticPreview\r\n\r\nimport androidx.compose.foundation.layout.Column\r\nimport androidx.compose.foundation.layout.Spacer\r\nimport androidx.compose.foundation.layout.fillMaxWidth\r\nimport androidx.compose.foundation.layout.height\r\nimport androidx.compose.foundation.layout.padding\r\nimport androidx.compose.material3.Button\r\nimport androidx.compose.material3.CircularProgressIndicator\r\nimport androidx.compose.material3.Text\r\nimport androidx.compose.material3.TextField\r\nimport androidx.compose.runtime.Composable\r\nimport androidx.compose.ui.Modifier\r\nimport androidx.compose.ui.tooling.preview.PreviewParameter\r\nimport androidx.compose.ui.unit.dp\r\nimport androidx.compose.ui.tooling.preview.PreviewParameterProvider\r\n\r\n@StaticPreview\r\n@Composable\r\nfun ShowPreview(\r\n    @PreviewParameter(ListOfStatesProvider::class) state: String\r\n) {\r\n    StatesPreview(state)\r\n}\r\n\r\n@Composable\r\nfun TestScreen() {\r\n    Column(\r\n        modifier = Modifier\r\n            .padding(16.dp)\r\n            .fillMaxWidth()\r\n    ) {\r\n        Text(\r\n            text = \"Введите текст:\",\r\n            modifier = Modifier.padding(bottom = 8.dp)\r\n        )\r\n\r\n        TextField(\r\n            value = \"\",\r\n            onValueChange = {  },\r\n            modifier = Modifier.fillMaxWidth(),\r\n            placeholder = { Text(\"Напишите что-нибудь...\") }\r\n        )\r\n\r\n        Spacer(modifier = Modifier.height(16.dp))\r\n\r\n        Button(\r\n            onClick = {  },\r\n            modifier = Modifier.fillMaxWidth()\r\n        ) {\r\n            Text(\"Отправить\")\r\n        }\r\n\r\n    }\r\n}\r\n\r\nclass ListOfStatesProvider : PreviewParameterProvider<String> {\r\n    override val values = sequenceOf(\r\n        \"First state\",\r\n        \"Second state\",\r\n        \"Third state\",\r\n        \"Fourth state\",\r\n    )\r\n}\r\n\r\n@Composable\r\nfun StatesPreview(state: String) {\r\n    Column(modifier = Modifier.padding(16.dp)) {\r\n        TestScreen()\r\n\r\n        Text(\"Текущее состояние: $state\")\r\n        when (state) {\r\n            \"First state\" -> Text(\"Список пуст\")\r\n            \"Second state\" -> CircularProgressIndicator(strokeWidth = 10.dp)\r\n            \"Third state\" -> Text(\"Ошибка загрузки\")\r\n            else -> Column {\r\n                Text(\"Данные:\")\r\n                Text(state)\r\n            }\r\n        }\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/ru/yeahub/example/staticPreview/PreviewExample.kt b/app/src/main/java/ru/yeahub/example/staticPreview/PreviewExample.kt
+--- a/app/src/main/java/ru/yeahub/example/staticPreview/PreviewExample.kt	(revision efaf5f4a490bea24267b212417bfb3e9bd08541e)
++++ b/app/src/main/java/ru/yeahub/example/staticPreview/PreviewExample.kt	(date 1750178198082)
+@@ -12,8 +12,8 @@
+ import androidx.compose.runtime.Composable
+ import androidx.compose.ui.Modifier
+ import androidx.compose.ui.tooling.preview.PreviewParameter
+-import androidx.compose.ui.unit.dp
+ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
++import androidx.compose.ui.unit.dp
+ 
+ @StaticPreview
+ @Composable
+@@ -37,7 +37,7 @@
+ 
+         TextField(
+             value = "",
+-            onValueChange = {  },
++            onValueChange = { },
+             modifier = Modifier.fillMaxWidth(),
+             placeholder = { Text("Напишите что-нибудь...") }
+         )
+@@ -45,12 +45,11 @@
+         Spacer(modifier = Modifier.height(16.dp))
+ 
+         Button(
+-            onClick = {  },
++            onClick = { },
+             modifier = Modifier.fillMaxWidth()
+         ) {
+             Text("Отправить")
+         }
+-
+     }
+ }
+ 
+Index: app/src/test/java/ru/yeahub/ExampleUnitTest.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package ru.yeahub\r\n\r\n\r\nimport org.junit.jupiter.api.Test\r\nimport org.junit.jupiter.api.Assertions.assertEquals\r\n\r\n\r\n/**\r\n * Example local unit test, which will execute on the development machine (host).\r\n *\r\n * See [testing documentation](http://d.android.com/tools/testing).\r\n */\r\nclass ExampleUnitTest {\r\n    @Test\r\n    fun addition_isCorrect() {\r\n        assertEquals(4, 2 + 2)\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/test/java/ru/yeahub/ExampleUnitTest.kt b/app/src/test/java/ru/yeahub/ExampleUnitTest.kt
+--- a/app/src/test/java/ru/yeahub/ExampleUnitTest.kt	(revision efaf5f4a490bea24267b212417bfb3e9bd08541e)
++++ b/app/src/test/java/ru/yeahub/ExampleUnitTest.kt	(date 1750178225460)
+@@ -1,9 +1,7 @@
+ package ru.yeahub
+ 
+-
+-import org.junit.jupiter.api.Test
+ import org.junit.jupiter.api.Assertions.assertEquals
+-
++import org.junit.jupiter.api.Test
+ 
+ /**
+  * Example local unit test, which will execute on the development machine (host).
+Index: app/detekt-setting/baseline.xml
+===================================================================
+diff --git a/app/detekt-setting/baseline.xml b/app/detekt-setting/baseline.xml
+deleted file mode 100644
+--- a/app/detekt-setting/baseline.xml	(revision efaf5f4a490bea24267b212417bfb3e9bd08541e)
++++ /dev/null	(revision efaf5f4a490bea24267b212417bfb3e9bd08541e)
+@@ -1,31 +0,0 @@
+-<?xml version="1.0" ?>
+-<SmellBaseline>
+-  <ManuallySuppressedIssues/>
+-  <CurrentIssues>
+-    <ID>BlockCommentInitialStarAlignment:Theme.kt$/* Other default colors to override background = Color(0xFFFFFBFE), surface = Color(0xFFFFFBFE), onPrimary = Color.White, onSecondary = Color.White, onTertiary = Color.White, onBackground = Color(0xFF1C1B1F), onSurface = Color(0xFF1C1B1F), */</ID>
+-    <ID>BlockCommentInitialStarAlignment:Type.kt$/* Other default text styles to override titleLarge = TextStyle( fontFamily = FontFamily.Default, fontWeight = FontWeight.Normal, fontSize = 22.sp, lineHeight = 28.sp, letterSpacing = 0.sp ), labelSmall = TextStyle( fontFamily = FontFamily.Default, fontWeight = FontWeight.Medium, fontSize = 11.sp, lineHeight = 16.sp, letterSpacing = 0.5.sp ) */</ID>
+-    <ID>FinalNewline:Color.kt$ru.yeahub.ui.theme.Color.kt</ID>
+-    <ID>FinalNewline:ExampleUnitTest.kt$ru.yeahub.ExampleUnitTest.kt</ID>
+-    <ID>FinalNewline:MainActivity.kt$ru.yeahub.MainActivity.kt</ID>
+-    <ID>FinalNewline:Theme.kt$ru.yeahub.ui.theme.Theme.kt</ID>
+-    <ID>FinalNewline:Type.kt$ru.yeahub.ui.theme.Type.kt</ID>
+-    <ID>FunctionNaming:MainActivity.kt$@Composable fun Greeting(name: String, modifier: Modifier = Modifier)</ID>
+-    <ID>FunctionNaming:MainActivity.kt$@Preview(showBackground = true) @Composable fun GreetingPreview()</ID>
+-    <ID>FunctionNaming:Theme.kt$@Composable fun YeaHubTheme( darkTheme: Boolean = isSystemInDarkTheme(), // Dynamic color is available on Android 12+ dynamicColor: Boolean = true, content: @Composable () -&gt; Unit )</ID>
+-    <ID>ImportOrdering:ExampleUnitTest.kt$import org.junit.Test import org.junit.Assert.*</ID>
+-    <ID>MagicNumber:Color.kt$0xFF625b71</ID>
+-    <ID>MagicNumber:Color.kt$0xFF6650a4</ID>
+-    <ID>MagicNumber:Color.kt$0xFF7D5260</ID>
+-    <ID>MagicNumber:Color.kt$0xFFCCC2DC</ID>
+-    <ID>MagicNumber:Color.kt$0xFFD0BCFF</ID>
+-    <ID>MagicNumber:Color.kt$0xFFEFB8C8</ID>
+-    <ID>NewLineAtEndOfFile:Color.kt$ru.yeahub.ui.theme.Color.kt</ID>
+-    <ID>NewLineAtEndOfFile:ExampleUnitTest.kt$ru.yeahub.ExampleUnitTest.kt</ID>
+-    <ID>NewLineAtEndOfFile:MainActivity.kt$ru.yeahub.MainActivity.kt</ID>
+-    <ID>NewLineAtEndOfFile:Theme.kt$ru.yeahub.ui.theme.Theme.kt</ID>
+-    <ID>NewLineAtEndOfFile:Type.kt$ru.yeahub.ui.theme.Type.kt</ID>
+-    <ID>NoUnusedImports:Theme.kt$ru.yeahub.ui.theme.Theme.kt</ID>
+-    <ID>NoWildcardImports:ExampleUnitTest.kt$import org.junit.Assert.*</ID>
+-    <ID>WildcardImport:ExampleUnitTest.kt$import org.junit.Assert.*</ID>
+-  </CurrentIssues>
+-</SmellBaseline>
+Index: .idea/.name
+===================================================================
+diff --git a/.idea/.name b/.idea/.name
+deleted file mode 100644
+--- a/.idea/.name	(revision efaf5f4a490bea24267b212417bfb3e9bd08541e)
++++ /dev/null	(revision efaf5f4a490bea24267b212417bfb3e9bd08541e)
+@@ -1,1 +0,0 @@
+-YeaHub
+\ No newline at end of file

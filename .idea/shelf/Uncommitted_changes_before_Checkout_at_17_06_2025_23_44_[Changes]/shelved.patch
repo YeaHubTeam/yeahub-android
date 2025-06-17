@@ -1,0 +1,40 @@
+Index: app/build.gradle.kts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import io.gitlab.arturbosch.detekt.Detekt\r\n\r\nplugins {\r\n    alias(libs.plugins.android.application)\r\n    alias(libs.plugins.kotlin.android)\r\n    alias(libs.plugins.kotlin.compose)\r\n    alias(libs.plugins.detekt)\r\n}\r\n\r\nandroid {\r\n    namespace = \"ru.yeahub\"\r\n    compileSdk = 35\r\n\r\n    defaultConfig {\r\n        applicationId = \"ru.yeahub\"\r\n        minSdk = 24\r\n        targetSdk = 35\r\n        versionCode = 1\r\n        versionName = \"1.0\"\r\n\r\n        testInstrumentationRunner = \"androidx.test.runner.AndroidJUnitRunner\"\r\n    }\r\n\r\n    buildTypes {\r\n        release {\r\n            isMinifyEnabled = false\r\n            proguardFiles(\r\n                getDefaultProguardFile(\"proguard-android-optimize.txt\"),\r\n                \"proguard-rules.pro\"\r\n            )\r\n        }\r\n    }\r\n    compileOptions {\r\n        sourceCompatibility = JavaVersion.VERSION_11\r\n        targetCompatibility = JavaVersion.VERSION_11\r\n    }\r\n    kotlinOptions {\r\n        jvmTarget = \"11\"\r\n    }\r\n    buildFeatures {\r\n        compose = true\r\n    }\r\n}\r\n\r\n// default lint config - only warnings\r\nandroid {\r\n    lint {\r\n        checkDependencies = true  // Enable Lint for dependencies\r\n        htmlOutput = file(\"${layout.buildDirectory.get()}/reports/lint/lint-report.html\")\r\n    }\r\n}\r\n\r\ndetekt {\r\n    toolVersion = libs.versions.detekt.get()\r\n    config.setFrom(files()) // Empty = use defaults detekt rules\r\n    baseline = file(\"$projectDir/detekt-setting/baseline.xml\")\r\n}\r\n\r\ntasks.withType<Detekt>().configureEach {\r\n    jvmTarget = JavaVersion.VERSION_21.toString()\r\n\r\n    // Disable default failure behavior (critical step!)\r\n    ignoreFailures = false  // Keep false to ensure build fails\r\n    autoCorrect = false     // Optional: Disable auto-fixing\r\n\r\n    reports {\r\n        html {\r\n            required.set(true)\r\n            outputLocation.set(layout.buildDirectory.file(\"reports/detekt/detekt-report.html\"))\r\n        }\r\n\r\n        xml.required.set(false)\r\n        txt.required.set(false)\r\n        sarif.required.set(false)\r\n        md.required.set(false)\r\n    }\r\n\r\n    finalizedBy(detektMessage)\r\n}\r\n\r\nval detektMessage by tasks.register(\"HOW TO FIX DETEKT FAIL\") {\r\n    doLast {\r\n        val reportPath = \"${layout.buildDirectory.get()}/reports/detekt/detekt-report.html\"\r\n        val reportUrl = \"file://${File(reportPath).absolutePath}\"\r\n\r\n        println(\"\\nDetekt task ended\")\r\n        println(\"Report address (copy and paste to web-browser):\")\r\n        println(reportUrl)\r\n\r\n        if (tasks.named(\"detekt\").get().state.failure != null) {\r\n            autoOpenHtmlReport(reportPath)\r\n            throw GradleException(\"\"\"\r\n                \r\n            ________________________________________________________________________________________   \r\n            \uD83D\uDCC3FULL REPORT (\uD83C\uDF10 copy and paste to web-browser):\r\n            $reportPath\r\n            ________________________________________________________________________________________\r\n            \uD83D\uDD27 HOW TO FIX? \r\n            1. Open the report and fix the listed issues.\r\n            2. Put changes.\r\n            3. Re-build project (preferably) OR run locally (terminal/Git Bash)\r\n                    ./gradlew detekt\r\n            \r\n            Optionally (pre-debug mode): Try locally (terminal/Git Bash)\r\n                    ./gradlew build -x detekt -x lint\r\n            to see app running without detekt and lint\r\n\r\n            ⚠\uFE0F The default build will fail until all issues are resolved.\r\n            ________________________________________________________________________________________\r\n            \r\n            \"\"\".trimIndent())\r\n        }\r\n    }\r\n}\r\n\r\nafterEvaluate {\r\n    tasks.named(\"assembleDebug\") {\r\n        finalizedBy(\"test\")\r\n        finalizedBy(\"detekt\")\r\n        finalizedBy(\"lint\")\r\n    }\r\n}\r\n\r\ntasks.withType<Test> {\r\n    finalizedBy(\"openTestReportOnFailure\")\r\n}\r\n\r\ntasks.register(\"openTestReportOnFailure\") {\r\n    onlyIf {\r\n        tasks.withType<Test>().any { it.state.failure != null }\r\n    }\r\n    doLast {\r\n        val reportPath = \"${projectDir}/build/reports/tests/testDebugUnitTest/index.html\"\r\n        autoOpenHtmlReport(reportPath)\r\n    }\r\n}\r\n\r\ndependencies {\r\n\r\n    //ViewModel\r\n    implementation(libs.androidx.lifecycle.viewmodel.ktx)\r\n\r\n    //Timber\r\n    implementation(libs.timber)\r\n\r\n    implementation(libs.androidx.core.ktx)\r\n    implementation(libs.androidx.lifecycle.runtime.ktx)\r\n    implementation(libs.androidx.activity.compose)\r\n    implementation(platform(libs.androidx.compose.bom))\r\n    implementation(libs.androidx.ui)\r\n    implementation(libs.androidx.ui.graphics)\r\n    implementation(libs.androidx.ui.tooling.preview)\r\n    implementation(libs.androidx.material3)\r\n    androidTestImplementation(libs.androidx.espresso.core)\r\n    androidTestImplementation(platform(libs.androidx.compose.bom))\r\n    debugImplementation(libs.androidx.ui.tooling)\r\n    debugImplementation(libs.androidx.ui.test.manifest)\r\n\r\n    testImplementation(libs.junit.jupiter)\r\n    testImplementation(platform(libs.junit.bom))\r\n    testRuntimeOnly(libs.junit.platform.launcher)\r\n    testImplementation(libs.mockk)\r\n\r\n    val detekt_version = \"1.23.8\"\r\n    detektPlugins(\"io.gitlab.arturbosch.detekt:detekt-formatting:$detekt_version\")\r\n    testImplementation(\"io.gitlab.arturbosch.detekt:detekt-test:$detekt_version\")\r\n\r\n}\r\n\r\nfun autoOpenHtmlReport (reportPath: String) {\r\n    val reportUrl = \"file://${file(reportPath).absolutePath}\"\r\n    try {\r\n        val os = System.getProperty(\"os.name\").lowercase()\r\n\r\n        when {\r\n            os.contains(\"win\") -> ProcessBuilder(\"rundll32\", \"url.dll\", \"FileProtocolHandler\", reportUrl).start()\r\n            os.contains(\"mac\") -> ProcessBuilder(\"open\", reportUrl).start()\r\n            os.contains(\"nix\") || os.contains(\"nux\") -> ProcessBuilder(\"xdg-open\", reportUrl).start()\r\n            else -> println(\"Unsupported OS for automatic opening\")\r\n        }\r\n    } catch (e: Exception) {\r\n        println(\"Could not open browser automatically: ${e.message}\")\r\n    }\r\n}\r\n\r\ntasks.withType<Test> {\r\n    useJUnitPlatform()\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/build.gradle.kts b/app/build.gradle.kts
+--- a/app/build.gradle.kts	(revision efaf5f4a490bea24267b212417bfb3e9bd08541e)
++++ b/app/build.gradle.kts	(date 1750177212668)
+@@ -52,7 +52,7 @@
+ 
+ detekt {
+     toolVersion = libs.versions.detekt.get()
+-    config.setFrom(files()) // Empty = use defaults detekt rules
++    config.setFrom(file("$projectDir/detekt-setting/detekt.yml")) // Empty = use defaults detekt rules
+     baseline = file("$projectDir/detekt-setting/baseline.xml")
+ }
+ 
+@@ -62,6 +62,7 @@
+     // Disable default failure behavior (critical step!)
+     ignoreFailures = false  // Keep false to ensure build fails
+     autoCorrect = false     // Optional: Disable auto-fixing
++    buildUponDefaultConfig = true   // Respect default rule
+ 
+     reports {
+         html {
+@@ -161,10 +162,8 @@
+     testRuntimeOnly(libs.junit.platform.launcher)
+     testImplementation(libs.mockk)
+ 
+-    val detekt_version = "1.23.8"
+-    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:$detekt_version")
+-    testImplementation("io.gitlab.arturbosch.detekt:detekt-test:$detekt_version")
+-
++    detektPlugins(libs.detekt.formatting)
++    testImplementation(libs.detekt.test)
+ }
+ 
+ fun autoOpenHtmlReport (reportPath: String) {
