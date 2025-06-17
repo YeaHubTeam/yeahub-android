@@ -9,7 +9,7 @@ import ru.yeahub.network_api.models.GetSkillsResponse
 import ru.yeahub.network_api.models.GetSpecializationResponse
 import ru.yeahub.network_api.models.GetSpecializationsResponse
 
-interface ApiService {
+interface RetrofitApiService {
 
     @GET("questions/public-questions")
     suspend fun getQuestions(
