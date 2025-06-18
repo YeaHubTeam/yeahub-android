@@ -40,7 +40,7 @@ android {
 }
 
 dependencies {
-    implementation(project())
+    implementation(project(":core:ui"))
 
     //ViewModel
     implementation(libs.androidx.lifecycle.viewmodel.ktx)

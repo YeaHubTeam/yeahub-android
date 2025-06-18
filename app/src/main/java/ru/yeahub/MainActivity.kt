@@ -11,7 +11,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import ru.yeahub.ui.theme.YeaHubTheme
+import ru.yeahub.core_ui.component.OutlineButton
+import ru.yeahub.core_ui.theme.YeaHubTheme
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,6 +26,10 @@ class MainActivity : ComponentActivity() {
                         name = "Android",
                         modifier = Modifier.padding(innerPadding)
                     )
+
+                    OutlineButton(onClick = {}) {
+                        Text("Button")
+                    }
                 }
             }
         }
@@ -45,3 +51,4 @@ fun GreetingPreview() {
         Greeting("Android")
     }
 }
+
