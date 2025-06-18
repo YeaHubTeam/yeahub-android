@@ -4,32 +4,28 @@ package ru.yeahub.core_ui.component
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
-import ru.yeahub.core_ui.theme.Theme
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import ru.yeahub.core_ui.theme.Theme
 
 
 @Composable
@@ -40,7 +36,7 @@ fun PrimaryButton(
     colors: YeahubButtonColors = YeahubButtonDefaults.primaryButtonColors(),
     border: BorderStroke? = null,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-    shape: Shape = ButtonDefaults.shape,
+    shape: Shape = RoundedCornerShape(12.dp),
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     content: @Composable RowScope.() -> Unit,
 ){
@@ -58,14 +54,14 @@ fun PrimaryButton(
 }
 
 @Composable
-internal fun SecondaryButton(
+fun SecondaryButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     colors: YeahubButtonColors = YeahubButtonDefaults.secondaryButtonColors(),
     border: BorderStroke? = null,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-    shape: Shape = ButtonDefaults.shape,
+    shape: Shape = RoundedCornerShape(12.dp),
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     content: @Composable RowScope.() -> Unit,
 ){
@@ -90,7 +86,7 @@ fun OutlineButton(
     colors: YeahubButtonColors = YeahubButtonDefaults.outlinedButtonColors(),
     border: BorderStroke = YeahubButtonDefaults.outlineBorderDefaults(),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-    shape: Shape = ButtonDefaults.shape,
+    shape: Shape = RoundedCornerShape(12.dp),
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     content: @Composable RowScope.() -> Unit
 ){
@@ -105,16 +101,17 @@ fun OutlineButton(
        contentPadding = contentPadding,
        content = content
    )
+
 }
 
 
 @Composable
-fun DefaultButton(
+private fun DefaultButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-    colors: YeahubButtonColors,
+    colors: YeahubButtonColors = YeahubButtonDefaults.primaryButtonColors(),
     border: BorderStroke? = null,
     shape: Shape = ButtonDefaults.shape,
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
@@ -127,35 +124,28 @@ fun DefaultButton(
         onClick = onClick,
         modifier = modifier,
         enabled = enabled,
+        shape = shape,
         color = containerColor,
         contentColor = contentColor,
         border = border,
-        shape = shape,
-        interactionSource = interactionSource,
+        interactionSource = interactionSource
     ) {
         CompositionLocalProvider(
             value = LocalContentColor provides contentColor
         ) {
-            ProvideTextStyle(value = Theme.typography.body3Strong) {
-                Row(
-                    modifier = Modifier
+            Row(
+                modifier = Modifier
                         .padding(contentPadding),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center,
-                    content = content
-                )
-            }
+                content = content
+            )
         }
-
     }
 }
 
 
 
 
-
-
-internal object YeahubButtonDefaults {
+object YeahubButtonDefaults {
     @Composable
     fun primaryButtonColors(
         contentColor: Color = Theme.colors.white900,
@@ -173,8 +163,8 @@ internal object YeahubButtonDefaults {
 
     @Composable
     fun primaryVariantButtonColors(
-        contentColor: Color = Theme.colors.red600,
-        containerColor: Color = Theme.colors.white900,
+        contentColor: Color = Theme.colors.white900,
+        containerColor: Color = Theme.colors.red600,
         disabledContentColor: Color = Theme.colors.white900,
         disabledContainerColor: Color = Theme.colors.red200
     ): YeahubButtonColors{
@@ -188,12 +178,32 @@ internal object YeahubButtonDefaults {
 
 
     @Composable
-    fun secondaryButtonColors(): YeahubButtonColors {
+    fun secondaryButtonColors(
+        contentColor: Color = Theme.colors.purple700,
+        containerColor: Color = Theme.colors.purple100,
+        disabledContentColor: Color = Theme.colors.black200,
+        disabledContainerColor: Color = Theme.colors.black50
+    ): YeahubButtonColors {
         return YeahubButtonColors(
-            contentColor = Theme.colors.white900,
-            containerColor = Theme.colors.red600,
-            disabledContentColor = Theme.colors.white900,
-            disabledContainerColor = Theme.colors.red200,
+            contentColor = contentColor,
+            containerColor = containerColor,
+            disabledContentColor = disabledContentColor,
+            disabledContainerColor = disabledContainerColor
+        )
+    }
+
+    @Composable
+    fun secondaryVariantButtonColors(
+        contentColor: Color = Theme.colors.white900,
+        containerColor: Color = Theme.colors.red600,
+        disabledContentColor: Color = Theme.colors.white900,
+        disabledContainerColor: Color = Theme.colors.red200
+    ): YeahubButtonColors {
+        return YeahubButtonColors(
+            contentColor = contentColor,
+            containerColor = containerColor,
+            disabledContentColor = disabledContentColor,
+            disabledContainerColor = disabledContainerColor
         )
     }
 
