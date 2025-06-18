@@ -19,7 +19,7 @@ val networkModule = module {
     }
 
     single<ApiService> {
-        ApiServiceImpl(get())
+        get<RetrofitApiService>()
     }
 
     single<NetworkProvider> {

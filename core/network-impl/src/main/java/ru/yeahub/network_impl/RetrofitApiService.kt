@@ -3,52 +3,53 @@ package ru.yeahub.network_impl
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
+import ru.yeahub.network_api.ApiService
 import ru.yeahub.network_api.models.GetPublicQuestionResponse
 import ru.yeahub.network_api.models.GetPublicQuestionsResponse
 import ru.yeahub.network_api.models.GetSkillsResponse
 import ru.yeahub.network_api.models.GetSpecializationResponse
 import ru.yeahub.network_api.models.GetSpecializationsResponse
 
-interface RetrofitApiService {
+interface RetrofitApiService : ApiService {
 
     @GET("questions/public-questions")
-    suspend fun getQuestions(
+    override suspend fun getQuestions(
         @Query("page") page: Int,
         @Query("limit") limit: Int,
-        @Query("title") title: String? = null,
-        @Query("titleOrDescription") titleOrDescription: String? = null,
-        @Query("skills") skills: List<String>? = null,
-        @Query("skillFilterMode") skillFilterMode: String? = null,
-        @Query("complexity") complexity: List<Int>? = null,
-        @Query("collection") collection: Int? = null,
-        @Query("rate") rate: List<Int>? = null,
-        @Query("keywords") keywords: List<String>? = null,
-        @Query("specialization") specialization: Int? = null,
-        @Query("orderBy") orderBy: String? = null,
-        @Query("order") order: String? = null,
-        @Query("random") random: Boolean? = null
+        @Query("title") title: String?,
+        @Query("titleOrDescription") titleOrDescription: String?,
+        @Query("skills") skills: List<String>?,
+        @Query("skillFilterMode") skillFilterMode: String?,
+        @Query("complexity") complexity: List<Int>?,
+        @Query("collection") collection: Int?,
+        @Query("rate") rate: List<Int>?,
+        @Query("keywords") keywords: List<String>?,
+        @Query("specialization") specialization: Int?,
+        @Query("orderBy") orderBy: String?,
+        @Query("order") order: String?,
+        @Query("random") random: Boolean?
     ): GetPublicQuestionsResponse
 
     @GET("questions/public-questions/{id}")
-    suspend fun getQuestionById(
+    override suspend fun getQuestionById(
         @Path("id") id: Long
     ): GetPublicQuestionResponse
 
     @GET("skills")
-    suspend fun getSkills(
+    override suspend fun getSkills(
         @Query("page") page: Int,
         @Query("limit") limit: Int,
-        @Query("specializations") specializations: List<Int>? = null
+        @Query("specializations") specializations: List<Int>?
     ): GetSkillsResponse
 
     @GET("specializations")
-    suspend fun getSpecializations(
+    override suspend fun getSpecializations(
         @Query("page") page: Int,
         @Query("limit") limit: Int
     ): GetSpecializationsResponse
 
     @GET("specializations/{id}")
-    suspend fun getSpecializationById(
+    override suspend fun getSpecializationById(
         @Path("id") id: Long
     ): GetSpecializationResponse
 }
