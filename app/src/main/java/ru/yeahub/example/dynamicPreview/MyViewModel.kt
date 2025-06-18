@@ -12,6 +12,4 @@ open class MyViewModel() : ViewModel() {
     fun increment(number: Int = 0) {
         _textState.intValue = _textState.intValue + number + 1
     }
-
 }
-
