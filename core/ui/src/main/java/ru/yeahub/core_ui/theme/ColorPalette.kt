@@ -1,4 +1,4 @@
-package ru.yeahub.ui.theme
+package ru.yeahub.core_ui.theme
 
 import androidx.compose.ui.graphics.Color
 

@@ -137,6 +137,7 @@ tasks.register("openTestReportOnFailure") {
 }
 
 dependencies {
+    implementation(project(":core:ui"))
 
     //ViewModel
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
