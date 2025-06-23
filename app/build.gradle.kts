@@ -137,7 +137,9 @@ tasks.register("openTestReportOnFailure") {
 }
 
 dependencies {
+    implementation(project(":core:navigation-api"))
     implementation(project(":core:ui"))
+    implementation(project(":core:navigation-impl"))
 
     //ViewModel
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
@@ -159,6 +161,7 @@ dependencies {
     implementation(libs.koin.android)
     implementation(libs.koin.compose)
 
+    implementation(libs.androidx.navigation.compose)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     debugImplementation(libs.androidx.ui.tooling)
