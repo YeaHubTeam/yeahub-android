@@ -147,4 +147,5 @@ fun Project.autoOpenHtmlReport (reportPath: String) {
     } catch (e: Exception) {
         println("Could not open browser automatically: ${e.message}")
     }
+    alias(libs.plugins.detekt) apply false
 }
