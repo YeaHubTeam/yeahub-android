@@ -21,4 +21,9 @@ dependencyResolutionManagement {
 
 rootProject.name = "YeaHub"
 include(":app")
- 
+include(":core:network-api")
+include(":core:network-impl")
+include(":core:ui")
+include(":core:test")
+include(":core:common")
+include(":core:utils")
