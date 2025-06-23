@@ -1,4 +1,4 @@
-package ru.yeahub.example.staticPreview
+package ru.yeahub.core_ui.example.staticPreview
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer

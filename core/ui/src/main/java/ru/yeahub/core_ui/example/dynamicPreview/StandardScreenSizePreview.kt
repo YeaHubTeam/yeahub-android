@@ -1,4 +1,4 @@
-package ru.yeahub.example.dynamicPreview
+package ru.yeahub.core_ui.example.dynamicPreview
 
 import androidx.compose.ui.tooling.preview.Preview
 
