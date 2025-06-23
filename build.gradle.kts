@@ -66,6 +66,8 @@ tasks.register("HOW_TO_FIX_DETEKT_FAIL_(IF_ERROR)") {
         if (tasks.named("detekt").get().state.failure != null) {
             autoOpenHtmlReport(reportPath)
             throw GradleException(detektInExceptionMessage(reportPath))
+        } else {
+            println("\nIn short, Detekt check accepted")
         }
     }
 }

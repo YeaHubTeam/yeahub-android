@@ -1,0 +1,30 @@
+style:
+  MagicNumber:
+    active: true
+    excludes:
+      - '**/Color.kt'
+      - '**/test/**'
+      - '**/ExampleUnitTest.kt'
+      - '**/example/**'
+      - '**/build.gradle.kts'
+      - '**/CheckFile.kt'
+  NewLineAtEndOfFile:
+    active: false
+  MayBeConst:
+    active: false
+  WildcardImport:
+    active: false
+
+naming:
+  FunctionNaming:
+    active: false
+  PackageNaming:
+    active: false
+
+empty-blocks:
+  EmptyDefaultConstructor:
+    active: false
+
+complexity:
+  LongParameterList:
+    active: false
