@@ -42,5 +42,9 @@ dependencies {
     implementation(libs.retrofit.core)
     implementation(libs.retrofit.gsonConverter)
 
+    implementation(libs.koin.core)
+    implementation(libs.koin.android)
+    implementation(libs.koin.compose)
+
 
 }
