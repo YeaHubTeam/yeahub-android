@@ -16,6 +16,7 @@ appcompat = "1.7.1"
 material = "1.12.0"
 junitKtx = "1.2.1"
 koin = "3.5.6"
+detekt = "1.23.8"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -34,6 +35,8 @@ timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
+#androidx-material = { module = "androidx.compose.material:material", version.ref = "composeBom" }
+
 #RETROFIT
 retrofit-core = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
 retrofit-gsonConverter = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit" }
@@ -49,9 +52,12 @@ junit-platform-launcher = { group = "org.junit.platform", name = "junit-platform
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
 androidx-junit-ktx = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "junitKtx" }
 
+detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
+detekt-test = { module = "io.gitlab.arturbosch.detekt:detekt-test", version.ref = "detekt" }
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }

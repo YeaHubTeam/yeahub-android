@@ -12,8 +12,8 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+import androidx.compose.ui.unit.dp
 
 @StaticPreview
 @Composable
@@ -37,7 +37,7 @@ fun TestScreen() {
 
         TextField(
             value = "",
-            onValueChange = {  },
+            onValueChange = { },
             modifier = Modifier.fillMaxWidth(),
             placeholder = { Text("Напишите что-нибудь...") }
         )
@@ -45,12 +45,11 @@ fun TestScreen() {
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
-            onClick = {  },
+            onClick = { },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Отправить")
         }
-
     }
 }
 
