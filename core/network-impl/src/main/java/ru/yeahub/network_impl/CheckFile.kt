@@ -1,13 +1,24 @@
 package ru.yeahub.network_impl
 
 import kotlinx.coroutines.runBlocking
+import org.koin.core.context.GlobalContext.startKoin
+import ru.yeahub.network_api.ApiService
 
-val api = ApiFactory.apiService
 val page = 1
 val limit = 10
+lateinit var api: ApiService
 
 fun main() {
+
+    //только для тестов и желательно удалить, запускать отдельно от приложения
+    val koin = startKoin {
+        modules(networkModule)
+    }.koin
+
+    api = koin.get<ApiService>()
+
     runBlocking {
+
         getQuestion()
         getQuestionById()
         getSkills()
