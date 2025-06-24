@@ -33,7 +33,7 @@ fun ShortQuestionAnswer(
                 ambientColor = Theme.colors.mainShadow,
                 spotColor = Theme.colors.mainShadow,
             )
-            .background(Color.White, shape = RoundedCornerShape(12.dp))
+            .background(Theme.colors.white900, shape = RoundedCornerShape(12.dp))
             .padding(start = 10.dp, end = 10.dp, top = 20.dp, bottom = 20.dp)
     ) {
         Column(
@@ -42,11 +42,13 @@ fun ShortQuestionAnswer(
             Text(
                 text = stringResource(R.string.short_answer_title),
                 style = Theme.typography.head4,
+                color = Theme.colors.black800
             )
 
             Text(
                 text = answerText,
-                style = Theme.typography.body3Accent
+                style = Theme.typography.body3Accent,
+                color = Theme.colors.black700
             )
         }
     }
