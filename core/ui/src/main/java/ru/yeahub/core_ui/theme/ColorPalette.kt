@@ -45,3 +45,5 @@ val Black50 = Color(color = 0xFFE8E8E8)
 val Black25 = Color(color = 0xFFF4F4F4)
 
 val White900 = Color(color = 0xFFFFFFFF)
+
+val MainShadow = Color(color = 0x1A6A6376)
