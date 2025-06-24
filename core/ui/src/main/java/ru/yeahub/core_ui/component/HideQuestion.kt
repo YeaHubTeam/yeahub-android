@@ -24,16 +24,6 @@ import ru.yeahub.core_ui.theme.LocalAppTypography
 import ru.yeahub.ui.R
 
 
-@StaticPreview
-@Composable
-fun HideQuestionPreview() {
-    HideQuestion(
-        text = "Что такое Virtual DOM, и как он работает?",
-        onClick = {}
-    )
-}
-
-
 @Composable
 fun HideQuestion(
     text: String,
@@ -85,3 +75,13 @@ fun HideQuestion(
         }
     }
 }
+
+@StaticPreview
+@Composable
+fun HideQuestionPreview() {
+    HideQuestion(
+        text = "Что такое Virtual DOM, и как он работает?",
+        onClick = {}
+    )
+}
+
