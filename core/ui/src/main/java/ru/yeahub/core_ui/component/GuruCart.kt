@@ -16,7 +16,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -41,24 +40,7 @@ data class GuruData(
 )
 
 
-@Preview
-@Composable
-fun GuruCartPreview() {
-    val data = GuruData(
-        name = "Руслан Куянец",
-        position = "Python Guru",
-        description = "Guru – это эксперты YeaHub, которые помогают развивать комьюнити.",
-        photoUrl = "",
-        profileUrl = "",
-        youtubeUrl = "https://www.youtube.com/watch?v=Cqu2HMJl44Q",
-        telegramUrl = ""
-    )
-    GuruCard(
-        data = data,
-        onProfileClick = {},
-        onYoutubeClick = { },
-        onTelegramClick = { })
-}
+
 
 
 @Composable
@@ -119,24 +101,24 @@ fun GuruCard(
                 ) {
                     Text(
                         text = data.name,
-                        style = Theme.typography.body3Accent,
-                        color = Theme.colors.black800
+                        color = Theme.colors.black800,
+                        style = Theme.typography.body3Accent
                     )
                     Text(
                         text = data.position,
-                        style = Theme.typography.body3Accent,
-                        color = Theme.colors.black500
+                        color = Theme.colors.black500,
+                        style = Theme.typography.body3Accent
                     )
                 }
             }
             Text(
                 text = data.description,
-                style = Theme.typography.body3Accent,
-                color = Theme.colors.black800
+                color = Theme.colors.black800,
+                style = Theme.typography.body3Accent
             )
 
             Row(
-                horizontalArrangement = Arrangement.Start,
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier
                     .padding(top = 12.dp)
                     .fillMaxWidth()
@@ -145,7 +127,6 @@ fun GuruCard(
                 IconButton(
                     onClick = onTelegramClick,
                     modifier = Modifier
-                        .padding(end = 12.dp)
                         .size(24.dp)
 
                 ) {
@@ -158,7 +139,6 @@ fun GuruCard(
                 IconButton(
                     onClick = onYoutubeClick,
                     modifier = Modifier
-                        .padding(end = 12.dp)
                         .size(24.dp)
                 ) {
                     Icon(
@@ -170,8 +150,7 @@ fun GuruCard(
                 IconButton(
                     onClick = onProfileClick,
                     modifier = Modifier
-                        .size(24.dp),
-                    colors = IconButtonDefaults.iconButtonColors(contentColor = Color.White)
+                        .size(24.dp)
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.profile),
@@ -182,4 +161,23 @@ fun GuruCard(
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun GuruCartPreview() {
+    val data = GuruData(
+        name = "Руслан Куянец",
+        position = "Python Guru",
+        description = "Guru – это эксперты YeaHub, которые помогают развивать комьюнити.",
+        photoUrl = "",
+        profileUrl = "",
+        youtubeUrl = "https://www.youtube.com/watch?v=Cqu2HMJl44Q",
+        telegramUrl = ""
+    )
+    GuruCard(
+        data = data,
+        onProfileClick = {},
+        onYoutubeClick = { },
+        onTelegramClick = { })
 }
