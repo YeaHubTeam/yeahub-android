@@ -2,26 +2,28 @@ package ru.yeahub.core_ui.component
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.Surface
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -52,43 +54,44 @@ fun GuruCartPreview() {
         telegramUrl = ""
     )
     GuruCard(
-        data = data, onCardClick = { },
+        data = data,
         onProfileClick = {},
         onYoutubeClick = { },
         onTelegramClick = { })
 }
 
 
-
 @Composable
 fun GuruCard(
     modifier: Modifier = Modifier,
     data: GuruData,
-    onCardClick: () -> Unit,
     onTelegramClick: () -> Unit,
     onYoutubeClick: () -> Unit,
     onProfileClick: () -> Unit,
 ) {
 
 
-    Surface(
+    Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp),
-        color = Theme.colors.white900,
-        onClick = onCardClick,
-        shadowElevation = 2.dp,
+        colors = CardDefaults.cardColors(containerColor = Theme.colors.white900),
         shape = RoundedCornerShape(16.dp),
         border = BorderStroke(1.dp, color = Theme.colors.purple700),
     ) {
         Column(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(
+                start = 10.dp,
+                top = 20.dp,
+                end = 10.dp,
+                bottom = 20.dp
+            ),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 16.dp), // Отступ снизу
+                    .padding(bottom = 12.dp),
                 horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically
             )
@@ -97,14 +100,23 @@ fun GuruCard(
                     painter = painterResource(
                         id = R.drawable.img,
                     ),
-                    contentDescription = null,
+                    contentDescription = "Фото ${data.name}",
+                    contentScale = ContentScale.Crop,
                     modifier = Modifier
-                        .size(60.dp)
-                        .background(Color.White)
-                        .padding(5.dp)
-                        .border(width = 1.dp, color = Theme.colors.purple700, shape = CircleShape)
+                        .size(45.dp)
+                        .clip(CircleShape)
+                        .border(
+                            width = 1.dp,
+                            color = Theme.colors.purple700,
+                            shape = CircleShape
+                        )
                 )
-                Column(verticalArrangement = Arrangement.SpaceEvenly) {
+                Column(
+                    modifier = Modifier
+                        .padding(start = 8.dp)
+                        .height(45.dp),
+                    verticalArrangement = Arrangement.SpaceBetween
+                ) {
                     Text(
                         text = data.name,
                         style = Theme.typography.body3Accent,
@@ -117,57 +129,54 @@ fun GuruCard(
                     )
                 }
             }
-            Row {
-                Text(
-                    text = data.description,
-                    style = Theme.typography.body3Accent,
-                    color = Theme.colors.black800
-                )
-            }
+            Text(
+                text = data.description,
+                style = Theme.typography.body3Accent,
+                color = Theme.colors.black800
+            )
+
             Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
+                horizontalArrangement = Arrangement.Start,
                 modifier = Modifier
-                    .padding(top = 8.dp)
-                    .width(100.dp)
+                    .padding(top = 12.dp)
+                    .fillMaxWidth()
             ) {
 
                 IconButton(
                     onClick = onTelegramClick,
-                    modifier = Modifier.size(32.dp)
+                    modifier = Modifier
+                        .padding(end = 12.dp)
+                        .size(24.dp)
+
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.combined_shape),
                         contentDescription = null,
-                        tint = Theme.colors.purple700,
-                        modifier = Modifier
-                            .size(24.dp)
+                        tint = Color.Unspecified,
                     )
                 }
                 IconButton(
                     onClick = onYoutubeClick,
-                    modifier = Modifier.size(32.dp)
+                    modifier = Modifier
+                        .padding(end = 12.dp)
+                        .size(24.dp)
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.youtube),
                         contentDescription = null,
-                        tint = Theme.colors.purple700,
-                        modifier = Modifier
-                            .size(24.dp)
+                        tint = Color.Unspecified,
                     )
                 }
                 IconButton(
                     onClick = onProfileClick,
-                    modifier = Modifier.size(32.dp)
+                    modifier = Modifier
+                        .size(24.dp),
+                    colors = IconButtonDefaults.iconButtonColors(contentColor = Color.White)
                 ) {
                     Icon(
-                        painter = painterResource(R.drawable.union),
+                        painter = painterResource(R.drawable.profile),
                         contentDescription = null,
-                        tint = Theme.colors.purple700,
-                        modifier = Modifier
-                            .size(24.dp)
-                            .clip(shape = CircleShape)
-                            .background(color = Theme.colors.purple700)
-                            .padding(4.dp)
+                        tint = Color.Unspecified,
                     )
                 }
             }
