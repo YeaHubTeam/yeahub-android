@@ -48,7 +48,9 @@ data class Colors(
     val black50: Color,
     val black25: Color,
 
-    val white900: Color
+    val white900: Color,
+
+    val mainShadow: Color,
 )
 
 val colors = Colors(
@@ -89,7 +91,8 @@ val colors = Colors(
     black100 = Black100,
     black50 = Black50,
     black25 = Black25,
-    white900 = White900
+    white900 = White900,
+    mainShadow = MainShadow,
 )
 
 val LocalAppColors = staticCompositionLocalOf<Colors> {
