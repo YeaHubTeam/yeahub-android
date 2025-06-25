@@ -31,14 +31,18 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
     buildFeatures {
         compose = true
+        buildConfig = true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.8"
     }
 }
 
@@ -156,6 +160,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.junit.ktx)
+    implementation(libs.androidx.runtime.android)
 
     implementation(libs.koin.core)
     implementation(libs.koin.android)
@@ -176,6 +181,11 @@ dependencies {
     implementation(project(":core:network-impl"))
     detektPlugins(libs.detekt.formatting)
     testImplementation(libs.detekt.test)
+
+    implementation(project(":feature:example-home:api"))
+    implementation(project(":feature:example-profile:api"))
+    implementation(project(":feature:example-home:impl"))
+    implementation(project(":feature:example-profile:impl"))
 }
 
 fun autoOpenHtmlReport (reportPath: String) {

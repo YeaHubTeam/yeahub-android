@@ -20,6 +20,9 @@ detekt = "1.23.8"
 nav_version = "2.9.0"
 junitVersion = "4.13.2"
 androidxJunit = "1.2.1"
+runtimeAndroid = "1.5.4"
+composeCompiler = "1.5.8"
+jetbrainsCompose = "1.6.0"
 
 
 [libraries]
@@ -40,6 +43,7 @@ timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "nav_version" }
+androidx-icons = { group = "androidx.compose.material", name = "material-icons-extended", version = "1.6.1" }
 
 #androidx-material = { module = "androidx.compose.material:material", version.ref = "composeBom" }
 
@@ -63,6 +67,7 @@ detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", 
 detekt-test = { module = "io.gitlab.arturbosch.detekt:detekt-test", version.ref = "detekt" }
 junit = { group = "junit", name = "junit", version.ref = "junitVersion" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidxJunit" }
+androidx-runtime-android = { group = "androidx.compose.runtime", name = "runtime-android", version.ref = "runtimeAndroid" }
 
 [plugins]
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }

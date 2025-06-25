@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.navigation_api"
+    namespace = "ru.yeahub.navigation_api"
     compileSdk = 35
 
     defaultConfig {
@@ -29,6 +29,9 @@ android {
     }
     kotlinOptions {
         jvmTarget = "11"
+    }
+    buildFeatures {
+        buildConfig = true
     }
 }
 
