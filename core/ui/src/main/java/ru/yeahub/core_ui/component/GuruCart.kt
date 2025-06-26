@@ -179,5 +179,6 @@ fun GuruCartPreview() {
         data = data,
         onProfileClick = {},
         onYoutubeClick = { },
-        onTelegramClick = { })
+        onTelegramClick = { }
+    )
 }
