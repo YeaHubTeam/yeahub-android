@@ -1,4 +1,4 @@
-package ru.yeahub.example.staticPreview
+package ru.yeahub.core_ui.example.staticPreview
 
 import android.content.res.Configuration
 import androidx.compose.ui.tooling.preview.Preview

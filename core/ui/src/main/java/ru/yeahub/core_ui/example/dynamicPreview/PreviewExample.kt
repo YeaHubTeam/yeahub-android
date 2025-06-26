@@ -1,4 +1,4 @@
-package ru.yeahub.example.dynamicPreview
+package ru.yeahub.core_ui.example.dynamicPreview
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
