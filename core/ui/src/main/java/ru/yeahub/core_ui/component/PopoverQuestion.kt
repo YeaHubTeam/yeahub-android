@@ -32,8 +32,6 @@ import ru.yeahub.core_ui.example.staticPreview.StaticPreview
 import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.ui.R
 
-
-
 private object PopoverQuestionControlConstants {
     val MAX_WIDTH = 600.dp
     val LARGE_SCREEN_THRESHOLD = 440.dp
@@ -56,7 +54,6 @@ enum class FavoriteState {
         get() = this != DISABLED
 }
 /**
-
  * @param onLearnClick Callback для кнопки "Изучить". Если null, кнопка будет неактивна (серая)
  * @param onRepeatClick Callback для кнопки "Повторить". Если null, кнопка будет неактивна (серая)
  * @param onFavoriteClick Callback для кнопки "Избранное". Если null, кнопка будет неактивна (серая)
@@ -178,8 +175,8 @@ fun IconWithText(
     iconColor: Color? = null,
     textColor: Color? = null,
 ) {
-    val actualIconColor = iconColor ?: getColorForIconAndText(isClickable)
-    val actualTextColor = textColor ?: getColorForIconAndText(isClickable)
+    val actualIconColor = iconColor ?: getColorForIcon(isClickable)
+    val actualTextColor = textColor ?: getColorForText(isClickable)
     val textStyle = getTextStyleForIconAndText(screenWidth)
 
     Row(
@@ -216,7 +213,15 @@ fun IconWithText(
 }
 
 @Composable
-private fun getColorForIconAndText(isClickable: Boolean): Color {
+private fun getColorForIcon(isClickable: Boolean): Color {
+    return if (isClickable) {
+        Theme.colors.black600
+    } else {
+        Theme.colors.black200
+    }
+}
+@Composable
+private fun getColorForText(isClickable: Boolean): Color {
     return if (isClickable) {
         Theme.colors.black800
     } else {
@@ -237,7 +242,7 @@ private fun getTextStyleForIconAndText(screenWidth: Dp): TextStyle {
 private fun getFavoriteIconColor(favoriteState: FavoriteState): Color {
     return when (favoriteState) {
         FavoriteState.DISABLED -> Theme.colors.black200
-        FavoriteState.AVAILABLE -> Theme.colors.black800
+        FavoriteState.AVAILABLE -> Theme.colors.black600
         FavoriteState.FAVORITED -> Theme.colors.red700
     }
 }
