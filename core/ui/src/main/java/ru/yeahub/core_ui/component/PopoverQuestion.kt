@@ -28,9 +28,12 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import ru.yeahub.core_ui.example.dynamicPreview.StandardScreenSizePreview
 import ru.yeahub.core_ui.example.staticPreview.StaticPreview
 import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.ui.R
+
+
 
 private object PopoverQuestionControlConstants {
     val MAX_WIDTH = 600.dp
@@ -53,21 +56,25 @@ enum class FavoriteState {
     val isClickable: Boolean
         get() = this != DISABLED
 }
+/**
 
+ * @param onLearnClick Callback для кнопки "Изучить". Если null, кнопка будет неактивна (серая)
+ * @param onRepeatClick Callback для кнопки "Повторить". Если null, кнопка будет неактивна (серая)
+ * @param onFavoriteClick Callback для кнопки "Избранное". Если null, кнопка будет неактивна (серая)
+ * @param onPreviousClick Callback для кнопки "Назад". Если null, кнопка будет неактивна (серая)
+ * @param onNextClick Callback для кнопки "Вперед". Если null, кнопка будет неактивна (серая)
+ * @param favoriteState Состояние кнопки избранного (недоступно/доступно/добавлено)
+ */
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun PopoverQuestion(
-    canLearn: Boolean,
-    canRepeat: Boolean,
-    favoriteState: FavoriteState,
-    hasPreviousPage: Boolean,
-    hasNextPage: Boolean,
-    onLearnClick: () -> Unit,
-    onRepeatClick: () -> Unit,
-    onFavoriteClick: () -> Unit,
-    onPreviousClick: () -> Unit,
-    onNextClick: () -> Unit,
     modifier: Modifier = Modifier,
+    favoriteState: FavoriteState,
+    onLearnClick: (() -> Unit)? = null,
+    onRepeatClick: (() -> Unit)? = null,
+    onFavoriteClick: (() -> Unit)? = null,
+    onPreviousClick: (() -> Unit)? = null,
+    onNextClick: (() -> Unit)? = null,
 ) {
     Surface(
         modifier = modifier
@@ -108,16 +115,16 @@ fun PopoverQuestion(
                         iconResId = R.drawable.student,
                         text = stringResource(R.string.learn),
                         contentDescription = stringResource(R.string.learn),
-                        isClickable = canLearn,
-                        onItemClickListener = onLearnClick,
+                        isClickable = onLearnClick != null,
+                        onItemClickListener = { onLearnClick?.invoke() },
                         screenWidth = screenWidth
                     )
                     IconWithText(
                         iconResId = R.drawable.clockcounterclockwise,
                         text = stringResource(R.string.repeat),
                         contentDescription = stringResource(R.string.repeat),
-                        isClickable = canRepeat,
-                        onItemClickListener = onRepeatClick,
+                        isClickable = onRepeatClick != null,
+                        onItemClickListener = { onRepeatClick?.invoke() },
                         screenWidth = screenWidth
                     )
                     IconWithText(
@@ -127,7 +134,7 @@ fun PopoverQuestion(
                         isClickable = favoriteState.isClickable,
                         iconColor = getFavoriteIconColor(favoriteState),
                         textColor = getFavoriteTextColor(favoriteState),
-                        onItemClickListener = onFavoriteClick,
+                        onItemClickListener = { onFavoriteClick?.invoke() },
                         screenWidth = screenWidth
                     )
                 }
@@ -141,8 +148,8 @@ fun PopoverQuestion(
                         iconResId = R.drawable.alt_arrow_left,
                         text = stringResource(R.string.previous),
                         contentDescription = stringResource(R.string.previous),
-                        isClickable = hasPreviousPage,
-                        onItemClickListener = onPreviousClick,
+                        isClickable = onPreviousClick != null,
+                        onItemClickListener = { onPreviousClick?.invoke() },
                         screenWidth = screenWidth
                     )
                     IconWithText(
@@ -150,8 +157,8 @@ fun PopoverQuestion(
                         text = stringResource(R.string.next),
                         contentDescription = stringResource(R.string.next),
                         iconFirst = false,
-                        isClickable = hasNextPage,
-                        onItemClickListener = onNextClick,
+                        isClickable = onNextClick != null,
+                        onItemClickListener = { onNextClick?.invoke() },
                         screenWidth = screenWidth
                     )
                 }
@@ -254,18 +261,39 @@ private fun getFavoriteTextColor(favoriteState: FavoriteState): Color {
 }
 
 @StaticPreview
+
 @Composable
-fun PopoverQuestionPreview() {
+fun PopoverQuestionPreviewFavoriteStateDISABLED() {
     PopoverQuestion(
-        hasNextPage = true,
-        hasPreviousPage = false,
-        canLearn = true,
-        canRepeat = false,
-        onLearnClick = { },
+        onLearnClick = null,
+        onRepeatClick = { },
+        onFavoriteClick = { },
+        onPreviousClick = { },
+        onNextClick = { },
+        favoriteState = FavoriteState.DISABLED,
+    )
+}
+@StaticPreview
+@Composable
+fun PopoverQuestionPreviewFavoriteStateFAVORITED() {
+    PopoverQuestion(
+        onLearnClick = null,
         onRepeatClick = { },
         onFavoriteClick = { },
         onPreviousClick = { },
         onNextClick = { },
         favoriteState = FavoriteState.FAVORITED,
+    )
+}
+@StaticPreview
+@Composable
+fun PopoverQuestionPreviewFavoriteStateAVAILABLE() {
+    PopoverQuestion(
+        onLearnClick = null,
+        onRepeatClick = { },
+        onFavoriteClick = { },
+        onPreviousClick = { },
+        onNextClick = { },
+        favoriteState = FavoriteState.AVAILABLE,
     )
 }
