@@ -6,6 +6,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -35,6 +36,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.Dp
@@ -61,40 +63,6 @@ private val contentPadding_Default = PaddingValues(
     top = 0.dp,
     bottom = 0.dp
 )
-
-
-@Composable
-fun Test() {
-    Row(modifier = Modifier.fillMaxSize()) {
-        ButtonScreen()
-    }
-}
-
-@Composable
-fun ButtonScreen() {
-    Column {
-        SkillButton(
-            onClick = {/* Действие при клике на button */ Log.d(
-                "Main",
-                "Я кликнул по большой кнопке"
-            )
-            },
-            onRightIconClick = { /* Действие при клике на icon */ Log.d(
-                "Main",
-                "Я кликнул закрыть"
-            )
-            },
-            enabled = true,
-            activeButton = false,
-            contentPadding = contentPaddingDefault,
-            imageLeft = R.drawable.icon_true_button,
-            imageSizeLeftWith = 20.dp,
-            imageSizeLeftHigh = 20.dp,
-            text = "Figma",
-            fillButton = true
-        )
-    }
-}
 
 @Composable
 fun SkillButton(
@@ -338,4 +306,305 @@ interface ButtonColors1 {
 
     @Composable
     fun contentColor(enabled: Boolean): State<Color>
+}
+data class SkillButtonParams(
+    val onClick: () -> Unit,
+    val enabled: Boolean = true,
+    val activeButton: Boolean = false,
+    val imageLeft: Int? = null,
+    val imageRight: Int? = null,
+    val elevation: Dp = 0.dp,
+    val colors: ColorsButtonYeaHub = getButtonColors(),
+    val text: String? = null,
+    val buttonWithoutBackground: Boolean = false,
+    val imageSizeLeftWith: Dp = 0.dp,
+    val imageSizeLeftHigh: Dp = 0.dp,
+    val fillButton: Boolean = false,
+    val shape: Shape = RoundedCornerShape(12.dp),
+    val contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
+)
+
+class SkillButtonParamsProvider : PreviewParameterProvider<SkillButtonParams> {
+
+    override val values = sequenceOf(
+        // firstButton
+        SkillButtonParams(
+            enabled = true,
+            activeButton = false,
+            contentPadding = contentPaddingDefault,
+            imageLeft = R.drawable.icon_true_button,
+            imageSizeLeftWith = 30.dp,
+            imageSizeLeftHigh = 30.dp,
+            text = "Figma",
+            onClick = { },
+            colors = getButtonColors(),
+        ),
+        SkillButtonParams(
+            enabled = true,
+            activeButton = true,
+            contentPadding = contentPaddingDefault,
+            imageLeft = R.drawable.icon_true_button,
+            imageSizeLeftWith = 30.dp,
+            imageSizeLeftHigh = 30.dp,
+            text = "Figma",
+            onClick = { },
+            colors = getButtonColors(),
+        ),
+        SkillButtonParams(
+            enabled = false,
+            activeButton = false,
+            contentPadding = contentPaddingDefault,
+            imageLeft = R.drawable.icon_false_button,
+            imageSizeLeftWith = 30.dp,
+            imageSizeLeftHigh = 30.dp,
+            text = "Figma",
+            onClick = { },
+            colors = getButtonColors(),
+        ),
+        // withoutIconsButton
+        SkillButtonParams(
+            enabled = true,
+            activeButton = false,
+            contentPadding = contentPaddingDefault,
+            imageSizeLeftWith = 30.dp,
+            imageSizeLeftHigh = 30.dp,
+            text = "Figma",
+            onClick = { },
+            colors = getButtonColors(),
+        ),
+        SkillButtonParams(
+            enabled = true,
+            activeButton = true,
+            contentPadding = contentPaddingDefault,
+            imageSizeLeftWith = 30.dp,
+            imageSizeLeftHigh = 30.dp,
+            text = "Figma",
+            onClick = { },
+            colors = getButtonColors(),
+        ),
+        SkillButtonParams(
+            enabled = false,
+            activeButton = false,
+            contentPadding = contentPaddingDefault,
+            imageSizeLeftWith = 30.dp,
+            imageSizeLeftHigh = 30.dp,
+            text = "Figma",
+            onClick = { },
+            colors = getButtonColors(),
+        ),
+        // lendingButton
+        SkillButtonParams(
+            enabled = true,
+            activeButton = false,
+            contentPadding = contentPaddingLendingDefault,
+            imageLeft = R.drawable.icon_true_button,
+            fillButton = true,
+            elevation = 8.dp,
+            imageSizeLeftWith = 36.dp,
+            imageSizeLeftHigh = 36.dp,
+            text = "Figma",
+            onClick = { },
+            colors = getButtonColors(),
+        ),
+        SkillButtonParams(
+            enabled = true,
+            activeButton = true,
+            contentPadding = contentPaddingLendingDefault,
+            imageLeft = R.drawable.icon_true_button,
+            fillButton = true,
+            elevation = 8.dp,
+            imageSizeLeftWith = 36.dp,
+            imageSizeLeftHigh = 36.dp,
+            text = "Figma",
+            onClick = { },
+            colors = getButtonColors(),
+        ),
+        SkillButtonParams(
+            enabled = false,
+            activeButton = false,
+            contentPadding = contentPaddingLendingDefault,
+            imageLeft = R.drawable.icon_false_button,
+            fillButton = true,
+            elevation = 8.dp,
+            imageSizeLeftWith = 36.dp,
+            imageSizeLeftHigh = 36.dp,
+            text = "Figma",
+            onClick = { },
+            colors = getButtonColors(),
+        ),
+        //canDelete
+        SkillButtonParams(
+            enabled = true,
+            activeButton = false,
+            contentPadding = contentPaddingDefault,
+            imageLeft = R.drawable.icon_true_button,
+            imageRight = R.drawable.icon_button_close,
+            imageSizeLeftWith = 30.dp,
+            imageSizeLeftHigh = 30.dp,
+            text = "Figma",
+            onClick = { },
+            colors = getButtonColors(),
+        ),
+        SkillButtonParams(
+            enabled = true,
+            activeButton = true,
+            contentPadding =contentPaddingDefault,
+            imageLeft = R.drawable.icon_true_button,
+            imageRight = R.drawable.icon_button_close,
+            elevation = 8.dp,
+            imageSizeLeftWith = 30.dp,
+            imageSizeLeftHigh = 30.dp,
+            text = "Figma",
+            onClick = { },
+            colors = getButtonColors(),
+        ),
+        SkillButtonParams(
+            enabled = false,
+            activeButton = false,
+            contentPadding = contentPaddingDefault,
+            imageLeft = R.drawable.icon_false_button,
+            imageRight = R.drawable.icon_button_close,
+            imageSizeLeftWith = 30.dp,
+            imageSizeLeftHigh = 30.dp,
+            text = "Figma",
+            onClick = { },
+            colors = getButtonColors(),
+        ),
+        // buttonWithoutBackground
+        SkillButtonParams(
+            enabled = true,
+            activeButton = false,
+            contentPadding = contentPadding_Default,
+            imageLeft = R.drawable.icon_true_button,
+            imageSizeLeftWith = 20.dp,
+            imageSizeLeftHigh = 20.dp,
+            buttonWithoutBackground = true,
+            text = "Figma",
+            onClick = { },
+            colors = getButtonColors(),
+        ),
+        SkillButtonParams(
+            enabled = true,
+            activeButton = true,
+            contentPadding = contentPadding_Default,
+            imageLeft = R.drawable.icon_true_button,
+            imageSizeLeftWith = 20.dp,
+            imageSizeLeftHigh = 20.dp,
+            buttonWithoutBackground = true,
+            text = "Figma",
+            onClick = { },
+            colors = getButtonColors(),
+        ),
+        SkillButtonParams(
+            enabled = false,
+            activeButton = false,
+            contentPadding = contentPadding_Default,
+            imageLeft = R.drawable.icon_false_button,
+            imageSizeLeftWith = 20.dp,
+            imageSizeLeftHigh = 20.dp,
+            buttonWithoutBackground = true,
+            text = "Figma",
+            onClick = { },
+            colors = getButtonColors(),
+        ),
+        // kompaniButton
+        SkillButtonParams(
+            enabled = true,
+            activeButton = false,
+            contentPadding = contentPaddingLendingDefault,
+            imageLeft = R.drawable.ellipse,
+            imageSizeLeftWith = 30.dp,
+            imageSizeLeftHigh = 30.dp,
+            text = "Figma",
+            onClick = { },
+            colors = getButtonColors(),
+        ),
+        SkillButtonParams(
+            enabled = true,
+            activeButton = true,
+            contentPadding = contentPaddingLendingDefault,
+            imageLeft = R.drawable.ellipse,
+            imageSizeLeftWith = 30.dp,
+            imageSizeLeftHigh = 30.dp,
+            text = "Figma",
+            onClick = { },
+            colors = getButtonColors(),
+        ),
+        SkillButtonParams(
+            enabled = false,
+            activeButton = false,
+            contentPadding = contentPaddingLendingDefault,
+            imageLeft = R.drawable.ellipse,
+            imageSizeLeftWith = 30.dp,
+            imageSizeLeftHigh = 30.dp,
+            text = "Figma",
+            onClick = { },
+            colors = getButtonColors(),
+        ),
+        // iconsButton
+        SkillButtonParams(
+            enabled = true,
+            activeButton = false,
+            contentPadding = contentPaddingLendingDefault,
+            imageLeft = R.drawable.icon_true_button,
+            imageSizeLeftWith = 24.dp,
+            imageSizeLeftHigh = 24.dp,
+            onClick = { },
+            colors = getButtonColors(),
+        ),
+        SkillButtonParams(
+            enabled = true,
+            activeButton = true,
+            contentPadding = contentPaddingLendingDefault,
+            imageLeft = R.drawable.icon_true_button,
+            imageSizeLeftWith = 24.dp,
+            imageSizeLeftHigh = 24.dp,
+            onClick = { },
+            colors = getButtonColors(),
+        ),
+        SkillButtonParams(
+            enabled = false,
+            activeButton = false,
+            contentPadding = contentPaddingLendingDefault,
+            imageLeft = R.drawable.icon_false_button,
+            imageSizeLeftWith = 24.dp,
+            imageSizeLeftHigh = 24.dp,
+            onClick = { },
+            colors = getButtonColors(),
+        )
+    )
+}
+
+fun getButtonColors(): ColorsButtonYeaHub {
+    return ColorsButtonYeaHub(
+        contentColor = Color(color = 0xFF303030), // синоним Theme.colors.black800
+        containerColor = Color(color = 0xFFFFFFFF), // синоним Theme.colors.white900
+        disabledContentColor = Color(color = 0xFFBABABA), // синоним Theme.colors.black200
+        disabledContainerColor = Color(color = 0xFFFFFFFF) // синоним Theme.colors.white900
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SkillButtonPreview(
+    @PreviewParameter(SkillButtonParamsProvider::class) params: SkillButtonParams,
+) {
+    Box(modifier = Modifier.padding(10.dp)) {
+        SkillButton(
+            onClick = params.onClick,
+            enabled = params.enabled,
+            activeButton = params.activeButton,
+            imageLeft = params.imageLeft,
+            imageRight = params.imageRight,
+            elevation = params.elevation,
+            text = params.text,
+            buttonWithoutBackground = params.buttonWithoutBackground,
+            imageSizeLeftWith = params.imageSizeLeftWith,
+            imageSizeLeftHigh = params.imageSizeLeftHigh,
+            fillButton = params.fillButton,
+            colors = params.colors,
+            contentPadding = params.contentPadding
+        )
+    }
+
 }
