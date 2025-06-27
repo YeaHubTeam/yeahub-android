@@ -45,6 +45,7 @@ import ru.yeahub.core_ui.component.ButtonColorDefaults.activeBorder
 import ru.yeahub.core_ui.component.ButtonColorDefaults.defaultsBorder
 import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.ui.R
+
 private val contentPaddingDefault = PaddingValues(
     start = 12.dp,
     end = 12.dp,
@@ -68,7 +69,7 @@ private val contentPadding_Default = PaddingValues(
 fun SkillButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    enabled: Boolean = true,
+    enabled: Boolean = false,
     activeButton: Boolean = false,
     imageLeft: Int? = null, // Иконка слева
     imageRight: Int? = null, // Иконка справа
@@ -83,12 +84,7 @@ fun SkillButton(
     onRightIconClick: (() -> Unit)? = null,
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
 ) {
-    val image = when {
-        imageLeft != null && enabled && imageLeft == R.drawable.icon_true_button -> R.drawable.icon_true_button
-        imageLeft != null && !enabled && imageLeft == R.drawable.icon_false_button -> R.drawable.icon_false_button
-        imageLeft != null && imageLeft == R.drawable.ellipse -> R.drawable.ellipse
-        else -> null
-    }
+
     DefaultButton(
         onClick = onClick,
         modifier = modifier,
@@ -100,7 +96,7 @@ fun SkillButton(
         contentPadding = contentPadding,
         onRightIconClick = onRightIconClick,
         imageRight = imageRight,
-        imageLeft = image,
+        imageLeft = imageLeft,
         imageSizeLeftHigh = imageSizeLeftHigh,
         imageSizeLeftWith = imageSizeLeftWith,
         text = text,
@@ -128,6 +124,7 @@ fun DefaultButton(
     imageRight: Int? = null,
     onRightIconClick: (() -> Unit)? = null,
 ) {
+
     val defaultColor: Color = Theme.colors.white900
     val purple = Theme.colors.purple700
     val black = Theme.colors.black800
@@ -175,7 +172,7 @@ fun DefaultButton(
     val updatedContentColor =
         if (newContentColor == black && buttonWithoutBackground && activeButton) {
             purple
-        } else if (newContentColor == black && fillButton&& activeButton) {
+        } else if (newContentColor == black && fillButton && activeButton) {
             defaultColor
         } else {
             newContentColor
@@ -203,7 +200,17 @@ fun DefaultButton(
                 horizontalArrangement = Arrangement.Center,
                 content = {
                     imageLeft?.let {
-                        val imageLeftPainter: Painter = painterResource(id = imageLeft)
+                        val imageLeftPainter = when {
+                            imageLeft == R.drawable.ellipse -> {
+                                painterResource(id = R.drawable.ellipse)
+                            }
+                            enabled -> {
+                                painterResource(id = R.drawable.icon_true_button)
+                            }
+                            else -> {
+                                painterResource(id = R.drawable.icon_false_button)
+                            }
+                        }
                         Image(
                             modifier = Modifier
                                 .height(imageSizeLeftHigh)
@@ -307,6 +314,7 @@ interface ButtonColors1 {
     @Composable
     fun contentColor(enabled: Boolean): State<Color>
 }
+
 data class SkillButtonParams(
     val onClick: () -> Unit,
     val enabled: Boolean = true,
@@ -448,7 +456,7 @@ class SkillButtonParamsProvider : PreviewParameterProvider<SkillButtonParams> {
         SkillButtonParams(
             enabled = true,
             activeButton = true,
-            contentPadding =contentPaddingDefault,
+            contentPadding = contentPaddingDefault,
             imageLeft = R.drawable.icon_true_button,
             imageRight = R.drawable.icon_button_close,
             elevation = 8.dp,
@@ -606,5 +614,29 @@ fun SkillButtonPreview(
             contentPadding = params.contentPadding
         )
     }
+}
 
+@Preview
+@Composable
+fun ExampleScreen() {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+
+
+        SkillButton(
+            enabled = true,
+            activeButton = false,
+            contentPadding = contentPaddingDefault,
+            imageLeft = R.drawable.icon_true_button,
+            imageRight = R.drawable.icon_button_close,
+            imageSizeLeftWith = 30.dp,
+            imageSizeLeftHigh = 30.dp,
+            text = "Figma",
+            onClick = { },
+            colors = getButtonColors(),
+        )
+    }
 }
