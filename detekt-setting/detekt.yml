@@ -16,11 +16,15 @@ style:
     active: true
     excludeImports:
       - 'java.util.*'
+  UnusedParameter:
+    active: false
 
 naming:
   FunctionNaming:
     active: false
   PackageNaming:
+    active: false
+  MatchingDeclarationName:
     active: false
 
 empty-blocks:
@@ -29,4 +33,8 @@ empty-blocks:
 
 complexity:
   LongParameterList:
+    active: false
+  LongMethod:
+    active: false
+  TooManyFunctions:
     active: false

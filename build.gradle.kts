@@ -31,8 +31,8 @@ configure<DetektExtension> {
     source.setFrom(
         files(
             subprojects.map { it.projectDir }
-                + file("src") // Include root project sources
-    ))
+                    + file("src") // Include root project sources
+        ))
 
     config.setFrom("${rootProject.projectDir}/detekt-setting/detekt.yml")
     baseline = file("${rootProject.projectDir}/detekt-setting/baseline.xml")
@@ -401,7 +401,8 @@ fun Project.getTotalKtlintHtml(
             <h2>Findings</h2>
             <div>Unresolved rules: ${violationStore.keys.size}</div>
             <div>Total: ${violationStore.keys.sumOf { k -> violationStore[k]?.size ?: 0 }}</div>
-            """.trimIndent())
+            """.trimIndent()
+        )
 
         for ((rule, violations) in violationStore) {
             append(

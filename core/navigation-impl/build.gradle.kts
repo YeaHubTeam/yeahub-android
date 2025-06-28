@@ -43,16 +43,16 @@ android {
 dependencies {
     implementation(project(":core:navigation-api"))
     implementation(project(":core:ui"))
-    
+
     // Feature APIs
     implementation(project(":feature:example-profile:api"))
     implementation(project(":feature:example-home:api"))
-    
+
     // Koin
     implementation(libs.koin.core)
     implementation(libs.koin.android)
     implementation(libs.koin.compose)
-    
+
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
@@ -63,7 +63,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.runtime.android)
     implementation(libs.androidx.icons)
-    
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

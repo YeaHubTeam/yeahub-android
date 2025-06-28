@@ -1,13 +1,20 @@
 package ru.yeahub.navigation_impl
 
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
-import androidx.compose.foundation.layout.padding
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
@@ -18,21 +25,22 @@ import ru.yeahub.example_profile.api.ProfileScreenApi
 import ru.yeahub.example_profile.api.navigation.ProfileRoutes
 import ru.yeahub.navigation_impl.features.StubScreen
 import ru.yeahub.navigation_impl.features.navigation.StubRoutes
-import ru.yeahub.navigation_impl.model.BottomNavigationItem
+
+//import ru.yeahub.navigation_impl.model.BottomNavigationItem
 
 /**
  * Основной компонент навигации приложения.
- * 
+ *
  * Архитектура навигации:
  * - Использует single-activity подход с Jetpack Navigation
  * - Поддерживает нижнюю навигацию для основных разделов
  * - Каждая фича-модуль определяет свои собственные маршруты в api модуле
- * 
+ *
  * Структура навигации:
  * 1. Нижняя панель навигации для переключения между основными разделами
  * 2. NavHost для управления навигационным стеком
  * 3. Отдельные composable для каждого экрана
- * 
+ *
  * @param modifier Модификатор для настройки внешнего вида
  */
 @Composable
