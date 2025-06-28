@@ -1,0 +1,8 @@
+<resources>
+    <string name="short_answer_title">Краткий ответ</string>
+    <string name="learn">Учить</string>
+    <string name="repeat">Повторить</string>
+    <string name="favorite">Избранное</string>
+    <string name="previous">Предыдущий</string>
+    <string name="next">Следующий</string>
+</resources>
