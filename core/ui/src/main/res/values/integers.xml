@@ -1,0 +1,3 @@
+<resources>
+    <integer name="collapsedMaxChars">500</integer>
+</resources>
