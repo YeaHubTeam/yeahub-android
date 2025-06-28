@@ -75,6 +75,8 @@ dependencies {
 
     //modules
     implementation(project(":core:network-impl"))
+
+    detektPlugins(libs.detekt.formatting)
 }
 
 tasks.withType<Test> {

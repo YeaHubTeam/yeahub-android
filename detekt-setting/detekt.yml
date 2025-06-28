@@ -13,7 +13,9 @@ style:
   MayBeConst:
     active: false
   WildcardImport:
-    active: false
+    active: true
+    excludeImports:
+      - 'java.util.*'
 
 naming:
   FunctionNaming:
