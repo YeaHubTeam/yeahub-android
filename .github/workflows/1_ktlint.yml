@@ -23,7 +23,7 @@ jobs:
 
     - name: Upload ktlint Report on Failure
       if: failure()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: detekt-report
         path: build/reports/detekt/ktlint-report.html
