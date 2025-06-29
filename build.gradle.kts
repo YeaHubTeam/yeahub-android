@@ -73,6 +73,7 @@ fun inTaskMsg(hasFail: Boolean, source: String, reportPath: String): String {
             "\nConsolidated $source report available at (copy and paste to web-browser):\n" +
             "$reportPath"
 }
+
 tasks.register("HERE_DETEKT_REPORT_LINK") {
     doLast {
         val reportPath = "${projectDir}/build/reports/detekt/detekt-report.html"
@@ -174,6 +175,22 @@ fun Project.hasKotlinFiles(): Boolean {
             fileTree(".").any { it.name == "build.gradle.kts" }
 }
 
+//test
+//накидываем кастомную таску к тестам для авто-открытия окна с отчетом при наличии провала по тестам
+tasks.withType<Test> {
+    finalizedBy("openTestReportOnFailure")
+}
+
+tasks.register("openTestReportOnFailure") {
+    onlyIf {
+        tasks.withType<Test>().any { it.state.failure != null }
+    }
+    doLast {
+        val reportPath = "${projectDir}/build/reports/tests/testDebugUnitTest/index.html"
+        autoOpenHtmlReport(reportPath)
+    }
+}
+
 subprojects {
     pluginManager.withPlugin("com.android.application") {
         //app:assembleDebug task exist after evaluate
@@ -181,6 +198,7 @@ subprojects {
             //app:detekt after app:assembleDebug
             tasks.named("assembleDebug") {
                 finalizedBy("detekt")
+                finalizedBy("test")
             }
         }
     }
