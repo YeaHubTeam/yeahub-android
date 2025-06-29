@@ -4,9 +4,9 @@ on:
     branches: [ "ANDROID-18,19,20" ]
   pull_request:
     branches: [ "ANDROID-18,19,20" ]
-  workflow_run:
-    workflows: [ "2. Detekt Stage"]
-        types: [completed]
+#  workflow_run:
+#    workflows: [ "2. Detekt Stage"]
+#        types: [completed]
 
 
 jobs:
