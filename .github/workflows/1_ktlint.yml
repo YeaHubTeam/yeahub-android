@@ -1,13 +1,12 @@
 name: "1. Ktlint Stage"
 on:
-  workflow_call:
   push:
     branches: [ "ANDROID-18,19,20" ]
   pull_request:
     branches: [ "ANDROID-18,19,20" ]
-#  workflow_run:
-#    workflows: [ "Main Pipeline" ]
-#    types: [ completed ]
+  workflow_run:
+    workflows: [ "Main Pipeline" ]
+    types: [ completed ]
 
 jobs:
   ktlint:
