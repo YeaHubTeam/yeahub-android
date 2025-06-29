@@ -1,5 +1,6 @@
 name: Main Pipeline
 on:
+  workflow_call:
   push:
     branches: [ "ANDROID-18,19,20" ]
   pull_request:

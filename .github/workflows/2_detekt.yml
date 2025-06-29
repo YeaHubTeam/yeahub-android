@@ -11,10 +11,11 @@ on:
 
 jobs:
   detekt:
+    runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: "Run Detekt from gradle"
-      - run: echo "Running detekt..."
+        run: echo "Running detekt..."
           ./gradlew detekt
 
       - name: Upload ktlint Report on Failure
@@ -29,4 +30,4 @@ jobs:
     if: always() && needs.detekt.result == 'success'
     runs-on: ubuntu-latest
     steps:
-    - run: echo "This job only runs if detekt passed"
+      - run: echo "This job only runs if detekt passed"

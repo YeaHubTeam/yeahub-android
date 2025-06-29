@@ -21,6 +21,6 @@ jobs:
       - name: Build Debug
         run: ./gradlew build -x consolidateKtlintReports -x detekt -x test -x lint
         with:
-            name: app-builds
-            path: |
-                app/build/outputs/apk/debug/app-debug.apk
+          name: app-builds
+          path: |
+              app/build/outputs/apk/debug/app-debug.apk
