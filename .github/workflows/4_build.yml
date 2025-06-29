@@ -10,17 +10,19 @@ on:
 
 
 jobs:
-  test:
+  build:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
-      - run: echo "Running build debug ..."
       - name: Checkout Code
         uses: actions/checkout@v4
 
       - name: Build Debug
-        run: ./gradlew build -x consolidateKtlintReports -x detekt -x test -x lint
+        run: ./gradlew assembleDebug -x consolidateKtlintReports -x detekt -x test -x lint
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v3
         with:
           name: app-builds
           path: |
-              app/build/outputs/apk/debug/app-debug.apk
+            app/build/outputs/apk/debug/app-debug.apk

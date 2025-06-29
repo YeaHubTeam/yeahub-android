@@ -26,7 +26,7 @@ jobs:
           path: build/reports/detekt/detekt-report.html
 
   subsequent_job:
-    needs: ktlint
+    needs: detekt
     if: always() && needs.detekt.result == 'success'
     runs-on: ubuntu-latest
     steps:
