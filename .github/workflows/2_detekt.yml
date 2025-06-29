@@ -1,0 +1,32 @@
+name: "2. Detekt Stage"
+on:
+  push:
+    branches: [ "ANDROID-18,19,20" ]
+  pull_request:
+    branches: [ "ANDROID-18,19,20" ]
+  workflow_run:
+    workflows: [ "1. Ktlint Stage" ]
+        types: [completed]
+
+
+jobs:
+  detekt:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - name: "Run Detekt from gradle"
+      - run: echo "Running detekt..."
+          ./gradlew detekt
+
+      - name: Upload ktlint Report on Failure
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: detekt-report
+          path: build/reports/detekt/detekt-report.html
+
+  subsequent_job:
+    needs: ktlint
+    if: always() && needs.detekt.result == 'success'
+    runs-on: ubuntu-latest
+    steps:
+    - run: echo "This job only runs if detekt passed"

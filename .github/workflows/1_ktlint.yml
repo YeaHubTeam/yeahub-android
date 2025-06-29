@@ -1,0 +1,36 @@
+name: "1. Ktlint Stage"
+on:
+  push:
+    branches: [ "ANDROID-18,19,20" ]
+  pull_request:
+    branches: [ "ANDROID-18,19,20" ]
+
+jobs:
+  ktlint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up JDK
+      uses: actions/setup-java@v3
+      with:
+        java-version: '21'
+
+    - name: Run Detekt from gradle
+      run: |
+        chmod +x ./gradlew
+        echo "Running ktlint..."
+        ./gradlew consolidateKtlintReports
+
+    - name: Upload ktlint Report on Failure
+      if: failure()
+      uses: actions/upload-artifact@v3
+      with:
+        name: detekt-report
+        path: build/reports/detekt/ktlint-report.html
+
+  subsequent_job:
+    needs: ktlint
+    if: always() && needs.detekt.result == 'success'
+    runs-on: ubuntu-latest
+    steps:
+    - run: echo "This job only runs if ktlint passed"
