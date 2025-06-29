@@ -91,9 +91,9 @@ private fun DetailedQuestionAnswerInternal(
 private fun AnswerTitle() {
     Text(
         text = stringResource(R.string.expanded_answer_title),
-        style = Theme.typography.head4,
+        modifier = Modifier.padding(bottom = 16.dp),
         color = Theme.colors.black800,
-        modifier = Modifier.padding(bottom = 16.dp)
+        style = Theme.typography.head4,
     )
 }
 
@@ -141,9 +141,9 @@ private fun CollapsedContent(
 private fun TextBlockContent(text: String) {
     Text(
         text = text,
-        style = Theme.typography.body3Accent,
+        modifier = Modifier.padding(bottom = 8.dp),
         color = Theme.colors.black700,
-        modifier = Modifier.padding(bottom = 8.dp)
+        style = Theme.typography.body3Accent,
     )
 }
 
@@ -151,18 +151,18 @@ private fun TextBlockContent(text: String) {
 private fun CodeBlockContent(code: String) {
     Text(
         text = code,
-        style = Theme.typography.body2Accent,
-        color = Theme.colors.purple700,
         modifier = Modifier
             .background(
                 brush = Brush.verticalGradient(
-                colors = listOf(
-                    Theme.colors.white900,
-                    Theme.colors.purple200
-                )
-            ), RoundedCornerShape(4.dp))
+                    colors = listOf(
+                        Theme.colors.white900,
+                        Theme.colors.purple200
+                    )
+                ), RoundedCornerShape(4.dp))
             .padding(8.dp)
-            .fillMaxWidth()
+            .fillMaxWidth(),
+        color = Theme.colors.purple700,
+        style = Theme.typography.body2Accent,
     )
 }
 
@@ -243,7 +243,6 @@ private fun ExpandCollapseButton(
                     contentDescription = null,
                     modifier = Modifier
                         .padding(start = 8.dp)
-                        .size(20.dp)
                         .rotate(rotationAngle)
                 )
             }
@@ -251,7 +250,7 @@ private fun ExpandCollapseButton(
     }
 }
 
-fun parseHTMLCodeBlock(html: String): String {
+private fun parseHTMLCodeBlock(html: String): String {
     val doc: Document = Jsoup.parse(html)
     val codeElement = doc.selectFirst("code") ?: doc.body()
     return codeElement.wholeText()
