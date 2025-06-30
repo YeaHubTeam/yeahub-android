@@ -26,4 +26,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: ktlint-report
-        path: build/reports/ktlint/ktlint-report.html
+        path: /build/reports/ktlint/ktlint-report.html
