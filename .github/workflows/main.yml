@@ -1,9 +1,9 @@
 name: Main Pipeline
 on:
   push:
-    branches: [ "ANDROID-18,19,20-TEST" ]
+    branches: '*'
   pull_request:
-    branches: [ "ANDROID-18,19,20-TEST" ]
+    branches: '*'
 
 env:
   JAVA_VERSION: '21'
