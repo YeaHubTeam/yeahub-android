@@ -13,7 +13,8 @@ jobs:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: "Run Detekt from gradle"
-        run: echo "Running detekt..."
+        run: |
+          chmod +x ./gradlew
           ./gradlew detekt
 
       - name: Upload ktlint Report on Failure
@@ -21,4 +22,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: detekt-report
-          path: build/reports/detekt/detekt-report.html
+          path: build/reports/detekt/**

@@ -1,6 +1,9 @@
 name: "3. Test Stage"
 on:
   workflow_call:
+  workflow_run:
+    workflows: [ "2. Detekt Stage" ]
+    types: [ completed ]
   push:
     branches: [ "ANDROID-18,19,20-TEST" ]
   pull_request:
@@ -12,12 +15,13 @@ jobs:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
-      - run: echo "Running tests..."
+      - run: | 
+          chmod +x ./gradlew
           ./gradlew test
 
       - name: Upload test Report on Failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: detekt-report
-          path: app/build/reports/tests/testReleaseUnitTest/index.html
+          name: index
+          path: app/build/reports/tests/testReleaseUnitTest/**
