@@ -7,14 +7,13 @@ on:
 
 jobs:
   ktlint:
-    needs: setup
     uses: ./.github/workflows/1_ktlint.yml
   detekt:
-    needs: [setup,ktlint]
+    needs: ktlint
     uses: ./.github/workflows/2_detekt.yml
   test:
-    needs: [setup,detekt]
+    needs: detekt
     uses: ./.github/workflows/3_test.yml
   build:
-    needs: [setup,test]
+    needs: test
     uses: ./.github/workflows/4_build.yml
