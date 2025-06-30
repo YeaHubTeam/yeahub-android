@@ -7,7 +7,7 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import ru.yeahub.core_ui.R
+import ru.yeahub.ui.R
 
 private val manrope = FontFamily(
     Font(R.font.manrope_regular, FontWeight.Normal),
