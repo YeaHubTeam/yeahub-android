@@ -9,7 +9,9 @@ on:
 
 jobs:
   test:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: |
+      github.event_name != 'workflow_run' ||
+      github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     steps:
       - run: | 
@@ -20,5 +22,5 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: index
-          path: app/build/reports/tests/testReleaseUnitTest/**
+          name: test-report
+          path: app/build/reports/tests/testReleaseUnitTest/index.html
