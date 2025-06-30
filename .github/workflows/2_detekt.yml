@@ -1,9 +1,6 @@
 name: "2. Detekt Stage"
 on:
   workflow_call:
-  workflow_run:
-    workflows: [ "1. Ktlint" ]
-    types: [ completed ]
   push:
     branches: [ "ANDROID-18,19,20" ]
   pull_request:
@@ -25,10 +22,3 @@ jobs:
         with:
           name: detekt-report
           path: build/reports/detekt/detekt-report.html
-
-  subsequent_job:
-    needs: detekt
-    if: always() && needs.detekt.result == 'success'
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "This job only runs if detekt passed"

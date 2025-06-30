@@ -21,10 +21,3 @@ jobs:
         with:
           name: detekt-report
           path: app/build/reports/tests/testReleaseUnitTest/index.html
-
-  subsequent_job:
-    needs: test
-    if: always() && needs.test.result == 'success'
-    runs-on: ubuntu-latest
-    steps:
-    - run: echo "This job only runs if test passed"

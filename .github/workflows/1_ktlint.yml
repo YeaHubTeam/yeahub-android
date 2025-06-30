@@ -28,10 +28,3 @@ jobs:
       with:
         name: detekt-report
         path: build/reports/detekt/ktlint-report.html
-
-  subsequent_job:
-    needs: ktlint
-    if: always() && needs.detekt.result == 'success'
-    runs-on: ubuntu-latest
-    steps:
-    - run: echo "This job only runs if ktlint passed"
