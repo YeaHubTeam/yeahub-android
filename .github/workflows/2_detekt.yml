@@ -18,6 +18,8 @@ jobs:
         run: |
           chmod +x ./gradlew
           ./gradlew detekt
+          mkdir -p build/reports/detekt/  # Ensure directory exists
+          touch build/reports/detekt/detekt-report.html  # Create empty file if none exists
 
       - name: Upload ktlint Report on Failure
         if: failure()
