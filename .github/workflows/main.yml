@@ -6,14 +6,70 @@ on:
     branches: [ "ANDROID-18,19,20-TEST" ]
 
 jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: '21'
   ktlint:
-    uses: ./.github/workflows/1_ktlint.yml
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run Detekt from gradle
+        run: |
+          chmod +x ./gradlew
+          ./gradlew consolidateKtlintReports
+
+      - name: Upload ktlint Report on Failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ktlint-report
+          path: /build/reports/ktlint/ktlint-report.html
+
   detekt:
+    runs-on: ubuntu-latest
     needs: ktlint
-    uses: ./.github/workflows/2_detekt.yml
+    steps:
+      - name: "Run Detekt from gradle"
+        run: |
+          chmod +x ./gradlew
+          ./gradlew detekt
+
+      - name: Upload ktlint Report on Failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: detekt-report
+          path: /build/reports/detekt/detekt-report.html
+
   test:
+    runs-on: ubuntu-latest
     needs: detekt
-    uses: ./.github/workflows/3_test.yml
+    steps:
+      - run: |
+          chmod +x ./gradlew
+          ./gradlew test 
+
+      - name: Upload test Report on Failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report
+          path: app/build/reports/tests/testReleaseUnitTest/index.html
+
   build:
+    runs-on: ubuntu-latest
     needs: test
-    uses: ./.github/workflows/4_build.yml
+    steps:
+      - name: Build Debug Without Checks
+        run: ./gradlew assembleDebug -x consolidateKtlintReports -x detekt -x test -x lint
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug
+          path: |
+            app/build/outputs/apk/debug/app-debug.apk
