@@ -17,7 +17,7 @@ jobs:
       - name: "Run Detekt from gradle"
         run: |
           chmod +x ./gradlew
-          ./gradlew detekt
+          ./gradlew detekt --no-daemon
           mkdir -p build/reports/detekt/  # Ensure directory exists
           touch build/reports/detekt/detekt-report.html  # Create empty file if none exists
 

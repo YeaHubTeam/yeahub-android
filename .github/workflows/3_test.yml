@@ -16,7 +16,7 @@ jobs:
     steps:
       - run: | 
           chmod +x ./gradlew
-          ./gradlew test
+          ./gradlew test --no-daemon
 
       - name: Upload test Report on Failure
         if: failure()
