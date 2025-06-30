@@ -17,6 +17,7 @@ jobs:
   ktlint:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
       - name: Run Detekt from gradle
         run: |
           chmod +x ./gradlew
@@ -33,6 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: ktlint
     steps:
+      - uses: actions/checkout@v4
       - name: "Run Detekt from gradle"
         run: |
           chmod +x ./gradlew
@@ -49,6 +51,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: detekt
     steps:
+      - uses: actions/checkout@v4
       - run: |
           chmod +x ./gradlew
           ./gradlew test 
@@ -64,6 +67,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: test
     steps:
+      - uses: actions/checkout@v4
       - name: Build Debug Without Checks
         run: ./gradlew assembleDebug -x consolidateKtlintReports -x detekt -x test -x lint
 
