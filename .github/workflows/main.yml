@@ -11,7 +11,6 @@ env:
 jobs:
   ktlint:
     runs-on: ubuntu-latest
-    needs: setup
     env:
       JAVA_HOME: ${{ needs.setup.outputs.java_home }}
     steps:
