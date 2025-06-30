@@ -14,6 +14,12 @@ jobs:
       github.event_name != 'workflow_run' ||
       github.event.workflow_run.conclusion == 'success'
     steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: '21'
+
       - name: "Run Detekt from gradle"
         run: |
           chmod +x ./gradlew
