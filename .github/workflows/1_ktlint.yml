@@ -19,7 +19,7 @@ jobs:
     - name: Run Detekt from gradle
       run: |
         chmod +x ./gradlew
-        ./gradlew consolidateKtlintReports --no-daemon
+        ./gradlew consolidateKtlintReports
 
     - name: Upload ktlint Report on Failure
       if: failure()

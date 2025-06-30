@@ -20,14 +20,11 @@ jobs:
         with:
           java-version: '21'
 
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
       - name: Build Debug Without Checks
         run: ./gradlew assembleDebug -x consolidateKtlintReports -x detekt -x test -x lint
 
       - name: Upload APK
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: app-builds
           path: |

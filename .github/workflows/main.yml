@@ -6,14 +6,15 @@ on:
     branches: [ "ANDROID-18,19,20-TEST" ]
 
 jobs:
-    ktlint:
-      uses: ./.github/workflows/1_ktlint.yml
-    detekt:
-      needs: ktlint
-      uses: ./.github/workflows/2_detekt.yml
-    test:
-      needs: detekt
-      uses: ./.github/workflows/3_test.yml
-    build:
-      needs: test
-      uses: ./.github/workflows/4_build.yml
+  ktlint:
+    needs: setup
+    uses: ./.github/workflows/1_ktlint.yml
+  detekt:
+    needs: [setup,ktlint]
+    uses: ./.github/workflows/2_detekt.yml
+  test:
+    needs: [setup,detekt]
+    uses: ./.github/workflows/3_test.yml
+  build:
+    needs: [setup,test]
+    uses: ./.github/workflows/4_build.yml
