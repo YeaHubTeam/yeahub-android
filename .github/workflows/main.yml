@@ -1,9 +1,9 @@
 name: Main Pipeline
 on:
   push:
-    branches: [ "ANDROID-18,19,20" ]
+    branches: [ "ANDROID-18,19,20-TEST" ]
   pull_request:
-    branches: [ "ANDROID-18,19,20" ]
+    branches: [ "ANDROID-18,19,20-TEST" ]
 
 jobs:
     ktlint:
