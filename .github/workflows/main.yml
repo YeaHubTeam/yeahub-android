@@ -5,6 +5,9 @@ on:
   pull_request:
     branches: [ "ANDROID-18,19,20-TEST" ]
 
+env:
+  JAVA_VERSION: '21'
+
 jobs:
   setup:
     runs-on: ubuntu-latest
@@ -13,10 +16,14 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v1
         with:
-          java-version: '21'
+          java-version: ${{ env.JAVA_VERSION }}
+      - name: Make gradlew executable
+        run: chmod +x gradlew
   ktlint:
     runs-on: ubuntu-latest
     needs: setup
+    env:
+      JAVA_HOME: ${{ needs.setup.outputs.java_home }}
     steps:
       - uses: actions/checkout@v4
       - name: Run Detekt from gradle
@@ -34,6 +41,8 @@ jobs:
   detekt:
     runs-on: ubuntu-latest
     needs: ktlint
+    env:
+      JAVA_HOME: ${{ needs.setup.outputs.java_home }}
     steps:
       - uses: actions/checkout@v4
       - name: "Run Detekt from gradle"
@@ -51,6 +60,8 @@ jobs:
   test:
     runs-on: ubuntu-latest
     needs: detekt
+    env:
+      JAVA_HOME: ${{ needs.setup.outputs.java_home }}
     steps:
       - uses: actions/checkout@v4
       - run: |
@@ -67,6 +78,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     needs: test
+    env:
+      JAVA_HOME: ${{ needs.setup.outputs.java_home }}
     steps:
       - uses: actions/checkout@v4
       - name: Build Debug Without Checks
