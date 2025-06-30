@@ -1,16 +1,20 @@
 name: "2. Detekt Stage"
 on:
-  workflow_call:
   push:
     branches: [ "ANDROID-18,19,20-TEST" ]
   pull_request:
     branches: [ "ANDROID-18,19,20-TEST" ]
+  workflow_run:
+    workflows: [ "1. Ktlint" ]
+    types: [ completed ]
 
 
 jobs:
   detekt:
+    if: |
+      github.event_name == 'workflow_call' || 
+      github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: "Run Detekt from gradle"
         run: echo "Running detekt..."
