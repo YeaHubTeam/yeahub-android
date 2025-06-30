@@ -1,9 +1,6 @@
 name: "3. Test Stage"
 on:
   workflow_call:
-  workflow_run:
-    workflows: [ "2. Detekt Stage" ]
-    types: [ completed ]
   push:
     branches: [ "ANDROID-18,19,20-TEST" ]
   pull_request:
