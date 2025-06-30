@@ -16,7 +16,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build Debug Without Checks
-        run: ./gradlew assembleDebug
+        run: ./gradlew assembleDebug -x consolidateKtlintReports -x detekt -x test -x lint
 
       - name: Upload APK
         uses: actions/upload-artifact@v3

@@ -9,9 +9,10 @@ jobs:
     ktlint:
       uses: ./.github/workflows/1_ktlint.yml
     detekt:
+      needs: ktlint
       uses: ./.github/workflows/2_detekt.yml
     test:
-      needs: [ktlint,detekt]
+      needs: detekt
       uses: ./.github/workflows/3_test.yml
     build:
       needs: test
