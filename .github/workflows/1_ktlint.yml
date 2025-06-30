@@ -1,5 +1,6 @@
 name: "1. Ktlint Stage"
 on:
+  workflow_call:
   push:
     branches: [ "ANDROID-18,19,20-TEST" ]
   pull_request:
