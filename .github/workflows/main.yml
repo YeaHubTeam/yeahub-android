@@ -26,6 +26,10 @@ jobs:
       JAVA_HOME: ${{ needs.setup.outputs.java_home }}
     steps:
       - uses: actions/checkout@v4
+      - name: Set up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
       - name: Verify Java installation
         run: |
           # Check system Java
@@ -60,6 +64,10 @@ jobs:
       JAVA_HOME: ${{ needs.setup.outputs.java_home }}
     steps:
       - uses: actions/checkout@v4
+      - name: Set up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
       - name: Verify Java installation
         run: |
           # Check system Java
@@ -94,6 +102,10 @@ jobs:
       JAVA_HOME: ${{ needs.setup.outputs.java_home }}
     steps:
       - uses: actions/checkout@v4
+      - name: Set up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
       - name: Verify Java installation
         run: |
           # Check system Java
@@ -127,6 +139,10 @@ jobs:
       JAVA_HOME: ${{ needs.setup.outputs.java_home }}
     steps:
       - uses: actions/checkout@v4
+      - name: Set up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
       - name: Verify Java installation
         run: |
           # Check system Java
