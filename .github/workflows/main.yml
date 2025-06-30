@@ -26,6 +26,21 @@ jobs:
       JAVA_HOME: ${{ needs.setup.outputs.java_home }}
     steps:
       - uses: actions/checkout@v4
+      - name: Verify Java installation
+        run: |
+          # Check system Java
+          java -version
+
+          # Check specific JDK installation
+          $JAVA_HOME/bin/java -version
+
+          # Version check
+          VERSION=$($JAVA_HOME/bin/java -version 2>&1 | head -1 | cut -d'"' -f2)
+          if [[ ! "$VERSION" =~ ^21\. ]]; then
+            echo "::error::Incorrect Java version: $VERSION"
+            exit 1
+          fi
+          echo "✓ Correct Java version: $VERSION"
       - name: Run Detekt from gradle
         run: |
           chmod +x ./gradlew
@@ -45,6 +60,21 @@ jobs:
       JAVA_HOME: ${{ needs.setup.outputs.java_home }}
     steps:
       - uses: actions/checkout@v4
+      - name: Verify Java installation
+        run: |
+          # Check system Java
+          java -version
+
+          # Check specific JDK installation
+          $JAVA_HOME/bin/java -version
+
+          # Version check
+          VERSION=$($JAVA_HOME/bin/java -version 2>&1 | head -1 | cut -d'"' -f2)
+          if [[ ! "$VERSION" =~ ^21\. ]]; then
+            echo "::error::Incorrect Java version: $VERSION"
+            exit 1
+          fi
+          echo "✓ Correct Java version: $VERSION"
       - name: "Run Detekt from gradle"
         run: |
           chmod +x ./gradlew
@@ -64,6 +94,21 @@ jobs:
       JAVA_HOME: ${{ needs.setup.outputs.java_home }}
     steps:
       - uses: actions/checkout@v4
+      - name: Verify Java installation
+        run: |
+          # Check system Java
+          java -version
+
+          # Check specific JDK installation
+          $JAVA_HOME/bin/java -version
+
+          # Version check
+          VERSION=$($JAVA_HOME/bin/java -version 2>&1 | head -1 | cut -d'"' -f2)
+          if [[ ! "$VERSION" =~ ^21\. ]]; then
+            echo "::error::Incorrect Java version: $VERSION"
+            exit 1
+          fi
+          echo "✓ Correct Java version: $VERSION"
       - run: |
           chmod +x ./gradlew
           ./gradlew test 
@@ -82,6 +127,21 @@ jobs:
       JAVA_HOME: ${{ needs.setup.outputs.java_home }}
     steps:
       - uses: actions/checkout@v4
+      - name: Verify Java installation
+        run: |
+          # Check system Java
+          java -version
+
+          # Check specific JDK installation
+          $JAVA_HOME/bin/java -version
+
+          # Version check
+          VERSION=$($JAVA_HOME/bin/java -version 2>&1 | head -1 | cut -d'"' -f2)
+          if [[ ! "$VERSION" =~ ^21\. ]]; then
+            echo "::error::Incorrect Java version: $VERSION"
+            exit 1
+          fi
+          echo "✓ Correct Java version: $VERSION"
       - name: Build Debug Without Checks
         run: ./gradlew assembleDebug -x consolidateKtlintReports -x detekt -x test -x lint
 
