@@ -7,7 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import ru.yeahub.core_ui.theme.YeaHubTheme
-import ru.yeahub.navigation_impl.AppNavigation
+import ru.yeahub.navigation_impl.*
 
 /**
  * Главная активити приложения, которая инициализирует навигацию.

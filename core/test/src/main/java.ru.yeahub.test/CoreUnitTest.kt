@@ -3,7 +3,7 @@ import org.junit.jupiter.api.Test
 
 class CoreUnitTest {
     @Test
-    fun addition_core_isCorrect() {
-        assertEquals(4, 2 + 2)
+    fun addition_core_isFail() {
+        assertEquals(5, 2 + 2)
     }
 }
