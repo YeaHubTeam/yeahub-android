@@ -23,14 +23,12 @@ import ru.yeahub.core_ui.theme.LocalAppColors
 import ru.yeahub.core_ui.theme.LocalAppTypography
 import ru.yeahub.ui.R
 
-
 @Composable
 fun HideQuestion(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-
     Surface(
         modifier = modifier
             .padding(10.dp)
@@ -48,7 +46,8 @@ fun HideQuestion(
                 }
         ) {
             Image(
-                painter = painterResource(R.drawable.ellipse), contentDescription = null,
+                painter = painterResource(R.drawable.ellipse),
+                contentDescription = null,
                 modifier = Modifier
                     .padding(top = 7.dp)
             )
@@ -84,4 +83,3 @@ fun HideQuestionPreview() {
         onClick = {}
     )
 }
-
