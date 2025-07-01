@@ -15,10 +15,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,8 +32,8 @@ import coil.compose.AsyncImage
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import ru.yeahub.core_ui.example.staticPreview.StaticPreview
-import ru.yeahub.ui.R
 import ru.yeahub.core_ui.theme.Theme
+import ru.yeahub.ui.R
 
 sealed class DetailedQuestionAnswerBlock {
     data class TextBlock(val text: String) : DetailedQuestionAnswerBlock()
