@@ -1,7 +1,5 @@
 package ru.yeahub.core_ui.component
 
-
-
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.PaddingValues
@@ -27,7 +25,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import ru.yeahub.core_ui.theme.Theme
 
-
 @Composable
 fun PrimaryButton(
     onClick: () -> Unit,
@@ -39,7 +36,7 @@ fun PrimaryButton(
     shape: Shape = RoundedCornerShape(12.dp),
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     content: @Composable RowScope.() -> Unit,
-){
+) {
     DefaultButton(
         onClick = onClick,
         modifier = modifier,
@@ -64,7 +61,7 @@ fun SecondaryButton(
     shape: Shape = RoundedCornerShape(12.dp),
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     content: @Composable RowScope.() -> Unit,
-){
+) {
     DefaultButton(
         onClick = onClick,
         modifier = modifier,
@@ -89,21 +86,19 @@ fun OutlineButton(
     shape: Shape = RoundedCornerShape(12.dp),
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     content: @Composable RowScope.() -> Unit
-){
-   DefaultButton(
-       onClick = onClick,
-       modifier = modifier,
-       enabled = enabled,
-       colors = colors,
-       border = border,
-       interactionSource = interactionSource,
-       shape = shape,
-       contentPadding = contentPadding,
-       content = content
-   )
-
+) {
+    DefaultButton(
+        onClick = onClick,
+        modifier = modifier,
+        enabled = enabled,
+        colors = colors,
+        border = border,
+        interactionSource = interactionSource,
+        shape = shape,
+        contentPadding = contentPadding,
+        content = content
+    )
 }
-
 
 @Composable
 private fun DefaultButton(
@@ -115,7 +110,7 @@ private fun DefaultButton(
     border: BorderStroke? = null,
     shape: Shape = ButtonDefaults.shape,
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
-    content:  @Composable RowScope.() -> Unit
+    content: @Composable RowScope.() -> Unit
 ) {
     val contentColor: Color by colors.contentColor(enabled)
     val containerColor: Color by colors.containerColor(enabled)
@@ -135,15 +130,12 @@ private fun DefaultButton(
         ) {
             Row(
                 modifier = Modifier
-                        .padding(contentPadding),
+                    .padding(contentPadding),
                 content = content
             )
         }
     }
 }
-
-
-
 
 object YeahubButtonDefaults {
     @Composable
@@ -167,7 +159,7 @@ object YeahubButtonDefaults {
         containerColor: Color = Theme.colors.red600,
         disabledContentColor: Color = Theme.colors.white900,
         disabledContainerColor: Color = Theme.colors.red200
-    ): YeahubButtonColors{
+    ): YeahubButtonColors {
         return YeahubButtonColors(
             contentColor = contentColor,
             containerColor = containerColor,
@@ -175,7 +167,6 @@ object YeahubButtonDefaults {
             disabledContainerColor = disabledContainerColor
         )
     }
-
 
     @Composable
     fun secondaryButtonColors(
@@ -207,7 +198,6 @@ object YeahubButtonDefaults {
         )
     }
 
-
     @Composable
     fun outlinedButtonColors(
         contentColor: Color = Theme.colors.red600,
@@ -223,7 +213,6 @@ object YeahubButtonDefaults {
         )
     }
 
-
     @Composable
     fun outlineBorderDefaults(
         width: Dp = 1.dp,
@@ -234,9 +223,7 @@ object YeahubButtonDefaults {
             color = borderColor
         )
     }
-
 }
-
 
 @Immutable
 data class YeahubButtonColors(
@@ -244,19 +231,17 @@ data class YeahubButtonColors(
     private val containerColor: Color,
     private val disabledContentColor: Color,
     private val disabledContainerColor: Color,
-): ButtonColors {
+) : ButtonColors {
     @Composable
     override fun containerColor(enabled: Boolean): State<Color> {
-       return rememberUpdatedState(if(enabled) containerColor else disabledContentColor)
+        return rememberUpdatedState(if (enabled) containerColor else disabledContentColor)
     }
 
     @Composable
     override fun contentColor(enabled: Boolean): State<Color> {
-        return rememberUpdatedState(if(enabled) contentColor else disabledContainerColor)
+        return rememberUpdatedState(if (enabled) contentColor else disabledContainerColor)
     }
-
 }
-
 
 @Stable
 interface ButtonColors {

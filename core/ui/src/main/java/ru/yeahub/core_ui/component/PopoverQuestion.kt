@@ -53,6 +53,7 @@ enum class FavoriteState {
     val isClickable: Boolean
         get() = this != DISABLED
 }
+
 /**
  * @param onLearnClick Callback для кнопки "Изучить". Если null, кнопка будет неактивна (серая)
  * @param onRepeatClick Callback для кнопки "Повторить". Если null, кнопка будет неактивна (серая)
@@ -61,6 +62,7 @@ enum class FavoriteState {
  * @param onNextClick Callback для кнопки "Вперед". Если null, кнопка будет неактивна (серая)
  * @param favoriteState Состояние кнопки избранного (недоступно/доступно/добавлено)
  */
+
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun PopoverQuestion(
@@ -220,6 +222,7 @@ private fun getColorForIcon(isClickable: Boolean): Color {
         Theme.colors.black200
     }
 }
+
 @Composable
 private fun getColorForText(isClickable: Boolean): Color {
     return if (isClickable) {
@@ -265,7 +268,6 @@ private fun getFavoriteTextColor(favoriteState: FavoriteState): Color {
 }
 
 @StaticPreview
-
 @Composable
 fun PopoverQuestionPreviewFavoriteStateDISABLED() {
     PopoverQuestion(
@@ -277,6 +279,7 @@ fun PopoverQuestionPreviewFavoriteStateDISABLED() {
         favoriteState = FavoriteState.DISABLED,
     )
 }
+
 @StaticPreview
 @Composable
 fun PopoverQuestionPreviewFavoriteStateFAVORITED() {
@@ -289,6 +292,7 @@ fun PopoverQuestionPreviewFavoriteStateFAVORITED() {
         favoriteState = FavoriteState.FAVORITED,
     )
 }
+
 @StaticPreview
 @Composable
 fun PopoverQuestionPreviewFavoriteStateAVAILABLE() {
