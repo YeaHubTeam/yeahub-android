@@ -1,6 +1,5 @@
 package ru.yeahub.core_ui.component
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -71,8 +70,8 @@ fun SkillButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = false,
     activeButton: Boolean = false,
-    imageLeft: Int? = null, // Иконка слева
-    imageRight: Int? = null, // Иконка справа
+    imageLeft: Int? = null,
+    imageRight: Int? = null,
     elevation: Dp = 0.dp,
     text: String? = null,
     buttonWithoutBackground: Boolean = false,
@@ -84,7 +83,6 @@ fun SkillButton(
     onRightIconClick: (() -> Unit)? = null,
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
 ) {
-
     DefaultButton(
         onClick = onClick,
         modifier = modifier,
@@ -105,6 +103,7 @@ fun SkillButton(
     )
 }
 
+@Suppress("ComplexMethod")
 @Composable
 fun DefaultButton(
     onClick: () -> Unit,
@@ -124,7 +123,6 @@ fun DefaultButton(
     imageRight: Int? = null,
     onRightIconClick: (() -> Unit)? = null,
 ) {
-
     val defaultColor: Color = Theme.colors.white900
     val purple = Theme.colors.purple700
     val black = Theme.colors.black800
@@ -304,7 +302,6 @@ data class ColorsButtonYeaHub(
         return rememberUpdatedState(if (enabled) contentColor else disabledContentColor)
     }
 }
-
 
 @Stable
 interface ButtonColors1 {
@@ -585,10 +582,10 @@ class SkillButtonParamsProvider : PreviewParameterProvider<SkillButtonParams> {
 
 fun getButtonColors(): ColorsButtonYeaHub {
     return ColorsButtonYeaHub(
-        contentColor = Color(color = 0xFF303030), // синоним Theme.colors.black800
-        containerColor = Color(color = 0xFFFFFFFF), // синоним Theme.colors.white900
-        disabledContentColor = Color(color = 0xFFBABABA), // синоним Theme.colors.black200
-        disabledContainerColor = Color(color = 0xFFFFFFFF) // синоним Theme.colors.white900
+        contentColor = Color(color = 0xFF303030),
+        containerColor = Color(color = 0xFFFFFFFF),
+        disabledContentColor = Color(color = 0xFFBABABA),
+        disabledContainerColor = Color(color = 0xFFFFFFFF)
     )
 }
 
@@ -624,8 +621,6 @@ fun ExampleScreen() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-
-
         SkillButton(
             enabled = true,
             activeButton = false,
