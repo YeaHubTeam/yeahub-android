@@ -9,18 +9,18 @@ import ru.yeahub.navigation_impl.features.navigation.StubRoutes
 
 /**
  * Модель для элементов нижней навигации.
- * 
+ *
  * Структура:
  * - route: маршрут из соответствующего Routes объекта фичи
  * - label: отображаемый текст в нижней навигации
  * - icon: иконка из Material Icons
- * 
+ *
  * Добавление нового элемента:
  * 1. Создайте Routes объект в impl модуле фичи
  * 2. Создайте новый data object здесь
  * 3. Добавьте элемент в NavigationFactory.getBottomNavItems()
  * 4. Добавьте composable в AppNavigation
- * 
+ *
  * Пример добавления:
  * ```
  * data object NewScreen : BottomNavigationItem(
@@ -40,7 +40,7 @@ sealed class BottomNavigationItem(
         label = "Главная",
         icon = Icons.Default.Home
     )
-    
+
     data object Stub : BottomNavigationItem(
         route = StubRoutes.STUB,
         label = "Заглушка",

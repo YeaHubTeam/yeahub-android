@@ -11,11 +11,11 @@ object ProfileRoutes : FeatureRoute {
 
     // Основной экран с параметрами
     const val PROFILE = "$BASE_ROUTE/{userId}/{userName}"
-    
+
     // Вложенные экраны
     const val SETTINGS = "$BASE_ROUTE/settings"
     const val EDIT = "$BASE_ROUTE/edit"
-    
+
     // Вспомогательные функции для создания маршрутов с параметрами
     fun profileRoute(userId: String, userName: String) = "$BASE_ROUTE/$userId/$userName"
 } 

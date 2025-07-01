@@ -9,7 +9,6 @@ val limit = 10
 lateinit var api: ApiService
 
 fun main() {
-
     //только для тестов и желательно удалить, запускать отдельно от приложения
     val koin = startKoin {
         modules(networkModule)
@@ -18,7 +17,6 @@ fun main() {
     api = koin.get<ApiService>()
 
     runBlocking {
-
         getQuestion()
         getQuestionById()
         getSkills()
@@ -28,13 +26,11 @@ fun main() {
     kotlin.system.exitProcess(0)
 }
 
-
 suspend fun getQuestion() {
     val result = api.getQuestions(page, limit)
     println("result for: fun getQuestion()")
     println(result)
     println()
-
 }
 
 suspend fun getQuestionById() {
