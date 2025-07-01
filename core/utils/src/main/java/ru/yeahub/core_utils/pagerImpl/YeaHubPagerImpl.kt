@@ -6,11 +6,15 @@ import ru.yeahub.core_utils.pager.YeaHubPager
 import ru.yeahub.core_utils.pager.YeaHubPagerLoader
 
 class YeaHubPagerImpl<T : Any, ItemType : Any, RequestType : Any>(
-    private val pagerLoader: YeaHubPagerLoader<T, RequestType>,      // Загрузка страницы
+    // Загрузка страницы
+    private val pagerLoader: YeaHubPagerLoader<T, RequestType>,
     private val requestData: RequestType,
-    private val data: (T) -> List<ItemType>, // Извлечение списка
-    private val total: (T) -> Long,         // Получение общего числа элементов
-    private val limit: (T) -> Long?         // Количество элементов на странице
+    // Извлечение списка
+    private val data: (T) -> List<ItemType>,
+    // Получение общего числа элементов
+    private val total: (T) -> Long,
+    // Количество элементов на странице
+    private val limit: (T) -> Long?
 ) : YeaHubPager<T, ItemType> {
 
     private val _state = MutableStateFlow<YeaHubPagerState<ItemType>>(YeaHubPagerState.Initial)
@@ -49,5 +53,4 @@ class YeaHubPagerImpl<T : Any, ItemType : Any, RequestType : Any>(
         _state.value = YeaHubPagerState.Initial
         currentRequest = requestData
     }
-
 }
