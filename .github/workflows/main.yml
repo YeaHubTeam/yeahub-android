@@ -19,17 +19,17 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: ${{ env.JAVA_VERSION }}
-      - name: Run Detekt from gradle
+      - name: Run Ktlint from gradle
         run: |
           chmod +x ./gradlew
           ./gradlew consolidateKtlintReports
 
-      - name: Upload ktlint Report on Failure
+      - name: Upload Ktlint Report on Failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: ktlint-report
-          path: /build/reports/ktlint/ktlint-report.html
+          path: build/reports/ktlint/ktlint-report.html
 
   detekt:
     runs-on: ubuntu-latest
@@ -47,12 +47,12 @@ jobs:
           chmod +x ./gradlew
           ./gradlew detekt
 
-      - name: Upload ktlint Report on Failure
+      - name: Upload Detekt Report on Failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: detekt-report
-          path: /build/reports/detekt/detekt-report.html
+          path: build/reports/detekt/detekt-report.html
 
   test:
     runs-on: ubuntu-latest
