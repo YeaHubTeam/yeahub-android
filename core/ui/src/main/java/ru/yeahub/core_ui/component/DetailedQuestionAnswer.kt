@@ -18,7 +18,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.integerResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import org.jsoup.Jsoup
@@ -154,7 +153,8 @@ private fun CodeBlockContent(code: String) {
                         Theme.colors.white900,
                         Theme.colors.purple200
                     )
-                ), RoundedCornerShape(12.dp))
+                ),
+                shape = RoundedCornerShape(12.dp))
             .padding(8.dp)
             .fillMaxWidth(),
         color = Theme.colors.purple700,
@@ -317,7 +317,7 @@ fun ExpandableDetailedQuestionAnswerPreview() {
     DetailedQuestionAnswerInternal(
         blocks = blocks,
         isExpanded = isExpanded,
-        onToggleExpand = { isExpanded = !isExpanded}
+        onToggleExpand = { isExpanded = !isExpanded }
     )
 }
 
@@ -329,7 +329,6 @@ fun DetailedQuestionAnswerPreview() {
     DetailedQuestionAnswerInternal(
         blocks = blocks,
         isExpanded = isExpanded,
-        onToggleExpand = { isExpanded = !isExpanded}
+        onToggleExpand = { isExpanded = !isExpanded }
     )
 }
-
