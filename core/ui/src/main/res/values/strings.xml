@@ -5,4 +5,7 @@
     <string name="favorite">Избранное</string>
     <string name="previous">Предыдущий</string>
     <string name="next">Следующий</string>
+    <string name="expanded_answer_title">Развёрнутый ответ</string>
+    <string name="expand">Развернуть</string>
+    <string name="collapse">Свернуть</string>
 </resources>

@@ -24,6 +24,8 @@ androidxJunit = "1.2.1"
 runtimeAndroid = "1.5.4"
 composeCompiler = "1.5.8"
 jetbrainsCompose = "1.6.0"
+coil = "2.5.0"
+jsoup = "1.17.2"
 
 
 [libraries]
@@ -56,6 +58,12 @@ retrofit-gsonConverter = { group = "com.squareup.retrofit2", name = "converter-g
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
 koin-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koin" }
+
+#COIL
+coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
+
+#Jsoup
+jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoup" }
 
 junit-bom = { group = "org.junit", name = "junit-bom", version.ref = "junit" }
 junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junit" }
