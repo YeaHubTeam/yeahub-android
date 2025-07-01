@@ -39,7 +39,7 @@ class YeaHubPagerImpl<T : Any, ItemType : Any, RequestType : Any>(
                 currentRequest = pagerLoader.updatePage(requestData, currentPage)
             }
         } catch (e: Exception) {
-            _state.value = YeaHubPagerState.Error(e)
+            _state.value = YeaHubPagerState.Error(currentItems, e)
         }
     }
 
@@ -47,6 +47,7 @@ class YeaHubPagerImpl<T : Any, ItemType : Any, RequestType : Any>(
         currentPage = 1
         currentItems = emptyList()
         _state.value = YeaHubPagerState.Initial
+        currentRequest = requestData
     }
 
 }

@@ -11,5 +11,8 @@ sealed class YeaHubPagerState<out ItemType> {
         val isEndReached: Boolean
     ) : YeaHubPagerState<ItemType>()
 
-    data class Error(val throwable: Throwable) : YeaHubPagerState<Nothing>()
+    data class Error<ItemType>(
+        val items: List<ItemType>,
+        val throwable: Throwable
+    ) : YeaHubPagerState<ItemType>()
 }
