@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import ru.yeahub.core_utils.pager.YeaHubPager
 import ru.yeahub.core_utils.pager.YeaHubPagerLoader
+import java.io.IOException
 
 class YeaHubPagerImpl<T : Any, ItemType : Any, RequestType : Any>(
     // Загрузка страницы
@@ -42,7 +43,9 @@ class YeaHubPagerImpl<T : Any, ItemType : Any, RequestType : Any>(
                 currentPage++
                 currentRequest = pagerLoader.updatePage(requestData, currentPage)
             }
-        } catch (e: Exception) {
+        } catch (e: IOException) {
+            _state.value = YeaHubPagerState.Error(currentItems, e)
+        } catch (e: IllegalStateException) {
             _state.value = YeaHubPagerState.Error(currentItems, e)
         }
     }
