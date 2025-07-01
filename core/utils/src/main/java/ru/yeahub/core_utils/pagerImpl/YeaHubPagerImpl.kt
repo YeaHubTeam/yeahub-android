@@ -4,7 +4,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import ru.yeahub.core_utils.pager.YeaHubPager
 import ru.yeahub.core_utils.pager.YeaHubPagerLoader
-import java.io.IOException
 
 class YeaHubPagerImpl<T : Any, ItemType : Any, RequestType : Any>(
     // Загрузка страницы
@@ -24,6 +23,7 @@ class YeaHubPagerImpl<T : Any, ItemType : Any, RequestType : Any>(
     private var currentPage: Int = 1
     private var currentItems = emptyList<ItemType>()
 
+    @Suppress("TooGenericExceptionCaught")
     override suspend fun load() {
         if (state.value is YeaHubPagerState.Loading) return
         if ((state.value as? YeaHubPagerState.Loaded)?.isEndReached == true) return
@@ -43,9 +43,7 @@ class YeaHubPagerImpl<T : Any, ItemType : Any, RequestType : Any>(
                 currentPage++
                 currentRequest = pagerLoader.updatePage(requestData, currentPage)
             }
-        } catch (e: IOException) {
-            _state.value = YeaHubPagerState.Error(currentItems, e)
-        } catch (e: IllegalStateException) {
+        } catch (e: Exception) {
             _state.value = YeaHubPagerState.Error(currentItems, e)
         }
     }
