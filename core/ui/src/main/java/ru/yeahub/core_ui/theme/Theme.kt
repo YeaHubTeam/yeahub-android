@@ -24,19 +24,14 @@ fun YeaHubTheme(
     }
 }
 
-
-
-
 internal object Theme {
     val colors: Colors
-    @Composable
-    @ReadOnlyComposable
-    get() = LocalAppColors.current
-
+        @Composable
+        @ReadOnlyComposable
+        get() = LocalAppColors.current
 
     val typography: Typography
-    @Composable
-    @ReadOnlyComposable
-    get() = LocalAppTypography.current
-
+        @Composable
+        @ReadOnlyComposable
+        get() = LocalAppTypography.current
 }
