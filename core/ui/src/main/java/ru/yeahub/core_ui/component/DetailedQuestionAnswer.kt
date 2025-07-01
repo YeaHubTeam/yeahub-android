@@ -4,13 +4,22 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.runtime.*
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -99,9 +108,11 @@ private fun ExpandedContent(blocks: List<DetailedQuestionAnswerBlock>) {
             is DetailedQuestionAnswerBlock.TextBlock -> {
                 TextBlockContent(block.text)
             }
+
             is DetailedQuestionAnswerBlock.CodeBlock -> {
                 CodeBlockContent(parseHTMLCodeBlock(block.htmlCode))
             }
+
             is DetailedQuestionAnswerBlock.ImageBlock -> {
                 ImageBlockContent(block.imageUrl)
             }
@@ -121,11 +132,13 @@ private fun CollapsedContent(
                 if (remainingChars <= 0) return@forEach
                 remainingChars -= showCollapsedText(block.text, remainingChars)
             }
+
             is DetailedQuestionAnswerBlock.CodeBlock -> {
                 if (remainingChars <= 0) return@forEach
                 val codeText = parseHTMLCodeBlock(block.htmlCode)
                 remainingChars -= showCollapsedCode(codeText, remainingChars)
             }
+
             is DetailedQuestionAnswerBlock.ImageBlock -> {
             }
         }
@@ -154,11 +167,12 @@ private fun CodeBlockContent(code: String) {
                         Theme.colors.purple200
                     )
                 ),
-                shape = RoundedCornerShape(12.dp))
+                shape = RoundedCornerShape(12.dp)
+            )
             .padding(8.dp)
             .fillMaxWidth(),
         color = Theme.colors.purple700,
-        style = Theme.typography.body2Accent,
+        style = Theme.typography.body2Accent
     )
 }
 
