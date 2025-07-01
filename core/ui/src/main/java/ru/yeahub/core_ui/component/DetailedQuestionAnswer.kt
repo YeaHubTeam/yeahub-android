@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import ru.yeahub.core_ui.example.staticPreview.StaticPreview
 import ru.yeahub.ui.R
 import ru.yeahub.core_ui.theme.Theme
 
@@ -40,19 +41,19 @@ fun DetailedQuestionAnswer(
     var isExpanded by remember { mutableStateOf(false) }
 
     DetailedQuestionAnswerInternal(
+        modifier = modifier,
         blocks = blocks,
         isExpanded = isExpanded,
-        onToggleExpand = { isExpanded = !isExpanded },
-        modifier = modifier
+        onToggleExpand = { isExpanded = !isExpanded }
     )
 }
 
 @Composable
 private fun DetailedQuestionAnswerInternal(
+    modifier: Modifier = Modifier,
     blocks: List<DetailedQuestionAnswerBlock>,
     isExpanded: Boolean,
     onToggleExpand: () -> Unit,
-    modifier: Modifier = Modifier
 ) {
     val collapsedMaxChars = integerResource(id = R.integer.collapsedMaxChars)
     val rotationAngle by animateFloatAsState(if (isExpanded) 180f else 0f)
@@ -63,7 +64,12 @@ private fun DetailedQuestionAnswerInternal(
             .background(Theme.colors.white900, RoundedCornerShape(12.dp))
             .padding(16.dp)
     ) {
-        AnswerTitle()
+        Text(
+            text = stringResource(R.string.expanded_answer_title),
+            modifier = Modifier.padding(bottom = 16.dp),
+            color = Theme.colors.black800,
+            style = Theme.typography.head4,
+        )
 
         Column(
             modifier = modifier
@@ -76,7 +82,7 @@ private fun DetailedQuestionAnswerInternal(
                 CollapsedContent(blocks, collapsedMaxChars)
             }
 
-            if (shouldShowExpandButton(blocks, collapsedMaxChars, isExpanded)) {
+            if (isContentExpandable(blocks, collapsedMaxChars, isExpanded)) {
                 ExpandCollapseButton(
                     isExpanded = isExpanded,
                     rotationAngle = rotationAngle,
@@ -85,16 +91,6 @@ private fun DetailedQuestionAnswerInternal(
             }
         }
     }
-}
-
-@Composable
-private fun AnswerTitle() {
-    Text(
-        text = stringResource(R.string.expanded_answer_title),
-        modifier = Modifier.padding(bottom = 16.dp),
-        color = Theme.colors.black800,
-        style = Theme.typography.head4,
-    )
 }
 
 @Composable
@@ -158,7 +154,7 @@ private fun CodeBlockContent(code: String) {
                         Theme.colors.white900,
                         Theme.colors.purple200
                     )
-                ), RoundedCornerShape(4.dp))
+                ), RoundedCornerShape(12.dp))
             .padding(8.dp)
             .fillMaxWidth(),
         color = Theme.colors.purple700,
@@ -202,7 +198,7 @@ private fun showCollapsedCode(code: String, remainingChars: Int): Int {
     return code.length
 }
 
-private fun shouldShowExpandButton(
+private fun isContentExpandable(
     blocks: List<DetailedQuestionAnswerBlock>,
     collapsedMaxChars: Int,
     isExpanded: Boolean
@@ -256,7 +252,7 @@ private fun parseHTMLCodeBlock(html: String): String {
     return codeElement.wholeText()
 }
 
-@Preview(heightDp = 1200)
+@StaticPreview
 @Composable
 fun СollapsedDetailedQuestionAnswerPreview() {
     val blocks = listOf(
@@ -303,7 +299,7 @@ fun СollapsedDetailedQuestionAnswerPreview() {
         DetailedQuestionAnswerBlock.ImageBlock("https://cs14.pikabu.ru/post_img/2022/05/05/1/1651703655174390434.webp"),
         DetailedQuestionAnswerBlock.TextBlock("Lorem ipsum dolor sit amet, consectetur ")
     )
-    var isExpanded by remember { mutableStateOf(true) }
+    var isExpanded by remember { mutableStateOf(false) }
     DetailedQuestionAnswerInternal(
         blocks = blocks,
         isExpanded = isExpanded,
@@ -311,13 +307,11 @@ fun СollapsedDetailedQuestionAnswerPreview() {
     )
 }
 
-@Preview
+@StaticPreview
 @Composable
 fun ExpandableDetailedQuestionAnswerPreview() {
     val blocks = listOf(
-        DetailedQuestionAnswerBlock.TextBlock("Lorem ipsum dolor sit amet, contetur ".repeat(10)),
-        DetailedQuestionAnswerBlock.ImageBlock("https://cs14.pikabu.ru/post_img/2022/05/05/1/1651703655174390434.webp"),
-        DetailedQuestionAnswerBlock.TextBlock("Lorem ipsum dolor sit amet, consectetur")
+        DetailedQuestionAnswerBlock.TextBlock("Lorem ipsum dolor sit amet, contetur ".repeat(20)),
     )
     var isExpanded by remember { mutableStateOf(false) }
     DetailedQuestionAnswerInternal(
@@ -327,12 +321,10 @@ fun ExpandableDetailedQuestionAnswerPreview() {
     )
 }
 
-@Preview
+@StaticPreview
 @Composable
 fun DetailedQuestionAnswerPreview() {
-    val blocks = listOf(
-        DetailedQuestionAnswerBlock.TextBlock("Lorem ipsum dolor sit amet, consectetur"),
-    )
+    val blocks = emptyList<DetailedQuestionAnswerBlock>()
     var isExpanded by remember { mutableStateOf(false) }
     DetailedQuestionAnswerInternal(
         blocks = blocks,
