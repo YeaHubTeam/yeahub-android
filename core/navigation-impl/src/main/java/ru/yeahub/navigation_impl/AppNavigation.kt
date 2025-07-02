@@ -18,6 +18,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.api.QuestionsScreenApi
+import com.example.api.navigation.QuestionsRoutes
 import org.koin.compose.koinInject
 import ru.yeahub.example_home.api.HomeScreenApi
 import ru.yeahub.example_home.api.navigation.HomeRoutes
@@ -89,6 +91,9 @@ fun AppNavigation(
                             navController.navigate(
                                 ProfileRoutes.profileRoute(userId, userName)
                             )
+                        },
+                        onQuestionClick = {
+                            navController.navigate(QuestionsRoutes.questionsRoute())
                         }
                     )
                 }
@@ -121,6 +126,13 @@ fun AppNavigation(
                 // Используется как пример для демонстрации нижней навигации
                 composable(StubRoutes.STUB) {
                     StubScreen()
+                }
+
+                composable(QuestionsRoutes.QUESTIONS) {
+                    val questionScreenApi = koinInject<QuestionsScreenApi>()
+                    questionScreenApi.QuestionsScreen(onBackClick = {
+                        navController.navigateUp()
+                    })
                 }
             }
         }
