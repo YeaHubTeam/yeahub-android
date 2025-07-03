@@ -1,8 +1,20 @@
 package ru.yeahub.example_home.impl
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -10,12 +22,12 @@ import ru.yeahub.example_home.api.HomeScreenApi
 
 /**
  * Реализация API главного экрана.
- * 
+ *
  * Этот класс демонстрирует:
  * 1. Реализацию интерфейса из api модуля
  * 2. Базовую структуру экрана с использованием Compose
  * 3. Обработку навигации через callback
- * 
+ *
  * Примечания по реализации:
  * - Используется Box для центрирования содержимого
  * - Кнопка демонстрирует передачу нескольких параметров при навигации
@@ -24,7 +36,7 @@ import ru.yeahub.example_home.api.HomeScreenApi
 class HomeScreenApiImpl : HomeScreenApi {
     /**
      * Реализация главного экрана.
-     * 
+     *
      * @param onProfileClick Callback для навигации в профиль.
      *                      Демонстрирует передачу userId и userName
      *                      как пример передачи множественных параметров.
@@ -38,7 +50,7 @@ class HomeScreenApiImpl : HomeScreenApi {
             contentAlignment = Alignment.Center
         ) {
             Button(
-                onClick = { 
+                onClick = {
                     // В реальном приложении здесь бы использовались
                     // актуальные данные пользователя
                     onProfileClick("12345", "Иван Иванов")

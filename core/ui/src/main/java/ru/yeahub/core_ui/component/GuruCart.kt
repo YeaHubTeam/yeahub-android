@@ -39,10 +39,6 @@ data class GuruData(
     val telegramUrl: String
 )
 
-
-
-
-
 @Composable
 fun GuruCard(
     modifier: Modifier = Modifier,
@@ -51,8 +47,6 @@ fun GuruCard(
     onYoutubeClick: () -> Unit,
     onProfileClick: () -> Unit,
 ) {
-
-
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -76,8 +70,7 @@ fun GuruCard(
                     .padding(bottom = 12.dp),
                 horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically
-            )
-            {
+            ) {
                 Image(
                     painter = painterResource(
                         id = R.drawable.img,
@@ -111,6 +104,7 @@ fun GuruCard(
                     )
                 }
             }
+
             Text(
                 text = data.description,
                 color = Theme.colors.black800,
@@ -123,12 +117,10 @@ fun GuruCard(
                     .padding(top = 12.dp)
                     .fillMaxWidth()
             ) {
-
                 IconButton(
                     onClick = onTelegramClick,
                     modifier = Modifier
                         .size(24.dp)
-
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.combined_shape),
@@ -175,6 +167,7 @@ fun GuruCartPreview() {
         youtubeUrl = "https://www.youtube.com/watch?v=Cqu2HMJl44Q",
         telegramUrl = ""
     )
+
     GuruCard(
         data = data,
         onProfileClick = {},
