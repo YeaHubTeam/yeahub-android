@@ -2,10 +2,10 @@ package ru.yeahub.core_utils.pagerImpl
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import ru.yeahub.core_utils.pager.YeaHubPager
+import ru.yeahub.core_utils.pager.Pager
 import ru.yeahub.core_utils.pager.YeaHubPagerLoader
 
-class YeaHubPagerImpl<T : Any, ItemType : Any, RequestType : Any>(
+class YeaHubPager<T : Any, ItemType : Any, RequestType : Any>(
     // Загрузка страницы
     private val pagerLoader: YeaHubPagerLoader<T, RequestType>,
     private val requestData: RequestType,
@@ -15,7 +15,7 @@ class YeaHubPagerImpl<T : Any, ItemType : Any, RequestType : Any>(
     private val total: (T) -> Long,
     // Количество элементов на странице
     private val limit: (T) -> Long?
-) : YeaHubPager<T, ItemType> {
+) : Pager<T, ItemType> {
 
     private val _state = MutableStateFlow<YeaHubPagerState<ItemType>>(YeaHubPagerState.Initial)
     override val state: StateFlow<YeaHubPagerState<ItemType>> = _state
