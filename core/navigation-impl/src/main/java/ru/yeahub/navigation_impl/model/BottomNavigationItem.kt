@@ -4,8 +4,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.QuestionMark
 import androidx.compose.ui.graphics.vector.ImageVector
-import ru.yeahub.example_home.api.navigation.HomeRoutes
-import ru.yeahub.navigation_impl.features.navigation.StubRoutes
+import ru.yeahub.navigation_api.FeatureRoute
 
 /**
  * Модель для элементов нижней навигации.
@@ -36,13 +35,13 @@ sealed class BottomNavigationItem(
     val icon: ImageVector
 ) {
     data object Home : BottomNavigationItem(
-        route = HomeRoutes.HOME,
+        route = FeatureRoute.HomeFeature.HOME,
         label = "Главная",
         icon = Icons.Default.Home
     )
 
     data object Stub : BottomNavigationItem(
-        route = StubRoutes.STUB,
+        route = FeatureRoute.StubFeature.STUB,
         label = "Заглушка",
         icon = Icons.Default.QuestionMark
     )

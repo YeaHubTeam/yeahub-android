@@ -34,11 +34,14 @@ class Application : Application() {
 
         startKoin {
             androidContext(this@Application)
+            printLogger()              // включаем лог Koin
             modules(
                 networkModule,
                 homeFeatureModule,
                 profileFeatureModule
             )
         }
+        // проверка, что модули загружены
+        Timber.d("Application onCreate: Koin modules loaded")
     }
 }

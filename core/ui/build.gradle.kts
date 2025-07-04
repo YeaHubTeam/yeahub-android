@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "ru.yeahub.core_ui"
+    namespace = "ru.yeahub.ui"
     compileSdk = 35
 
     defaultConfig {

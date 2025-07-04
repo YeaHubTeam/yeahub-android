@@ -4,8 +4,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.ui.Modifier
 import ru.yeahub.core_ui.theme.YeaHubTheme
 import ru.yeahub.navigation_impl.AppNavigation
 
@@ -37,9 +35,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             YeaHubTheme {
-                AppNavigation(
-                    modifier = Modifier.fillMaxSize()
-                )
+                AppNavigation()
             }
         }
     }

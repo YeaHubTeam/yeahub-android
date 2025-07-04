@@ -1,5 +1,6 @@
 package ru.yeahub.navigation_impl
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
@@ -9,24 +10,15 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
-import org.koin.compose.koinInject
-import ru.yeahub.example_home.api.HomeScreenApi
-import ru.yeahub.example_home.api.navigation.HomeRoutes
-import ru.yeahub.example_profile.api.ProfileScreenApi
-import ru.yeahub.example_profile.api.navigation.ProfileRoutes
+import org.koin.compose.getKoin
+import ru.yeahub.navigation_api.FeatureApi
+import ru.yeahub.navigation_api.FeatureRoute
 import ru.yeahub.navigation_impl.features.StubScreen
-import ru.yeahub.navigation_impl.features.navigation.StubRoutes
-
-//import ru.yeahub.navigation_impl.model.BottomNavigationItem
 
 /**
  * Основной компонент навигации приложения.
@@ -45,11 +37,20 @@ import ru.yeahub.navigation_impl.features.navigation.StubRoutes
  */
 @Composable
 fun AppNavigation(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
+    val features: Set<FeatureApi> = getKoin().getAll<FeatureApi>().toSet()
+    Log.d("NavDebug", "Loaded features: ${features.map { it.javaClass.simpleName }}")
     val navController = rememberNavController()
-    val navItems = NavigationFactory.getBottomNavItems()
-    var selectedRoute by remember { mutableStateOf(navItems.first().route) }
+    val navItems = getBottomNavItems()
+    Log.d("NavDebug", "NavItems: ${navItems.map { "${it.label} -> ${it.route}" }}")
+    
+    // Отслеживаем текущий маршрут из NavController
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+    Log.d("NavDebug", "Current route: $currentRoute")
+    val selectedRoute = getSelectedRoute(currentRoute, navItems)
+    Log.d("NavDebug", "Selected route for bottom nav: $selectedRoute")
 
     Scaffold(
         modifier = modifier,
@@ -59,18 +60,25 @@ fun AppNavigation(
                     NavigationBarItem(
                         selected = selectedRoute == item.route,
                         onClick = {
-                            selectedRoute = item.route
-                            // Настройка навигации для нижней панели:
-                            // - popUpTo удаляет все экраны до стартового
-                            // - launchSingleTop предотвращает создание дубликатов экрана
-                            navController.navigate(item.route) {
-                                popUpTo(navController.graph.startDestinationId)
-                                launchSingleTop = true
+                            // Проверяем, не находимся ли мы уже на этом экране
+                            if (selectedRoute != item.route) {
+                                // Настройка навигации для нижней панели:
+                                // - popUpTo удаляет все экраны до стартового
+                                // - launchSingleTop предотвращает создание дубликатов экрана
+                                // - saveState/restoreState сохраняют состояние табов
+                                navController.navigate(item.route) {
+                                    popUpTo(navController.graph.startDestinationId) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
                             }
                         },
                         label = { Text(item.label) },
                         icon = { Icon(item.icon, contentDescription = item.label) }
                     )
+                    Log.d("NavSelected", "$currentRoute")
                 }
             }
         }
@@ -78,48 +86,19 @@ fun AppNavigation(
         Box(modifier = Modifier.padding(padding)) {
             NavHost(
                 navController = navController,
-                startDestination = HomeRoutes.HOME
+                startDestination = if (features.isNotEmpty()) navItems.first().route else FeatureRoute.StubFeature.STUB,
+                modifier = Modifier,
+//                анимация
+//                enterTransition = { EnterTransition.None },
+//                exitTransition = { ExitTransition.None },
+//                popEnterTransition = { EnterTransition.None },
+//                popExitTransition = { ExitTransition.None }
             ) {
-                // Главный экран
-                // Демонстрирует простой переход с передачей параметров
-                composable(HomeRoutes.HOME) {
-                    val homeScreenApi = koinInject<HomeScreenApi>()
-                    homeScreenApi.HomeScreen(
-                        onProfileClick = { userId, userName ->
-                            navController.navigate(
-                                ProfileRoutes.profileRoute(userId, userName)
-                            )
-                        }
-                    )
+                features.forEach { feature ->
+                    Log.d("NavDebug", "Registering feature: ${feature.javaClass.simpleName}")
+                    feature.registerGraph(this, navController)
                 }
-
-                // Экран профиля
-                // Демонстрирует:
-                // 1. Получение параметров через navArgument
-                // 2. Безопасную обработку null-параметров
-                // 3. Навигацию назад через navigateUp
-                composable(
-                    route = ProfileRoutes.PROFILE,
-                    arguments = listOf(
-                        navArgument("userId") { type = NavType.StringType },
-                        navArgument("userName") { type = NavType.StringType }
-                    )
-                ) { backStackEntry ->
-                    val userId = backStackEntry.arguments?.getString("userId") ?: ""
-                    val userName = backStackEntry.arguments?.getString("userName") ?: ""
-                    val profileScreenApi = koinInject<ProfileScreenApi>()
-                    profileScreenApi.ProfileScreen(
-                        userId = userId,
-                        userName = userName,
-                        onBackClick = {
-                            navController.navigateUp()
-                        }
-                    )
-                }
-
-                // Экран-заглушка
-                // Используется как пример для демонстрации нижней навигации
-                composable(StubRoutes.STUB) {
+                composable(FeatureRoute.StubFeature.STUB) {
                     StubScreen()
                 }
             }

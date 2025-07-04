@@ -8,6 +8,7 @@ style:
       - '**/example/**'
       - '**/build.gradle.kts'
       - '**/CheckFile.kt'
+      - '**/core_ui/component/**'
   NewLineAtEndOfFile:
     active: false
   MayBeConst:
