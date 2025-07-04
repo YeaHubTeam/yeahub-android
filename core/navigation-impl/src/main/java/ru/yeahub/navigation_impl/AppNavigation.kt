@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -18,6 +19,14 @@ import androidx.navigation.compose.rememberNavController
 import org.koin.compose.getKoin
 import ru.yeahub.navigation_api.FeatureApi
 import ru.yeahub.navigation_api.FeatureRoute
+import androidx.navigation.navArgument
+import com.example.api.QuestionsScreenApi
+import com.example.api.navigation.QuestionsRoutes
+import org.koin.compose.koinInject
+import ru.yeahub.example_home.api.HomeScreenApi
+import ru.yeahub.example_home.api.navigation.HomeRoutes
+import ru.yeahub.example_profile.api.ProfileScreenApi
+import ru.yeahub.example_profile.api.navigation.ProfileRoutes
 import ru.yeahub.navigation_impl.features.StubScreen
 
 /**
@@ -44,7 +53,7 @@ fun AppNavigation(
     val navController = rememberNavController()
     val navItems = getBottomNavItems()
     Log.d("NavDebug", "NavItems: ${navItems.map { "${it.label} -> ${it.route}" }}")
-    
+
     // Отслеживаем текущий маршрут из NavController
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
@@ -100,6 +109,13 @@ fun AppNavigation(
                 }
                 composable(FeatureRoute.StubFeature.STUB) {
                     StubScreen()
+                }
+
+                composable(QuestionsRoutes.QUESTIONS) {
+                    val questionScreenApi = koinInject<QuestionsScreenApi>()
+                    questionScreenApi.QuestionsScreen(onBackClick = {
+                        navController.navigateUp()
+                    })
                 }
             }
         }

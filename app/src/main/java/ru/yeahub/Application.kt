@@ -1,6 +1,7 @@
 package ru.yeahub
 
 import android.app.Application
+import com.example.impl.di.questionsFeatureModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 import ru.yeahub.example_home.impl.homeFeatureModule
@@ -38,7 +39,8 @@ class Application : Application() {
             modules(
                 networkModule,
                 homeFeatureModule,
-                profileFeatureModule
+                profileFeatureModule,
+                questionsFeatureModule
             )
         }
         // проверка, что модули загружены
