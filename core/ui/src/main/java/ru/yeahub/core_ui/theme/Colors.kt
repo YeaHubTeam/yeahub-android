@@ -47,6 +47,7 @@ data class Colors(
     val black100: Color,
     val black50: Color,
     val black25: Color,
+    val black10: Color,
 
     val white900: Color,
 
@@ -91,6 +92,7 @@ val colors = Colors(
     black100 = Black100,
     black50 = Black50,
     black25 = Black25,
+    black10 = Black10,
     white900 = White900,
     mainShadow = MainShadow,
 )
