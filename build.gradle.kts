@@ -1,7 +1,9 @@
+import com.android.build.gradle.tasks.reportErrors
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
+import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree.Companion.test
 import org.jetbrains.kotlin.org.jline.utils.Log.debug
 import org.jlleitschuh.gradle.ktlint.KtlintExtension
 import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
@@ -19,6 +21,9 @@ plugins {
     alias(libs.plugins.detekt) apply false
     alias(libs.plugins.ktlint) apply false
     alias(libs.plugins.kotlin.parcelize) apply false
+
+    //kotlin("jvm") version "2.0.20"
+    //id("com.coditory.integration-test") version "2.0.1"
 }
 
 //DETEKT part
@@ -178,6 +183,12 @@ fun Project.hasKotlinFiles(): Boolean {
 //test
 //накидываем кастомную таску к тестам для авто-открытия окна с отчетом при наличии провала по тестам
 tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "failed", "skipped")
+        setExceptionFormat("full")
+    }
+
     finalizedBy("openTestReportOnFailure")
 }
 
@@ -227,6 +238,9 @@ subprojects {
             }
         }
     }
+
+    //test
+    //...
 }
 
 fun Project.autoOpenHtmlReport(reportPath: String) {

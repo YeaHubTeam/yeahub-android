@@ -33,4 +33,26 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
+
+    testImplementation(libs.junit.jupiter)
+    testImplementation(platform(libs.junit.bom))
+    testRuntimeOnly(libs.junit.platform.launcher)
+    testImplementation(libs.mockk)
+    testImplementation(kotlin("test"))
+}
+
+android {
+    // ... your existing android configuration
+
+    testOptions {
+        unitTests.all {
+            it.useJUnitPlatform() // Enable JUnit 5 support
+        }
+    }
+}
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed", "standardOut", "standardError")
+    }
 }
