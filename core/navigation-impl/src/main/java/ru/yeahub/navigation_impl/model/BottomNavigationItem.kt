@@ -35,13 +35,13 @@ sealed class BottomNavigationItem(
     val icon: ImageVector
 ) {
     data object Home : BottomNavigationItem(
-        route = FeatureRoute.HomeFeature.HOME,
+        route = FeatureRoute.HomeFeature.FEATURE_NAME,
         label = "Главная",
         icon = Icons.Default.Home
     )
 
     data object Stub : BottomNavigationItem(
-        route = FeatureRoute.StubFeature.STUB,
+        route = FeatureRoute.StubFeature.FEATURE_NAME,
         label = "Заглушка",
         icon = Icons.Default.QuestionMark
     )

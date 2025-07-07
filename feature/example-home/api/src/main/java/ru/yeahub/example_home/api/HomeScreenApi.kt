@@ -8,10 +8,4 @@ interface HomeScreenApi {
         onProfileClick: (userId: String, userName: String) -> Unit,
         onQuestionClick: () -> Unit
     )
-
-    @Composable
-    fun ResultScreen(
-        onBackClick: () -> Unit,
-        onSaveResult: (result: String) -> Unit
-    )
 } 

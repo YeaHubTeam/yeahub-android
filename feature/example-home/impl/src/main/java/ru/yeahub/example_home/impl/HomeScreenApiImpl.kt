@@ -2,21 +2,12 @@ package ru.yeahub.example_home.impl
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import ru.yeahub.example_home.api.HomeScreenApi
 
 /**
@@ -59,51 +50,51 @@ class HomeScreenApiImpl : HomeScreenApi {
             ) {
                 Text(text = "Перейти в профиль")
             }
-            Button(onClick =  onQuestionClick) {
-                Text(text = "Перейти к списку")
+            Button(onClick = onQuestionClick) {
+                Text(text = "Перейти к вопросам")
             }
         }
     }
 
-    @Composable
-    override fun ResultScreen(
-        onBackClick: () -> Unit,
-        onSaveResult: (result: String) -> Unit
-    ) {
-        var resultText by remember { mutableStateOf("") }
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            OutlinedTextField(
-                value = resultText,
-                onValueChange = { resultText = it },
-                label = { Text("Введите результат") },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Button(
-                    onClick = { onBackClick() },
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text("Отмена")
-                }
-
-                Button(
-                    onClick = { onSaveResult(resultText) },
-                    modifier = Modifier.weight(1f),
-                    enabled = resultText.isNotBlank()
-                ) {
-                    Text("Сохранить")
-                }
-            }
-        }
-    }
+//    @Composable
+//    override fun ResultScreen(
+//        onBackClick: () -> Unit,
+//        onSaveResult: (result: String) -> Unit
+//    ) {
+//        var resultText by remember { mutableStateOf("") }
+//
+//        Column(
+//            modifier = Modifier
+//                .fillMaxSize()
+//                .padding(16.dp),
+//            verticalArrangement = Arrangement.spacedBy(16.dp)
+//        ) {
+//            OutlinedTextField(
+//                value = resultText,
+//                onValueChange = { resultText = it },
+//                label = { Text("Введите результат") },
+//                modifier = Modifier.fillMaxWidth()
+//            )
+//
+//            Row(
+//                modifier = Modifier.fillMaxWidth(),
+//                horizontalArrangement = Arrangement.spacedBy(8.dp)
+//            ) {
+//                Button(
+//                    onClick = { onBackClick() },
+//                    modifier = Modifier.weight(1f)
+//                ) {
+//                    Text("Отмена")
+//                }
+//
+//                Button(
+//                    onClick = { onSaveResult(resultText) },
+//                    modifier = Modifier.weight(1f),
+//                    enabled = resultText.isNotBlank()
+//                ) {
+//                    Text("Сохранить")
+//                }
+//            }
+//        }
+//    }
 } 
