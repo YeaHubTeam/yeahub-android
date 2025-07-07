@@ -1,7 +1,6 @@
 package ru.yeahub.example_home.impl
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -43,11 +42,13 @@ class HomeScreenApiImpl : HomeScreenApi {
      */
     @Composable
     override fun HomeScreen(
-        onProfileClick: (userId: String, userName: String) -> Unit
+        onProfileClick: (userId: String, userName: String) -> Unit,
+        onQuestionClick: () -> Unit
     ) {
-        Box(
+        Column(
             modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
             Button(
                 onClick = {
@@ -57,6 +58,9 @@ class HomeScreenApiImpl : HomeScreenApi {
                 }
             ) {
                 Text(text = "Перейти в профиль")
+            }
+            Button(onClick =  onQuestionClick) {
+                Text(text = "Перейти к списку")
             }
         }
     }
