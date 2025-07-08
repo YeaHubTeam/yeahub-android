@@ -1,6 +1,7 @@
 package ru.yeahub.core_ui.component
 
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -24,27 +25,36 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import ru.yeahub.core_ui.example.staticPreview.StaticPreview
-import ru.yeahub.core_ui.theme.LocalAppColors
 import ru.yeahub.core_ui.theme.LocalAppTypography
 import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.ui.R
 
-
-
-
 @Composable
 fun HideQuestion(
     text: String,
+    ratingValue: String,
+    difficultyValue: String,
+    questionDescription: String,
+    imageUrl: String,
+    isExtended: Boolean,
     onClickMore: () -> Unit,
+    onToggle: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var isExtended by remember { mutableStateOf(true) }
+    val rotation by animateFloatAsState(
+        targetValue = if (!isExtended) 0f else -180f,
+        animationSpec = tween(durationMillis = 600),
+        label = "rotate",
+    )
 
     Surface(
         modifier = modifier
@@ -58,17 +68,19 @@ fun HideQuestion(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 10.dp, top = 20.dp, end = 10.dp, bottom = 20.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 16.dp)
                     .clickable {
-                        isExtended = !isExtended
+                        println("Click! isExtended before: $isExtended")
+                        onToggle()
                     },
             ) {
                 Image(
-                    painter = painterResource(R.drawable.ellipse), contentDescription = null,
+                    painter = painterResource(R.drawable.ellipse),
+                    contentDescription = null,
                     modifier = Modifier
                         .padding(top = 7.dp)
                 )
@@ -90,31 +102,25 @@ fun HideQuestion(
                     Image(
                         painter = painterResource(R.drawable.arrow_vector),
                         contentDescription = null,
+                        modifier = Modifier.graphicsLayer {
+                            rotationZ = rotation
+                        }
                     )
                 }
             }
 
             if (isExtended) {
-
                 ExtendedQuestion(
-                    ratingValue = "4",
-                    difficultyValue = "10",
-                    questionDescription = "Virtual DOM (виртуальный DOM) — это программная концепция, " +
-                            "используемая в разработке веб-приложений для повышения эффективности обновлений интерфейса." +
-                            " Это представление реального DOM (структуры документа, отображаемого в браузере) в памяти," +
-                            " которое позволяет оптимизировать изменения, минимизируя взаимодействие с реальным DOM," +
-                            " что ускоряет рендеринг и обновление страниц." +
-                            " При изменении данных приложения Virtual DOM сравнивает новое состояние с предыдущим " +
-                            "и обновляет только те части реального DOM, " +
-                            "которые изменились, вместо перерисовки всего документа.",
-                    imageUrl = "",
+                    ratingValue = ratingValue,
+                    difficultyValue = difficultyValue,
+                    questionDescription = questionDescription,
+                    imageUrl = imageUrl,
                     onClickMore = { onClickMore() }
                 )
             }
         }
     }
 }
-
 
 @Composable
 fun ExtendedQuestion(
@@ -124,7 +130,6 @@ fun ExtendedQuestion(
     imageUrl: String,
     onClickMore: () -> Unit
 ) {
-
     Column(
         modifier = Modifier.background(
             color = Theme.colors.white900,
@@ -138,9 +143,10 @@ fun ExtendedQuestion(
             QuestionMetadata(stringResource(R.string.difficulty), difficultyValue)
         }
 
-        Image(
-            painter = painterResource(R.drawable.question_image),
+        AsyncImage(
+            model = imageUrl,
             contentDescription = null,
+            placeholder = painterResource(R.drawable.question_image),
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(8.dp)),
@@ -170,18 +176,17 @@ fun ExtendedQuestion(
 
             Spacer(modifier = Modifier.width(8.dp))
             Box(modifier = Modifier.size(24.dp), contentAlignment = Alignment.Center) {
-                Image(painter = painterResource(R.drawable.arrow_next), contentDescription = null)
+                Image(
+                    painter = painterResource(R.drawable.arrow_next),
+                    contentDescription = null
+                )
             }
         }
-
     }
-
-
 }
 
 @Composable
 fun QuestionMetadata(text: String, value: String) {
-
     Row(
         modifier = Modifier
             .background(color = Theme.colors.black10, shape = RoundedCornerShape(8.dp))
@@ -205,8 +210,29 @@ fun QuestionMetadata(text: String, value: String) {
     }
 }
 
+@Preview(name = "Dynamic Preview", showBackground = true)
+@Composable
+fun DynamicPreview() {
+    var isExtended by remember { mutableStateOf(true) }
 
-
+    HideQuestion(
+        text = "Question",
+        ratingValue = "4",
+        difficultyValue = "10",
+        questionDescription = "Virtual DOM (виртуальный DOM) — это программная концепция, " +
+                "используемая в разработке веб-приложений для повышения эффективности обновлений интерфейса." +
+                " Это представление реального DOM (структуры документа, отображаемого в браузере) в памяти," +
+                " которое позволяет оптимизировать изменения, минимизируя взаимодействие с реальным DOM," +
+                " что ускоряет рендеринг и обновление страниц." +
+                " При изменении данных приложения Virtual DOM сравнивает новое состояние с предыдущим " +
+                "и обновляет только те части реального DOM, " +
+                "которые изменились, вместо перерисовки всего документа.",
+        imageUrl = "",
+        isExtended = isExtended,
+        onClickMore = {},
+        onToggle = { isExtended = !isExtended }
+    )
+}
 
 @StaticPreview
 @Composable
@@ -227,7 +253,6 @@ fun ExtendedQuestionPreview() {
     )
 }
 
-
 @StaticPreview
 @Composable
 fun QuestionMetadataContainerPreview2() {
@@ -237,12 +262,24 @@ fun QuestionMetadataContainerPreview2() {
     )
 }
 
-
 @StaticPreview
 @Composable
 fun HideQuestionPreview() {
     HideQuestion(
         text = "Что такое Virtual DOM, и как он работает?",
-        onClickMore = {}
+        isExtended = false,
+        ratingValue = "4",
+        difficultyValue = "10",
+        questionDescription = "Virtual DOM (виртуальный DOM) — это программная концепция, " +
+                "используемая в разработке веб-приложений для повышения эффективности обновлений интерфейса." +
+                " Это представление реального DOM (структуры документа, отображаемого в браузере) в памяти," +
+                " которое позволяет оптимизировать изменения, минимизируя взаимодействие с реальным DOM," +
+                " что ускоряет рендеринг и обновление страниц." +
+                " При изменении данных приложения Virtual DOM сравнивает новое состояние с предыдущим " +
+                "и обновляет только те части реального DOM, " +
+                "которые изменились, вместо перерисовки всего документа.",
+        imageUrl = "",
+        onClickMore = {},
+        onToggle = {}
     )
 }
