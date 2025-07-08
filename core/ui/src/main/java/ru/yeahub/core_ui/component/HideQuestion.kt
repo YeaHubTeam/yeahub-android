@@ -40,10 +40,10 @@ import ru.yeahub.ui.R
 
 @Composable
 fun HideQuestion(
-    text: String,
+    questionText: String,
     ratingValue: String,
     difficultyValue: String,
-    questionDescription: String,
+    answerText: String,
     imageUrl: String,
     isExtended: Boolean,
     onClickMore: () -> Unit,
@@ -52,7 +52,7 @@ fun HideQuestion(
 ) {
     val rotation by animateFloatAsState(
         targetValue = if (!isExtended) 0f else -180f,
-        animationSpec = tween(durationMillis = 600),
+        animationSpec = tween(durationMillis = 300),
         label = "rotate",
     )
 
@@ -88,7 +88,7 @@ fun HideQuestion(
                 Spacer(modifier = Modifier.width(8.dp))
 
                 Text(
-                    text = text,
+                    text = questionText,
                     modifier = Modifier.weight(1f),
                     style = LocalAppTypography.current.body3Accent.copy(lineHeight = 20.sp)
                 )
@@ -113,7 +113,7 @@ fun HideQuestion(
                 ExtendedQuestion(
                     ratingValue = ratingValue,
                     difficultyValue = difficultyValue,
-                    questionDescription = questionDescription,
+                    answerText = answerText,
                     imageUrl = imageUrl,
                     onClickMore = { onClickMore() }
                 )
@@ -126,7 +126,7 @@ fun HideQuestion(
 fun ExtendedQuestion(
     ratingValue: String,
     difficultyValue: String,
-    questionDescription: String,
+    answerText: String,
     imageUrl: String,
     onClickMore: () -> Unit
 ) {
@@ -154,7 +154,7 @@ fun ExtendedQuestion(
         )
 
         Text(
-            text = questionDescription,
+            text = answerText,
             color = Theme.colors.black700,
             style = Theme.typography.body3Accent
         )
@@ -216,10 +216,10 @@ fun DynamicPreview() {
     var isExtended by remember { mutableStateOf(true) }
 
     HideQuestion(
-        text = "Question",
+        questionText = "Что такое Virtual DOM, и как он работает?",
         ratingValue = "4",
         difficultyValue = "10",
-        questionDescription = "Virtual DOM (виртуальный DOM) — это программная концепция, " +
+        answerText = "Virtual DOM (виртуальный DOM) — это программная концепция, " +
                 "используемая в разработке веб-приложений для повышения эффективности обновлений интерфейса." +
                 " Это представление реального DOM (структуры документа, отображаемого в браузере) в памяти," +
                 " которое позволяет оптимизировать изменения, минимизируя взаимодействие с реальным DOM," +
@@ -240,7 +240,7 @@ fun ExtendedQuestionPreview() {
     ExtendedQuestion(
         ratingValue = "4",
         difficultyValue = "10",
-        questionDescription = "Virtual DOM (виртуальный DOM) — это программная концепция, " +
+        answerText = "Virtual DOM (виртуальный DOM) — это программная концепция, " +
                 "используемая в разработке веб-приложений для повышения эффективности обновлений интерфейса." +
                 " Это представление реального DOM (структуры документа, отображаемого в браузере) в памяти," +
                 " которое позволяет оптимизировать изменения, минимизируя взаимодействие с реальным DOM," +
@@ -266,11 +266,11 @@ fun QuestionMetadataContainerPreview2() {
 @Composable
 fun HideQuestionPreview() {
     HideQuestion(
-        text = "Что такое Virtual DOM, и как он работает?",
+        questionText = "Что такое Virtual DOM, и как он работает?",
         isExtended = false,
         ratingValue = "4",
         difficultyValue = "10",
-        questionDescription = "Virtual DOM (виртуальный DOM) — это программная концепция, " +
+        answerText = "Virtual DOM (виртуальный DOM) — это программная концепция, " +
                 "используемая в разработке веб-приложений для повышения эффективности обновлений интерфейса." +
                 " Это представление реального DOM (структуры документа, отображаемого в браузере) в памяти," +
                 " которое позволяет оптимизировать изменения, минимизируя взаимодействие с реальным DOM," +
