@@ -1,18 +1,18 @@
 package ru.yeahub.example_home.impl
 
-import android.util.Log
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import ru.yeahub.example_home.api.HomeScreenApi
 import ru.yeahub.navigation_api.FeatureApi
+import timber.log.Timber
 
 val homeFeatureModule = module {
     single<HomeScreenApi> {
-        Log.d("NavDebug", "Creating HomeScreenApiImpl")
+        Timber.d("HomeFeatureModule single: Creating HomeScreenApiImpl")
         HomeScreenApiImpl()
     }
     single { 
-        Log.d("NavDebug", "Creating HomeFeatureImpl")
+        Timber.d("HomeFeatureModule single: Creating HomeFeatureImpl")
         HomeFeatureImpl(get()) 
     } bind FeatureApi::class
 }

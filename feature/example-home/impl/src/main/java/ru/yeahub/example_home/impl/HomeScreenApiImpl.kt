@@ -55,46 +55,4 @@ class HomeScreenApiImpl : HomeScreenApi {
             }
         }
     }
-
-//    @Composable
-//    override fun ResultScreen(
-//        onBackClick: () -> Unit,
-//        onSaveResult: (result: String) -> Unit
-//    ) {
-//        var resultText by remember { mutableStateOf("") }
-//
-//        Column(
-//            modifier = Modifier
-//                .fillMaxSize()
-//                .padding(16.dp),
-//            verticalArrangement = Arrangement.spacedBy(16.dp)
-//        ) {
-//            OutlinedTextField(
-//                value = resultText,
-//                onValueChange = { resultText = it },
-//                label = { Text("Введите результат") },
-//                modifier = Modifier.fillMaxWidth()
-//            )
-//
-//            Row(
-//                modifier = Modifier.fillMaxWidth(),
-//                horizontalArrangement = Arrangement.spacedBy(8.dp)
-//            ) {
-//                Button(
-//                    onClick = { onBackClick() },
-//                    modifier = Modifier.weight(1f)
-//                ) {
-//                    Text("Отмена")
-//                }
-//
-//                Button(
-//                    onClick = { onSaveResult(resultText) },
-//                    modifier = Modifier.weight(1f),
-//                    enabled = resultText.isNotBlank()
-//                ) {
-//                    Text("Сохранить")
-//                }
-//            }
-//        }
-//    }
-} 
+}

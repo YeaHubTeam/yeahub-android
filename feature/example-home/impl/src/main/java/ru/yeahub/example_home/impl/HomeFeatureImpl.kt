@@ -1,6 +1,5 @@
 package ru.yeahub.example_home.impl
 
-import android.util.Log
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -8,6 +7,7 @@ import androidx.navigation.compose.composable
 import ru.yeahub.example_home.api.HomeScreenApi
 import ru.yeahub.navigation_api.FeatureApi
 import ru.yeahub.navigation_api.FeatureRoute
+import timber.log.Timber
 
 class HomeFeatureImpl(private val homeScreen: HomeScreenApi) : FeatureApi {
 
@@ -21,7 +21,7 @@ class HomeFeatureImpl(private val homeScreen: HomeScreenApi) : FeatureApi {
         parentRoute: String,
         modifier: Modifier
     ) {
-        Log.d("NavDebug", "registerGraph() of HomeFeatureImpl with parentRoute: $parentRoute")
+        Timber.d("HomeFeatureImpl registerGraph: parentRoute: $parentRoute")
         
         // Корневая фича регистрирует только свой корневой маршрут
         val currentHomeRoute = if (parentRoute.isEmpty()) {
@@ -38,14 +38,14 @@ class HomeFeatureImpl(private val homeScreen: HomeScreenApi) : FeatureApi {
                         userId = userId,
                         userName = userName
                     )
-                    Log.d("NavDebug", "Navigating to profile: $profilePath")
+                    Timber.d("HomeFeatureImpl onProfileClick: Navigating to profile: $profilePath")
                     navController.navigate(profilePath)
                 },
                 onQuestionClick = {
                     val questionsPath = FeatureRoute.QuestionsFeature.createQuestionsPath(
                         parentRoute = currentHomeRoute
                     )
-                    Log.d("NavDebug", "Navigating to questions: $questionsPath")
+                    Timber.d("HomeFeatureImpl onQuestionClick: Navigating to questions: $questionsPath")
                     navController.navigate(questionsPath)
                 }
             )

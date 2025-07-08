@@ -58,6 +58,9 @@ dependencies {
     // Navigation dependencies
     implementation(libs.androidx.navigation.compose)
 
+    // Timber
+    implementation(libs.timber)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

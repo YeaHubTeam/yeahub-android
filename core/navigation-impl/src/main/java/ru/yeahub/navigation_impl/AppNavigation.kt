@@ -19,6 +19,7 @@ import org.koin.compose.getKoin
 import ru.yeahub.navigation_api.FeatureApi
 import ru.yeahub.navigation_api.FeatureRoute
 import ru.yeahub.navigation_impl.features.StubScreen
+import timber.log.Timber
 
 /**
  * Основной компонент навигации приложения.
@@ -45,16 +46,16 @@ fun AppNavigation(
     modifier: Modifier = Modifier,
 ) {
     val features: Set<FeatureApi> = getKoin().getAll<FeatureApi>().toSet()
-    Log.d("NavDebug", "Loaded features: ${features.map { it.javaClass.simpleName }}")
+    Timber.d("AppNavigation onCreate: Loaded features: ${features.map { it.javaClass.simpleName }}")
     val navController = rememberNavController()
     val navItems = getBottomNavItems()
-    Log.d("NavDebug", "NavItems: ${navItems.map { "${it.label} -> ${it.route}" }}")
+    Timber.d("AppNavigation onCreate: NavItems: ${navItems.map { "${it.label} -> ${it.route}" }}")
 
     // Отслеживаем текущий маршрут из NavController
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
     val selectedRoute = getSelectedRoute(currentRoute, navItems)
-    Log.d("NavDebug", "Selected route for bottom nav: $selectedRoute")
+    Timber.d("AppNavigation onCreate: Selected route for bottom nav: $selectedRoute")
 
     Scaffold(
         modifier = modifier,
@@ -71,9 +72,9 @@ fun AppNavigation(
 
                             // Если мы в подмаршруте этого таба, навигируем на родительский
                             if (currentRoute != null && currentRoute.startsWith(item.route)) {
-                                Log.d(
-                                    "NavDebug",
-                                    "Navigating to parent route: ${item.route} from child: $currentRoute"
+                                Timber.d(
+                                    "AppNavigation onClick: Navigating to parent route: ${item.route} " +
+                                            "from child: $currentRoute"
                                 )
                                 navController.navigate(item.route) {
                                     popUpTo(item.route) {
@@ -83,9 +84,9 @@ fun AppNavigation(
                                 }
                             } else {
                                 // Навигируем на родительский маршрут другого таба
-                                Log.d(
-                                    "NavDebug",
-                                    "Navigating to different tab: ${item.route} from: $currentRoute"
+                                Timber.d(
+                                    "AppNavigation onClick: Navigating to different tab: " +
+                                        "${item.route} from: $currentRoute"
                                 )
                                 navController.navigate(item.route) {
                                     popUpTo(navController.graph.startDestinationId) {
@@ -113,18 +114,16 @@ fun AppNavigation(
                     FeatureRoute.StubFeature.FEATURE_NAME
                 },
                 modifier = Modifier,
-//                анимация
-//                enterTransition = { EnterTransition.None },
-//                exitTransition = { ExitTransition.None },
-//                popEnterTransition = { EnterTransition.None },
-//                popExitTransition = { ExitTransition.None }
             ) {
                 val rootFeatures = features.filter { it.isRootFeature() }
                 val childFeatures = features.filter { !it.isRootFeature() }
                 
                 // Регистрируем корневые фичи
                 rootFeatures.forEach { feature ->
-                    Log.d("NavDebug", "Registering root feature: ${feature.javaClass.simpleName}")
+                    Timber.d(
+                        "AppNavigation registerGraph: Registering root feature: " +
+                                "${feature.javaClass.simpleName}"
+                    )
                     feature.registerGraph(this, navController, "")
                 }
                 
@@ -139,9 +138,9 @@ fun AppNavigation(
                         dependentRootFeatures
                     }
                     targetRootFeatures.forEach { rootFeature ->
-                        Log.d(
-                            "NavDebug",
-                            "Registering ${childFeature.javaClass.simpleName} for ${rootFeature.javaClass.simpleName}"
+                        Timber.d(
+                            "AppNavigation registerGraph: Registering ${childFeature.javaClass.simpleName}" +
+                                    " for ${rootFeature.javaClass.simpleName}"
                         )
                         childFeature.registerGraph(this, navController, rootFeature.getFeatureName())
                     }

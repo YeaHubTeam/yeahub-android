@@ -1,6 +1,5 @@
 package com.example.impl
 
-import android.util.Log
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -8,6 +7,7 @@ import androidx.navigation.compose.composable
 import com.example.api.QuestionsScreenApi
 import ru.yeahub.navigation_api.FeatureApi
 import ru.yeahub.navigation_api.FeatureRoute
+import timber.log.Timber
 
 class QuestionsFeatureImpl(private val questionScreen: QuestionsScreenApi) : FeatureApi {
 
@@ -21,7 +21,7 @@ class QuestionsFeatureImpl(private val questionScreen: QuestionsScreenApi) : Fea
         parentRoute: String,
         modifier: Modifier
     ) {
-        Log.d("NavDebug", "registerGraph() of QuestionsFeatureImpl with parentRoute: $parentRoute")
+        Timber.d("QuestionsFeatureImpl registerGraph: parentRoute: $parentRoute")
         
         // Создаем маршрут для экрана вопросов с учетом родительского маршрута
         val currentQuestionsRoute = FeatureRoute.QuestionsFeature.createQuestionsRoute(parentRoute)
@@ -29,7 +29,7 @@ class QuestionsFeatureImpl(private val questionScreen: QuestionsScreenApi) : Fea
         navGraphBuilder.composable(currentQuestionsRoute) {
             questionScreen.QuestionsScreen(
                 onBackClick = {
-                    Log.d("NavDebug", "Navigating back from questions")
+                    Timber.d("QuestionsFeatureImpl onBackClick: Navigating back from questions")
                     navController.navigateUp()
                 }
             )

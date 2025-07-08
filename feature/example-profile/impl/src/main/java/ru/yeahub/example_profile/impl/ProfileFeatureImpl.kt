@@ -1,6 +1,5 @@
 package ru.yeahub.example_profile.impl
 
-import android.util.Log
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -10,6 +9,7 @@ import androidx.navigation.navArgument
 import ru.yeahub.example_profile.api.ProfileScreenApi
 import ru.yeahub.navigation_api.FeatureApi
 import ru.yeahub.navigation_api.FeatureRoute
+import timber.log.Timber
 
 class ProfileFeatureImpl(private val profileScreen: ProfileScreenApi) : FeatureApi {
 
@@ -23,7 +23,7 @@ class ProfileFeatureImpl(private val profileScreen: ProfileScreenApi) : FeatureA
         parentRoute: String,
         modifier: Modifier
     ) {
-        Log.d("NavDebug", "registerGraph() of ProfileFeatureImpl with parentRoute: $parentRoute")
+        Timber.d("ProfileFeatureImpl registerGraph: parentRoute: $parentRoute")
         
         // Создаем маршрут профиля с учетом родительского маршрута
         val currentProfileRoute = FeatureRoute.ProfileFeature.createProfileRoute(parentRoute)
@@ -38,14 +38,14 @@ class ProfileFeatureImpl(private val profileScreen: ProfileScreenApi) : FeatureA
             val userId = backStackEntry.arguments?.getString("userId") ?: ""
             val userName = backStackEntry.arguments?.getString("userName") ?: ""
             
-            Log.d("NavDebug", "ProfileScreen: userId=$userId, userName=$userName")
+            Timber.d("ProfileFeatureImpl composable: userId=$userId, userName=$userName")
             
             profileScreen.ProfileScreen(
                 userId = userId,
                 userName = userName,
                 parentRoute = parentRoute,
                 onBackClick = {
-                    Log.d("NavDebug", "Navigating back from profile")
+                    Timber.d("ProfileFeatureImpl onBackClick: Navigating back from profile")
                     navController.navigateUp()
                 }
             )
