@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.network_api"
+    namespace = "ru.yeahub.network_api"
     compileSdk = 35
 
     defaultConfig {
@@ -26,6 +26,9 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+    buildFeatures {
+        buildConfig = true
+    }
 }
 
 dependencies {
@@ -33,5 +36,4 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
-
 }

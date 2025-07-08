@@ -13,11 +13,26 @@
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/core" />
             <option value="$PROJECT_DIR$/core/common" />
+            <option value="$PROJECT_DIR$/core/navigation-api" />
+            <option value="$PROJECT_DIR$/core/navigation-impl" />
             <option value="$PROJECT_DIR$/core/network-api" />
             <option value="$PROJECT_DIR$/core/network-impl" />
             <option value="$PROJECT_DIR$/core/test" />
             <option value="$PROJECT_DIR$/core/ui" />
             <option value="$PROJECT_DIR$/core/utils" />
+            <option value="$PROJECT_DIR$/feature" />
+            <option value="$PROJECT_DIR$/feature/example-home" />
+            <option value="$PROJECT_DIR$/feature/example-home/api" />
+            <option value="$PROJECT_DIR$/feature/example-home/impl" />
+            <option value="$PROJECT_DIR$/feature/example-main" />
+            <option value="$PROJECT_DIR$/feature/example-main/api" />
+            <option value="$PROJECT_DIR$/feature/example-main/impl" />
+            <option value="$PROJECT_DIR$/feature/example-profile" />
+            <option value="$PROJECT_DIR$/feature/example-profile/api" />
+            <option value="$PROJECT_DIR$/feature/example-profile/impl" />
+            <option value="$PROJECT_DIR$/feature/example-questions" />
+            <option value="$PROJECT_DIR$/feature/example-questions/api" />
+            <option value="$PROJECT_DIR$/feature/example-questions/impl" />
           </set>
         </option>
       </GradleProjectSettings>

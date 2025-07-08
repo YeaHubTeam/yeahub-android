@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.network_impl"
+    namespace = "ru.yeahub.network_impl"
     compileSdk = 35
 
     defaultConfig {
@@ -45,6 +45,4 @@ dependencies {
     implementation(libs.koin.core)
     implementation(libs.koin.android)
     implementation(libs.koin.compose)
-
-
 }

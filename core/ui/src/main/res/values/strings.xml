@@ -1,5 +1,13 @@
 <resources>
     <string name="short_answer_title">Краткий ответ</string>
+    <string name="learn">Учить</string>
+    <string name="repeat">Повторить</string>
+    <string name="favorite">Избранное</string>
+    <string name="previous">Предыдущий</string>
+    <string name="next">Следующий</string>
+    <string name="expanded_answer_title">Развёрнутый ответ</string>
+    <string name="expand">Развернуть</string>
+    <string name="collapse">Свернуть</string>
     <string name="rating">Рейтинг:</string>
     <string name="difficulty">Сложность:</string>
     <string name="read_more">Подробнее</string>

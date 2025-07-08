@@ -30,6 +30,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.yeahub.core_ui.example.staticPreview.StaticPreview
+import ru.yeahub.core_ui.theme.LocalAppColors
 import ru.yeahub.core_ui.theme.LocalAppTypography
 import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.ui.R
@@ -245,4 +246,3 @@ fun HideQuestionPreview() {
         onClickMore = {}
     )
 }
-

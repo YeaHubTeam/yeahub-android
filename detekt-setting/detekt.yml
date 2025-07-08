@@ -1,0 +1,41 @@
+style:
+  MagicNumber:
+    active: true
+    excludes:
+      - '**/Color.kt'
+      - '**/test/**'
+      - '**/ExampleUnitTest.kt'
+      - '**/example/**'
+      - '**/build.gradle.kts'
+      - '**/CheckFile.kt'
+      - '**/core_ui/component/**'
+  NewLineAtEndOfFile:
+    active: false
+  MayBeConst:
+    active: false
+  WildcardImport:
+    active: true
+    excludeImports:
+      - 'java.util.*'
+  UnusedParameter:
+    active: false
+
+naming:
+  FunctionNaming:
+    active: false
+  PackageNaming:
+    active: false
+  MatchingDeclarationName:
+    active: false
+
+empty-blocks:
+  EmptyDefaultConstructor:
+    active: false
+
+complexity:
+  LongParameterList:
+    active: false
+  LongMethod:
+    active: false
+  TooManyFunctions:
+    active: false
