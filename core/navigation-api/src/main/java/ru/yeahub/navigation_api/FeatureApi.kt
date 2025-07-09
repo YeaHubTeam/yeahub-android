@@ -11,6 +11,7 @@ import androidx.navigation.NavHostController
  * 1. Максимально изолировать логику навигации внутри модуля
  * 2. Самостоятельно регистрировать все необходимые маршруты
  * 3. Быть независимой от конкретных маршрутов других фич
+ * 4. Динамически управлять путями навигации
  */
 interface FeatureApi {
     /**
@@ -42,13 +43,24 @@ interface FeatureApi {
      * 
      * @param navGraphBuilder Строитель навигационного графа
      * @param navController Контроллер навигации
-     * @param parentRoute Родительский маршрут (пустой для корневых фич)
+     * @param pathManager Менеджер путей навигации для динамического управления маршрутами
      * @param modifier Модификатор для настройки UI
      */
     fun registerGraph(
         navGraphBuilder: NavGraphBuilder,
         navController: NavHostController,
-        parentRoute: String,
+        pathManager: NavigationPathManager,
         modifier: Modifier = Modifier
     )
+    
+    /**
+     * Дополнительная настройка фичи при её инициализации.
+     * Может использоваться для регистрации собственных путей в pathManager.
+     * 
+     * @param pathManager Менеджер путей навигации
+     */
+    fun initialize(pathManager: NavigationPathManager) {
+        // Регистрируем базовый путь фичи
+        pathManager.registerFeaturePath(getFeatureName(), pathManager.createChildPath(getFeatureName()))
+    }
 }

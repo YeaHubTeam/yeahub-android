@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "ru.yeahub.navigation_impl"
+    namespace = "ru.yeahub.example_details.impl"
     compileSdk = 35
 
     defaultConfig {
@@ -33,7 +33,6 @@ android {
     }
     buildFeatures {
         compose = true
-        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.8"
@@ -41,34 +40,30 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:navigation-api"))
     implementation(project(":core:ui"))
-
-    // Feature APIs
-    implementation(project(":feature:example-profile:api"))
-    implementation(project(":feature:example-home:api"))
-    implementation(project(":feature:example-questions:api"))
+    implementation(project(":core:navigation-api"))
     implementation(project(":feature:example-details:api"))
 
-    // Koin
-    implementation(libs.koin.core)
-    implementation(libs.koin.android)
-    implementation(libs.koin.compose)
-
-    implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
+
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.runtime.android)
-    implementation(libs.androidx.icons)
+
+    implementation(libs.koin.core)
+    implementation(libs.koin.android)
+    implementation(libs.koin.compose)
+
+    // Timber
+    implementation(libs.timber)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    // Timber
-    implementation(libs.timber)
-}
+
+    implementation(libs.androidx.navigation.compose)
+} 

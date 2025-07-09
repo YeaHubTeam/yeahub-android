@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import com.example.api.QuestionsScreenApi
 import ru.yeahub.navigation_api.FeatureApi
 import ru.yeahub.navigation_api.FeatureRoute
+import ru.yeahub.navigation_api.NavigationPathManager
 import timber.log.Timber
 
 class QuestionsFeatureImpl(private val questionScreen: QuestionsScreenApi) : FeatureApi {
@@ -15,24 +16,89 @@ class QuestionsFeatureImpl(private val questionScreen: QuestionsScreenApi) : Fea
     
     override fun isRootFeature(): Boolean = false  // Вложенная фича
 
+    override fun initialize(pathManager: NavigationPathManager) {
+        super.initialize(pathManager)
+        Timber.d("QuestionsFeatureImpl initialize: Registering questions feature paths")
+        
+        // Дополнительная инициализация для Questions фичи
+        // Может включать регистрацию специфичных для фичи путей
+    }
+
     override fun registerGraph(
         navGraphBuilder: NavGraphBuilder,
         navController: NavHostController,
-        parentRoute: String,
+        pathManager: NavigationPathManager,
         modifier: Modifier
     ) {
-        Timber.d("QuestionsFeatureImpl registerGraph: parentRoute: $parentRoute")
+        val currentPath = pathManager.getCurrentPath()
+        Timber.d("QuestionsFeatureImpl registerGraph: currentPath: $currentPath")
         
-        // Создаем маршрут для экрана вопросов с учетом родительского маршрута
-        val currentQuestionsRoute = FeatureRoute.QuestionsFeature.createQuestionsRoute(parentRoute)
+        // Создаем маршрут для экрана вопросов с учетом текущего пути
+        val questionsRoute = pathManager.createChildPath(getFeatureName())
         
-        navGraphBuilder.composable(currentQuestionsRoute) {
+        Timber.d("QuestionsFeatureImpl registerGraph: Registering route: $questionsRoute")
+        
+        navGraphBuilder.composable(questionsRoute) {
             questionScreen.QuestionsScreen(
                 onBackClick = {
-                    Timber.d("QuestionsFeatureImpl onBackClick: Navigating back from questions")
-                    navController.navigateUp()
+                    handleBackNavigation(pathManager, navController)
+                },
+                onDetailsClick = { itemId, title ->
+                    handleDetailsNavigation(pathManager, navController, itemId, title)
                 }
             )
         }
+    }
+    
+    /**
+     * Обработка навигации назад.
+     */
+    private fun handleBackNavigation(
+        pathManager: NavigationPathManager,
+        navController: NavHostController
+    ) {
+        val parentPath = pathManager.getParentPath()
+        
+        Timber.d("QuestionsFeatureImpl handleBackNavigation: Navigating to parent: $parentPath")
+        
+        pathManager.setCurrentPath(parentPath)
+        
+        if (parentPath.isEmpty()) {
+            navController.navigateUp()
+        } else {
+            navController.navigate(parentPath) {
+                popUpTo(parentPath) {
+                    inclusive = true
+                }
+            }
+        }
+    }
+    
+    /**
+     * Обработка навигации к деталям.
+     */
+    private fun handleDetailsNavigation(
+        pathManager: NavigationPathManager,
+        navController: NavHostController,
+        itemId: String,
+        title: String
+    ) {
+        // Используем текущий путь как базу для Details
+        val detailsPath = pathManager.createParametrizedPath(
+            featureName = "details",
+            "itemId",
+            "title"
+        )
+        
+        val concretePath = pathManager.createConcretePath(
+            detailsPath,
+            itemId,
+            title
+        )
+        
+        Timber.d("QuestionsFeatureImpl handleDetailsNavigation: Navigating to: $concretePath")
+        
+        pathManager.setCurrentPath(concretePath)
+        navController.navigate(concretePath)
     }
 } 

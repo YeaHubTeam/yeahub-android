@@ -101,4 +101,28 @@ object FeatureRoute {
             return createFeatureRoute(parentRoute, FEATURE_NAME)
         }
     }
+
+    object DetailsFeature {
+        const val FEATURE_NAME = "details"
+
+        fun createDetailsRoute(parentRoute: String): String {
+            return createParametrizedRoute(
+                createFeatureRoute(parentRoute, FEATURE_NAME),
+                "itemId",
+                "title"
+            )
+        }
+        
+        fun createDetailsPath(
+            parentRoute: String,
+            itemId: String,
+            title: String
+        ): String {
+            return createPath(
+                createFeatureRoute(parentRoute, FEATURE_NAME),
+                itemId,
+                title
+            )
+        }
+    }
 }
