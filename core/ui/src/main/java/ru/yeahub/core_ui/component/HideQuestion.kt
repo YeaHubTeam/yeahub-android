@@ -1,7 +1,13 @@
 package ru.yeahub.core_ui.component
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.EaseInOut
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -52,7 +58,7 @@ fun HideQuestion(
 ) {
     val rotation by animateFloatAsState(
         targetValue = if (!isExtended) 0f else -180f,
-        animationSpec = tween(durationMillis = 300),
+        animationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing),
         label = "rotate",
     )
 
@@ -68,7 +74,6 @@ fun HideQuestion(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 10.dp, top = 20.dp, end = 10.dp, bottom = 20.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Row(
                 modifier = Modifier
@@ -109,14 +114,33 @@ fun HideQuestion(
                 }
             }
 
-            if (isExtended) {
-                ExtendedQuestion(
-                    ratingValue = ratingValue,
-                    difficultyValue = difficultyValue,
-                    answerText = answerText,
-                    imageUrl = imageUrl,
-                    onClickMore = { onClickMore() }
-                )
+            AnimatedContent(
+                targetState = isExtended,
+                transitionSpec = {
+                    (
+                            slideInVertically(
+                                animationSpec = tween(300, easing = EaseInOut),
+                                initialOffsetY = { -it }
+                            )
+                            ).togetherWith(
+                            slideOutVertically(
+                                animationSpec = tween(300, easing = EaseInOut),
+                                targetOffsetY = { -it }
+                            )
+                        )
+                },
+                label = "ExtendedQuestion"
+            ) { targetVisible ->
+
+                if (targetVisible) {
+                    ExtendedQuestion(
+                        ratingValue = ratingValue,
+                        difficultyValue = difficultyValue,
+                        answerText = answerText,
+                        imageUrl = imageUrl,
+                        onClickMore = { onClickMore() }
+                    )
+                }
             }
         }
     }
@@ -133,7 +157,7 @@ fun ExtendedQuestion(
     Column(
         modifier = Modifier.background(
             color = Theme.colors.white900,
-        ),
+        ).padding(top = 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Row(
