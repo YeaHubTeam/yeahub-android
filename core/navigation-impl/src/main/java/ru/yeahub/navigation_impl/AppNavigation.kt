@@ -56,26 +56,17 @@ fun AppNavigation(
     Timber.d("AppNavigation onCreate: Loaded features: ${features.map { it.javaClass.simpleName }}")
     val navItems = getBottomNavItems()
     
-    // Инициализируем все фичи с pathManager
     features.forEach { feature ->
         feature.initialize(pathManager)
-        Timber.d("AppNavigation initialized feature: ${feature.getFeatureName()}")
     }
-    
-    Timber.d("AppNavigation onCreate: NavItems: ${navItems.map { "${it.label} -> ${it.route}" }}")
 
-    // Отслеживаем текущий маршрут из NavController
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
     val selectedRoute = getSelectedRoute(currentRoute, navItems)
     
-    // Обновляем текущий путь в pathManager
     currentRoute?.let { route ->
         pathManager.setCurrentPath(route)
     }
-    
-    Timber.d("AppNavigation onCreate: Selected route for bottom nav: $selectedRoute")
-    Timber.d("AppNavigation onCreate: Current path in pathManager: ${pathManager.getCurrentPath()}")
 
     Scaffold(
         modifier = modifier,
@@ -137,18 +128,9 @@ private fun handleBottomNavClick(
 
     // Если мы в подмаршруте этого таба, навигируем на родительский
     if (currentRoute != null && currentRoute.startsWith(item.route)) {
-        Timber.d(
-            "AppNavigation onClick: Navigating to parent route: ${item.route} " +
-                    "from child: $currentRoute"
-        )
-        
-        // Сбрасываем путь в pathManager до корневого уровня
         pathManager.setCurrentPath(item.route)
-        
         navController.navigate(item.route) {
-            popUpTo(item.route) {
-                inclusive = true
-            }
+            popUpTo(item.route) { inclusive = true }
             launchSingleTop = true
         }
     } else {
@@ -160,11 +142,8 @@ private fun handleBottomNavClick(
         
         // Устанавливаем новый корневой путь
         pathManager.setCurrentPath(item.route)
-        
         navController.navigate(item.route) {
-            popUpTo(navController.graph.startDestinationId) {
-                saveState = true
-            }
+            popUpTo(navController.graph.startDestinationId) { saveState = true }
             launchSingleTop = true
             restoreState = true
         }
@@ -222,12 +201,6 @@ private fun registerChildFeatures(
         }
         
         targetRootFeatures.forEach { rootFeature ->
-            Timber.d(
-                "AppNavigation registerGraph: Registering ${childFeature.javaClass.simpleName}" +
-                        " for ${rootFeature.javaClass.simpleName}"
-            )
-            
-            // Устанавливаем контекст для дочерней фичи
             pathManager.setCurrentPath(rootFeature.getFeatureName())
             
             // Регистрируем дочернюю фичу
@@ -239,58 +212,4 @@ private fun registerChildFeatures(
         }
     }
 }
-
-/**
- * Сервис для динамического управления навигацией.
- */
-class DynamicNavigationService(
-    private val pathManager: NavigationPathManager
-) {
-    
-    /**
-     * Навигация на следующий уровень с параметрами.
-     */
-    fun navigateToChild(
-        navController: NavHostController,
-        childFeatureName: String,
-        vararg parameters: String
-    ) {
-        val newPath = pathManager.createParametrizedPath(childFeatureName, *parameters)
-        val concretePath = pathManager.createConcretePath(newPath, *parameters)
-        
-        Timber.d("DynamicNavigationService navigateToChild: $concretePath")
-        
-        pathManager.setCurrentPath(concretePath)
-        navController.navigate(concretePath)
-    }
-    
-    /**
-     * Навигация назад на родительский уровень.
-     */
-    fun navigateToParent(navController: NavHostController) {
-        val parentPath = pathManager.getParentPath()
-        
-        Timber.d("DynamicNavigationService navigateToParent: $parentPath")
-        
-        pathManager.setCurrentPath(parentPath)
-        navController.navigate(parentPath) {
-            popUpTo(parentPath) {
-                inclusive = true
-            }
-        }
-    }
-    
-    /**
-     * Навигация на корневой уровень.
-     */
-    fun navigateToRoot(navController: NavHostController, rootFeatureName: String) {
-        Timber.d("DynamicNavigationService navigateToRoot: $rootFeatureName")
-        
-        pathManager.setCurrentPath(rootFeatureName)
-        navController.navigate(rootFeatureName) {
-            popUpTo(rootFeatureName) {
-                inclusive = true
-            }
-        }
-    }
-} 
+ 
