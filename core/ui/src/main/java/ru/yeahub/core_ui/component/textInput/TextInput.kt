@@ -104,7 +104,6 @@ fun TextInput(
                     value = value,
                     onValueChange = { newValue ->
                         onValueChange(newValue)
-                        onExpandedChange(newValue.isNotEmpty())
                     },
                     modifier = Modifier,
                     label = label,
@@ -364,7 +363,7 @@ class TextInputParamsProvider : PreviewParameterProvider<TextInputParams> {
     )
 }
 
-@StaticPreview()
+@StaticPreview
 @Composable
 fun TextInputPreview(
     @PreviewParameter(TextInputParamsProvider::class) params: TextInputParams
@@ -433,7 +432,8 @@ fun ScreenSuggestions(
 class TextInputPreviewProvider : PreviewParameterProvider<Pair<String, List<String>>> {
     override val values: Sequence<Pair<String, List<String>>> = sequenceOf(
         Pair("", emptyList()),
-        Pair("ко", listOf("кофе", "компьютер", "кот")),
+        Pair("", listOf("кофе", "компьютер", "кот")),
         Pair("теле", listOf("телефон", "телевизор")),
+        Pair("телек", listOf("телефон", "телевизор")),
     )
 }
