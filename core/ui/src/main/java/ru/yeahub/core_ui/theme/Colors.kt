@@ -35,6 +35,7 @@ data class Colors(
     val green800: Color,
     val green700: Color,
     val green600: Color,
+    val green007: Color,
 
     val black900: Color,
     val black800: Color,
@@ -81,6 +82,7 @@ val colors = Colors(
     green800 = Green800,
     green700 = Green700,
     green600 = Green600,
+    green007 = Green007,
     black900 = Black900,
     black800 = Black800,
     black700 = Black700,

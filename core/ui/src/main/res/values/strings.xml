@@ -11,4 +11,5 @@
     <string name="rating">Рейтинг:</string>
     <string name="difficulty">Сложность:</string>
     <string name="read_more">Подробнее</string>
+    <string name="for_members">Для участников</string>
 </resources>
