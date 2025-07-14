@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -45,7 +46,9 @@ fun CompanyInterviewCard(
         color = Theme.colors.white900,
     ) {
         Column(
-            modifier = Modifier.padding(start = 10.dp, top = 10.dp, end = 10.dp, bottom = 20.dp),
+            modifier = Modifier
+                .padding(start = 10.dp, top = 10.dp, end = 10.dp, bottom = 20.dp)
+                .clickable { onClick() },
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
             AsyncImage(
@@ -55,6 +58,7 @@ fun CompanyInterviewCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(18.dp)),
+                contentScale = ContentScale.FillWidth
             )
 
             TagContainer(tags)
@@ -74,7 +78,6 @@ fun CompanyInterviewCard(
 
                 Text(
                     text = stringResource(R.string.for_members),
-                    modifier = Modifier.clickable { onClick() },
                     color = Theme.colors.purple700,
                     style = Theme.typography.body2
                 )
