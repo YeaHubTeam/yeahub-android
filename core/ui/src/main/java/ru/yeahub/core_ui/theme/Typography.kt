@@ -109,7 +109,7 @@ data class Typography(
     ),
     val body5Accent: TextStyle = TextStyle(
         fontFamily = manrope,
-        fontWeight = FontWeight.SemiBold,
+        fontWeight = FontWeight.Medium,
         fontSize = 20.sp,
         lineHeight = 24.sp,
     ),
