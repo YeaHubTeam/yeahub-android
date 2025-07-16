@@ -34,7 +34,7 @@ class QuestionsScreenApiImpl : QuestionsScreenApi {
                 val lastItem = layout.visibleItemsInfo.lastOrNull()
                 lastItem?.index == layout.totalItemsCount - 1
             }.distinctUntilChanged().collect { reachedEnd ->
-                if (reachedEnd) {
+                if (reachedEnd && state !is YeaHubPagerState.Error) {
                     viewModel.loadNext()
                 }
             }
