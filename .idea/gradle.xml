@@ -21,6 +21,9 @@
             <option value="$PROJECT_DIR$/core/ui" />
             <option value="$PROJECT_DIR$/core/utils" />
             <option value="$PROJECT_DIR$/feature" />
+            <option value="$PROJECT_DIR$/feature/example-details" />
+            <option value="$PROJECT_DIR$/feature/example-details/api" />
+            <option value="$PROJECT_DIR$/feature/example-details/impl" />
             <option value="$PROJECT_DIR$/feature/example-home" />
             <option value="$PROJECT_DIR$/feature/example-home/api" />
             <option value="$PROJECT_DIR$/feature/example-home/impl" />

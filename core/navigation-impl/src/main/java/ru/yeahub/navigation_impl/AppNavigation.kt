@@ -1,5 +1,6 @@
 package ru.yeahub.navigation_impl
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
@@ -9,49 +10,63 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavType
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
-import com.example.api.QuestionsScreenApi
-import com.example.api.navigation.QuestionsRoutes
-import org.koin.compose.koinInject
-import ru.yeahub.example_home.api.HomeScreenApi
-import ru.yeahub.example_home.api.navigation.HomeRoutes
-import ru.yeahub.example_profile.api.ProfileScreenApi
-import ru.yeahub.example_profile.api.navigation.ProfileRoutes
-import ru.yeahub.navigation_impl.features.StubScreen
-import ru.yeahub.navigation_impl.features.navigation.StubRoutes
-
-//import ru.yeahub.navigation_impl.model.BottomNavigationItem
+import org.koin.compose.getKoin
+import ru.yeahub.navigation_api.FeatureApi
+import ru.yeahub.navigation_api.FeatureRoute
+import ru.yeahub.navigation_api.NavigationPathManager
+import ru.yeahub.navigation_impl.model.BottomNavigationItem
+import timber.log.Timber
 
 /**
- * Основной компонент навигации приложения.
+ * Основной компонент навигации приложения с динамическим управлением путями.
  *
  * Архитектура навигации:
  * - Использует single-activity подход с Jetpack Navigation
  * - Поддерживает нижнюю навигацию для основных разделов
  * - Каждая фича-модуль определяет свои собственные маршруты в api модуле
+ * - Динамически управляет путями через NavigationPathManager
  *
  * Структура навигации:
  * 1. Нижняя панель навигации для переключения между основными разделами
  * 2. NavHost для управления навигационным стеком
  * 3. Отдельные composable для каждого экрана
+ * 4. NavigationPathManager для динамического управления путями
+ *
+ * Логика навигации в нижней панели:
+ * - Если уже на родительском экране таба - ничего не делаем (избегаем пересоздания)
+ * - Если в подэкране текущего таба - возвращаемся на родительский экран таба
+ * - Если в другом табе - переходим на родительский экран выбранного таба
  *
  * @param modifier Модификатор для настройки внешнего вида
+ * @param pathManager Менеджер путей для динамического управления навигацией
  */
 @Composable
 fun AppNavigation(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    navController: NavHostController = rememberNavController(),
+    pathManager: NavigationPathManager = getKoin().get<NavigationPathManager>(),
 ) {
-    val navController = rememberNavController()
-    val navItems = NavigationFactory.getBottomNavItems()
-    var selectedRoute by remember { mutableStateOf(navItems.first().route) }
+    val features: Set<FeatureApi> = getKoin().getAll<FeatureApi>().toSet()
+    Timber.d("AppNavigation onCreate: Loaded features: ${features.map { it.javaClass.simpleName }}")
+    val navItems = getBottomNavItems()
+    
+    features.forEach { feature ->
+        feature.initialize(pathManager)
+    }
+
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+    val selectedRoute = getSelectedRoute(currentRoute, navItems)
+    
+    currentRoute?.let { route ->
+        pathManager.setCurrentPath(route)
+    }
 
     Scaffold(
         modifier = modifier,
@@ -61,18 +76,17 @@ fun AppNavigation(
                     NavigationBarItem(
                         selected = selectedRoute == item.route,
                         onClick = {
-                            selectedRoute = item.route
-                            // Настройка навигации для нижней панели:
-                            // - popUpTo удаляет все экраны до стартового
-                            // - launchSingleTop предотвращает создание дубликатов экрана
-                            navController.navigate(item.route) {
-                                popUpTo(navController.graph.startDestinationId)
-                                launchSingleTop = true
-                            }
+                            handleBottomNavClick(
+                                item = item,
+                                currentRoute = currentRoute,
+                                navController = navController,
+                                pathManager = pathManager
+                            )
                         },
                         label = { Text(item.label) },
                         icon = { Icon(item.icon, contentDescription = item.label) }
                     )
+                    Log.d("NavSelected", "$currentRoute")
                 }
             }
         }
@@ -80,61 +94,122 @@ fun AppNavigation(
         Box(modifier = Modifier.padding(padding)) {
             NavHost(
                 navController = navController,
-                startDestination = HomeRoutes.HOME
+                startDestination = if (features.isNotEmpty()) {
+                    navItems.first().route
+                } else {
+                    FeatureRoute.StubFeature.FEATURE_NAME
+                },
+                modifier = Modifier,
             ) {
-                // Главный экран
-                // Демонстрирует простой переход с передачей параметров
-                composable(HomeRoutes.HOME) {
-                    val homeScreenApi = koinInject<HomeScreenApi>()
-                    homeScreenApi.HomeScreen(
-                        onProfileClick = { userId, userName ->
-                            navController.navigate(
-                                ProfileRoutes.profileRoute(userId, userName)
-                            )
-                        },
-                        onQuestionClick = {
-                            navController.navigate(QuestionsRoutes.questionsRoute())
-                        }
-                    )
-                }
-
-                // Экран профиля
-                // Демонстрирует:
-                // 1. Получение параметров через navArgument
-                // 2. Безопасную обработку null-параметров
-                // 3. Навигацию назад через navigateUp
-                composable(
-                    route = ProfileRoutes.PROFILE,
-                    arguments = listOf(
-                        navArgument("userId") { type = NavType.StringType },
-                        navArgument("userName") { type = NavType.StringType }
-                    )
-                ) { backStackEntry ->
-                    val userId = backStackEntry.arguments?.getString("userId") ?: ""
-                    val userName = backStackEntry.arguments?.getString("userName") ?: ""
-                    val profileScreenApi = koinInject<ProfileScreenApi>()
-                    profileScreenApi.ProfileScreen(
-                        userId = userId,
-                        userName = userName,
-                        onBackClick = {
-                            navController.navigateUp()
-                        }
-                    )
-                }
-
-                // Экран-заглушка
-                // Используется как пример для демонстрации нижней навигации
-                composable(StubRoutes.STUB) {
-                    StubScreen()
-                }
-
-                composable(QuestionsRoutes.QUESTIONS) {
-                    val questionScreenApi = koinInject<QuestionsScreenApi>()
-                    questionScreenApi.QuestionsScreen(onBackClick = {
-                        navController.navigateUp()
-                    })
-                }
+                registerDynamicNavigation(
+                    features = features,
+                    pathManager = pathManager,
+                    navController = navController,
+                    navGraphBuilder = this
+                )
             }
         }
     }
-} 
+}
+
+/**
+ * Обработка нажатий на нижнюю панель навигации.
+ */
+private fun handleBottomNavClick(
+    item: BottomNavigationItem,
+    currentRoute: String?,
+    navController: NavHostController,
+    pathManager: NavigationPathManager
+) {
+    // Если уже на родительском маршруте этого таба, ничего не делаем
+    if (currentRoute == item.route) {
+        return
+    }
+
+    // Если мы в подмаршруте этого таба, навигируем на родительский
+    if (currentRoute != null && currentRoute.startsWith(item.route)) {
+        pathManager.setCurrentPath(item.route)
+        navController.navigate(item.route) {
+            popUpTo(item.route) { inclusive = true }
+            launchSingleTop = true
+        }
+    } else {
+        // Навигируем на родительский маршрут другого таба
+        Timber.d(
+            "AppNavigation onClick: Navigating to different tab: " +
+                "${item.route} from: $currentRoute"
+        )
+        
+        // Устанавливаем новый корневой путь
+        pathManager.setCurrentPath(item.route)
+        navController.navigate(item.route) {
+            popUpTo(navController.graph.startDestinationId) { saveState = true }
+            launchSingleTop = true
+            restoreState = true
+        }
+    }
+}
+
+/**
+ * Регистрация динамической навигации для всех фич.
+ */
+private fun registerDynamicNavigation(
+    features: Set<FeatureApi>,
+    pathManager: NavigationPathManager,
+    navController: NavHostController,
+    navGraphBuilder: NavGraphBuilder
+) {
+    val rootFeatures = features.filter { it.isRootFeature() }
+    val childFeatures = features.filter { !it.isRootFeature() }
+    
+    // Регистрируем корневые фичи
+    rootFeatures.forEach { feature ->
+        Timber.d(
+            "AppNavigation registerGraph: Registering root feature: " +
+                    "${feature.javaClass.simpleName}"
+        )
+        
+        // Сбрасываем путь для корневой фичи
+        pathManager.setCurrentPath("")
+        pathManager.registerFeaturePath(feature.getFeatureName(), feature.getFeatureName())
+        
+        feature.registerGraph(navGraphBuilder, navController, pathManager)
+    }
+    
+    // Регистрируем дочерние фичи для каждой корневой фичи
+    registerChildFeatures(childFeatures, rootFeatures, pathManager, navController, navGraphBuilder)
+}
+
+/**
+ * Регистрация дочерних фич для каждой корневой фичи.
+ */
+private fun registerChildFeatures(
+    childFeatures: List<FeatureApi>,
+    rootFeatures: List<FeatureApi>,
+    pathManager: NavigationPathManager,
+    navController: NavHostController,
+    navGraphBuilder: NavGraphBuilder
+) {
+    childFeatures.forEach { childFeature ->
+        val dependentRootFeatures = childFeature.getDependentRootFeatures(rootFeatures)
+        
+        // Если фича не указала зависимости, регистрируем для всех корневых фич
+        val targetRootFeatures = if (dependentRootFeatures.isEmpty()) {
+            rootFeatures
+        } else {
+            dependentRootFeatures
+        }
+        
+        targetRootFeatures.forEach { rootFeature ->
+            pathManager.setCurrentPath(rootFeature.getFeatureName())
+            
+            // Регистрируем дочернюю фичу
+            childFeature.registerGraph(
+                navGraphBuilder = navGraphBuilder,
+                navController = navController,
+                pathManager = pathManager
+            )
+        }
+    }
+}
+ 
