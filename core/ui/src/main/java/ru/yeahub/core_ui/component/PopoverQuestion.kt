@@ -1,6 +1,7 @@
 package ru.yeahub.core_ui.component
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -30,6 +32,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import ru.yeahub.core_ui.example.staticPreview.StaticPreview
 import ru.yeahub.core_ui.theme.Theme
+import ru.yeahub.core_ui.theme.colors
 import ru.yeahub.ui.R
 
 private object PopoverQuestionControlConstants {
@@ -80,7 +83,8 @@ fun PopoverQuestion(
             .padding(PopoverQuestionControlConstants.SURFACE_PADDING)
             .widthIn(max = PopoverQuestionControlConstants.MAX_WIDTH),
         shape = RoundedCornerShape(PopoverQuestionControlConstants.CORNER_RADIUS),
-        shadowElevation = PopoverQuestionControlConstants.SHADOW_ELEVATION
+        shadowElevation = PopoverQuestionControlConstants.SHADOW_ELEVATION,
+        color = Theme.colors.white900,
     ) {
         BoxWithConstraints {
             val screenWidth = maxWidth
@@ -102,7 +106,7 @@ fun PopoverQuestion(
                         bottom = PopoverQuestionControlConstants.CONTENT_PADDING_VERTICAL,
                         end = PopoverQuestionControlConstants.CONTENT_PADDING_HORIZONTAL
                     ),
-                verticalArrangement = Arrangement.spacedBy(rowSpacing)
+                verticalArrangement = Arrangement.spacedBy(rowSpacing),
             ) {
                 // Первый ряд: Изучить, Повторить, Избранное
                 Row(

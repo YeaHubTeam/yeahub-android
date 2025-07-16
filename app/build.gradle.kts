@@ -49,9 +49,6 @@ dependencies {
     implementation(project(":core:ui"))
     implementation(project(":core:navigation-impl"))
 
-    //ViewModel
-    implementation(libs.androidx.lifecycle.viewmodel.ktx)
-
     //Timber
     implementation(libs.timber)
 
