@@ -7,6 +7,7 @@ interface ProfileScreenApi {
     fun ProfileScreen(
         userId: String,
         userName: String,
+        parentRoute: String,
         onBackClick: () -> Unit
     )
 } 
