@@ -1,7 +1,6 @@
 package ru.yeahub.core_ui.component
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -13,7 +12,6 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -32,7 +30,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import ru.yeahub.core_ui.example.staticPreview.StaticPreview
 import ru.yeahub.core_ui.theme.Theme
-import ru.yeahub.core_ui.theme.colors
 import ru.yeahub.ui.R
 
 private object PopoverQuestionControlConstants {
@@ -40,7 +37,6 @@ private object PopoverQuestionControlConstants {
     val LARGE_SCREEN_THRESHOLD = 440.dp
     val LARGE_ROW_SPACING = 32.dp
     val SMALL_ROW_SPACING = 10.dp
-    val SURFACE_PADDING = 5.dp
     val CORNER_RADIUS = 16.dp
     val SHADOW_ELEVATION = 10.dp
     val CONTENT_PADDING_VERTICAL = 16.dp
@@ -80,7 +76,6 @@ fun PopoverQuestion(
     Surface(
         modifier = modifier
             .wrapContentWidth()
-            .padding(PopoverQuestionControlConstants.SURFACE_PADDING)
             .widthIn(max = PopoverQuestionControlConstants.MAX_WIDTH),
         shape = RoundedCornerShape(PopoverQuestionControlConstants.CORNER_RADIUS),
         shadowElevation = PopoverQuestionControlConstants.SHADOW_ELEVATION,
