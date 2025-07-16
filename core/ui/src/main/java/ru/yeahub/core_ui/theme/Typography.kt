@@ -55,6 +55,12 @@ data class Typography(
         fontSize = 12.sp,
         lineHeight = 14.sp,
     ),
+    val bodyStrong: TextStyle = TextStyle(
+        fontFamily = manrope,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 12.sp,
+        lineHeight = 14.sp,
+    ),
     //body2
     val body2: TextStyle = TextStyle(
         fontFamily = manrope,

@@ -2,14 +2,19 @@ package ru.yeahub.core_ui.component
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
@@ -21,6 +26,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import ru.yeahub.core_ui.theme.Theme
@@ -250,4 +256,68 @@ interface ButtonColors {
 
     @Composable
     fun contentColor(enabled: Boolean): State<Color>
+}
+
+@Preview(
+    showBackground = true
+)
+@Composable
+fun ButtonPreviews() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        // Primary Button
+        Text("Primary Buttons", style = MaterialTheme.typography.titleMedium)
+        PrimaryButton(
+            onClick = {},
+            modifier = Modifier.fillMaxWidth(),
+            enabled = true
+        ) {
+            Text("Enabled Primary Button")
+        }
+        PrimaryButton(
+            onClick = {},
+            modifier = Modifier.fillMaxWidth(),
+            enabled = false
+        ) {
+            Text("Disabled Primary Button")
+        }
+
+        // Secondary Button
+        Text("Secondary Buttons", style = MaterialTheme.typography.titleMedium)
+        SecondaryButton(
+            onClick = {},
+            modifier = Modifier.fillMaxWidth(),
+            enabled = true
+        ) {
+            Text("Enabled Secondary Button")
+        }
+        SecondaryButton(
+            onClick = {},
+            modifier = Modifier.fillMaxWidth(),
+            enabled = false
+        ) {
+            Text("Disabled Secondary Button")
+        }
+
+        // Outline Button
+        Text("Outline Buttons", style = MaterialTheme.typography.titleMedium)
+        OutlineButton(
+            onClick = {},
+            modifier = Modifier.fillMaxWidth(),
+            enabled = true
+        ) {
+            Text("Enabled Outline Button")
+        }
+        OutlineButton(
+            onClick = {},
+            modifier = Modifier.fillMaxWidth(),
+            enabled = false
+        ) {
+            Text("Disabled Outline Button")
+        }
+    }
 }
