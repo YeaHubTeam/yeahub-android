@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "ru.yeahub.example_home.impl"
+    namespace = "ru.yeahub.example_details.impl"
     compileSdk = 35
 
     defaultConfig {
@@ -42,7 +42,7 @@ android {
 dependencies {
     implementation(project(":core:ui"))
     implementation(project(":core:navigation-api"))
-    implementation(project(":feature:example-home:api"))
+    implementation(project(":feature:example-details:api"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
@@ -66,4 +66,4 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 
     implementation(libs.androidx.navigation.compose)
-}
+} 
