@@ -26,13 +26,14 @@ import ru.yeahub.ui.R
 
 @Composable
 fun SpecializationCard(
+    modifier: Modifier = Modifier,
     specializationTitle: String,
     additionalText: String,
     imageUrl: String,
     onSpecializationClick: () -> Unit,
 ) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(245.dp)
             .shadow(
