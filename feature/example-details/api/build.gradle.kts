@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "ru.yeahub.example_home.impl"
+    namespace = "ru.yeahub.example_details.api"
     compileSdk = 35
 
     defaultConfig {
@@ -40,30 +40,16 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:ui"))
     implementation(project(":core:navigation-api"))
-    implementation(project(":feature:example-home:api"))
 
     implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material)
-
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.runtime.android)
 
-    implementation(libs.koin.core)
-    implementation(libs.koin.android)
-    implementation(libs.koin.compose)
-
-    // Timber
-    implementation(libs.timber)
-
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-
-    implementation(libs.androidx.navigation.compose)
-}
+} 
