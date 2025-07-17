@@ -8,6 +8,7 @@
     <string name="expanded_answer_title">Развёрнутый ответ</string>
     <string name="expand">Развернуть</string>
     <string name="collapse">Свернуть</string>
+    <string name="for_members">Для участников</string>
     <string name="rating">Рейтинг:</string>
     <string name="difficulty">Сложность:</string>
     <string name="read_more">Подробнее</string>
