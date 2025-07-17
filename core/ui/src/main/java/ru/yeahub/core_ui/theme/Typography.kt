@@ -39,7 +39,7 @@ data class Typography(
     val head4: TextStyle = TextStyle(
         fontFamily = manrope,
         fontWeight = FontWeight.Medium,
-        fontSize = 18.sp,
+        fontSize = 20.sp,
         lineHeight = 23.sp,
     ),
     //Body
