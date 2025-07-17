@@ -177,7 +177,7 @@ fun StatesDetailQuestionPreview(params: DetailQuestionScreenStateParams) {
 
 @StandardScreenSizePreview
 @Composable
-fun TextInputDynamicPreview() {
+fun DetailQuestionScreenDynamicPreview() {
     val mapper = remember {
         DomainToVOMapper()
     }
