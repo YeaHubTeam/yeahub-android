@@ -1,11 +1,14 @@
 package com.example.impl.presentation.viewmodel
 
-val publicQuestion = PublicQuestion(
+import com.example.impl.presentation.view.DetailQuestionState
+import ru.yeahub.core_ui.component.GuruData
+
+val publicQuestion = DetailQuestionState.Success.PublicQuestion(
     id = 1L,
     title = "Что такое Virtual DOM, и как он работает?",
     description = "Вопрос проверяет знание React под капотом",
     code = "\"<code>val x = 5</code>\"",
-    imageSrc = "",
+    imageSrc = "https://i.pinimg.com/originals/0e/cc/62/0ecc62627c01939838e619a9a5e5e69f.jpg",
     longAnswer = "Virtual DOM (виртуальное DOM) - это концепция, " +
             "используемая в библиотеках и фреймворках, таких как React, " +
             "для оптимизации обновлений реального DOM (Document Object Model) " +
@@ -39,14 +42,13 @@ val publicQuestion = PublicQuestion(
             "При изменении данных приложения Virtual DOM сравнивает новое состояние" +
             "с предыдущим и обновляет только те части реального DOM, которые изменились," +
             " вместо перерисовки всего документа.",
-)
-
-data class PublicQuestion(
-    val id: Long,
-    val title: String,
-    val description: String,
-    val code: String,
-    val imageSrc: String,
-    val longAnswer: String,
-    val shortAnswer: String,
+    guruData = GuruData(
+        name = "Руслан Куянец",
+        position = "Python Guru",
+        description = "Guru – это эксперты YeaHub, которые помогают развивать комьюнити.",
+        photoUrl = "",
+        profileUrl = "",
+        youtubeUrl = "https://www.youtube.com/watch?v=Cqu2HMJl44Q",
+        telegramUrl = ""
+    )
 )
