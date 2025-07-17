@@ -18,6 +18,7 @@ class ProfileScreenApiImpl : ProfileScreenApi {
     override fun ProfileScreen(
         userId: String,
         userName: String,
+        parentRoute: String,
         onBackClick: () -> Unit
     ) {
         Box(
@@ -32,7 +33,7 @@ class ProfileScreenApiImpl : ProfileScreenApi {
                 Text(text = "Имя пользователя: $userName")
                 Spacer(modifier = Modifier.height(16.dp))
                 Button(onClick = onBackClick) {
-                    Text(text = "Назад на Home")
+                    Text(text = "Назад на ${parentRoute.uppercase()}")
                 }
             }
         }

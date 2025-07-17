@@ -31,6 +31,7 @@ val Green900 = Color(color = 0xFF17663A)
 val Green800 = Color(color = 0xFF1E874C)
 val Green700 = Color(color = 0xFF26A95F)
 val Green600 = Color(color = 0xFF2DCA72)
+val Green007 = Color(color = 0xFFEDF7EF)
 
 val Black900 = Color(color = 0xFF191919)
 val Black800 = Color(color = 0xFF303030)
