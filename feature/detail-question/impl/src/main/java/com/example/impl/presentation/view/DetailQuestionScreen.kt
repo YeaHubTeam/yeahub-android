@@ -57,7 +57,6 @@ import ru.yeahub.core_ui.example.dynamicPreview.StandardScreenSizePreview
 import ru.yeahub.core_ui.example.staticPreview.StaticPreview
 import ru.yeahub.core_ui.theme.Theme
 
-
 @Composable
 fun DetailQuestionScreen(
     onBackClick: () -> Unit,
@@ -154,7 +153,6 @@ fun LoadingScreen(padding: PaddingValues) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-
                         .height(332.dp)
                         .background(Theme.colors.black100)
                         .clip(shape = RoundedCornerShape(12.dp))
@@ -164,7 +162,6 @@ fun LoadingScreen(padding: PaddingValues) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-
                             .height(225.dp)
                             .background(Theme.colors.black100)
                             .clip(shape = RoundedCornerShape(12.dp))
@@ -172,14 +169,12 @@ fun LoadingScreen(padding: PaddingValues) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-
                             .height(36.dp)
                             .background(Theme.colors.black100)
                             .clip(shape = RoundedCornerShape(12.dp))
                     )
                 }
             }
-
         }
         item {
             Box(
@@ -254,13 +249,13 @@ fun QuestionContent(question: PublicQuestion, padding: PaddingValues) {
             }
         }
         item {
-                PopoverQuestion(
-                    favoriteState = FavoriteState.DISABLED,
-                    onPreviousClick = { },
-                    onNextClick = {},
-                    modifier = Modifier
-                        .padding(start = 10.dp, end = 10.dp, bottom = 20.dp)
-                )
+            PopoverQuestion(
+                favoriteState = FavoriteState.DISABLED,
+                onPreviousClick = { },
+                onNextClick = {},
+                modifier = Modifier
+                    .padding(start = 10.dp, end = 10.dp, bottom = 20.dp)
+            )
         }
         item {
             Box(
@@ -275,12 +270,12 @@ fun QuestionContent(question: PublicQuestion, padding: PaddingValues) {
             }
         }
         item {
-                DetailedQuestionAnswer(
-                    blocks = blocks,
-                    modifier = Modifier
-                        .height(IntrinsicSize.Min)
-                        .padding(start = 10.dp, end = 10.dp, bottom = 20.dp)
-                )
+            DetailedQuestionAnswer(
+                blocks = blocks,
+                modifier = Modifier
+                    .height(IntrinsicSize.Min)
+                    .padding(start = 10.dp, end = 10.dp, bottom = 20.dp)
+            )
         }
         item {
             GuruCard(
