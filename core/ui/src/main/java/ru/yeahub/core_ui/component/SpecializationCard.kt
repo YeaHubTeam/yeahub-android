@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -32,21 +34,19 @@ fun SpecializationCard(
     imageUrl: String,
     onSpecializationClick: () -> Unit,
 ) {
-    Box(
+    Card(
         modifier = modifier
             .fillMaxWidth()
-            .height(245.dp)
-            .shadow(
-                elevation = 4.dp,
-                shape = RoundedCornerShape(20.dp),
-                ambientColor = Theme.colors.mainShadow,
-                spotColor = Theme.colors.mainShadow
-            )
-            .background(Theme.colors.white900, shape = RoundedCornerShape(20.dp))
-            .padding(horizontal = 10.dp, vertical = 16.dp)
+            .height(245.dp),
+        colors = CardDefaults.cardColors(containerColor = Theme.colors.white900),
+        shape = RoundedCornerShape(20.dp),
+        elevation = CardDefaults.cardElevation(4.dp),
+
     ) {
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 10.dp, vertical = 16.dp),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             Row(
@@ -95,6 +95,6 @@ fun SpecializationCardPreview() {
         specializationTitle = "Frontend",
         additionalText = "HTML, CSS, JavaScript и современные фреймворки",
         imageUrl = "123",
-        onSpecializationClick = {}
+        onSpecializationClick = {},
     )
 }
