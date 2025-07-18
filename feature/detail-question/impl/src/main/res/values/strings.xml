@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="back_button_text">Назад</string>
+    <string name="icon_error_screen_description">Ошибка</string>
+    <string name="error_screen_title_text">Ошибка загрузки</string>
+    <string name="unknown_error_screen_text">Неизвестная ошибка</string>
+    <string name="onretry_button_text">Повторить попытку</string>
+</resources>

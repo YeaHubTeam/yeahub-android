@@ -1,4 +1,4 @@
-package ru.yeahub
+package ru.yeahub.core_utils
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
