@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.impl.R
 import com.example.impl.presentation.intents.DetailQuestionCommand
-import com.example.impl.presentation.mapper.DomainToVOMapper
+import com.example.impl.presentation.mapper.DetailQuestionScreenMapper
 import com.example.impl.presentation.viewmodel.DetailQuestionViewModel
 import com.example.impl.presentation.viewmodel.publicQuestion
 import com.example.impl.presentation.viewmodel.viewModelCreator
@@ -70,6 +70,7 @@ fun DetailQuestionScreenView(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     Scaffold(
+        containerColor = Theme.colors.black25,
         topBar = {
             Box(modifier = Modifier.fillMaxWidth()) {
                 TopAppBar(
@@ -132,7 +133,7 @@ fun DetailQuestionScreenState(
 ) {
     when (uiState) {
         is DetailQuestionState.Initial -> Unit
-        is DetailQuestionState.Success -> QuestionContent(uiState.data, padding)
+        is DetailQuestionState.Success -> QuestionContent(uiState.data, padding, errorStrings)
         is DetailQuestionState.LoadingState -> LoadingScreen(padding)
         is DetailQuestionState.ErrorState -> ErrorScreen(
             uiState.message,
@@ -179,7 +180,7 @@ fun StatesDetailQuestionPreview(params: DetailQuestionScreenStateParams) {
 @Composable
 fun DetailQuestionScreenDynamicPreview() {
     val mapper = remember {
-        DomainToVOMapper()
+        DetailQuestionScreenMapper()
     }
     val mockViewModel: DetailQuestionViewModel = viewModelCreator {
         DetailQuestionViewModel(mapper)

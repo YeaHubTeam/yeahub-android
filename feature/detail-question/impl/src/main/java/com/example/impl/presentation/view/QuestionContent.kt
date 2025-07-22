@@ -25,7 +25,11 @@ import ru.yeahub.core_ui.component.ShortQuestionAnswer
 import ru.yeahub.core_ui.example.staticPreview.StaticPreview
 
 @Composable
-fun QuestionContent(question: DetailQuestionState.Success.PublicQuestion, padding: PaddingValues) {
+fun QuestionContent(
+    question: DetailQuestionState.Success.PublicQuestion,
+    padding: PaddingValues,
+    strings: DetailQuestionStrings = rememberDetailQuestionStrings()
+) {
     val blocks = listOf(
         DetailedQuestionAnswerBlock.TextBlock(question.longAnswer),
         DetailedQuestionAnswerBlock.CodeBlock(question.code),
@@ -85,7 +89,7 @@ fun QuestionContent(question: DetailQuestionState.Success.PublicQuestion, paddin
                 data = GuruData(
                     name = question.guruData.name,
                     position = question.guruData.position,
-                    description = question.guruData.description,
+                    description = strings.guruDescriptionText,
                     photoUrl = question.guruData.photoUrl,
                     profileUrl = question.guruData.profileUrl,
                     youtubeUrl = question.guruData.youtubeUrl,
@@ -232,6 +236,15 @@ fun ShowQuestionContentPreview(
 fun StatesQuestionContentPreview(params: QuestionContentParams) {
     QuestionContent(
         question = params.question,
-        padding = params.padding
+        padding = params.padding,
+        strings = previewQuestionContentStrings()
     )
 }
+
+fun previewQuestionContentStrings() = DetailQuestionStrings(
+    iconErrorScreenDescription = "Иконка ошибки",
+    errorScreenTitleText = "Ошибка",
+    unknownErrorScreenText = "Неизвестная ошибка",
+    onRetryButtonText = "Повторить",
+    guruDescriptionText = "Guru – это эксперты YeaHub, которые помогают развивать комьюнити."
+)

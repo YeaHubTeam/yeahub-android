@@ -5,4 +5,5 @@
     <string name="error_screen_title_text">Ошибка загрузки</string>
     <string name="unknown_error_screen_text">Неизвестная ошибка</string>
     <string name="onretry_button_text">Повторить попытку</string>
+    <string name="guru_description_text">Guru – это эксперты YeaHub, которые помогают развивать комьюнити.</string>
 </resources>
