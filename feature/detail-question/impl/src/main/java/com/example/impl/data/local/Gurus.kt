@@ -8,7 +8,8 @@ private val gurus: List<Guru> =
             name = "Ruslan Kuyanets",
             title = "Frontend Guru",
             specializationId = 11,
-            photoUrl = "https://e5e684b1-4a6a-4be5-b7ee-b2b678239d61.selstorage.ru/gurus/%D1%80%D1%83%D1%81%D0%BB%D0%B0%D0%BD%D0%BC%D0%B5%D0%BD%D1%82%D0%BE%D1%80%20(1).jpeg",
+            photoUrl = "https://e5e684b1-4a6a-4be5-b7ee-b2b678239d61.selstorage.ru/" +
+                    "gurus/%D1%80%D1%83%D1%81%D0%BB%D0%B0%D0%BD%D0%BC%D0%B5%D0%BD%D1%82%D0%BE%D1%80%20(1).jpeg",
             youtubeUrl = "https://youtube.com/@reactify-it",
             telegramUrl = "https://t.me/reactify_IT"
         ),
@@ -16,7 +17,8 @@ private val gurus: List<Guru> =
             name = "Anton Gulyaev",
             title = "Android Guru",
             specializationId = 27,
-            photoUrl = "https://e5e684b1-4a6a-4be5-b7ee-b2b678239d61.selstorage.ru/gurus/%D0%90%D0%BD%D1%82%D0%BE%D0%BD%D0%BC%D0%B5%D0%BD%D1%82%D0%BE%D1%80.png",
+            photoUrl = "https://e5e684b1-4a6a-4be5-b7ee-b2b678239d61.selstorage.ru/gurus" +
+                    "/%D0%90%D0%BD%D1%82%D0%BE%D0%BD%D0%BC%D0%B5%D0%BD%D1%82%D0%BE%D1%80.png",
             youtubeUrl = "https://youtube.com/@gulyaev_it",
             telegramUrl = "https://t.me/gulyaev_it"
         ),

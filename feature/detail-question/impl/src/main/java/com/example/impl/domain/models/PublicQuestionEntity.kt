@@ -1,6 +1,6 @@
 package com.example.impl.domain.models
 
-data class PublicQuestionEntity (
+data class PublicQuestionEntity(
     val id: Long,
     val title: String,
     val description: String,

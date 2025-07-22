@@ -8,5 +8,4 @@ class GetQuestionByIdUseCaseImpl(private val detailQuestionRepository: DetailQue
     override suspend fun invoke(id: Long): PublicQuestionEntity {
         return detailQuestionRepository.getQuestionById(id)
     }
-
 }

@@ -1,6 +1,6 @@
 package com.example.impl.domain.models
 
-data class GuruEntity (
+data class GuruEntity(
     val title: String,
     val name: String,
     val specializationId: Long,

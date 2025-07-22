@@ -25,7 +25,11 @@ import ru.yeahub.core_ui.component.ShortQuestionAnswer
 import ru.yeahub.core_ui.example.staticPreview.StaticPreview
 
 @Composable
-fun QuestionContent(question: DetailQuestionState.Success.PublicQuestion, padding: PaddingValues, strings: DetailQuestionStrings = rememberDetailQuestionStrings()) {
+fun QuestionContent(
+    question: DetailQuestionState.Success.PublicQuestion,
+    padding: PaddingValues,
+    strings: DetailQuestionStrings = rememberDetailQuestionStrings()
+) {
     val blocks = listOf(
         DetailedQuestionAnswerBlock.TextBlock(question.longAnswer),
         DetailedQuestionAnswerBlock.CodeBlock(question.code),

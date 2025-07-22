@@ -1,6 +1,6 @@
 package com.example.impl.data.local
 
-data class Guru (
+data class Guru(
     val title: String,
     val name: String,
     val specializationId: Long,

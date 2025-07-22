@@ -1,6 +1,6 @@
 package com.example.impl.domain.models
 
-data class NestedSpecializationEntity (
+data class NestedSpecializationEntity(
     val id: Long,
     val title: String,
     val description: String,
