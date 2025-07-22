@@ -40,6 +40,8 @@ dependencies {
 
     implementation(project(":core:ui"))
     implementation(project(":core:utils"))
+    implementation(project(":core:network-api"))
+    implementation(libs.timber)
     implementation(libs.androidx.core.ktx)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.lifecycle.viewmodel.ktx)

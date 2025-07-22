@@ -118,5 +118,6 @@ fun previewErrorScreenStrings() = DetailQuestionStrings(
     iconErrorScreenDescription = "Иконка ошибки",
     errorScreenTitleText = "Ошибка",
     unknownErrorScreenText = "Неизвестная ошибка",
-    onRetryButtonText = "Повторить"
+    onRetryButtonText = "Повторить",
+    guruDescriptionText = "Guru – это эксперты YeaHub, которые помогают развивать комьюнити."
 )
