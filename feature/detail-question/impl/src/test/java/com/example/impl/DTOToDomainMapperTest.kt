@@ -128,7 +128,8 @@ class DTOToDomainMapperTest {
                             name = "Anton Gulyaev",
                             title = "Android Guru",
                             specializationId = 27,
-                            photoUrl = "https://e5e684b1-4a6a-4be5-b7ee-b2b678239d61.selstorage.ru/gurus/%D0%90%D0%BD%D1%82%D0%BE%D0%BD%D0%BC%D0%B5%D0%BD%D1%82%D0%BE%D1%80.png",
+                            photoUrl = "https://e5e684b1-4a6a-4be5-b7ee-b2b678239d61.selstorage.ru/gurus" +
+                                    "/%D0%90%D0%BD%D1%82%D0%BE%D0%BD%D0%BC%D0%B5%D0%BD%D1%82%D0%BE%D1%80.png",
                             youtubeUrl = "https://youtube.com/@gulyaev_it",
                             telegramUrl = "https://t.me/gulyaev_it"
                         )
@@ -222,7 +223,8 @@ class DTOToDomainMapperTest {
                             name = "Anton Gulyaev",
                             title = "Android Guru",
                             specializationId = 27,
-                            photoUrl = "https://e5e684b1-4a6a-4be5-b7ee-b2b678239d61.selstorage.ru/gurus/%D0%90%D0%BD%D1%82%D0%BE%D0%BD%D0%BC%D0%B5%D0%BD%D1%82%D0%BE%D1%80.png",
+                            photoUrl = "https://e5e684b1-4a6a-4be5-b7ee-b2b678239d61.selstorage.ru/gurus" +
+                                    "/%D0%90%D0%BD%D1%82%D0%BE%D0%BD%D0%BC%D0%B5%D0%BD%D1%82%D0%BE%D1%80.png",
                             youtubeUrl = "https://youtube.com/@gulyaev_it",
                             telegramUrl = "https://t.me/gulyaev_it"
                         )

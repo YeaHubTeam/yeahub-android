@@ -11,6 +11,7 @@ class DetailQuestionRepositoryImpl(
     private val dataToDomainMapper: DataToDomainMapper
 ) : DetailQuestionRepository {
 
+    @Suppress("TooGenericExceptionCaught")
     override suspend fun getQuestionById(id: Long): PublicQuestionEntity {
         return try {
             dataToDomainMapper.getPublicQuestionEntity(apiService.getQuestionById(id))

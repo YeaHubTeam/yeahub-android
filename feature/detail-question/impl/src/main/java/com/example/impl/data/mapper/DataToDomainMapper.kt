@@ -58,7 +58,9 @@ class DataToDomainMapper {
         )
     }
 
-    private fun getQuestionSpecializationsToEntity(nestedSpecializationResponse: NestedSpecializationResponse): NestedSpecializationEntity {
+    private fun getQuestionSpecializationsToEntity(
+        nestedSpecializationResponse: NestedSpecializationResponse
+    ): NestedSpecializationEntity {
         return NestedSpecializationEntity(
             id = nestedSpecializationResponse.id,
             title = nestedSpecializationResponse.title,
@@ -80,7 +82,9 @@ class DataToDomainMapper {
         )
     }
 
-    private fun getNestedUserReferenceToEntity(nestedUserReferenceDto: NestedUserReferenceDto): NestedUserReferenceEntity {
+    private fun getNestedUserReferenceToEntity(
+        nestedUserReferenceDto: NestedUserReferenceDto
+    ): NestedUserReferenceEntity {
         return NestedUserReferenceEntity(
             id = nestedUserReferenceDto.id,
             username = nestedUserReferenceDto.username
