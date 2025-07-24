@@ -137,6 +137,7 @@ private fun DefaultButton(
             Row(
                 modifier = Modifier
                     .padding(contentPadding),
+                horizontalArrangement = Arrangement.Center,
                 content = content
             )
         }
