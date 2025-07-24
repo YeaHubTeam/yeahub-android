@@ -325,11 +325,105 @@ fun StatesDetailQuestionPreview(params: DetailQuestionScreenStateParams) {
 @StandardScreenSizePreview
 @Composable
 fun DetailQuestionScreenDynamicPreview() {
-    val mapper = remember {
+    val questionId by remember { mutableLongStateOf(1L) }
+    val mockMapper = remember {
         DetailQuestionScreenMapper()
     }
-    val mockViewModel: DetailQuestionViewModel = viewModelCreator {
-        DetailQuestionViewModel(mapper)
+    val mockUseCase = object : GetQuestionByIdUseCase {
+        override suspend fun invoke(id: Long): PublicQuestionEntity {
+            return PublicQuestionEntity(
+                id = 1L,
+                title = "Что такое Virtual DOM, и как он работает?",
+                description = "Вопрос проверяет знание React под капотом",
+                code = "\"<code>val x = 5</code>\"",
+                imageSrc = "",
+                longAnswer = "Virtual DOM (виртуальное DOM) - это концепция, " +
+                        "используемая в библиотеках и фреймворках, таких как React, " +
+                        "для оптимизации обновлений реального DOM (Document Object Model) " +
+                        "и повышения производительности веб-приложений. Реальный DOM — " +
+                        "это представление структуры веб-страницы в браузере в виде дерева объектов. " +
+                        "Когда состояние приложения меняется и требуется обновление интерфейса, " +
+                        "браузер выполняет изменения непосредственно в реальном DOM. " +
+                        "Однако многократные и частые обновления реального DOM могут быть затратными " +
+                        "с точки зрения производительности, особенно для больших и сложных интерфейсов. " +
+                        "Виртуальное DOM решает эту проблему следующим образом: Создание виртуального DOM: " +
+                        "При изменении состояния приложения React создаёт виртуальное представление " +
+                        "DOM-структуры, которая является легковесной копией реального DOM. " +
+                        "Сравнение виртуального DOM: " +
+                        "React сравнивает предыдущее состояние виртуального DOM с новым состоянием, " +
+                        "выявляя, какие части интерфейса были изменены. " +
+                        "Генерация разницы (патч): " +
+                        "На основе сравнения React создаёт минимальный набор изменений, " +
+                        "необходимых для обновления виртуального DOM согласно новому состоянию. " +
+                        "Применение изменений: Созданные изменения применяются к реальному DOM только " +
+                        "одним обновлением, что позволяет избежать множественных манипуляций с реальным DOM. " +
+                        "Использование виртуального DOM позволяет значительно улучшить производительность, " +
+                        "так как обновления реального DOM происходят только в необходимых местах. " +
+                        "Это также делает разработку более удобной и предсказуемой, поскольку разработчику " +
+                        "не нужно ручным образом управлять множеством изменений на реальном DOM.",
+                shortAnswer = "Virtual DOM (виртуальный DOM) — это программная концепция, " +
+                        "используемая в разработке веб-приложений для повышения эффективности " +
+                        "обновлений интерфейса. Это представление реального DOM (структуры документа, " +
+                        "отображаемого в браузере) в памяти, которое позволяет оптимизировать изменения, " +
+                        "минимизируя взаимодействие с реальным DOM, " +
+                        "что ускоряет рендеринг и обновление страниц. " +
+                        "При изменении данных приложения Virtual DOM сравнивает новое состояние" +
+                        "с предыдущим и обновляет только те части реального DOM, которые изменились," +
+                        " вместо перерисовки всего документа.",
+                keywords = listOf(),
+                status = null,
+                rate = null,
+                complexity = null,
+                createdById = "",
+                updatedById = "",
+                questionSpecializations = listOf(
+                    NestedSpecializationEntity(
+                        id = 27,
+                        title = "",
+                        description = "",
+                        imageSrc = "",
+                        createdAt = "",
+                        updatedAt = ""
+                    )
+                ),
+                questionSkills = listOf(
+                    NestedSkillEntity(
+                        id = 11,
+                        title = "",
+                        description = "",
+                        imageSrc = "",
+                        createdAt = "",
+                        updatedAt = ""
+                    )
+                ),
+                createdAt = "",
+                updatedAt = "",
+                createdBy = NestedUserReferenceEntity(
+                    id = "",
+                    username = ""
+                ),
+                updatedBy = null,
+                guru = GuruEntity(
+                    name = "Ruslan Kuyanets",
+                    title = "Frontend Guru",
+                    specializationId = 11,
+                    photoUrl = "https://e5e684b1-4a6a-4be5-b7ee-b2b678239d61.selstorage.ru/" +
+                            "gurus/%D1%80%D1%83%D1%81%D0%BB%D0%B0%D0%BD%D0%BC%D0%B5%D0%BD%D1%82%D0%BE%D1%80%20(1).jpeg",
+                    youtubeUrl = "https://youtube.com/@reactify-it",
+                    telegramUrl = "https://t.me/reactify_IT"
+                )
+            )
+        }
     }
-    DetailQuestionScreenView(onBackClick = {}, viewModel = mockViewModel)
+    val mockViewModel: DetailQuestionViewModel = viewModelCreator {
+        DetailQuestionViewModel(mockMapper, mockUseCase)
+    }
+
+    LaunchedEffect(Unit) { mockViewModel.handleEvents(DetailQuestionEvent.LoadQuestion(questionId)) }
+
+    DetailQuestionScreenView(
+        onBackClick = {}, viewModel = mockViewModel,
+        onPrevClick = {},
+        onNextClick = {}
+    )
 }
