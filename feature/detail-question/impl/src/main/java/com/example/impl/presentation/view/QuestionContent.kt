@@ -14,6 +14,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import com.example.impl.presentation.state.DetailQuestionState
+import com.example.impl.presentation.state.GuruVO
+import com.example.impl.presentation.state.NestedSkillVO
+import com.example.impl.presentation.state.NestedSpecializationVO
+import com.example.impl.presentation.state.NestedUserReferenceVO
 import ru.yeahub.core_ui.component.DetailHeaderQuestion
 import ru.yeahub.core_ui.component.DetailedQuestionAnswer
 import ru.yeahub.core_ui.component.DetailedQuestionAnswerBlock
@@ -26,14 +31,18 @@ import ru.yeahub.core_ui.example.staticPreview.StaticPreview
 
 @Composable
 fun QuestionContent(
-    question: DetailQuestionState.Success.PublicQuestion,
+    question: DetailQuestionState.Success.PublicQuestionVO,
+    onPrevClick: () -> Unit,
+    onNextClick: () -> Unit,
+    onTelegramClick: () -> Unit,
+    onYoutubeClick: () -> Unit,
     padding: PaddingValues,
     strings: DetailQuestionStrings = rememberDetailQuestionStrings()
 ) {
-    val blocks = listOf(
-        DetailedQuestionAnswerBlock.TextBlock(question.longAnswer),
-        DetailedQuestionAnswerBlock.CodeBlock(question.code),
-        DetailedQuestionAnswerBlock.ImageBlock(question.imageSrc)
+    val blocks = listOfNotNull(
+        question.longAnswer?.let { DetailedQuestionAnswerBlock.TextBlock(it) },
+        question.code?.let { DetailedQuestionAnswerBlock.CodeBlock(it) },
+        question.imageSrc?.let { DetailedQuestionAnswerBlock.ImageBlock(it) }
     )
 
     LazyColumn(
@@ -47,19 +56,21 @@ fun QuestionContent(
                     .background(Color.Transparent)
                     .padding(10.dp, 16.dp)
             ) {
-                DetailHeaderQuestion(
-                    questionTitle = question.title,
-                    additionalText = question.description,
-                    imageUrl = question.imageSrc,
-                    onFilterClick = {},
-                )
+                question.imageSrc?.let {
+                    DetailHeaderQuestion(
+                        questionTitle = question.title,
+                        additionalText = question.description,
+                        imageUrl = it,
+                        onFilterClick = {},
+                    )
+                }
             }
         }
         item {
             PopoverQuestion(
                 favoriteState = FavoriteState.DISABLED,
-                onPreviousClick = { },
-                onNextClick = {},
+                onPreviousClick = { onPrevClick() },
+                onNextClick = { onNextClick() },
                 modifier = Modifier
                     .padding(start = 10.dp, end = 10.dp, bottom = 20.dp)
             )
@@ -71,9 +82,11 @@ fun QuestionContent(
                     .padding(start = 10.dp, end = 10.dp, bottom = 20.dp)
                     .height(IntrinsicSize.Min)
             ) {
-                ShortQuestionAnswer(
-                    answerText = question.shortAnswer
-                )
+                question.shortAnswer?.let {
+                    ShortQuestionAnswer(
+                        answerText = it
+                    )
+                }
             }
         }
         item {
@@ -87,30 +100,30 @@ fun QuestionContent(
         item {
             GuruCard(
                 data = GuruData(
-                    name = question.guruData.name,
-                    position = question.guruData.position,
+                    name = question.guru.name,
+                    position = question.guru.title,
                     description = strings.guruDescriptionText,
-                    photoUrl = question.guruData.photoUrl,
-                    profileUrl = question.guruData.profileUrl,
-                    youtubeUrl = question.guruData.youtubeUrl,
-                    telegramUrl = question.guruData.telegramUrl,
+                    photoUrl = question.guru.photoUrl,
+                    profileUrl = "",
+                    youtubeUrl = question.guru.youtubeUrl,
+                    telegramUrl = question.guru.telegramUrl,
                 ),
-                onTelegramClick = {},
-                onYoutubeClick = {},
+                onTelegramClick = {onTelegramClick()},
+                onYoutubeClick = {onYoutubeClick()},
             ) { }
         }
     }
 }
 
 data class QuestionContentParams(
-    val question: DetailQuestionState.Success.PublicQuestion,
+    val question: DetailQuestionState.Success.PublicQuestionVO,
     val padding: PaddingValues = PaddingValues()
 )
 
 class ListOfQuestionContentProvider : PreviewParameterProvider<QuestionContentParams> {
     override val values = sequenceOf(
         QuestionContentParams(
-            DetailQuestionState.Success.PublicQuestion(
+            DetailQuestionState.Success.PublicQuestionVO(
                 id = 1L,
                 title = "Что такое Virtual DOM, и как он работает?",
                 description = "Вопрос проверяет знание React под капотом",
@@ -149,19 +162,52 @@ class ListOfQuestionContentProvider : PreviewParameterProvider<QuestionContentPa
                         "При изменении данных приложения Virtual DOM сравнивает новое состояние" +
                         "с предыдущим и обновляет только те части реального DOM, которые изменились," +
                         " вместо перерисовки всего документа.",
-                guruData = GuruData(
-                    name = "Руслан Куянец",
-                    position = "Python Guru",
-                    description = "Guru – это эксперты YeaHub, которые помогают развивать комьюнити.",
-                    photoUrl = "",
-                    profileUrl = "",
-                    youtubeUrl = "https://www.youtube.com/watch?v=Cqu2HMJl44Q",
-                    telegramUrl = ""
+                keywords = listOf(),
+                status = null,
+                rate = null,
+                complexity = null,
+                createdById = "",
+                updatedById = "",
+                questionSpecializations = listOf(
+                    NestedSpecializationVO(
+                        id = 27,
+                        title = "",
+                        description = "",
+                        imageSrc = "",
+                        createdAt = "",
+                        updatedAt = ""
+                )
+                ),
+                questionSkills = listOf(
+                    NestedSkillVO(
+                        id = 11,
+                        title = "",
+                        description = "",
+                        imageSrc = "",
+                        createdAt = "",
+                        updatedAt = ""
+                    )
+                ),
+                createdAt = "",
+                updatedAt = "",
+                createdBy = NestedUserReferenceVO(
+                    id = "",
+                    username = ""
+                ),
+                updatedBy = null,
+                guru = GuruVO(
+                    name = "Ruslan Kuyanets",
+                    title = "Frontend Guru",
+                    specializationId = 11,
+                    photoUrl = "https://e5e684b1-4a6a-4be5-b7ee-b2b678239d61.selstorage.ru/" +
+                            "gurus/%D1%80%D1%83%D1%81%D0%BB%D0%B0%D0%BD%D0%BC%D0%B5%D0%BD%D1%82%D0%BE%D1%80%20(1).jpeg",
+                    youtubeUrl = "https://youtube.com/@reactify-it",
+                    telegramUrl = "https://t.me/reactify_IT"
                 )
             )
         ),
         QuestionContentParams(
-            DetailQuestionState.Success.PublicQuestion(
+            DetailQuestionState.Success.PublicQuestionVO(
                 id = 2L,
                 title = "Как работает алгоритм быстрой сортировки?",
                 description = "Нужна визуализация алгоритма сортировки",
@@ -170,19 +216,52 @@ class ListOfQuestionContentProvider : PreviewParameterProvider<QuestionContentPa
                 longAnswer = "Быстрая сортировка работает по принципу " +
                         "'разделяй и властвуй'...",
                 shortAnswer = "Рекурсивный алгоритм с выбором опорного элемента",
-                guruData = GuruData(
-                    name = "Руслан Куянец",
-                    position = "Python Guru",
-                    description = "Guru – это эксперты YeaHub...",
-                    photoUrl = "",
-                    profileUrl = "",
-                    youtubeUrl = "https://www.youtube.com/watch?v=Cqu2HMJl44Q",
-                    telegramUrl = ""
+                keywords = listOf(),
+                status = null,
+                rate = null,
+                complexity = null,
+                createdById = "",
+                updatedById = "",
+                questionSpecializations = listOf(
+                    NestedSpecializationVO(
+                        id = 27,
+                        title = "",
+                        description = "",
+                        imageSrc = "",
+                        createdAt = "",
+                        updatedAt = ""
+                    )
+                ),
+                questionSkills = listOf(
+                    NestedSkillVO(
+                        id = 11,
+                        title = "",
+                        description = "",
+                        imageSrc = "",
+                        createdAt = "",
+                        updatedAt = ""
+                    )
+                ),
+                createdAt = "",
+                updatedAt = "",
+                createdBy = NestedUserReferenceVO(
+                    id = "",
+                    username = ""
+                ),
+                updatedBy = null,
+                guru = GuruVO(
+                    name = "Ruslan Kuyanets",
+                    title = "Frontend Guru",
+                    specializationId = 11,
+                    photoUrl = "https://e5e684b1-4a6a-4be5-b7ee-b2b678239d61.selstorage.ru/" +
+                            "gurus/%D1%80%D1%83%D1%81%D0%BB%D0%B0%D0%BD%D0%BC%D0%B5%D0%BD%D1%82%D0%BE%D1%80%20(1).jpeg",
+                    youtubeUrl = "https://youtube.com/@reactify-it",
+                    telegramUrl = "https://t.me/reactify_IT"
                 )
             )
         ),
         QuestionContentParams(
-            DetailQuestionState.Success.PublicQuestion(
+            DetailQuestionState.Success.PublicQuestionVO(
                 id = 3L,
                 title = "Каковы основные принципы SOLID?",
                 description = "Теория объектно-ориентированного программирования",
@@ -190,19 +269,52 @@ class ListOfQuestionContentProvider : PreviewParameterProvider<QuestionContentPa
                 imageSrc = "",
                 longAnswer = "SOLID - это аббревиатура пяти основных принципов...",
                 shortAnswer = "Пять принципов ООП: Single responsibility, Open-closed...",
-                guruData = GuruData(
-                    name = "Руслан Куянец",
-                    position = "Python Guru",
-                    description = "Guru – это эксперты YeaHub...",
-                    photoUrl = "",
-                    profileUrl = "",
-                    youtubeUrl = "https://www.youtube.com/watch?v=Cqu2HMJl44Q",
-                    telegramUrl = ""
+                keywords = listOf(),
+                status = null,
+                rate = null,
+                complexity = null,
+                createdById = "",
+                updatedById = "",
+                questionSpecializations = listOf(
+                    NestedSpecializationVO(
+                        id = 27,
+                        title = "",
+                        description = "",
+                        imageSrc = "",
+                        createdAt = "",
+                        updatedAt = ""
+                    )
+                ),
+                questionSkills = listOf(
+                    NestedSkillVO(
+                        id = 11,
+                        title = "",
+                        description = "",
+                        imageSrc = "",
+                        createdAt = "",
+                        updatedAt = ""
+                    )
+                ),
+                createdAt = "",
+                updatedAt = "",
+                createdBy = NestedUserReferenceVO(
+                    id = "",
+                    username = ""
+                ),
+                updatedBy = null,
+                guru = GuruVO(
+                    name = "Ruslan Kuyanets",
+                    title = "Frontend Guru",
+                    specializationId = 11,
+                    photoUrl = "https://e5e684b1-4a6a-4be5-b7ee-b2b678239d61.selstorage.ru/" +
+                            "gurus/%D1%80%D1%83%D1%81%D0%BB%D0%B0%D0%BD%D0%BC%D0%B5%D0%BD%D1%82%D0%BE%D1%80%20(1).jpeg",
+                    youtubeUrl = "https://youtube.com/@reactify-it",
+                    telegramUrl = "https://t.me/reactify_IT"
                 )
             )
         ),
         QuestionContentParams(
-            DetailQuestionState.Success.PublicQuestion(
+            DetailQuestionState.Success.PublicQuestionVO(
                 id = 4L,
                 title = "Что такое closure в JavaScript?",
                 description = "",
@@ -210,14 +322,47 @@ class ListOfQuestionContentProvider : PreviewParameterProvider<QuestionContentPa
                 imageSrc = "",
                 longAnswer = "Замыкание (closure) - это функция вместе с лексическим окружением...",
                 shortAnswer = "Функция + её лексическое окружение",
-                guruData = GuruData(
-                    name = "",
-                    position = "",
-                    description = "",
-                    photoUrl = "",
-                    profileUrl = "",
-                    youtubeUrl = "",
-                    telegramUrl = ""
+                keywords = listOf(),
+                status = null,
+                rate = null,
+                complexity = null,
+                createdById = "",
+                updatedById = "",
+                questionSpecializations = listOf(
+                    NestedSpecializationVO(
+                        id = 27,
+                        title = "",
+                        description = "",
+                        imageSrc = "",
+                        createdAt = "",
+                        updatedAt = ""
+                    )
+                ),
+                questionSkills = listOf(
+                    NestedSkillVO(
+                        id = 11,
+                        title = "",
+                        description = "",
+                        imageSrc = "",
+                        createdAt = "",
+                        updatedAt = ""
+                    )
+                ),
+                createdAt = "",
+                updatedAt = "",
+                createdBy = NestedUserReferenceVO(
+                    id = "",
+                    username = ""
+                ),
+                updatedBy = null,
+                guru = GuruVO(
+                    name = "Ruslan Kuyanets",
+                    title = "Frontend Guru",
+                    specializationId = 11,
+                    photoUrl = "https://e5e684b1-4a6a-4be5-b7ee-b2b678239d61.selstorage.ru/" +
+                            "gurus/%D1%80%D1%83%D1%81%D0%BB%D0%B0%D0%BD%D0%BC%D0%B5%D0%BD%D1%82%D0%BE%D1%80%20(1).jpeg",
+                    youtubeUrl = "https://youtube.com/@reactify-it",
+                    telegramUrl = "https://t.me/reactify_IT"
                 )
             )
         )
@@ -237,7 +382,11 @@ fun StatesQuestionContentPreview(params: QuestionContentParams) {
     QuestionContent(
         question = params.question,
         padding = params.padding,
-        strings = previewQuestionContentStrings()
+        strings = previewQuestionContentStrings(),
+        onPrevClick = {},
+        onNextClick = {},
+        onTelegramClick = {},
+        onYoutubeClick = {}
     )
 }
 
