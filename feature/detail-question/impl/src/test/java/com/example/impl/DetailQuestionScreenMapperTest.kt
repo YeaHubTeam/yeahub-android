@@ -16,17 +16,15 @@ import org.junit.jupiter.params.provider.ArgumentsSource
 
 class DetailQuestionScreenMapperTest {
 
-
     @ParameterizedTest
     @ArgumentsSource(DetailQuestionScreenMapperArgumentsProvider::class)
-    fun `map PublicQuestionEntity to DetailQuestionState correctly`(tesCase: DetailQuestionScreenMapperTestCase){
+    fun `map PublicQuestionEntity to DetailQuestionState correctly`(tesCase: DetailQuestionScreenMapperTestCase) {
         val mapper = DetailQuestionScreenMapper()
 
         val result = mapper.getScreenState(tesCase.dataToTest)
 
         assert(result == tesCase.expectedResult)
     }
-
 
     data class DetailQuestionScreenMapperTestCase(
         val dataToTest: PublicQuestionEntity,
@@ -147,7 +145,8 @@ class DetailQuestionScreenMapperTest {
                             telegramUrl = "https://t.me/gulyaev_it"
                         )
                     )
-                )),
+                )
+                ),
                 DetailQuestionScreenMapperTestCase(
                     dataToTest = PublicQuestionEntity(
                         id = 1,

@@ -26,6 +26,7 @@ sealed class DetailQuestionState {
             val guru: GuruVO
         )
     }
+
     data object Initial : DetailQuestionState()
     data class ErrorState(val message: String?) : DetailQuestionState()
 }
@@ -39,7 +40,7 @@ data class GuruVO(
     val youtubeUrl: String
 )
 
-data class NestedSkillVO (
+data class NestedSkillVO(
     val id: Long,
     val title: String,
     val description: String,
@@ -48,7 +49,7 @@ data class NestedSkillVO (
     val updatedAt: String,
 )
 
-data class NestedSpecializationVO (
+data class NestedSpecializationVO(
     val id: Long,
     val title: String,
     val description: String,
@@ -57,7 +58,7 @@ data class NestedSpecializationVO (
     val updatedAt: String
 )
 
-data class NestedUserReferenceVO (
+data class NestedUserReferenceVO(
     val id: String,
     val username: String
 )

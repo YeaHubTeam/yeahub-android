@@ -422,7 +422,8 @@ fun DetailQuestionScreenDynamicPreview() {
     LaunchedEffect(Unit) { mockViewModel.handleEvents(DetailQuestionEvent.LoadQuestion(questionId)) }
 
     DetailQuestionScreenView(
-        onBackClick = {}, viewModel = mockViewModel,
+        onBackClick = {},
+        viewModel = mockViewModel,
         onPrevClick = {},
         onNextClick = {}
     )

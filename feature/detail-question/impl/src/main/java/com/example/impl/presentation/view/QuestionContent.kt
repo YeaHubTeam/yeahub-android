@@ -108,8 +108,8 @@ fun QuestionContent(
                     youtubeUrl = question.guru.youtubeUrl,
                     telegramUrl = question.guru.telegramUrl,
                 ),
-                onTelegramClick = {onTelegramClick()},
-                onYoutubeClick = {onYoutubeClick()},
+                onTelegramClick = { onTelegramClick() },
+                onYoutubeClick = { onYoutubeClick() },
             ) { }
         }
     }
@@ -176,7 +176,7 @@ class ListOfQuestionContentProvider : PreviewParameterProvider<QuestionContentPa
                         imageSrc = "",
                         createdAt = "",
                         updatedAt = ""
-                )
+                    )
                 ),
                 questionSkills = listOf(
                     NestedSkillVO(
