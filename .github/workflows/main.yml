@@ -1,7 +1,7 @@
 name: Main Pipeline
 on:
   pull_request:
-    branches: '*'
+    branches: '**'
   push:
     branches: ["develop"]
 
