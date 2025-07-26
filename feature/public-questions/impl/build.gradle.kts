@@ -18,8 +18,7 @@ android {
         release {
             isMinifyEnabled = false
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                getDefaultProguardFile("proguard-android-optimize.txt")
             )
         }
     }
@@ -45,7 +44,6 @@ dependencies {
     implementation(project(":feature:public-questions:api"))
     implementation(project(":core:utils"))
     implementation(project(":core:ui"))
-    implementation(project(":app"))
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)

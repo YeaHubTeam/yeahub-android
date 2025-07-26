@@ -33,4 +33,10 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
+
+    //ViewModel
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+
+    //Timber
+    implementation(libs.timber)
 }

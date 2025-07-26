@@ -17,8 +17,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import ru.yeahub.public_questions.impl.R
 
 @Composable
 fun ErrorItem(error: Throwable, onRetry: () -> Unit) {
@@ -31,7 +33,7 @@ fun ErrorItem(error: Throwable, onRetry: () -> Unit) {
     ) {
         Icon(
             imageVector = Icons.Default.Warning,
-            contentDescription = "Ошибка",
+            contentDescription =  stringResource(R.string.error),
             tint = MaterialTheme.colorScheme.error,
             modifier = Modifier.size(48.dp)
         )
@@ -39,7 +41,7 @@ fun ErrorItem(error: Throwable, onRetry: () -> Unit) {
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "Ошибка загрузки",
+            text = stringResource(R.string.loading_error),
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.error
         )
@@ -47,7 +49,7 @@ fun ErrorItem(error: Throwable, onRetry: () -> Unit) {
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = error.localizedMessage ?: "Неизвестная ошибка",
+            text = error.localizedMessage ?:  stringResource(R.string.unknown_error),
             style = MaterialTheme.typography.bodyMedium,
             textAlign = TextAlign.Center
         )
@@ -61,7 +63,7 @@ fun ErrorItem(error: Throwable, onRetry: () -> Unit) {
                 contentColor = MaterialTheme.colorScheme.onErrorContainer
             )
         ) {
-            Text("Повторить попытку")
+            Text(stringResource(R.string.try_again))
         }
     }
 }

@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">impl</string>
+    <string name="try_again">Повторить попытку</string>
+    <string name="unknown_error">Повторить попытку</string>
+    <string name="loading_error">Ошибка загрузки</string>
+    <string name="error">Ошибка</string>
 </resources>

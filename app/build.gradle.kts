@@ -90,10 +90,12 @@ dependencies {
     implementation(project(":feature:example-profile:api"))
     implementation(project(":feature:example-questions:api"))
     implementation(project(":feature:example-details:api"))
+    implementation(project(":feature:public-questions:api"))
     implementation(project(":feature:example-home:impl"))
     implementation(project(":feature:example-profile:impl"))
     implementation(project(":feature:example-questions:impl"))
     implementation(project(":feature:example-details:impl"))
+    implementation(project(":feature:public-questions:impl"))
 }
 
 tasks.withType<Test> {
