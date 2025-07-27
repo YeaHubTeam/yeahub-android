@@ -62,6 +62,7 @@ dependencies {
 
     // Timber
     implementation(libs.timber)
+    implementation(libs.androidx.ui.tooling.preview.android)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
