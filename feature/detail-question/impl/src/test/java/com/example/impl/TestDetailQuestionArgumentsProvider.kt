@@ -8,7 +8,6 @@ import java.util.stream.Stream
 abstract class TestDetailQuestionArgumentsProvider<T> : ArgumentsProvider {
     abstract fun testCases(): List<T>
 
-
     override fun provideArguments(context: ExtensionContext?): Stream<out Arguments>? {
         return testCases().map { Arguments.of(it) }.stream()
     }
