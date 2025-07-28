@@ -6,6 +6,7 @@ interface QuestionsScreenApi {
 
     @Composable
     fun QuestionsScreen(
-        onBackClick: () -> Unit
+        onBackClick: () -> Unit,
+        onDetailsClick: (itemId: String, title: String) -> Unit
     )
 }

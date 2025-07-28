@@ -19,10 +19,11 @@ import ru.yeahub.ui.R
 
 @Composable
 fun ShortQuestionAnswer(
-    answerText: String
+    answerText: String,
+    modifier: Modifier = Modifier
 ) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .shadow(
                 elevation = 4.dp,

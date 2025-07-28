@@ -48,6 +48,7 @@ dependencies {
     implementation(project(":feature:example-profile:api"))
     implementation(project(":feature:example-home:api"))
     implementation(project(":feature:example-questions:api"))
+    implementation(project(":feature:example-details:api"))
 
     // Koin
     implementation(libs.koin.core)
@@ -68,4 +69,6 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    // Timber
+    implementation(libs.timber)
 }

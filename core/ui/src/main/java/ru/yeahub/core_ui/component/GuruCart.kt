@@ -1,7 +1,6 @@
 package ru.yeahub.core_ui.component
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -25,6 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import ru.yeahub.core_ui.example.staticPreview.StaticPreview
 import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.ui.R
@@ -48,7 +48,7 @@ fun GuruCard(
     onProfileClick: () -> Unit,
 ) {
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(12.dp),
         colors = CardDefaults.cardColors(containerColor = Theme.colors.white900),
@@ -71,10 +71,8 @@ fun GuruCard(
                 horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Image(
-                    painter = painterResource(
-                        id = R.drawable.img,
-                    ),
+                AsyncImage(
+                    model = data.photoUrl,
                     contentDescription = "Фото ${data.name}",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -162,7 +160,7 @@ fun GuruCartPreview() {
         name = "Руслан Куянец",
         position = "Python Guru",
         description = "Guru – это эксперты YeaHub, которые помогают развивать комьюнити.",
-        photoUrl = "",
+        photoUrl = "https://i.postimg.cc/mZ9rFtRy/1646813954022030-TV8e-JZ.jpg",
         profileUrl = "",
         youtubeUrl = "https://www.youtube.com/watch?v=Cqu2HMJl44Q",
         telegramUrl = ""

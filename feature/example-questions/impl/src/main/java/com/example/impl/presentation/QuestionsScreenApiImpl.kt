@@ -1,12 +1,16 @@
 package com.example.impl.presentation
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -24,7 +28,10 @@ import ru.yeahub.core_utils.pagerImpl.YeaHubPagerState
 class QuestionsScreenApiImpl : QuestionsScreenApi {
 
     @Composable
-    override fun QuestionsScreen(onBackClick: () -> Unit) {
+    override fun QuestionsScreen(
+        onBackClick: () -> Unit,
+        onDetailsClick: (itemId: String, title: String) -> Unit
+    ) {
         val viewModel: QuestionsViewModel = koinViewModel()
         val state by viewModel.state.collectAsStateWithLifecycle()
         val lazyListState = rememberLazyListState()
@@ -34,7 +41,7 @@ class QuestionsScreenApiImpl : QuestionsScreenApi {
                 val lastItem = layout.visibleItemsInfo.lastOrNull()
                 lastItem?.index == layout.totalItemsCount - 1
             }.distinctUntilChanged().collect { reachedEnd ->
-                if (reachedEnd) {
+                if (reachedEnd && state !is YeaHubPagerState.Error) {
                     viewModel.loadNext()
                 }
             }
@@ -46,8 +53,20 @@ class QuestionsScreenApiImpl : QuestionsScreenApi {
             }
         }
 
-        Box(modifier = Modifier.fillMaxSize()) {
-            when (val currentState = state) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            // Кнопка для перехода к деталям
+            Button(
+                onClick = {
+                    onDetailsClick("question_item_1", "Детали с экрана вопросов")
+                },
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Text("Перейти к деталям")
+            }
+            
+            // Основной контент
+            Box(modifier = Modifier.weight(1f)) {
+                when (val currentState = state) {
                 is YeaHubPagerState.Initial -> {
                     LazyColumn(state = lazyListState) {
                         items(10) {
@@ -111,6 +130,7 @@ class QuestionsScreenApiImpl : QuestionsScreenApi {
                             }
                         }
                     }
+                }
                 }
             }
         }
