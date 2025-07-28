@@ -168,7 +168,7 @@ class MockQuestionsViewModel : ViewModel() {
                 title = "Mocked Question Title $index",
                 rate = "Rate: ${index * 3}",
                 complexity = "Complexity: ${index + 1}",
-                imageSc = "https://via.placeholder.com/150",
+                imageSc = "https://images.dog.ceo/breeds/terrier-welsh/lucy.jpg",
                 description = "Mocked description for question #$index"
             )
         }
