@@ -19,7 +19,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import ru.yeahub.core_ui.example.staticPreview.StaticPreview
 import ru.yeahub.public_questions.impl.R
 
 @Composable
@@ -66,4 +69,21 @@ fun ErrorItem(error: Throwable, onRetry: () -> Unit) {
             Text(stringResource(R.string.try_again))
         }
     }
+}
+
+@StaticPreview
+@Composable
+fun ShowErrorItemPreview(
+    @PreviewParameter(ErrorStateProvider::class) error: Throwable
+) {
+    ErrorItem(error = error, onRetry = {})
+}
+
+class ErrorStateProvider : PreviewParameterProvider<Throwable> {
+    override val values = sequenceOf(
+        Throwable("Network Error"),
+        Throwable("Timeout Error"),
+        Throwable("Server Error"),
+        Throwable("Unknown Error")
+    )
 }
