@@ -1,7 +1,7 @@
 package ru.yeahub.example_questions.impl.data
 
-import ru.yeahub.example_questions.api.QuestionsRepository
-import ru.yeahub.example_questions.api.RequestQuestionsData
+import ru.yeahub.example_questions.impl.domain.QuestionsRepository
+import ru.yeahub.example_questions.impl.presentation.RequestQuestionsData
 import ru.yeahub.network_api.ApiService
 import ru.yeahub.network_api.models.GetPublicQuestionsResponse
 

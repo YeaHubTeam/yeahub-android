@@ -5,9 +5,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -60,74 +63,74 @@ class QuestionsScreenApiImpl : QuestionsScreenApi {
             ) {
                 Text("Перейти к деталям")
             }
-            
+
             // Основной контент
             Box(modifier = Modifier.weight(1f)) {
                 when (val currentState = state) {
-                is YeaHubPagerState.Initial -> {
-                    LazyColumn(state = lazyListState) {
-                        items(10) {
-                            PlaceholderItem()
-                        }
-                    }
-                }
-
-                is YeaHubPagerState.Loading -> {
-                    if (currentState.items.isEmpty()) {
+                    is YeaHubPagerState.Initial -> {
                         LazyColumn(state = lazyListState) {
                             items(10) {
                                 PlaceholderItem()
                             }
                         }
+                    }
+
+                    is YeaHubPagerState.Loading -> {
+                        if (currentState.items.isEmpty()) {
+                            LazyColumn(state = lazyListState) {
+                                items(10) {
+                                    PlaceholderItem()
+                                }
+                            }
+                        } else {
+                            LazyColumn(state = lazyListState) {
+                                items(currentState.items) { question ->
+                                    QuestionItem(question = question)
+                                }
+                                items(10) {
+                                    PlaceholderItem()
+                                }
+                            }
+                        }
+                    }
+
+                    is YeaHubPagerState.Loaded -> {
+                        LazyColumn(state = lazyListState) {
+                            items(currentState.items) { question ->
+                                QuestionItem(question = question)
+                            }
+                        }
+                    }
+
+                    is YeaHubPagerState.Error -> if (currentState.items.isEmpty()) {
+                        ErrorScreen(
+                            error = currentState.throwable,
+                            onRetry = {
+                                viewModel.refresh()
+                            }
+                        )
                     } else {
                         LazyColumn(state = lazyListState) {
                             items(currentState.items) { question ->
                                 QuestionItem(question = question)
                             }
-                            items(10) {
-                                PlaceholderItem()
+                            item {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(150.dp),
+                                    contentAlignment = Alignment.TopCenter
+                                ) {
+                                    ErrorItem(
+                                        error = currentState.throwable,
+                                        onRetry = {
+                                            viewModel.loadNext()
+                                        }
+                                    )
+                                }
                             }
                         }
                     }
-                }
-
-                is YeaHubPagerState.Loaded -> {
-                    LazyColumn(state = lazyListState) {
-                        items(currentState.items) { question ->
-                            QuestionItem(question = question)
-                        }
-                    }
-                }
-
-                is YeaHubPagerState.Error -> if (currentState.items.isEmpty()) {
-                    ErrorScreen(
-                        error = currentState.throwable,
-                        onRetry = {
-                            viewModel.refresh()
-                        }
-                    )
-                } else {
-                    LazyColumn(state = lazyListState) {
-                        items(currentState.items) { question ->
-                            QuestionItem(question = question)
-                        }
-                        item {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(150.dp),
-                                contentAlignment = Alignment.TopCenter
-                            ) {
-                                ErrorItem(
-                                    error = currentState.throwable,
-                                    onRetry = {
-                                        viewModel.loadNext()
-                                    }
-                                )
-                            }
-                        }
-                    }
-                }
                 }
             }
         }

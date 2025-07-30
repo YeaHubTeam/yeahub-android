@@ -8,7 +8,6 @@ import kotlinx.coroutines.launch
 import ru.yeahub.core_utils.pager.YeaHubPagerLoader
 import ru.yeahub.core_utils.pagerImpl.YeaHubPager
 import ru.yeahub.core_utils.pagerImpl.YeaHubPagerState
-import ru.yeahub.example_questions.api.RequestQuestionsData
 import ru.yeahub.example_questions.impl.domain.QuestionsUseCase
 import ru.yeahub.network_api.models.GetPublicQuestionsResponse
 import ru.yeahub.network_api.models.GetQuestionResponse
