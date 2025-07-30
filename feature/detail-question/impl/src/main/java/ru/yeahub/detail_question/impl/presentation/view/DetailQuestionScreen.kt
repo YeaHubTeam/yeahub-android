@@ -70,8 +70,6 @@ fun DetailQuestionScreen(
 
     DetailQuestionScreenView(
         onBackClick = { viewModel.handleEvents(DetailQuestionEvent.OnBackClick) },
-        onPrevClick = { viewModel.handleEvents(DetailQuestionEvent.OnPrevClick) },
-        onNextClick = { viewModel.handleEvents(DetailQuestionEvent.OnNextClick) },
         viewModel = viewModel
     )
 
@@ -87,8 +85,6 @@ internal fun HandleCommands(
         commands.collect { command ->
             when (command) {
                 DetailQuestionCommand.NavigateBack -> onResult(DetailQuestionResult.BackClick)
-                DetailQuestionCommand.NavigateNextPage -> onResult(DetailQuestionResult.NextClick)
-                DetailQuestionCommand.NavigatePrevPage -> onResult(DetailQuestionResult.PrevClick)
                 is DetailQuestionCommand.OpenUrl -> onResult(DetailQuestionResult.UrlClick(command.url))
             }
         }
@@ -99,8 +95,6 @@ internal fun HandleCommands(
 @Composable
 fun DetailQuestionScreenView(
     onBackClick: () -> Unit,
-    onPrevClick: () -> Unit,
-    onNextClick: () -> Unit,
     viewModel: DetailQuestionViewModel
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -159,7 +153,6 @@ fun DetailQuestionScreenView(
         DetailQuestionScreenState(
             uiState = uiState,
             onBackClick = onBackClick,
-            onPrevClick = onPrevClick,
             onTelegramClick = {
                 if (uiState is DetailQuestionState.Success) {
                     viewModel.handleEvents(
@@ -178,7 +171,6 @@ fun DetailQuestionScreenView(
                     )
                 }
             },
-            onNextClick = onNextClick,
             padding = padding
         )
     }
@@ -188,8 +180,6 @@ fun DetailQuestionScreenView(
 fun DetailQuestionScreenState(
     uiState: DetailQuestionState,
     onBackClick: () -> Unit,
-    onPrevClick: () -> Unit,
-    onNextClick: () -> Unit,
     onTelegramClick: () -> Unit,
     onYoutubeClick: () -> Unit,
     padding: PaddingValues,
@@ -199,8 +189,6 @@ fun DetailQuestionScreenState(
         is DetailQuestionState.Initial -> Unit
         is DetailQuestionState.Success -> QuestionContent(
             uiState.data,
-            onPrevClick,
-            onNextClick,
             onTelegramClick,
             onYoutubeClick,
             padding,
@@ -328,8 +316,6 @@ fun StatesDetailQuestionPreview(params: DetailQuestionScreenStateParams) {
         uiState = params.state,
         padding = params.padding,
         errorStrings = params.errorStrings,
-        onPrevClick = {},
-        onNextClick = {},
         onTelegramClick = {},
         onYoutubeClick = {},
         onBackClick = {}
@@ -343,7 +329,7 @@ fun DetailQuestionScreenDynamicPreview() {
     val mockMapper = remember {
         DetailQuestionScreenMapper()
     }
-    val mockUseCase = object : GetQuestionByIdUseCase {
+    val mockGetQuestionByIUseCase = object : GetQuestionByIdUseCase {
         override suspend fun invoke(id: Long): PublicQuestionEntity {
             return PublicQuestionEntity(
                 id = 1L,
@@ -429,8 +415,12 @@ fun DetailQuestionScreenDynamicPreview() {
             )
         }
     }
+
     val mockViewModel: DetailQuestionViewModel = viewModelCreator {
-        DetailQuestionViewModel(mockMapper, mockUseCase)
+        DetailQuestionViewModel(
+            mockMapper,
+            mockGetQuestionByIUseCase
+        )
     }
 
     LaunchedEffect(Unit) { mockViewModel.handleEvents(DetailQuestionEvent.LoadQuestion(questionId)) }
@@ -438,7 +428,5 @@ fun DetailQuestionScreenDynamicPreview() {
     DetailQuestionScreenView(
         onBackClick = {},
         viewModel = mockViewModel,
-        onPrevClick = {},
-        onNextClick = {}
     )
 }

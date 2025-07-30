@@ -17,10 +17,8 @@ import androidx.compose.ui.unit.dp
 import ru.yeahub.core_ui.component.DetailHeaderQuestion
 import ru.yeahub.core_ui.component.DetailedQuestionAnswer
 import ru.yeahub.core_ui.component.DetailedQuestionAnswerBlock
-import ru.yeahub.core_ui.component.FavoriteState
 import ru.yeahub.core_ui.component.GuruCard
 import ru.yeahub.core_ui.component.GuruData
-import ru.yeahub.core_ui.component.PopoverQuestion
 import ru.yeahub.core_ui.component.ShortQuestionAnswer
 import ru.yeahub.core_ui.example.staticPreview.StaticPreview
 import ru.yeahub.detail_question.impl.presentation.state.DetailQuestionState
@@ -32,8 +30,6 @@ import ru.yeahub.detail_question.impl.presentation.state.NestedUserReferenceVO
 @Composable
 fun QuestionContent(
     question: DetailQuestionState.Success.PublicQuestionVO,
-    onPrevClick: () -> Unit,
-    onNextClick: () -> Unit,
     onTelegramClick: () -> Unit,
     onYoutubeClick: () -> Unit,
     padding: PaddingValues,
@@ -63,15 +59,6 @@ fun QuestionContent(
                     onFilterClick = null,
                 )
             }
-        }
-        item {
-            PopoverQuestion(
-                favoriteState = FavoriteState.DISABLED,
-                onPreviousClick = { onPrevClick() },
-                onNextClick = { onNextClick() },
-                modifier = Modifier
-                    .padding(start = 10.dp, end = 10.dp, bottom = 20.dp)
-            )
         }
         item {
             Box(
@@ -381,8 +368,6 @@ fun StatesQuestionContentPreview(params: QuestionContentParams) {
         question = params.question,
         padding = params.padding,
         strings = previewQuestionContentStrings(),
-        onPrevClick = {},
-        onNextClick = {},
         onTelegramClick = {},
         onYoutubeClick = {}
     )

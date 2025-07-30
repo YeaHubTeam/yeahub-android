@@ -7,10 +7,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import ru.yeahub.core_utils.BaseViewModel
 import ru.yeahub.detail_question.impl.domain.usecase.GetQuestionByIdUseCase
-import ru.yeahub.detail_question.impl.domain.usecase.GetQuestionByNextIdUseCase
-import ru.yeahub.detail_question.impl.domain.usecase.GetQuestionByPrevIdUseCase
 import ru.yeahub.detail_question.impl.presentation.intents.DetailQuestionCommand
 import ru.yeahub.detail_question.impl.presentation.intents.DetailQuestionEvent
+import ru.yeahub.detail_question.impl.presentation.mapper.DetailQuestionScreenMapper
 import ru.yeahub.detail_question.impl.presentation.state.DetailQuestionState
 
 class DetailQuestionViewModel(
@@ -28,8 +27,6 @@ class DetailQuestionViewModel(
         when (event) {
             is DetailQuestionEvent.LoadQuestion -> getQuestionById(event.id)
             DetailQuestionEvent.OnBackClick -> handleBackClick()
-            DetailQuestionEvent.OnNextClick -> handleNextClick()
-            DetailQuestionEvent.OnPrevClick -> handlePrevClick()
             is DetailQuestionEvent.OnTelegramClick -> handleTelegramClick(event.url)
             is DetailQuestionEvent.OnYoutubeClick -> handleYoutubeClick(event.url)
         }
@@ -51,18 +48,6 @@ class DetailQuestionViewModel(
     private fun handleBackClick() {
         viewModelScopeSafe.launch {
             _commands.emit(DetailQuestionCommand.NavigateBack)
-        }
-    }
-
-    private fun handleNextClick() {
-        viewModelScopeSafe.launch {
-            _commands.emit(DetailQuestionCommand.NavigateNextPage)
-        }
-    }
-
-    private fun handlePrevClick() {
-        viewModelScopeSafe.launch {
-            _commands.emit(DetailQuestionCommand.NavigatePrevPage)
         }
     }
 
