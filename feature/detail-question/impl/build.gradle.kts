@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.impl"
+    namespace = "ru.yeahub.detail_question.impl"
     compileSdk = 35
 
     defaultConfig {
