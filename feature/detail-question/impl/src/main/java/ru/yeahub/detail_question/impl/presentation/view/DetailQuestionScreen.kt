@@ -156,25 +156,38 @@ fun DetailQuestionScreenView(
             }
         }
     ) { padding ->
-        DetailQuestionScreenState(uiState = uiState, onPrevClick = onPrevClick, onTelegramClick = {
-            if (uiState is DetailQuestionState.Success) {
-                viewModel.handleEvents(
-                    DetailQuestionEvent.OnTelegramClick((uiState as DetailQuestionState.Success).data.guru.telegramUrl)
-                )
-            }
-        }, onYoutubeClick = {
-            if (uiState is DetailQuestionState.Success) {
-                viewModel.handleEvents(
-                    DetailQuestionEvent.OnYoutubeClick((uiState as DetailQuestionState.Success).data.guru.youtubeUrl)
-                )
-            }
-        }, onNextClick = onNextClick, padding = padding)
+        DetailQuestionScreenState(
+            uiState = uiState,
+            onBackClick = onBackClick,
+            onPrevClick = onPrevClick,
+            onTelegramClick = {
+                if (uiState is DetailQuestionState.Success) {
+                    viewModel.handleEvents(
+                        DetailQuestionEvent.OnTelegramClick(
+                            (uiState as DetailQuestionState.Success).data.guru.telegramUrl
+                        )
+                    )
+                }
+            },
+            onYoutubeClick = {
+                if (uiState is DetailQuestionState.Success) {
+                    viewModel.handleEvents(
+                        DetailQuestionEvent.OnYoutubeClick(
+                            (uiState as DetailQuestionState.Success).data.guru.youtubeUrl
+                        )
+                    )
+                }
+            },
+            onNextClick = onNextClick,
+            padding = padding
+        )
     }
 }
 
 @Composable
 fun DetailQuestionScreenState(
     uiState: DetailQuestionState,
+    onBackClick: () -> Unit,
     onPrevClick: () -> Unit,
     onNextClick: () -> Unit,
     onTelegramClick: () -> Unit,
@@ -197,7 +210,7 @@ fun DetailQuestionScreenState(
         is DetailQuestionState.LoadingState -> LoadingScreen(padding)
         is DetailQuestionState.ErrorState -> ErrorScreen(
             uiState.message,
-            onRetry = { },
+            onBack = { onBackClick() },
             errorStrings
         )
     }
@@ -318,7 +331,8 @@ fun StatesDetailQuestionPreview(params: DetailQuestionScreenStateParams) {
         onPrevClick = {},
         onNextClick = {},
         onTelegramClick = {},
-        onYoutubeClick = {}
+        onYoutubeClick = {},
+        onBackClick = {}
     )
 }
 

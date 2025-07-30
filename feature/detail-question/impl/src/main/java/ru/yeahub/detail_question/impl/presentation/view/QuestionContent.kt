@@ -56,14 +56,12 @@ fun QuestionContent(
                     .background(Color.Transparent)
                     .padding(10.dp, 16.dp)
             ) {
-                question.imageSrc?.let {
-                    DetailHeaderQuestion(
-                        questionTitle = question.title,
-                        additionalText = question.description,
-                        imageUrl = it,
-                        onFilterClick = {},
-                    )
-                }
+                DetailHeaderQuestion(
+                    questionTitle = question.title,
+                    additionalText = question.description,
+                    imageUrl = null,
+                    onFilterClick = null,
+                )
             }
         }
         item {
@@ -391,9 +389,8 @@ fun StatesQuestionContentPreview(params: QuestionContentParams) {
 }
 
 fun previewQuestionContentStrings() = DetailQuestionStrings(
-    iconErrorScreenDescription = "Иконка ошибки",
     errorScreenTitleText = "Ошибка",
     unknownErrorScreenText = "Неизвестная ошибка",
-    onRetryButtonText = "Повторить",
+    onBackButtonText = "Повторить",
     guruDescriptionText = "Guru – это эксперты YeaHub, которые помогают развивать комьюнити."
 )

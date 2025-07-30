@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="back_button_text">Назад</string>
-    <string name="icon_error_screen_description">Ошибка</string>
-    <string name="error_screen_title_text">Ошибка загрузки</string>
-    <string name="unknown_error_screen_text">Неизвестная ошибка</string>
-    <string name="onretry_button_text">Повторить попытку</string>
+    <string name="error_screen_title_text">УПС!</string>
+    <string name="unknown_error_screen_text">Что‑то пошло не так</string>
+    <string name="on_back_button_text">Назад</string>
     <string name="guru_description_text">Guru – это эксперты YeaHub, которые помогают развивать комьюнити.</string>
 </resources>

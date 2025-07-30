@@ -26,49 +26,48 @@ import ru.yeahub.core_ui.theme.Theme
 @Composable
 fun ErrorScreen(
     error: String?,
-    onRetry: () -> Unit,
+    onBack: () -> Unit,
     strings: DetailQuestionStrings = rememberDetailQuestionStrings()
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .background(Theme.colors.black25),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Icon(
-            imageVector = Icons.Default.Warning,
-            contentDescription = strings.iconErrorScreenDescription,
-            tint = MaterialTheme.colorScheme.error,
-            modifier = Modifier.size(48.dp)
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = strings.errorScreenTitleText,
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.error
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text(
-            text = error ?: strings.unknownErrorScreenText,
-            style = MaterialTheme.typography.bodyMedium,
-            textAlign = TextAlign.Center
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Button(
-            onClick = onRetry,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.errorContainer,
-                contentColor = MaterialTheme.colorScheme.onErrorContainer
-            )
+        Surface(
+            modifier = Modifier
+                .height(IntrinsicSize.Min)
+                .width(IntrinsicSize.Max),
+            color = Theme.colors.white900,
+            shape = MaterialTheme.shapes.medium,
         ) {
-            Text(strings.onRetryButtonText)
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Text(
+                    modifier = Modifier.padding(bottom = 4.dp),
+                    text = strings.errorScreenTitleText,
+                    style = Theme.typography.body6,
+                    color = Theme.colors.black900
+                )
+                Text(
+                    modifier = Modifier.padding(bottom = 4.dp),
+                    text = error ?: strings.unknownErrorScreenText,
+                    style = Theme.typography.body3Accent,
+                    textAlign = TextAlign.Center,
+                    color = Theme.colors.black700
+                )
+                PrimaryButton(
+                    onClick = onBack,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    Text(text = strings.onBackButtonText, style = Theme.typography.body3Strong)
+                }
+            }
         }
     }
 }
@@ -94,7 +93,7 @@ class ListOfErrorScreenProvider : PreviewParameterProvider<ErrorScreenParams> {
 
 data class ErrorScreenParams(
     val errorMessage: String?,
-    val onRetry: () -> Unit = {}
+    val onBack: () -> Unit = {}
 )
 
 @StaticPreview
@@ -109,15 +108,14 @@ fun ShowErrorScreenPreview(
 fun StatesErrorScreenPreview(params: ErrorScreenParams) {
     ErrorScreen(
         error = params.errorMessage,
-        onRetry = params.onRetry,
+        onBack = params.onBack,
         strings = previewErrorScreenStrings()
     )
 }
 
 fun previewErrorScreenStrings() = DetailQuestionStrings(
-    iconErrorScreenDescription = "Иконка ошибки",
-    errorScreenTitleText = "Ошибка",
-    unknownErrorScreenText = "Неизвестная ошибка",
-    onRetryButtonText = "Повторить",
+    errorScreenTitleText = "УПС!",
+    unknownErrorScreenText = "Что‑то пошло не так",
+    onBackButtonText = "Назад",
     guruDescriptionText = "Guru – это эксперты YeaHub, которые помогают развивать комьюнити."
 )
