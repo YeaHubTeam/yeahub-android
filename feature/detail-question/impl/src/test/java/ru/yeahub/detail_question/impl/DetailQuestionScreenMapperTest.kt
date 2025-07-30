@@ -1,6 +1,5 @@
 package ru.yeahub.detail_question.impl
 
-
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ArgumentsSource
 import ru.yeahub.detail_question.impl.domain.models.GuruEntity
