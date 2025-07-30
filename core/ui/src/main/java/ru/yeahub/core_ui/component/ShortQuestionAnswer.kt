@@ -12,7 +12,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
+import dev.jeziellago.compose.markdowntext.MarkdownText
 import ru.yeahub.core_ui.example.staticPreview.StaticPreview
 import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.ui.R
@@ -42,11 +44,16 @@ fun ShortQuestionAnswer(
                 style = Theme.typography.head4,
                 color = Theme.colors.black800
             )
-
-            Text(
-                text = answerText,
-                style = Theme.typography.body3Accent,
-                color = Theme.colors.black700
+            MarkdownText(
+                markdown = answerText,
+                style = TextStyle(
+                    color = Theme.colors.black700,
+                    fontFamily = Theme.typography.body3Accent.fontFamily,
+                    fontWeight = Theme.typography.body3Accent.fontWeight,
+                    fontSize = Theme.typography.body3Accent.fontSize,
+                    lineHeight = Theme.typography.body3Accent.lineHeight
+                ),
+                modifier = Modifier.padding(bottom = 8.dp)
             )
         }
     }
