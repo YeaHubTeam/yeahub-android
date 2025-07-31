@@ -3,7 +3,6 @@ package ru.yeahub.core_ui.component
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -55,16 +53,13 @@ fun CollectionsOrQuestionContent(
                     color = Theme.colors.white900,
                     shape = RoundedCornerShape(8.dp)
                 )
-                .padding(start = 12.dp, top = 16.dp, end = 16.dp, bottom = 12.dp),
+                .padding(start = 12.dp, top = 16.dp, end = 12.dp, bottom = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            Box(modifier = Modifier, contentAlignment = Alignment.Center) {
-                Image(
-                    painterResource(state.image),
-                    contentDescription = null,
-                )
-            }
-
+            Image(
+                painterResource(state.image),
+                contentDescription = null,
+            )
             Text(
                 text = state.description.getString(context),
                 style = Theme.typography.body3Accent
@@ -93,9 +88,9 @@ fun QuestionPreview() {
         state = QuestionState(
             title = TextOrResource.Text("База вопросов"),
             description = TextOrResource.Text(
-                "Сотни проверенных вопросов по специальностям\u2028" +
+                "Сотни проверенных вопросов по специальностям" +
                         "Frontend, Backend, QA, DevOps, Data Analytics и другие." +
-                        "\u2028Прокачайте знания — от джуниора до синьора"
+                        "Прокачайте знания — от джуниора до синьора"
             ),
             buttonText = TextOrResource.Text("Выбрать специальность"),
             image = R.drawable.frontend__1_
