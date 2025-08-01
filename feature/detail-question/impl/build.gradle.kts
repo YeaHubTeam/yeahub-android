@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.impl"
+    namespace = "ru.yeahub.detail_question.impl"
     compileSdk = 35
 
     defaultConfig {
@@ -47,6 +47,7 @@ dependencies {
     implementation(project(":core:ui"))
     implementation(project(":core:utils"))
     implementation(project(":core:network-api"))
+    implementation(project(":core:navigation-api"))
     implementation(libs.timber)
     implementation(libs.androidx.core.ktx)
     implementation(platform(libs.androidx.compose.bom))
@@ -60,6 +61,7 @@ dependencies {
     implementation(libs.koin.android)
     implementation(libs.koin.compose)
     implementation(libs.compose.shimmer)
+    implementation(libs.androidx.navigation.compose)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     testImplementation(libs.junit.jupiter)
