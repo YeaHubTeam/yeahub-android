@@ -22,7 +22,6 @@ import androidx.compose.ui.unit.dp
 import ru.yeahub.core_ui.example.staticPreview.StaticPreview
 import ru.yeahub.core_ui.theme.Theme
 
-
 @Composable
 fun ErrorScreen(
     error: String?,
@@ -30,7 +29,6 @@ fun ErrorScreen(
     backText: String,
     unknownErrorText: String,
     onBack: () -> Unit
-
 ) {
     Column(
         modifier = Modifier
@@ -74,7 +72,6 @@ fun ErrorScreen(
         }
     }
 }
-
 
 class ListOfErrorScreenProvider : PreviewParameterProvider<ErrorScreenParams> {
     override val values = sequenceOf(
