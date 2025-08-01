@@ -1,4 +1,4 @@
-package ru.yeahub.detail_question.impl.presentation.view
+package ru.yeahub.core_ui.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -19,15 +19,18 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
-import ru.yeahub.core_ui.component.PrimaryButton
 import ru.yeahub.core_ui.example.staticPreview.StaticPreview
 import ru.yeahub.core_ui.theme.Theme
+
 
 @Composable
 fun ErrorScreen(
     error: String?,
-    onBack: () -> Unit,
-    strings: DetailQuestionStrings = rememberDetailQuestionStrings()
+    titleText: String,
+    backText: String,
+    unknownErrorText: String,
+    onBack: () -> Unit
+
 ) {
     Column(
         modifier = Modifier
@@ -49,13 +52,13 @@ fun ErrorScreen(
             ) {
                 Text(
                     modifier = Modifier.padding(bottom = 4.dp),
-                    text = strings.errorScreenTitleText,
+                    text = titleText,
                     style = Theme.typography.body6,
                     color = Theme.colors.black900
                 )
                 Text(
                     modifier = Modifier.padding(bottom = 4.dp),
-                    text = error ?: strings.unknownErrorScreenText,
+                    text = error ?: unknownErrorText,
                     style = Theme.typography.body3Accent,
                     textAlign = TextAlign.Center,
                     color = Theme.colors.black700
@@ -65,12 +68,13 @@ fun ErrorScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                 ) {
-                    Text(text = strings.onBackButtonText, style = Theme.typography.body3Strong)
+                    Text(text = backText, style = Theme.typography.body3Strong)
                 }
             }
         }
     }
 }
+
 
 class ListOfErrorScreenProvider : PreviewParameterProvider<ErrorScreenParams> {
     override val values = sequenceOf(
@@ -109,13 +113,8 @@ fun StatesErrorScreenPreview(params: ErrorScreenParams) {
     ErrorScreen(
         error = params.errorMessage,
         onBack = params.onBack,
-        strings = previewErrorScreenStrings()
+        titleText = "УПС!",
+        backText = "Назад",
+        unknownErrorText = "Что‑то пошло не так",
     )
 }
-
-fun previewErrorScreenStrings() = DetailQuestionStrings(
-    errorScreenTitleText = "УПС!",
-    unknownErrorScreenText = "Что‑то пошло не так",
-    onBackButtonText = "Назад",
-    guruDescriptionText = "Guru – это эксперты YeaHub, которые помогают развивать комьюнити."
-)

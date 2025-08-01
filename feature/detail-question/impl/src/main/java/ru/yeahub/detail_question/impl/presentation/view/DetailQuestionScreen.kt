@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.flow.SharedFlow
 import org.koin.androidx.compose.koinViewModel
+import ru.yeahub.core_ui.component.ErrorScreen
 import ru.yeahub.core_ui.example.dynamicPreview.StandardScreenSizePreview
 import ru.yeahub.core_ui.example.staticPreview.StaticPreview
 import ru.yeahub.core_ui.theme.Theme
@@ -199,7 +200,9 @@ fun DetailQuestionScreenState(
         is DetailQuestionState.ErrorState -> ErrorScreen(
             uiState.message,
             onBack = { onBackClick() },
-            errorStrings
+            titleText = errorStrings.errorScreenTitleText,
+            backText = errorStrings.onBackButtonText,
+            unknownErrorText = errorStrings.unknownErrorScreenText
         )
     }
 }
@@ -430,3 +433,10 @@ fun DetailQuestionScreenDynamicPreview() {
         viewModel = mockViewModel,
     )
 }
+
+fun previewErrorScreenStrings() = DetailQuestionStrings(
+    errorScreenTitleText = "УПС!",
+    unknownErrorScreenText = "Что‑то пошло не так",
+    onBackButtonText = "Назад",
+    guruDescriptionText = "Guru – это эксперты YeaHub, которые помогают развивать комьюнити."
+)
