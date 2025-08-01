@@ -44,6 +44,7 @@ val Black200 = Color(color = 0xFFBABABA)
 val Black100 = Color(color = 0xFFD1D1D1)
 val Black50 = Color(color = 0xFFE8E8E8)
 val Black25 = Color(color = 0xFFF4F4F4)
+val Black10 = Color(color = 0xFFF8F8F8)
 
 val White900 = Color(color = 0xFFFFFFFF)
 
