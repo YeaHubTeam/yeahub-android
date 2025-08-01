@@ -24,7 +24,7 @@ fun YeaHubTheme(
     }
 }
 
-internal object Theme {
+object Theme {
     val colors: Colors
         @Composable
         @ReadOnlyComposable
