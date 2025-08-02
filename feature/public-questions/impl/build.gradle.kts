@@ -30,7 +30,7 @@ android {
         jvmTarget = "17"
     }
     buildFeatures {
-        compose = false
+        compose = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.8"
@@ -64,7 +64,12 @@ dependencies {
     implementation(libs.timber)
     implementation(libs.androidx.ui.tooling.preview.android)
 
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
+    testImplementation(libs.junit.jupiter)
+    testImplementation(platform(libs.junit.bom))
+    testRuntimeOnly(libs.junit.platform.launcher)
+    implementation(libs.androidx.junit.ktx)
+    testImplementation(libs.mockk)
+}
+tasks.withType<Test> {
+    useJUnitPlatform()
 }
