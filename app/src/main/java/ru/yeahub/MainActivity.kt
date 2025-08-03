@@ -20,18 +20,18 @@ import timber.log.Timber
 
 /**
  * Главная активити приложения, которая инициализирует навигацию.
- * 
+ *
  * Поддерживает:
  * - Обычную навигацию через AppNavigation
  * - Deep links из уведомлений
  * - Правильную обработку Intent-ов при создании и возобновлении активности
- * 
+ *
  * Навигация:
  * 1. Все экраны приложения отображаются через [AppNavigation]
  * 2. Нижняя навигация настраивается в [NavigationFactory]
  * 3. Маршруты определены в [NavigationRoutes]
  * 4. Deep links обрабатываются через [NotificationNavigationService]
- * 
+ *
  * Добавление нового экрана:
  * 1. Если экран должен быть в нижней навигации:
  *    - Добавьте маршрут в [NavigationRoutes.Bottom]
@@ -49,22 +49,22 @@ import timber.log.Timber
  *    - Используйте NavController для навигации между экранами
  */
 class MainActivity : ComponentActivity() {
-    
+
     private val pathManager: NavigationPathManager by inject()
     private lateinit var notificationService: NotificationNavigationService
-    
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        
+
         // Инициализируем сервис уведомлений
         notificationService = NotificationNavigationService(pathManager)
-        
+
         setContent {
             YeaHubTheme {
                 val navController = rememberNavController()
                 var pendingIntent by remember { mutableStateOf<Intent?>(null) }
-                
+
                 // Обрабатываем intent при создании активности
                 LaunchedEffect(Unit) {
                     intent?.let { initialIntent ->
@@ -73,7 +73,7 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }
-                
+
                 // Обрабатываем pending intent после инициализации навигации
                 LaunchedEffect(pendingIntent) {
                     pendingIntent?.let { intentToHandle ->
@@ -82,17 +82,17 @@ class MainActivity : ComponentActivity() {
                         pendingIntent = null
                     }
                 }
-                
+
                 AppNavigation(navController = navController)
             }
         }
     }
-    
+
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        
+
         Timber.d("MainActivity onNewIntent: Received intent: ${intent.data}")
-        
+
         // Обрабатываем новый intent, если активность уже запущена
         if (notificationService.canHandleIntent(intent)) {
             // Получаем текущий navController из compose
@@ -100,10 +100,10 @@ class MainActivity : ComponentActivity() {
             this.intent = intent
         }
     }
-    
+
     /**
      * Получает текущий intent для обработки в compose.
-     * 
+     *
      * @return Intent для обработки или null
      */
     fun getPendingIntentForCompose(): Intent? {

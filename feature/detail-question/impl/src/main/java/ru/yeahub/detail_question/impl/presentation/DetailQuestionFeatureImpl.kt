@@ -45,6 +45,7 @@ class DetailQuestionFeatureImpl : FeatureApi {
                             pathManager,
                             navController
                         )
+
                         is DetailQuestionResult.UrlClick -> {
                             val intent = Intent(Intent.ACTION_VIEW, result.url.toUri())
                             navController.context.startActivity(intent)

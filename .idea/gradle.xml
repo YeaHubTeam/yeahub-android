@@ -36,6 +36,13 @@
             <option value="$PROJECT_DIR$/feature/example-questions" />
             <option value="$PROJECT_DIR$/feature/example-questions/api" />
             <option value="$PROJECT_DIR$/feature/example-questions/impl" />
+            <option value="$PROJECT_DIR$/feature/example-specializations" />
+            <option value="$PROJECT_DIR$/feature/example-specializations/api" />
+            <option value="$PROJECT_DIR$/feature/example-specializations/impl" />
+            <option value="$PROJECT_DIR$/feature/example-specialties" />
+            <option value="$PROJECT_DIR$/feature/example-specialties/api" />
+            <option value="$PROJECT_DIR$/feature/example-specialties/impl" />
+            <option value="$PROJECT_DIR$/mylibrary" />
           </set>
         </option>
       </GradleProjectSettings>

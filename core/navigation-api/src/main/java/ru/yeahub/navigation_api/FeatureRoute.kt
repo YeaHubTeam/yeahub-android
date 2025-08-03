@@ -9,7 +9,7 @@ package ru.yeahub.navigation_api
  * - Построение путей с учетом родительских маршрутов
  */
 object FeatureRoute {
-    
+
     fun createFeatureRoute(parentRoute: String, featureName: String): String =
         if (parentRoute.isEmpty()) featureName else "$parentRoute/$featureName"
 
@@ -46,6 +46,7 @@ object FeatureRoute {
     object DetailsFeature {
         const val FEATURE_NAME = "details"
     }
+
     object DetailQuestionFeature {
         const val FEATURE_NAME = "detail_question"
     }

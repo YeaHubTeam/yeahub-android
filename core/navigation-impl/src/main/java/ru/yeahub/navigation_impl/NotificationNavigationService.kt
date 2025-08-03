@@ -8,7 +8,7 @@ import timber.log.Timber
 
 /**
  * Сервис для обработки навигации из уведомлений.
- * 
+ *
  * Поддерживает:
  * - Dynamic deep links из уведомлений
  * - Различные типы экранов через DeepLinkConfig
@@ -17,10 +17,10 @@ import timber.log.Timber
 class NotificationNavigationService(
     private val pathManager: NavigationPathManager
 ) {
-    
+
     /**
      * Обрабатывает Intent из уведомления.
-     * 
+     *
      * @param intent Intent с данными уведомления
      * @param navController NavHostController для навигации
      * @return true, если Intent был обработан
@@ -28,7 +28,7 @@ class NotificationNavigationService(
     fun handleNotificationIntent(intent: Intent, navController: NavHostController): Boolean {
         val data = intent.data ?: return false
         val parser = DeepLinkConfig.Utils.parseDeepLink(data)
-        
+
         return if (parser.isValidDeepLink()) {
             handleDeepLink(parser, navController)
             true
@@ -37,19 +37,22 @@ class NotificationNavigationService(
             false
         }
     }
-    
+
     /**
      * Обрабатывает deep link для любого типа экрана.
-     * 
+     *
      * @param parser Парсер deep link
      * @param navController NavHostController для навигации
      */
-    private fun handleDeepLink(parser: DeepLinkConfig.DeepLinkParser, navController: NavHostController) {
+    private fun handleDeepLink(
+        parser: DeepLinkConfig.DeepLinkParser,
+        navController: NavHostController
+    ) {
         val screenType = parser.getScreenType() ?: run {
             Timber.e("Unknown screen type")
             return
         }
-        
+
         when (screenType) {
             DeepLinkConfig.ScreenType.DETAILS -> handleDetailsDeepLink(parser, navController)
             DeepLinkConfig.ScreenType.PROFILE -> handleProfileDeepLink(parser, navController)
@@ -58,64 +61,79 @@ class NotificationNavigationService(
             DeepLinkConfig.ScreenType.SETTINGS -> handleSettingsDeepLink(parser, navController)
         }
     }
-    
+
     /**
      * Обрабатывает deep link для экрана деталей.
      */
-    private fun handleDetailsDeepLink(parser: DeepLinkConfig.DeepLinkParser, navController: NavHostController) {
+    private fun handleDetailsDeepLink(
+        parser: DeepLinkConfig.DeepLinkParser,
+        navController: NavHostController
+    ) {
         val itemId = parser.getItemId() ?: run {
             Timber.e("Missing itemId parameter")
             return
         }
-        
+
         val title = parser.getTitle()
         val rootFeature = parser.getRootFeature()
-        
+
         navigateToDetails(rootFeature, itemId, title, navController)
     }
-    
+
     /**
      * Обрабатывает deep link для экрана профиля.
      */
-    private fun handleProfileDeepLink(parser: DeepLinkConfig.DeepLinkParser, navController: NavHostController) {
+    private fun handleProfileDeepLink(
+        parser: DeepLinkConfig.DeepLinkParser,
+        navController: NavHostController
+    ) {
         val userId = parser.getUserId() ?: run {
             Timber.e("Missing userId parameter")
             return
         }
-        
+
         val userName = parser.getUserName() ?: "Пользователь"
         val rootFeature = parser.getRootFeature()
-        
+
         navigateToProfile(rootFeature, userId, userName, navController)
     }
-    
+
     /**
      * Обрабатывает deep link для экрана вопросов.
      */
-    private fun handleQuestionsDeepLink(parser: DeepLinkConfig.DeepLinkParser, navController: NavHostController) {
+    private fun handleQuestionsDeepLink(
+        parser: DeepLinkConfig.DeepLinkParser,
+        navController: NavHostController
+    ) {
         val rootFeature = parser.getRootFeature()
         val category = parser.getCategory()
         val filter = parser.getFilter()
-        
+
         navigateToQuestions(rootFeature, category, filter, navController)
     }
-    
+
     /**
      * Обрабатывает deep link для главного экрана.
      */
-    private fun handleHomeDeepLink(parser: DeepLinkConfig.DeepLinkParser, navController: NavHostController) {
+    private fun handleHomeDeepLink(
+        parser: DeepLinkConfig.DeepLinkParser,
+        navController: NavHostController
+    ) {
         val tab = parser.getTab()
         navigateToHome(tab, navController)
     }
-    
+
     /**
      * Обрабатывает deep link для экрана настроек.
      */
-    private fun handleSettingsDeepLink(parser: DeepLinkConfig.DeepLinkParser, navController: NavHostController) {
+    private fun handleSettingsDeepLink(
+        parser: DeepLinkConfig.DeepLinkParser,
+        navController: NavHostController
+    ) {
         val category = parser.getCategory()
         navigateToSettings(category, navController)
     }
-    
+
     /**
      * Выполняет навигацию к экрану деталей.
      */
@@ -131,10 +149,10 @@ class NotificationNavigationService(
             itemId,
             title
         )
-        
+
         navigateWithDirectPath(directPath, navController)
     }
-    
+
     /**
      * Выполняет навигацию к экрану профиля.
      */
@@ -150,10 +168,10 @@ class NotificationNavigationService(
             userId,
             userName
         )
-        
+
         navigateWithDirectPath(directPath, navController)
     }
-    
+
     /**
      * Выполняет навигацию к экрану вопросов.
      */
@@ -177,10 +195,10 @@ class NotificationNavigationService(
                 category
             )
         }
-        
+
         navigateWithDirectPath(directPath, navController)
     }
-    
+
     /**
      * Выполняет навигацию к главному экрану.
      */
@@ -189,10 +207,10 @@ class NotificationNavigationService(
             rootFeatureName = DeepLinkConfig.ScreenType.HOME.childFeatureName,
             childFeatureName = tab
         )
-        
+
         navigateWithDirectPath(directPath, navController)
     }
-    
+
     /**
      * Выполняет навигацию к экрану настроек.
      */
@@ -201,16 +219,16 @@ class NotificationNavigationService(
             rootFeatureName = DeepLinkConfig.ScreenType.SETTINGS.childFeatureName,
             childFeatureName = category
         )
-        
+
         navigateWithDirectPath(directPath, navController)
     }
-    
+
     /**
      * Общий метод для навигации с direct path.
      */
     private fun navigateWithDirectPath(directPath: String, navController: NavHostController) {
         pathManager.prepareForDirectNavigation(directPath)
-        
+
         navController.navigate(directPath) {
             popUpTo(navController.graph.startDestinationId) {
                 inclusive = false
@@ -221,7 +239,7 @@ class NotificationNavigationService(
 
     /**
      * Проверяет, может ли сервис обработать данный Intent.
-     * 
+     *
      * @param intent Intent для проверки
      * @return true, если Intent может быть обработан
      */

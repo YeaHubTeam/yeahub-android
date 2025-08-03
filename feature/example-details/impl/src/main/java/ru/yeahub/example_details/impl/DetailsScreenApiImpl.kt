@@ -17,7 +17,7 @@ import ru.yeahub.example_details.api.DetailsScreenApi
 
 /**
  * Реализация API экрана деталей.
- * 
+ *
  * Демонстрирует:
  * - Отображение параметров навигации
  * - Поддержку DeepLink
@@ -46,7 +46,7 @@ class DetailsScreenApiImpl : DetailsScreenApi {
                 text = "Детали",
                 style = MaterialTheme.typography.headlineMedium
             )
-            
+
             // Карточка с информацией
             Card(
                 modifier = Modifier.fillMaxSize(CARD_FILL_RATIO),
@@ -70,7 +70,7 @@ class DetailsScreenApiImpl : DetailsScreenApi {
                     )
                 }
             }
-            
+
             // Кнопка навигации
             Button(onClick = onBackClick) {
                 Text("Назад")

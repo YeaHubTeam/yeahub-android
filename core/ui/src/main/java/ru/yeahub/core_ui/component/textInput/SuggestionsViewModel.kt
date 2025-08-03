@@ -17,6 +17,6 @@ open class SuggestionsViewModel() : ViewModel() {
     }
 
     fun onQueryChange(newTextPreview: String, suggestionsPreview: List<String>) {
-        _suggestions.value =  suggestionsPreview.filter { it.startsWith(newTextPreview) }
+        _suggestions.value = suggestionsPreview.filter { it.startsWith(newTextPreview) }
     }
 }

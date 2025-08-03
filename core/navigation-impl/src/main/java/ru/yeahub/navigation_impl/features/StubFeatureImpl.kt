@@ -11,7 +11,7 @@ import timber.log.Timber
 
 /**
  * Реализация stub фичи для отладки и демонстрации.
- * 
+ *
  * Демонстрирует:
  * - Регистрацию фичи как корневой
  * - Навигацию к дочерним фичам (Details)
@@ -20,7 +20,7 @@ import timber.log.Timber
 class StubFeatureImpl : FeatureApi {
 
     override fun getFeatureName(): String = FeatureRoute.StubFeature.FEATURE_NAME
-    
+
     override fun isRootFeature(): Boolean = true  // Stub как корневая фича для демонстрации
 
     override fun initialize(pathManager: NavigationPathManager) {
@@ -36,16 +36,16 @@ class StubFeatureImpl : FeatureApi {
     ) {
         val currentPath = pathManager.getCurrentPath()
         Timber.d("StubFeatureImpl registerGraph: currentPath: $currentPath")
-        
+
         // Создаем маршрут для stub экрана
         val stubRoute = if (currentPath.isEmpty()) {
             getFeatureName()
         } else {
             pathManager.createChildPath(getFeatureName())
         }
-        
+
         Timber.d("StubFeatureImpl registerGraph: Registering route: $stubRoute")
-        
+
         navGraphBuilder.composable(stubRoute) {
             StubScreen(
                 onDetailsClick = { itemId, title ->
@@ -54,7 +54,7 @@ class StubFeatureImpl : FeatureApi {
             )
         }
     }
-    
+
     /**
      * Обработка навигации к Details экрану из Stub экрана.
      */
@@ -66,21 +66,21 @@ class StubFeatureImpl : FeatureApi {
     ) {
         // Используем stub как базовый путь для Details фичи
         pathManager.setCurrentPath(getFeatureName())
-        
+
         val detailsPath = pathManager.createParametrizedPath(
             featureName = "details",
             "itemId",
             "title"
         )
-        
+
         val concretePath = pathManager.createConcretePath(
             detailsPath,
             itemId,
             title
         )
-        
+
         Timber.d("StubFeatureImpl handleDetailsNavigation: Navigating to: $concretePath")
-        
+
         pathManager.setCurrentPath(concretePath)
         navController.navigate(concretePath)
     }

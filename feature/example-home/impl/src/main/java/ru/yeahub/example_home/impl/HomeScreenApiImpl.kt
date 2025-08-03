@@ -36,11 +36,11 @@ import ru.yeahub.navigation_api.NotificationService
  * - В реальном приложении здесь был бы более сложный UI и бизнес-логика
  */
 class HomeScreenApiImpl : HomeScreenApi {
-    
+
     companion object {
         private const val MULTIPLE_NOTIFICATIONS_COUNT = 3
     }
-    
+
     /**
      * Реализация главного экрана.
      *
@@ -57,7 +57,7 @@ class HomeScreenApiImpl : HomeScreenApi {
         onDetailsClick: (itemId: String, title: String) -> Unit
     ) {
         val notificationService: NotificationService = koinInject()
-        
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -71,7 +71,7 @@ class HomeScreenApiImpl : HomeScreenApi {
                 style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
-            
+
             Text(
                 text = "Добро пожаловать в приложение YeaHub!",
                 style = MaterialTheme.typography.bodyLarge,
@@ -93,7 +93,7 @@ class HomeScreenApiImpl : HomeScreenApi {
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
-                    
+
                     Button(
                         onClick = {
                             // В реальном приложении здесь бы использовались
@@ -104,14 +104,14 @@ class HomeScreenApiImpl : HomeScreenApi {
                     ) {
                         Text(text = "👤 Перейти в профиль")
                     }
-                    
+
                     Button(
                         onClick = onQuestionClick,
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(text = "❓ Перейти к вопросам")
                     }
-                    
+
                     Button(
                         onClick = {
                             onDetailsClick("home_item_1", "Детали с главного экрана")
@@ -137,7 +137,7 @@ class HomeScreenApiImpl : HomeScreenApi {
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
-                    
+
                     // Новости
                     Button(
                         onClick = {
@@ -214,7 +214,7 @@ class HomeScreenApiImpl : HomeScreenApi {
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
-                    
+
                     // Напоминания
                     Button(
                         onClick = {
@@ -276,7 +276,7 @@ class HomeScreenApiImpl : HomeScreenApi {
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
-                    
+
                     // Множественные уведомления
                     Button(
                         onClick = {
@@ -298,13 +298,14 @@ class HomeScreenApiImpl : HomeScreenApi {
                     Button(
                         onClick = {
                             val isEnabled = notificationService.areNotificationsEnabled()
-                            val statusTitle = if (isEnabled) "✅ Разрешения OK" else "❌ Нет разрешений"
+                            val statusTitle =
+                                if (isEnabled) "✅ Разрешения OK" else "❌ Нет разрешений"
                             val statusMessage = if (isEnabled) {
                                 "Уведомления разрешены для Home фичи"
                             } else {
                                 "Включите уведомления в настройках устройства"
                             }
-                            
+
                             notificationService.showDetailsNotification(
                                 itemId = "home_permissions_${System.currentTimeMillis()}",
                                 title = statusTitle,
@@ -323,7 +324,7 @@ class HomeScreenApiImpl : HomeScreenApi {
                             val homeDeepLink = notificationService.deepLinkFactory.home()
                                 .tab("featured")
                                 .addParameter("highlight", "new_feature")
-                            
+
                             notificationService.showNotification(
                                 screenType = ru.yeahub.navigation_api.DeepLinkConfig.ScreenType.HOME,
                                 title = "🏠 Новая функция",
@@ -349,9 +350,9 @@ class HomeScreenApiImpl : HomeScreenApi {
                                 .addParameter("priority", "high")
                                 .addParameter("source", "home_screen")
                                 .addParameter("experiment", "new_ui")
-                            
+
                             val deepLinkString = notificationService.createDeepLink(customDeepLink)
-                            
+
                             notificationService.showDetailsNotification(
                                 itemId = "custom_deeplink_demo",
                                 title = "🔧 Кастомный Deep Link",
@@ -374,12 +375,13 @@ class HomeScreenApiImpl : HomeScreenApi {
                                 "invalid://link",
                                 "yeahub://unknown?param=value"
                             )
-                            
+
                             val results = testLinks.map { link ->
-                                val isValid = notificationService.deepLinkUtils.isValidDeepLink(link)
+                                val isValid =
+                                    notificationService.deepLinkUtils.isValidDeepLink(link)
                                 "$link -> ${if (isValid) "✅" else "❌"}"
                             }
-                            
+
                             notificationService.showDetailsNotification(
                                 itemId = "validation_test",
                                 title = "🧪 Тест валидации",

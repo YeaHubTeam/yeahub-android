@@ -13,13 +13,13 @@ import timber.log.Timber
 class QuestionsFeatureImpl(private val questionScreen: QuestionsScreenApi) : FeatureApi {
 
     override fun getFeatureName(): String = FeatureRoute.QuestionsFeature.FEATURE_NAME
-    
+
     override fun isRootFeature(): Boolean = false  // Вложенная фича
 
     override fun initialize(pathManager: NavigationPathManager) {
         super.initialize(pathManager)
         Timber.d("QuestionsFeatureImpl initialize: Registering questions feature paths")
-        
+
         // Дополнительная инициализация для Questions фичи
         // Может включать регистрацию специфичных для фичи путей
     }
@@ -32,12 +32,12 @@ class QuestionsFeatureImpl(private val questionScreen: QuestionsScreenApi) : Fea
     ) {
         val currentPath = pathManager.getCurrentPath()
         Timber.d("QuestionsFeatureImpl registerGraph: currentPath: $currentPath")
-        
+
         // Создаем маршрут для экрана вопросов с учетом текущего пути
         val questionsRoute = pathManager.createChildPath(getFeatureName())
-        
+
         Timber.d("QuestionsFeatureImpl registerGraph: Registering route: $questionsRoute")
-        
+
         navGraphBuilder.composable(questionsRoute) {
             questionScreen.QuestionsScreen(
                 onBackClick = {
@@ -49,7 +49,7 @@ class QuestionsFeatureImpl(private val questionScreen: QuestionsScreenApi) : Fea
             )
         }
     }
-    
+
     /**
      * Обработка навигации назад.
      */
@@ -58,11 +58,11 @@ class QuestionsFeatureImpl(private val questionScreen: QuestionsScreenApi) : Fea
         navController: NavHostController
     ) {
         val parentPath = pathManager.getParentPath()
-        
+
         Timber.d("QuestionsFeatureImpl handleBackNavigation: Navigating to parent: $parentPath")
-        
+
         pathManager.setCurrentPath(parentPath)
-        
+
         if (parentPath.isEmpty()) {
             navController.navigateUp()
         } else {
@@ -73,7 +73,7 @@ class QuestionsFeatureImpl(private val questionScreen: QuestionsScreenApi) : Fea
             }
         }
     }
-    
+
     /**
      * Обработка навигации к деталям.
      */
@@ -89,15 +89,15 @@ class QuestionsFeatureImpl(private val questionScreen: QuestionsScreenApi) : Fea
             "itemId",
             "title"
         )
-        
+
         val concretePath = pathManager.createConcretePath(
             detailsPath,
             itemId,
             title
         )
-        
+
         Timber.d("QuestionsFeatureImpl handleDetailsNavigation: Navigating to: $concretePath")
-        
+
         pathManager.setCurrentPath(concretePath)
         navController.navigate(concretePath)
     }

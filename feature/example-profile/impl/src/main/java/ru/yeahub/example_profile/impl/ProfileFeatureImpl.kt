@@ -15,13 +15,13 @@ import timber.log.Timber
 class ProfileFeatureImpl(private val profileScreen: ProfileScreenApi) : FeatureApi {
 
     override fun getFeatureName(): String = FeatureRoute.ProfileFeature.FEATURE_NAME
-    
+
     override fun isRootFeature(): Boolean = false  // Вложенная фича
 
     override fun initialize(pathManager: NavigationPathManager) {
         super.initialize(pathManager)
         Timber.d("ProfileFeatureImpl initialize: Registering profile feature paths")
-        
+
         // Дополнительная инициализация для Profile фичи
         // Может включать регистрацию специфичных для фичи путей
     }
@@ -34,16 +34,16 @@ class ProfileFeatureImpl(private val profileScreen: ProfileScreenApi) : FeatureA
     ) {
         val currentPath = pathManager.getCurrentPath()
         Timber.d("ProfileFeatureImpl registerGraph: currentPath: $currentPath")
-        
+
         // Создаем маршрут профиля с учетом текущего пути
         val profileRoute = pathManager.createParametrizedPath(
             featureName = getFeatureName(),
             "userId",
             "userName"
         )
-        
+
         Timber.d("ProfileFeatureImpl registerGraph: Registering route: $profileRoute")
-        
+
         navGraphBuilder.composable(
             route = profileRoute,
             arguments = listOf(
@@ -53,12 +53,12 @@ class ProfileFeatureImpl(private val profileScreen: ProfileScreenApi) : FeatureA
         ) { backStackEntry ->
             val userId = backStackEntry.arguments?.getString("userId") ?: ""
             val userName = backStackEntry.arguments?.getString("userName") ?: ""
-            
+
             Timber.d("ProfileFeatureImpl composable: userId=$userId, userName=$userName")
-            
+
             // Создаем отображаемый путь для пользователя
             val displayPath = createDisplayPath(pathManager, userId, userName)
-            
+
             profileScreen.ProfileScreen(
                 userId = userId,
                 userName = userName,
@@ -69,7 +69,7 @@ class ProfileFeatureImpl(private val profileScreen: ProfileScreenApi) : FeatureA
             )
         }
     }
-    
+
     /**
      * Создает отображаемый путь для пользователя.
      */
@@ -85,7 +85,7 @@ class ProfileFeatureImpl(private val profileScreen: ProfileScreenApi) : FeatureA
             "$currentPath/${getFeatureName()}/$userId/$userName"
         }
     }
-    
+
     /**
      * Обработка навигации назад.
      */
@@ -94,11 +94,11 @@ class ProfileFeatureImpl(private val profileScreen: ProfileScreenApi) : FeatureA
         navController: NavHostController
     ) {
         val parentPath = pathManager.getParentPath()
-        
+
         Timber.d("ProfileFeatureImpl handleBackNavigation: Navigating to parent: $parentPath")
-        
+
         pathManager.setCurrentPath(parentPath)
-        
+
         if (parentPath.isEmpty()) {
             navController.navigateUp()
         } else {

@@ -202,9 +202,11 @@ fun DefaultButton(
                             imageLeft == R.drawable.ellipse -> {
                                 painterResource(id = R.drawable.ellipse)
                             }
+
                             enabled -> {
                                 painterResource(id = R.drawable.icon_true_button)
                             }
+
                             else -> {
                                 painterResource(id = R.drawable.icon_false_button)
                             }

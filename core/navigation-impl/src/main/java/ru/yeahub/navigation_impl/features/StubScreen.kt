@@ -44,7 +44,7 @@ fun StubScreen(
                 style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
-            
+
             Text(
                 text = "Демонстрационная страница для тестирования функций",
                 style = MaterialTheme.typography.bodyLarge,
@@ -66,7 +66,7 @@ fun StubScreen(
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
-                    
+
                     Button(
                         onClick = {
                             onDetailsClick("stub_item_1", "Детали из заглушки")
@@ -92,7 +92,7 @@ fun StubScreen(
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
-                    
+
                     Button(
                         onClick = {
                             notificationService.showDetailsNotification(
@@ -156,7 +156,7 @@ fun StubScreen(
                                 itemId = "long_text",
                                 title = "Подробная информация",
                                 message = "Это очень длинное уведомление с большим количеством текста " +
-                                    "для демонстрации того, как система обрабатывает длинные сообщения",
+                                        "для демонстрации того, как система обрабатывает длинные сообщения",
                                 rootFeature = "stub"
                             )
                         },
@@ -190,7 +190,7 @@ fun StubScreen(
                             } else {
                                 "Уведомления запрещены. Включите их в настройках"
                             }
-                            
+
                             notificationService.showDetailsNotification(
                                 itemId = "permission_status",
                                 title = statusTitle,
@@ -219,7 +219,7 @@ fun StubScreen(
                                 title = "Тест Deep Link",
                                 rootFeature = "stub"
                             )
-                            
+
                             notificationService.showDetailsNotification(
                                 itemId = "deeplink_info",
                                 title = "Deep Link создан",
@@ -238,7 +238,7 @@ fun StubScreen(
                                 .userId("user123")
                                 .userName("Тестовый пользователь")
                                 .rootFeature("home")
-                            
+
                             notificationService.showNotification(
                                 screenType = ru.yeahub.navigation_api.DeepLinkConfig.ScreenType.PROFILE,
                                 title = "👤 Профиль пользователя",
@@ -257,7 +257,7 @@ fun StubScreen(
                                 .category("technology")
                                 .filter("recent")
                                 .rootFeature("home")
-                            
+
                             notificationService.showNotification(
                                 screenType = ru.yeahub.navigation_api.DeepLinkConfig.ScreenType.QUESTIONS,
                                 title = "❓ Новые вопросы",
@@ -278,7 +278,7 @@ fun StubScreen(
                                 .category("notifications")
                                 .addParameter("source", "stub_screen")
                                 .addParameter("timestamp", System.currentTimeMillis().toString())
-                            
+
                             notificationService.showNotification(
                                 screenType = ru.yeahub.navigation_api.DeepLinkConfig.ScreenType.SETTINGS,
                                 title = "⚙️ Настройки",

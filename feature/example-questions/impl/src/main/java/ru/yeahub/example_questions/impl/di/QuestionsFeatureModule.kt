@@ -12,7 +12,7 @@ val questionsFeatureModule = module {
         questionsUseCaseModule,
         questionsViewModelModule
     )
-    
+
     // Регистрируем QuestionsFeatureImpl как FeatureApi
     single { QuestionsFeatureImpl(get()) } bind FeatureApi::class
 }

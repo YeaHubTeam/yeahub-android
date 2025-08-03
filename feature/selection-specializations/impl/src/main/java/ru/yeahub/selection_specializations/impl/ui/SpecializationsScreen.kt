@@ -1,4 +1,4 @@
-package ru.yeahub.example_specializations.impl.ui
+package ru.yeahub.selection_specializations.impl.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -13,10 +13,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import ru.yeahub.core_ui.component.ErrorScreen
 import ru.yeahub.core_ui.theme.LocalAppTypography
 import ru.yeahub.core_ui.theme.colors
-import ru.yeahub.example_specializations.impl.ui.SpecilizationsResult.Success
-import ru.yeahub.example_specializations.impl.ui.SpecilizationsResult.Error
+import ru.yeahub.selection_specializations.impl.ui.SpecilizationsResult.Error
+import ru.yeahub.selection_specializations.impl.ui.SpecilizationsResult.Success
 
 val FIGMA_HORIZONTAL_PADDING = 16.dp
 val FIGMA_VERTICAL_TITLE_PADDING = 22.dp
@@ -28,21 +29,27 @@ fun SpecializationsScreen(
     onResult: SpecilizationsResult,
     onBackClick: () -> Unit
 ) {
-    when (onResult){
+    when (onResult) {
         is Success -> {
             SuccessSpecializationsScreen(list = onResult.specList)
         }
+
         is Error -> {
-            //some error screen
+            ErrorScreen(
+                error = onResult.errorMessage,
+                titleText = "Crash",
+                backText = "Back",
+                unknownErrorText = "Something went wrong...",
+                onBack = onBackClick
+            )
         }
     }
-
 }
 
 @Composable
 fun SuccessSpecializationsScreen(
     list: List<Specilialization>
-){
+) {
     val modifier = Modifier
     val lazyListState = rememberLazyListState()
     Column(
@@ -53,10 +60,10 @@ fun SuccessSpecializationsScreen(
     ) {
         val titleTextStyle = LocalAppTypography.current.body5Strong
         Text(
-            modifier = Modifier.
-            padding(
+            modifier = Modifier.padding(
                 vertical = FIGMA_VERTICAL_TITLE_PADDING,
-                horizontal = FIGMA_HORIZONTAL_PADDING),
+                horizontal = FIGMA_HORIZONTAL_PADDING
+            ),
             fontSize = titleTextStyle.fontSize,
             fontStyle = titleTextStyle.fontStyle,
             fontWeight = titleTextStyle.fontWeight,
@@ -72,7 +79,7 @@ fun SuccessSpecializationsScreen(
             items(
                 items = list,
                 key = { spec -> spec.id }
-            ){ specialization ->
+            ) { specialization ->
                 SpecializationButton(
                     title = specialization.description,
                     onClick = { }
@@ -84,10 +91,11 @@ fun SuccessSpecializationsScreen(
 
 @Preview
 @Composable
-fun SpecializationsScreenReview(){
-    val exampleList = mutableListOf(Specilialization(description = "tooooo looooong speeeeeeeeeeeeeeeeeeeee"))
+fun SpecializationsScreenReview() {
+    val exampleList =
+        mutableListOf(Specilialization(description = "tooooo looooong speeeeeeeeeeeeeeeeeeeee"))
     val names = listOf("React", "Frontend", "QA", "Java")
-    for (i in 0 until 15){
+    for (i in 0 until 15) {
         exampleList.add(Specilialization(id = i, description = names[i % names.size]))
     }
 
@@ -95,16 +103,16 @@ fun SpecializationsScreenReview(){
 }
 
 sealed class SpecilizationsResult {
-    data class Error(val message: String = "no message") : SpecilizationsResult()
+    data class Error(val errorMessage: String = "no message") : SpecilizationsResult()
     data class Success(val specList: List<Specilialization>) : SpecilizationsResult()
 }
 
 //model from backend
 data class Specilialization(
-        val description: String,
-		val id: Int = description.hashCode(),
-		val title: String = "",
-		val imageSrc: String = "",
-		val createdAt: String = "",
-		val updatedAt: String = ""
+    val description: String,
+    val id: Int = description.hashCode(),
+    val title: String = "",
+    val imageSrc: String = "",
+    val createdAt: String = "",
+    val updatedAt: String = ""
 )

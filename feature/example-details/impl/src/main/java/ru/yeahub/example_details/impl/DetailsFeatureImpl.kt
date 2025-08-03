@@ -11,7 +11,7 @@ import timber.log.Timber
 
 /**
  * Реализация фичи Details с поддержкой динамической навигации.
- * 
+ *
  * Демонстрирует:
  * - Поддержку DeepLink
  * - Автоматическое управление путями навигации
@@ -19,13 +19,13 @@ import timber.log.Timber
 class DetailsFeatureImpl(private val detailsScreen: DetailsScreenApi) : FeatureApi {
 
     override fun getFeatureName(): String = "details"
-    
+
     override fun isRootFeature(): Boolean = false  // Вложенная фича
 
     override fun initialize(pathManager: NavigationPathManager) {
         super.initialize(pathManager)
         Timber.d("DetailsFeatureImpl initialize: Registering feature paths")
-        
+
         // Дополнительная инициализация для Details фичи
         // Может включать регистрацию специфичных для фичи путей
     }
@@ -38,23 +38,23 @@ class DetailsFeatureImpl(private val detailsScreen: DetailsScreenApi) : FeatureA
     ) {
         val currentPath = pathManager.getCurrentPath()
         Timber.d("DetailsFeatureImpl registerGraph: currentPath: $currentPath")
-        
+
         // Создаем маршрут для экрана деталей с учетом текущего пути
         val detailsRoute = pathManager.createParametrizedPath(
             featureName = getFeatureName(),
             "itemId",
             "title"
         )
-        
+
         Timber.d("DetailsFeatureImpl registerGraph: Registering route: $detailsRoute")
-        
+
         navGraphBuilder.composable(detailsRoute) { backStackEntry ->
             val itemId = backStackEntry.arguments?.getString("itemId") ?: "unknown"
             val title = backStackEntry.arguments?.getString("title") ?: "Unknown Title"
-            
+
             // Создаем отображаемый путь для пользователя
             val displayPath = createDisplayPath(pathManager, itemId)
-            
+
             detailsScreen.DetailsScreen(
                 itemId = itemId,
                 title = title,
@@ -65,7 +65,7 @@ class DetailsFeatureImpl(private val detailsScreen: DetailsScreenApi) : FeatureA
             )
         }
     }
-    
+
     /**
      * Создает отображаемый путь для пользователя.
      */
@@ -77,7 +77,7 @@ class DetailsFeatureImpl(private val detailsScreen: DetailsScreenApi) : FeatureA
             "$currentPath/${getFeatureName()}/$itemId"
         }
     }
-    
+
     /**
      * Обработка навигации назад.
      */
@@ -86,11 +86,11 @@ class DetailsFeatureImpl(private val detailsScreen: DetailsScreenApi) : FeatureA
         navController: NavHostController
     ) {
         val parentPath = pathManager.getParentPath()
-        
+
         Timber.d("DetailsFeatureImpl handleBackNavigation: Navigating to parent: $parentPath")
-        
+
         pathManager.setCurrentPath(parentPath)
-        
+
         if (parentPath.isEmpty()) {
             navController.navigateUp()
         } else {

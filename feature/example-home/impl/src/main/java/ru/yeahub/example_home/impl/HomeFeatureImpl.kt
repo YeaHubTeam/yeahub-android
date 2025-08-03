@@ -13,13 +13,13 @@ import timber.log.Timber
 class HomeFeatureImpl(private val homeScreen: HomeScreenApi) : FeatureApi {
 
     override fun getFeatureName(): String = FeatureRoute.HomeFeature.FEATURE_NAME
-    
+
     override fun isRootFeature(): Boolean = true  // Корневая фича
 
     override fun initialize(pathManager: NavigationPathManager) {
         super.initialize(pathManager)
         Timber.d("HomeFeatureImpl initialize: Registering home feature paths")
-        
+
         // Регистрируем домашний маршрут как корневой
         pathManager.registerFeaturePath(getFeatureName(), getFeatureName())
     }
@@ -32,16 +32,16 @@ class HomeFeatureImpl(private val homeScreen: HomeScreenApi) : FeatureApi {
     ) {
         val currentPath = pathManager.getCurrentPath()
         Timber.d("HomeFeatureImpl registerGraph: currentPath: $currentPath")
-        
+
         // Корневая фича регистрирует только свой корневой маршрут
         val currentHomeRoute = if (currentPath.isEmpty()) {
             getFeatureName()
         } else {
             pathManager.createChildPath(getFeatureName())
         }
-        
+
         Timber.d("HomeFeatureImpl registerGraph: Registering route: $currentHomeRoute")
-        
+
         navGraphBuilder.composable(currentHomeRoute) {
             homeScreen.HomeScreen(
                 onProfileClick = { userId, userName ->
@@ -56,7 +56,7 @@ class HomeFeatureImpl(private val homeScreen: HomeScreenApi) : FeatureApi {
             )
         }
     }
-    
+
     /**
      * Обработка навигации к профилю.
      */
@@ -68,25 +68,25 @@ class HomeFeatureImpl(private val homeScreen: HomeScreenApi) : FeatureApi {
     ) {
         // Сбрасываем текущий путь на корневую фичу
         pathManager.setCurrentPath(getFeatureName())
-        
+
         val profilePath = pathManager.createParametrizedPath(
             featureName = FeatureRoute.ProfileFeature.FEATURE_NAME,
             "userId",
             "userName"
         )
-        
+
         val concretePath = pathManager.createConcretePath(
             profilePath,
             userId,
             userName
         )
-        
+
         Timber.d("HomeFeatureImpl handleProfileNavigation: Navigating to: $concretePath")
-        
+
         pathManager.setCurrentPath(concretePath)
         navController.navigate(concretePath)
     }
-    
+
     /**
      * Обработка навигации к вопросам.
      */
@@ -96,15 +96,15 @@ class HomeFeatureImpl(private val homeScreen: HomeScreenApi) : FeatureApi {
     ) {
         // Сбрасываем текущий путь на корневую фичу
         pathManager.setCurrentPath(getFeatureName())
-        
+
         val questionsPath = pathManager.createChildPath(FeatureRoute.QuestionsFeature.FEATURE_NAME)
-        
+
         Timber.d("HomeFeatureImpl handleQuestionsNavigation: Navigating to: $questionsPath")
-        
+
         pathManager.setCurrentPath(questionsPath)
         navController.navigate(questionsPath)
     }
-    
+
     /**
      * Обработка навигации к деталям.
      */
@@ -116,21 +116,21 @@ class HomeFeatureImpl(private val homeScreen: HomeScreenApi) : FeatureApi {
     ) {
         // Сбрасываем текущий путь на корневую фичу
         pathManager.setCurrentPath(getFeatureName())
-        
+
         val detailsPath = pathManager.createParametrizedPath(
             featureName = FeatureRoute.DetailsFeature.FEATURE_NAME,
             "itemId",
             "title"
         )
-        
+
         val concretePath = pathManager.createConcretePath(
             detailsPath,
             itemId,
             title
         )
-        
+
         Timber.d("HomeFeatureImpl handleDetailsNavigation: Navigating to: $concretePath")
-        
+
         pathManager.setCurrentPath(concretePath)
         navController.navigate(concretePath)
     }

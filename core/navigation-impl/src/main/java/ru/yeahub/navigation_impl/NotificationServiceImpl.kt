@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger
 
 /**
  * Реализация сервиса уведомлений с dynamic deep links.
- * 
+ *
  * Поддерживает:
  * - Создание уведомлений с dynamic deep links
  * - Правильную настройку PendingIntent
@@ -25,19 +25,19 @@ import java.util.concurrent.atomic.AtomicInteger
 class NotificationServiceImpl(
     private val context: Context
 ) : NotificationService {
-    
+
     private val notificationIdCounter = AtomicInteger(INITIAL_NOTIFICATION_ID)
-    
+
     companion object {
         private const val DEFAULT_ICON = android.R.drawable.ic_dialog_info
         private const val INITIAL_NOTIFICATION_ID = 1000
     }
-    
+
     init {
         // Создаем основные каналы уведомлений
         createDefaultChannels()
     }
-    
+
     override fun showDetailsNotification(
         itemId: String,
         title: String,
@@ -49,7 +49,7 @@ class NotificationServiceImpl(
             .itemId(itemId)
             .title(title)
             .rootFeature(rootFeature)
-        
+
         return showNotification(
             screenType = DeepLinkConfig.ScreenType.DETAILS,
             title = title,
@@ -58,7 +58,7 @@ class NotificationServiceImpl(
             notificationId = notificationId
         )
     }
-    
+
     override fun showNotification(
         screenType: DeepLinkConfig.ScreenType,
         title: String,
@@ -73,7 +73,7 @@ class NotificationServiceImpl(
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
-        
+
         val channelId = getChannelIdForScreenType(screenType)
         val notification = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(DEFAULT_ICON)
@@ -83,7 +83,7 @@ class NotificationServiceImpl(
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
             .build()
-        
+
         return try {
             if (areNotificationsEnabled()) {
                 @Suppress("MissingPermission")
@@ -98,7 +98,7 @@ class NotificationServiceImpl(
             false
         }
     }
-    
+
     override fun createNotificationIntent(
         itemId: String,
         title: String,
@@ -111,10 +111,10 @@ class NotificationServiceImpl(
                 .rootFeature(rootFeature)
         )
     }
-    
+
     override fun createNotificationIntent(deepLinkBuilder: DeepLinkConfig.DeepLinkBuilder): Intent =
         deepLinkBuilder.buildIntent()
-    
+
     override fun createDetailsDeepLink(
         itemId: String,
         title: String,
@@ -125,10 +125,10 @@ class NotificationServiceImpl(
             .title(title)
             .rootFeature(rootFeature)
     )
-    
+
     override fun createDeepLink(deepLinkBuilder: DeepLinkConfig.DeepLinkBuilder): String =
         deepLinkBuilder.build()
-    
+
     override fun cancelNotification(notificationId: Int) {
         try {
             NotificationManagerCompat.from(context).cancel(notificationId)
@@ -138,7 +138,7 @@ class NotificationServiceImpl(
             Timber.e(e, "Permission denied for notification: $notificationId")
         }
     }
-    
+
     override fun cancelAllNotifications() {
         try {
             NotificationManagerCompat.from(context).cancelAll()
@@ -146,7 +146,7 @@ class NotificationServiceImpl(
             Timber.e(e, "Permission denied for canceling all notifications")
         }
     }
-    
+
     override fun createNotificationChannel(
         channelId: String,
         channelName: String,
@@ -162,16 +162,17 @@ class NotificationServiceImpl(
                 NotificationService.NotificationImportance.MAX -> NotificationManager.IMPORTANCE_MAX
                 else -> NotificationManager.IMPORTANCE_DEFAULT
             }
-            
+
             val channel = NotificationChannel(channelId, channelName, androidImportance).apply {
                 description = channelDescription
             }
-            
-            val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+            val notificationManager =
+                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
         }
     }
-    
+
     override fun areNotificationsEnabled(): Boolean {
         return try {
             NotificationManagerCompat.from(context).areNotificationsEnabled()
@@ -183,17 +184,18 @@ class NotificationServiceImpl(
             false
         }
     }
-    
+
     override fun generateNotificationId(): Int = notificationIdCounter.getAndIncrement()
-    
-    private fun getChannelIdForScreenType(screenType: DeepLinkConfig.ScreenType): String = when (screenType) {
-        DeepLinkConfig.ScreenType.DETAILS -> NotificationService.NotificationChannels.DETAILS
-        DeepLinkConfig.ScreenType.PROFILE -> NotificationService.NotificationChannels.SOCIAL
-        DeepLinkConfig.ScreenType.QUESTIONS -> NotificationService.NotificationChannels.NEWS
-        DeepLinkConfig.ScreenType.HOME -> NotificationService.NotificationChannels.NEWS
-        DeepLinkConfig.ScreenType.SETTINGS -> NotificationService.NotificationChannels.UPDATES
-    }
-    
+
+    private fun getChannelIdForScreenType(screenType: DeepLinkConfig.ScreenType): String =
+        when (screenType) {
+            DeepLinkConfig.ScreenType.DETAILS -> NotificationService.NotificationChannels.DETAILS
+            DeepLinkConfig.ScreenType.PROFILE -> NotificationService.NotificationChannels.SOCIAL
+            DeepLinkConfig.ScreenType.QUESTIONS -> NotificationService.NotificationChannels.NEWS
+            DeepLinkConfig.ScreenType.HOME -> NotificationService.NotificationChannels.NEWS
+            DeepLinkConfig.ScreenType.SETTINGS -> NotificationService.NotificationChannels.UPDATES
+        }
+
     /**
      * Создает каналы уведомлений по умолчанию.
      */
@@ -204,35 +206,35 @@ class NotificationServiceImpl(
             channelDescription = "Уведомления для перехода к экрану деталей",
             importance = NotificationService.NotificationImportance.DEFAULT
         )
-        
+
         createNotificationChannel(
             channelId = NotificationService.NotificationChannels.NEWS,
             channelName = "Новости",
             channelDescription = "Уведомления о новостях и обновлениях",
             importance = NotificationService.NotificationImportance.DEFAULT
         )
-        
+
         createNotificationChannel(
             channelId = NotificationService.NotificationChannels.UPDATES,
             channelName = "Обновления приложения",
             channelDescription = "Уведомления об обновлениях приложения",
             importance = NotificationService.NotificationImportance.LOW
         )
-        
+
         createNotificationChannel(
             channelId = NotificationService.NotificationChannels.ALERTS,
             channelName = "Важные уведомления",
             channelDescription = "Критически важные уведомления",
             importance = NotificationService.NotificationImportance.HIGH
         )
-        
+
         createNotificationChannel(
             channelId = NotificationService.NotificationChannels.REMINDERS,
             channelName = "Напоминания",
             channelDescription = "Напоминания о задачах и событиях",
             importance = NotificationService.NotificationImportance.DEFAULT
         )
-        
+
         createNotificationChannel(
             channelId = NotificationService.NotificationChannels.SOCIAL,
             channelName = "Социальные уведомления",

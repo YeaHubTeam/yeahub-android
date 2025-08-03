@@ -6,7 +6,7 @@ import ru.yeahub.navigation_api.FeatureApi
 
 /**
  * Модуль DI для фичи Details.
- * 
+ *
  * Регистрирует:
  * - API экрана деталей
  * - Реализацию фичи

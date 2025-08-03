@@ -26,14 +26,17 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            
+
             <!-- Deep Link для уведомлений -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="yeahub"
-                      android:host="details" />
+
+                <data
+                    android:host="details"
+                    android:scheme="yeahub" />
             </intent-filter>
         </activity>
     </application>

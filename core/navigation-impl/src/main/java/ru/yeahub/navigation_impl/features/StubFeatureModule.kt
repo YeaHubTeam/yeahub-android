@@ -6,7 +6,7 @@ import ru.yeahub.navigation_api.FeatureApi
 
 /**
  * Модуль DI для stub фичи.
- * 
+ *
  * Регистрирует stub фичу как FeatureApi для автоматической
  * регистрации в навигационной системе.
  */

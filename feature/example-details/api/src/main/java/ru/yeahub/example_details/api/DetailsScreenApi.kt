@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 
 /**
  * API интерфейс для экрана деталей.
- * 
+ *
  * Демонстрирует:
  * - Передачу параметров между экранами
  * - Поддержку DeepLink
@@ -12,7 +12,7 @@ import androidx.compose.runtime.Composable
 interface DetailsScreenApi {
     /**
      * Экран деталей.
-     * 
+     *
      * @param itemId ID элемента для отображения
      * @param title Заголовок элемента
      * @param currentPath Текущий путь навигации (для демонстрации)

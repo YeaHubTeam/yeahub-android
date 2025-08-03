@@ -155,9 +155,11 @@ fun ExtendedQuestion(
     onClickMore: () -> Unit
 ) {
     Column(
-        modifier = Modifier.background(
-            color = Theme.colors.white900,
-        ).padding(top = 16.dp),
+        modifier = Modifier
+            .background(
+                color = Theme.colors.white900,
+            )
+            .padding(top = 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Row(

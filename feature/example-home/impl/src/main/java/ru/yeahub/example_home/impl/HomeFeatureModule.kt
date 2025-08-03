@@ -11,8 +11,8 @@ val homeFeatureModule = module {
         Timber.d("HomeFeatureModule single: Creating HomeScreenApiImpl")
         HomeScreenApiImpl()
     }
-    single { 
+    single {
         Timber.d("HomeFeatureModule single: Creating HomeFeatureImpl")
-        HomeFeatureImpl(get()) 
+        HomeFeatureImpl(get())
     } bind FeatureApi::class
 }
