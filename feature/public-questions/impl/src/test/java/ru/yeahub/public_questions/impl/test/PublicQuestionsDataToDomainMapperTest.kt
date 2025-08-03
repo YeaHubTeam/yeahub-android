@@ -2,9 +2,9 @@ package ru.yeahub.public_questions.impl.test
 
 import org.junit.jupiter.api.Assertions
 
-import ru.yeahub.public_questions.impl.data.mapper.DataToDomainMapper
-import ru.yeahub.public_questions.impl.domain.entity.QuestionModel
-import ru.yeahub.public_questions.impl.domain.entity.QuestionsModel
+import ru.yeahub.public_questions.impl.data.mapper.PublicQuestionsDataToDomainMapper
+import ru.yeahub.public_questions.impl.domain.entity.PublicQuestionModel
+import ru.yeahub.public_questions.impl.domain.entity.PublicQuestionsModel
 import org.junit.jupiter.api.extension.ExtensionContext
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
@@ -17,8 +17,8 @@ import ru.yeahub.network_api.models.NestedSpecializationResponse
 import ru.yeahub.network_api.models.NestedUserReferenceDto
 import java.util.stream.Stream
 
-class DataToDomainMapperTest {
-    private val mapper = DataToDomainMapper()
+class PublicQuestionsDataToDomainMapperTest {
+    private val mapper = PublicQuestionsDataToDomainMapper()
 
     @ParameterizedTest
     @ArgumentsSource(PublicQuestionMapperArgumentsProvider::class)
@@ -29,7 +29,7 @@ class DataToDomainMapperTest {
 
     data class PublicQuestionMapperTestCase(
         val dto: GetPublicQuestionsResponse,
-        val expectedResult: QuestionsModel
+        val expectedResult: PublicQuestionsModel
     )
 
     class PublicQuestionMapperArgumentsProvider : ArgumentsProvider {
@@ -92,11 +92,11 @@ class DataToDomainMapperTest {
                             ),
                             total = 1
                         ),
-                        expectedResult = QuestionsModel(
+                        expectedResult = PublicQuestionsModel(
                             page = 0,
                             limit = 10,
                             data = listOf(
-                                QuestionModel(
+                                PublicQuestionModel(
                                     id = 1,
                                     title = "Title 1",
                                 )
@@ -159,11 +159,11 @@ class DataToDomainMapperTest {
                             ),
                             total = 1
                         ),
-                        expectedResult = QuestionsModel(
+                        expectedResult = PublicQuestionsModel(
                             page = 0,
                             limit = 10,
                             data = listOf(
-                                QuestionModel(
+                                PublicQuestionModel(
                                     id = 1,
                                     title = "Title 1",
                                 )
@@ -226,11 +226,11 @@ class DataToDomainMapperTest {
                             ),
                             total = 1
                         ),
-                        expectedResult = QuestionsModel(
+                        expectedResult = PublicQuestionsModel(
                             page = 2,
                             limit = 10,
                             data = listOf(
-                                QuestionModel(
+                                PublicQuestionModel(
                                     id = 2,
                                     title = "Title 2",
                                 )
@@ -293,11 +293,11 @@ class DataToDomainMapperTest {
                             ),
                             total = 1
                         ),
-                        expectedResult = QuestionsModel(
+                        expectedResult = PublicQuestionsModel(
                             page = 1,
                             limit = 5,
                             data = listOf(
-                                QuestionModel(
+                                PublicQuestionModel(
                                     id = 3,
                                     title = "Title 3",
                                 )
@@ -405,15 +405,15 @@ class DataToDomainMapperTest {
                             ),
                             total = 2
                         ),
-                        expectedResult = QuestionsModel(
+                        expectedResult = PublicQuestionsModel(
                             page = 1,
                             limit = 5,
                             data = listOf(
-                                QuestionModel(
+                                PublicQuestionModel(
                                     id = 4,
                                     title = "Title 4",
                                 ),
-                                QuestionModel(
+                                PublicQuestionModel(
                                     id = 5,
                                     title = "Title 5",
                                 )
