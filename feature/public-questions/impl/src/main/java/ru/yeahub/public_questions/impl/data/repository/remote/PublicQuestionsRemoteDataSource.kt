@@ -3,9 +3,9 @@ package ru.yeahub.public_questions.impl.data.repository.remote
 import ru.yeahub.network_api.NetworkProvider
 import ru.yeahub.network_api.models.GetPublicQuestionsResponse
 
-class QuestionsRemoteDataSource(private val apiService: NetworkProvider) : QuestionsRemoteDataSourceApi {
+class PublicQuestionsRemoteDataSource(private val apiService: NetworkProvider) : PublicQuestionsRemoteDataSourceApi {
 
-    override suspend fun requestQuestionsApi(
+    override suspend fun requestPublicQuestionsApi(
         page: Int,
         limit: Int,
         skills: List<String>?,
