@@ -8,23 +8,22 @@ import androidx.lifecycle.flowWithLifecycle
 import kotlinx.coroutines.flow.Flow
 
 @Composable
-fun HandleQuestionsCommand(
-    commandFlow: Flow<QuestionsScreenCommand>,
-    onNavigateToDetail: (id: String, title: String) -> Unit,
+fun HandlePublicQuestionsCommand(
+    commandFlow: Flow<PublicQuestionsScreenCommand>,
+    onNavigateToDetail: (id: String) -> Unit,
     onBackClick: () -> Unit
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
-
-    LaunchedEffect(Unit) {
+    LaunchedEffect(key1 = commandFlow, key2 = lifecycleOwner) {
         commandFlow
             .flowWithLifecycle(lifecycleOwner.lifecycle, Lifecycle.State.STARTED)
             .collect { command ->
                 when (command) {
-                    is QuestionsScreenCommand.OnMoreClick -> {
-                        onNavigateToDetail(command.id, command.title)
+                    is PublicQuestionsScreenCommand.OnMoreClick -> {
+                        onNavigateToDetail(command.id)
                     }
 
-                    QuestionsScreenCommand.OnBackClick -> {
+                    PublicQuestionsScreenCommand.OnBackClick -> {
                         onBackClick()
                     }
                 }

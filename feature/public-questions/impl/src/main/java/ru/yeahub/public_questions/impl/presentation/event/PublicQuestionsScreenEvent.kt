@@ -16,7 +16,7 @@ sealed class PublicQuestionsScreenEvent {
 
     /** Клик по карточке вопроса(подробнее) */
 
-    data class OnMoreClick(val id: String, val title: String) : PublicQuestionsScreenEvent()
+    data class OnMoreClick(val id: String) : PublicQuestionsScreenEvent()
 
     /** Клик назад */
 
