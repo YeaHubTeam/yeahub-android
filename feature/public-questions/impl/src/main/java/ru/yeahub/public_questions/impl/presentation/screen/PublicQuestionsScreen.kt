@@ -1,10 +1,406 @@
 package ru.yeahub.public_questions.impl.presentation.screen
 
+import android.content.Context
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Button
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
+import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
+import ru.yeahub.core_ui.theme.Theme
+import ru.yeahub.public_questions.impl.R
+import ru.yeahub.public_questions.impl.presentation.command.HandlePublicQuestionsCommand
+import ru.yeahub.public_questions.impl.presentation.event.PublicQuestionsScreenEvent
+import ru.yeahub.public_questions.impl.presentation.viewmodel.PublicQuestionsViewModel
+import ru.yeahub.public_questions.impl.presentation.views.ErrorItem
+import ru.yeahub.public_questions.impl.presentation.views.PlaceholderItem
+import ru.yeahub.public_questions.impl.presentation.views.PublicQuestionsItem
+import java.net.UnknownHostException
+import java.util.concurrent.TimeoutException
+
+@OptIn(FlowPreview::class, ExperimentalMaterial3Api::class)
+@Composable
+fun PublicQuestionsScreen(
+    onBackClick: () -> Unit,
+    onDetailsClick: (itemId: String) -> Unit,
+    skills: List<String>? = null,
+    skillFilter: String? = null,
+    heading: String
+) {
+    val viewModel: PublicQuestionsViewModel = koinViewModel(
+        parameters = { parametersOf(skills, skillFilter) }
+    )
+    val screenState by viewModel.screenState.collectAsStateWithLifecycle()
+    val lazyListState = rememberLazyListState()
+
+    HandlePublicQuestionsCommand(
+        commandFlow = viewModel.commandState,
+        onNavigateToDetail = { id -> onDetailsClick(id) },
+        onBackClick = { onBackClick() },
+    )
+
+    LaunchedEffect(lazyListState, screenState) {
+        snapshotFlow { lazyListState.layoutInfo }.map { layout ->
+            val lastItem = layout.visibleItemsInfo.lastOrNull()
+            val totalItems = layout.totalItemsCount
+            val isAlmostAtEnd =
+                lastItem != null && totalItems > 0 && lastItem.index >= totalItems - RESPONSE_THRESHOLD
+            isAlmostAtEnd
+        }.distinctUntilChanged()
+            .filter { shouldTriggerLoad -> shouldTriggerLoad }
+            .debounce(DELAY_BEFORE_LOADING)
+            .collect {
+                val currentScreenState = viewModel.screenState.value
+                val canLoadMore = when (currentScreenState) {
+                    is PublicQuestionsScreenState.Loaded -> {
+                        !currentScreenState.isEndReached && !currentScreenState.isLoadingNextPage
+                    }
+
+                    else -> false
+                }
+                if (canLoadMore) {
+                    viewModel.onEvent(PublicQuestionsScreenEvent.LoadNextPage)
+                }
+            }
+    }
+
+    LaunchedEffect(Unit) {
+        if (viewModel.screenState.value is PublicQuestionsScreenState.Initial) {
+            viewModel.onEvent(PublicQuestionsScreenEvent.LoadInitial)
+        }
+    }
+    Scaffold(
+        topBar = {
+            TopAppBarWithBottomBorder(
+                title = heading,
+                onBackClick = { viewModel.onEvent(PublicQuestionsScreenEvent.OnBackClick) }
+            )
+        }
+    ) { innerPadding ->
+        PublicQuestionsContent(
+            modifier = Modifier.padding(innerPadding),
+            screenState = screenState,
+            listState = lazyListState,
+            onRetryLoadInitial = { viewModel.onEvent(PublicQuestionsScreenEvent.LoadInitial) },
+            title = heading,
+            onMoreCLick = { id ->
+                viewModel.onEvent(
+                    PublicQuestionsScreenEvent.OnMoreClick(
+                        id = id
+                    )
+                )
+            }
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TopAppBarWithBottomBorder(
+    title: String,
+    borderColor: Color = Theme.colors.black50,
+    borderThickness: Dp = 1.dp,
+    onBackClick: () -> Unit
+) {
+    val density = LocalDensity.current
+    val borderThicknessPx = with(density) { borderThickness.toPx() }
+    CenterAlignedTopAppBar(
+        title = {
+            Text(
+                text = title,
+                style = Theme.typography.body3Accent,
+                color = Theme.colors.black900
+            )
+        },
+        navigationIcon = {
+            IconButton(onClick = { onBackClick() }) {
+                Icon(
+                    modifier = Modifier
+                        .width(20.dp)
+                        .height(20.dp),
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = null,
+                    tint = Theme.colors.purple700
+                )
+            }
+        },
+        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+            containerColor = Theme.colors.white900
+        ),
+        modifier = Modifier
+            .fillMaxWidth()
+            .drawWithContent {
+                drawContent()
+                val y = size.height - borderThicknessPx / 2f
+                drawLine(
+                    color = borderColor,
+                    start = Offset(0f, y),
+                    end = Offset(size.width, y),
+                    strokeWidth = borderThicknessPx
+                )
+            }
+    )
+}
 
 @Composable
-fun PublicQuestionsScreen() {
-    /**
-     * Логика отображения экрана
-     */
+private fun PublicQuestionsContent(
+    modifier: Modifier = Modifier,
+    title: String,
+    onMoreCLick: (id: String) -> Unit,
+    screenState: PublicQuestionsScreenState,
+    listState: LazyListState,
+    onRetryLoadInitial: () -> Unit,
+) {
+    Box(
+        modifier = modifier.background(Theme.colors.white900)
+    ) {
+        when (screenState) {
+            is PublicQuestionsScreenState.Initial, PublicQuestionsScreenState.Loading -> {
+                FullScreenPlaceholders(
+                    listState = listState
+                )
+            }
+
+            is PublicQuestionsScreenState.Error -> {
+                if (screenState.questions.isEmpty()) {
+                    FullScreenError(
+                        error = screenState.throwable,
+                        onRetry = onRetryLoadInitial
+                    )
+                } else {
+                    QuestionsListWithFooter(
+                        listState = listState,
+                        questions = screenState.questions,
+                        isEndReached = true,
+                        isLoadingNextPage = false,
+                        paginationError = screenState.throwable,
+                        onRetryPagination = { onRetryLoadInitial() },
+                        title = title,
+                        onMoreCLick = { id -> onMoreCLick(id) }
+                    )
+                }
+            }
+
+            is PublicQuestionsScreenState.Loaded -> {
+                if (screenState.questions
+                        .isEmpty() && !screenState.isLoadingNextPage && screenState.isEndReached
+                ) {
+                    EmptyState()
+                } else {
+                    QuestionsListWithFooter(
+                        listState = listState,
+                        questions = screenState.questions,
+                        isEndReached = screenState.isEndReached,
+                        isLoadingNextPage = screenState.isLoadingNextPage,
+                        paginationError = null,
+                        onRetryPagination = { onRetryLoadInitial() },
+                        title = title,
+                        onMoreCLick = { id -> onMoreCLick(id) }
+                    )
+                }
+            }
+        }
+    }
 }
+
+@Composable
+private fun FullScreenPlaceholders(
+    listState: LazyListState
+) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        state = listState,
+        userScrollEnabled = false
+    ) {
+        items(COUNT_PLACEHOLDER) { PlaceholderItem() }
+    }
+}
+
+@Composable
+private fun FullScreenError(
+    modifier: Modifier = Modifier,
+    error: Throwable,
+    onRetry: () -> Unit
+) {
+    ErrorItem(
+        modifier = modifier.fillMaxSize(),
+        error = error,
+        onRetry = onRetry
+    )
+}
+
+@Composable
+private fun QuestionsListWithFooter(
+    title: String,
+    listState: LazyListState,
+    questions: List<PublicQuestionUiModel>,
+    isEndReached: Boolean,
+    isLoadingNextPage: Boolean,
+    paginationError: Throwable?,
+    onMoreCLick: (id: String) -> Unit,
+    onRetryPagination: () -> Unit,
+) {
+    LazyColumn(
+        state = listState,
+        modifier = Modifier.fillMaxSize()
+    ) {
+        item {
+            Box(modifier = Modifier.padding(start = 15.dp, bottom = 20.dp, top = 20.dp)) {
+                Text(
+                    text = stringResource(id = R.string.questions_list_header, title),
+                    style = Theme.typography.body5Strong,
+                    color = Theme.colors.black900
+                )
+            }
+        }
+        if (questions.isNotEmpty()) {
+            items(
+                items = questions,
+                key = { question -> question.id }
+            ) { question ->
+                PublicQuestionsItem(
+                    questions = question,
+                    onClickMore = { id -> onMoreCLick(id) }
+                )
+            }
+        }
+
+        item {
+            PaginationFooter(
+                isLoading = isLoadingNextPage,
+                isEndReached = isEndReached,
+                error = paginationError,
+                onRetry = onRetryPagination
+            )
+        }
+    }
+}
+
+@Composable
+private fun PaginationFooter(
+    modifier: Modifier = Modifier,
+    isLoading: Boolean,
+    isEndReached: Boolean,
+    error: Throwable?,
+    onRetry: () -> Unit
+) {
+    val context = LocalContext.current
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 24.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        when {
+            isLoading -> {
+                CircularProgressIndicator()
+            }
+
+            error != null -> {
+                val errorMessage = getReadableErrorMessage(context = context, throwable = error)
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = errorMessage,
+                        color = MaterialTheme.colorScheme.error,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                    Button(onClick = onRetry) {
+                        Text(stringResource(id = R.string.try_again))
+                    }
+                }
+            }
+
+            isEndReached -> {
+                Text(stringResource(id = R.string.error))
+            }
+
+            else -> {
+                Spacer(modifier = Modifier.height(0.dp))
+            }
+        }
+    }
+}
+
+@Composable
+fun getReadableErrorMessage(context: Context, throwable: Throwable): String {
+    return when (throwable) {
+        is UnknownHostException -> {
+            context.getString(R.string.there_i_no_internet)
+        }
+
+        is TimeoutException -> {
+            context.getString(
+                R.string.the_response_timeout_expired
+            )
+        }
+
+        else -> throwable.localizedMessage ?: context.getString(R.string.error)
+    }
+}
+
+@Composable
+private fun EmptyState(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = stringResource(R.string.there_is_nothing),
+            style = MaterialTheme.typography.headlineSmall,
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
+private const val RESPONSE_THRESHOLD = 5
+private const val DELAY_BEFORE_LOADING = 300L
+private const val COUNT_PLACEHOLDER = 11
