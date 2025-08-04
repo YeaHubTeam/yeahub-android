@@ -1,5 +1,6 @@
 package ru.yeahub.public_questions.impl.presentation.views
 
+import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -17,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -24,9 +26,16 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import ru.yeahub.core_ui.example.staticPreview.StaticPreview
 import ru.yeahub.public_questions.impl.R
+import java.net.UnknownHostException
+import java.util.concurrent.TimeoutException
 
 @Composable
-fun ErrorItem(error: Throwable, onRetry: () -> Unit) {
+fun ErrorItem(
+    modifier: Modifier = Modifier,
+    error: Throwable,
+    onRetry: () -> Unit
+) {
+    val context = LocalContext.current
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -36,7 +45,7 @@ fun ErrorItem(error: Throwable, onRetry: () -> Unit) {
     ) {
         Icon(
             imageVector = Icons.Default.Warning,
-            contentDescription =  stringResource(R.string.error),
+            contentDescription = stringResource(R.string.error),
             tint = MaterialTheme.colorScheme.error,
             modifier = Modifier.size(48.dp)
         )
@@ -52,7 +61,7 @@ fun ErrorItem(error: Throwable, onRetry: () -> Unit) {
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = error.localizedMessage ?:  stringResource(R.string.unknown_error),
+            text = getReadableErrorMessage(context, error),
             style = MaterialTheme.typography.bodyMedium,
             textAlign = TextAlign.Center
         )
@@ -71,12 +80,33 @@ fun ErrorItem(error: Throwable, onRetry: () -> Unit) {
     }
 }
 
+@Composable
+fun getReadableErrorMessage(context: Context, throwable: Throwable): String {
+    return when (throwable) {
+        is UnknownHostException -> {
+            context.getString(R.string.there_i_no_internet)
+        }
+
+        is TimeoutException -> {
+            context.getString(
+                R.string.the_response_timeout_expired
+            )
+        }
+
+        else -> throwable.localizedMessage ?: context.getString(R.string.error)
+    }
+}
+
 @StaticPreview
 @Composable
 fun ShowErrorItemPreview(
     @PreviewParameter(ErrorStateProvider::class) error: Throwable
 ) {
-    ErrorItem(error = error, onRetry = {})
+    ErrorItem(
+        modifier = Modifier,
+        error = error,
+        onRetry = {}
+    )
 }
 
 class ErrorStateProvider : PreviewParameterProvider<Throwable> {
