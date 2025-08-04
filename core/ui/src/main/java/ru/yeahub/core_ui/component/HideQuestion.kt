@@ -2,8 +2,6 @@ package ru.yeahub.core_ui.component
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.EaseInOut
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
@@ -17,6 +15,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -31,7 +30,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -56,12 +54,6 @@ fun HideQuestion(
     onToggle: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val rotation by animateFloatAsState(
-        targetValue = if (!isExtended) 0f else -180f,
-        animationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing),
-        label = "rotate",
-    )
-
     Surface(
         modifier = modifier
             .padding(10.dp)
@@ -94,24 +86,11 @@ fun HideQuestion(
 
                 Text(
                     text = questionText,
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.fillMaxWidth().height(21.dp),
                     style = LocalAppTypography.current.body3Accent.copy(lineHeight = 20.sp)
                 )
 
                 Spacer(modifier = Modifier.width(8.dp))
-
-                Box(
-                    modifier = Modifier.size(24.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Image(
-                        painter = painterResource(R.drawable.arrow_vector),
-                        contentDescription = null,
-                        modifier = Modifier.graphicsLayer {
-                            rotationZ = rotation
-                        }
-                    )
-                }
             }
 
             AnimatedContent(
