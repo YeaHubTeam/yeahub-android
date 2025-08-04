@@ -50,7 +50,7 @@ fun GuruCard(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(8.dp),
+            .padding(12.dp),
         colors = CardDefaults.cardColors(containerColor = Theme.colors.white900),
         shape = RoundedCornerShape(16.dp),
         border = BorderStroke(1.dp, color = Theme.colors.purple700),

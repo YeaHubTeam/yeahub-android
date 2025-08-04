@@ -52,7 +52,7 @@ dependencies {
 
     implementation(libs.coil.compose)
     implementation(libs.jsoup)
-
+    implementation(libs.compose.markdown)
     // Добавляем зависимости для Compose Preview
     implementation(libs.androidx.ui.tooling.preview)
     debugImplementation(libs.androidx.ui.tooling)

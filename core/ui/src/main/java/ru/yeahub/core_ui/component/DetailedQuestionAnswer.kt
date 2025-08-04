@@ -27,8 +27,10 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.integerResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import dev.jeziellago.compose.markdowntext.MarkdownText
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import ru.yeahub.core_ui.example.staticPreview.StaticPreview
@@ -147,11 +149,16 @@ private fun CollapsedContent(
 
 @Composable
 private fun TextBlockContent(text: String) {
-    Text(
-        text = text,
-        modifier = Modifier.padding(bottom = 8.dp),
-        color = Theme.colors.black700,
-        style = Theme.typography.body3Accent,
+    MarkdownText(
+        markdown = text,
+        style = TextStyle(
+            color = Theme.colors.black700,
+            fontFamily = Theme.typography.body3Accent.fontFamily,
+            fontWeight = Theme.typography.body3Accent.fontWeight,
+            fontSize = Theme.typography.body3Accent.fontSize,
+            lineHeight = Theme.typography.body3Accent.lineHeight
+        ),
+        modifier = Modifier.padding(bottom = 8.dp)
     )
 }
 

@@ -30,8 +30,8 @@ import ru.yeahub.ui.R
 fun DetailHeaderQuestion(
     questionTitle: String,
     additionalText: String,
-    imageUrl: String,
-    onFilterClick: () -> Unit,
+    imageUrl: String?,
+    onFilterClick: (() -> Unit)?,
 ) {
     Box(
         modifier = Modifier
@@ -46,17 +46,18 @@ fun DetailHeaderQuestion(
             .padding(start = 10.dp, top = 10.dp, end = 10.dp, bottom = 20.dp)
     ) {
         Column {
-            AsyncImage(
-                model = imageUrl,
-                contentDescription = null,
-                modifier = Modifier
-                    .padding(bottom = 16.dp)
-                    .fillMaxWidth()
-                    .height(332.dp)
-                    .background(Theme.colors.white900, shape = RoundedCornerShape(8.dp))
-                    .clip(RoundedCornerShape(8.dp))
-            )
-
+            imageUrl?.let {
+                AsyncImage(
+                    model = imageUrl,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(bottom = 16.dp)
+                        .fillMaxWidth()
+                        .height(332.dp)
+                        .background(Theme.colors.white900, shape = RoundedCornerShape(8.dp))
+                        .clip(RoundedCornerShape(8.dp))
+                )
+            }
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -70,28 +71,29 @@ fun DetailHeaderQuestion(
                         .weight(1f)
                         .padding(end = 16.dp, bottom = 4.dp)
                 )
-
-                Box(
-                    modifier = Modifier
-                        .size(32.dp)
-                        .border(
-                            width = 0.1.dp,
-                            color = Theme.colors.black200,
-                            shape = RoundedCornerShape(8.dp)
-                        )
-                ) {
-                    IconButton(
-                        onClick = onFilterClick,
+                onFilterClick?.let {
+                    Box(
                         modifier = Modifier
                             .size(32.dp)
-                            .align(Alignment.Center)
+                            .border(
+                                width = 0.1.dp,
+                                color = Theme.colors.black200,
+                                shape = RoundedCornerShape(8.dp)
+                            )
                     ) {
-                        Icon(
-                            painter = painterResource(R.drawable.filter_button_icon),
-                            contentDescription = null,
-                            modifier = Modifier.size(24.dp),
-                            tint = Theme.colors.black700
-                        )
+                        IconButton(
+                            onClick = onFilterClick,
+                            modifier = Modifier
+                                .size(32.dp)
+                                .align(Alignment.Center)
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.filter_button_icon),
+                                contentDescription = null,
+                                modifier = Modifier.size(24.dp),
+                                tint = Theme.colors.black700
+                            )
+                        }
                     }
                 }
             }
