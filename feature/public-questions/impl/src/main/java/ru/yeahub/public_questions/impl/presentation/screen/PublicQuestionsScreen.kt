@@ -18,6 +18,8 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -33,6 +35,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -43,6 +46,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.valentinilk.shimmer.shimmer
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -200,7 +204,8 @@ private fun PublicQuestionsContent(
         when (screenState) {
             is PublicQuestionsScreenState.Initial, PublicQuestionsScreenState.Loading -> {
                 FullScreenPlaceholders(
-                    listState = listState
+                    listState = listState,
+                    nameQuestion = title
                 )
             }
 
@@ -218,7 +223,7 @@ private fun PublicQuestionsContent(
                         isLoadingNextPage = false,
                         paginationError = screenState.throwable,
                         onRetryPagination = { onRetryLoadInitial() },
-                        title = title,
+                        nameQuestion = title,
                         onMoreCLick = { id -> onMoreCLick(id) }
                     )
                 }
@@ -237,8 +242,8 @@ private fun PublicQuestionsContent(
                         isLoadingNextPage = screenState.isLoadingNextPage,
                         paginationError = null,
                         onRetryPagination = { onRetryLoadInitial() },
-                        title = title,
-                        onMoreCLick = { id -> onMoreCLick(id) }
+                        nameQuestion = title,
+                        onMoreCLick = { id -> onMoreCLick(id) },
                     )
                 }
             }
@@ -248,13 +253,30 @@ private fun PublicQuestionsContent(
 
 @Composable
 private fun FullScreenPlaceholders(
-    listState: LazyListState
+    listState: LazyListState,
+    nameQuestion: String
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         state = listState,
         userScrollEnabled = false
     ) {
+        item {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 15.dp, bottom = 20.dp, top = 20.dp)
+                    .blur(10.dp)
+                    .shimmer(),
+                shape = MaterialTheme.shapes.medium,
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+            ) {
+                Text(
+                    text = stringResource(id = R.string.questions_list_header, nameQuestion),
+                    style = Theme.typography.body5Strong
+                )
+            }
+        }
         items(COUNT_PLACEHOLDER) { PlaceholderItem() }
     }
 }
@@ -274,7 +296,7 @@ private fun FullScreenError(
 
 @Composable
 private fun QuestionsListWithFooter(
-    title: String,
+    nameQuestion: String,
     listState: LazyListState,
     questions: List<PublicQuestionUiModel>,
     isEndReached: Boolean,
@@ -290,7 +312,7 @@ private fun QuestionsListWithFooter(
         item {
             Box(modifier = Modifier.padding(start = 15.dp, bottom = 20.dp, top = 20.dp)) {
                 Text(
-                    text = stringResource(id = R.string.questions_list_header, title),
+                    text = stringResource(id = R.string.questions_list_header, nameQuestion),
                     style = Theme.typography.body5Strong,
                     color = Theme.colors.black900
                 )
@@ -340,7 +362,8 @@ private fun PaginationFooter(
             }
 
             error != null -> {
-                val errorMessage = getReadableErrorMessage(context = context, throwable = error)
+                val errorMessage =
+                    getReadableErrorMessage(context = context, throwable = error)
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(8.dp)

@@ -42,7 +42,8 @@ fun PlaceholderItem() {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 10.dp, top = 20.dp, end = 10.dp, bottom = 20.dp)
+                .padding(start = 12.dp, top = 16.dp, end = 12.dp, bottom = 16.dp)
+                .height(21.dp)
         ) {
             Image(
                 painter = painterResource(R.drawable.ellipse),
@@ -86,8 +87,8 @@ fun PlaceholderItemPreview() {
         modifier = Modifier
             .fillMaxSize()
             .padding(
-                top = 20.dp,
-                bottom = 20.dp,
+                top = 16.dp,
+                bottom = 16.dp,
                 start = 10.dp,
                 end = 10.dp
             )
@@ -99,4 +100,5 @@ fun PlaceholderItemPreview() {
         }
     }
 }
+
 private const val TEST = 6
