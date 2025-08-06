@@ -11,6 +11,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -87,6 +89,10 @@ fun AppNavigation(
                         icon = { Icon(item.icon, contentDescription = item.label) }
                     )
                     Log.d("NavSelected", "$currentRoute")
+                                Icon(
+                                    imageVector = ImageVector.vectorResource(item.icon),
+                                    contentDescription = item.label
+                                )
                 }
             }
         }
@@ -94,11 +100,7 @@ fun AppNavigation(
         Box(modifier = Modifier.padding(padding)) {
             NavHost(
                 navController = navController,
-                startDestination = if (features.isNotEmpty()) {
-                    navItems.first().route
-                } else {
-                    FeatureRoute.StubFeature.FEATURE_NAME
-                },
+                startDestination = navItems[1].route,
                 modifier = Modifier,
             ) {
                 registerDynamicNavigation(
