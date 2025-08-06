@@ -1,26 +1,39 @@
 package ru.yeahub.navigation_impl
 
-import android.util.Log
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import org.koin.compose.getKoin
+import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.navigation_api.FeatureApi
-import ru.yeahub.navigation_api.FeatureRoute
 import ru.yeahub.navigation_api.NavigationPathManager
 import ru.yeahub.navigation_impl.model.BottomNavigationItem
 import timber.log.Timber
@@ -73,10 +86,25 @@ fun AppNavigation(
     Scaffold(
         modifier = modifier,
         bottomBar = {
-            NavigationBar {
+            NavigationBar(
+                modifier = Modifier.clip(RoundedCornerShape(12.dp))
+                    .height(100.dp),
+                containerColor = Theme.colors.purple700
+            ) {
                 navItems.forEach { item ->
+                    val isSelected by remember(selectedRoute) {
+                        derivedStateOf { selectedRoute == item.route }
+                    }
                     NavigationBarItem(
-                        selected = selectedRoute == item.route,
+                        modifier = Modifier.padding(8.dp),
+                        colors = NavigationBarItemDefaults.colors(
+                            selectedIconColor = Theme.colors.purple700,
+                            selectedTextColor = Theme.colors.purple700,
+                            unselectedIconColor = Theme.colors.white900,
+                            unselectedTextColor = Theme.colors.white900,
+                            indicatorColor = Color.Transparent
+                        ),
+                        selected = isSelected,
                         onClick = {
                             handleBottomNavClick(
                                 item = item,
@@ -85,14 +113,33 @@ fun AppNavigation(
                                 pathManager = pathManager
                             )
                         },
-                        label = { Text(item.label) },
-                        icon = { Icon(item.icon, contentDescription = item.label) }
-                    )
-                    Log.d("NavSelected", "$currentRoute")
+                        icon = {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(
+                                        color = animateColorAsState(
+                                            targetValue = if (isSelected) Theme.colors.white900 else Color.Transparent,
+                                            animationSpec = tween(durationMillis = 80)
+                                        ).value,
+                                        shape = RoundedCornerShape(8.dp)
+                                    )
+                                    .padding(8.dp)
+                            ) {
                                 Icon(
                                     imageVector = ImageVector.vectorResource(item.icon),
                                     contentDescription = item.label
                                 )
+                                Text(
+                                    text = item.label,
+                                    style = Theme.typography.bodyAccent
+                                )
+                            }
+                        },
+                        alwaysShowLabel = false
+                    )
+                    Timber.d("NavSelected", "$currentRoute")
                 }
             }
         }
