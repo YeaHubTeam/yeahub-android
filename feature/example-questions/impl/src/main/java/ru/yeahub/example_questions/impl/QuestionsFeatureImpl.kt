@@ -14,7 +14,7 @@ class QuestionsFeatureImpl(private val questionScreen: QuestionsScreenApi) : Fea
 
     override fun getFeatureName(): String = FeatureRoute.QuestionsFeature.FEATURE_NAME
     
-    override fun isRootFeature(): Boolean = false  // Вложенная фича
+    override fun isRootFeature(): Boolean = true  // Вложенная фича
 
     override fun initialize(pathManager: NavigationPathManager) {
         super.initialize(pathManager)
@@ -34,8 +34,12 @@ class QuestionsFeatureImpl(private val questionScreen: QuestionsScreenApi) : Fea
         Timber.d("QuestionsFeatureImpl registerGraph: currentPath: $currentPath")
         
         // Создаем маршрут для экрана вопросов с учетом текущего пути
-        val questionsRoute = pathManager.createChildPath(getFeatureName())
-        
+        val questionsRoute =  if (currentPath.isEmpty()) {
+            getFeatureName()
+        } else {
+            pathManager.createChildPath(getFeatureName())
+        }
+
         Timber.d("QuestionsFeatureImpl registerGraph: Registering route: $questionsRoute")
         
         navGraphBuilder.composable(questionsRoute) {
@@ -83,6 +87,7 @@ class QuestionsFeatureImpl(private val questionScreen: QuestionsScreenApi) : Fea
         itemId: String,
         title: String
     ) {
+        pathManager.setCurrentPath(getFeatureName())
         // Используем текущий путь как базу для Details
         val detailsPath = pathManager.createParametrizedPath(
             featureName = "details",
