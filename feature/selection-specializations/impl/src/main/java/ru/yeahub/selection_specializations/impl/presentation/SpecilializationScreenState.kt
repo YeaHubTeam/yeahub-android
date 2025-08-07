@@ -9,10 +9,13 @@ sealed class SpecilializationScreenState {
     data object PagerLoading : SpecilializationScreenState()
 
     data class Loaded(
-        val resultList: List<VoSpecilialization>
+        val resultList: List<VoSpecilialization>,
+        val isEndReached: Boolean,
+        val isLoadingNextPage: Boolean
     ) : SpecilializationScreenState()
 
     data class Error(
-        val errorMessage: String
+        val currentList: List<VoSpecilialization>,
+        val throwable: Throwable
     ) : SpecilializationScreenState()
 }

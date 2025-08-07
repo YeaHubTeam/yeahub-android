@@ -14,12 +14,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import org.koin.androidx.compose.koinViewModel
 import ru.yeahub.core_ui.component.ErrorScreen
 import ru.yeahub.core_ui.theme.LocalAppTypography
 import ru.yeahub.core_ui.theme.colors
 import ru.yeahub.selection_specializations.impl.model.VoSpecilialization
-import ru.yeahub.selection_specializations.impl.presentation.OnSpecialScreenUseCase
+import ru.yeahub.selection_specializations.impl.presentation.HandleSpecialCommand
+import ru.yeahub.selection_specializations.impl.presentation.OnSpecialFeatureUseCase
+import ru.yeahub.selection_specializations.impl.presentation.SpecilializationScreenEvent
 import ru.yeahub.selection_specializations.impl.presentation.SpecilializationScreenState
+import ru.yeahub.selection_specializations.impl.presentation.SpecilializationViewModel
 
 val FIGMA_HORIZONTAL_PADDING = 16.dp
 val FIGMA_VERTICAL_TITLE_PADDING = 22.dp
@@ -28,18 +33,39 @@ val FIGMA_VERTICAL_CARD_PADDING = 16.dp //need edge_to_edge = 16
 @Composable
 fun SpecializationsScreen(
     modifier: Modifier = Modifier,
-    currentUseCase: OnSpecialScreenUseCase,
-    onResult: SpecilializationScreenState,
-    onBackClick: () -> Unit = {}
+    onNavigate: (nextRoute: String) -> Unit,
+    currentUseCase: OnSpecialFeatureUseCase,
+    onBackClick: () -> Unit
 ) {
-    when (onResult) {
+    val specialViewModel: SpecilializationViewModel = koinViewModel()
+    val screenState = specialViewModel.uiStatus.collectAsStateWithLifecycle()
+
+    //command handler
+    HandleSpecialCommand(
+        commandFlow = specialViewModel.commands,
+        currentUseCase = currentUseCase,
+        onNavigate = onNavigate,
+        onBackClick = onBackClick
+    )
+
+    when (screenState) {
         is SpecilializationScreenState.Loaded -> {
-            SuccessSpecializationsScreen(list = onResult.resultList)
+            SuccessSpecializationsScreen(
+                list = screenState.resultList,
+                onSpecialClick = { id ->
+                    specialViewModel.onEvent(
+                        SpecilializationScreenEvent.OnSpecialClick(
+                            currentUseCase = currentUseCase,
+                            id = id
+                        )
+                    )
+                }
+            )
         }
 
         is SpecilializationScreenState.Error -> {
             ErrorScreen(
-                error = onResult.errorMessage,
+                error = screenState.throwable.message ?: "... no message about throwable",
                 titleText = "Crash",
                 backText = "Back",
                 unknownErrorText = "Something went wrong...",
@@ -62,6 +88,7 @@ fun SpecializationsScreen(
 @Composable
 fun SuccessSpecializationsScreen(
     modifier: Modifier = Modifier,
+    onSpecialClick: (id: Int) -> Unit,
     list: List<VoSpecilialization>
 ) {
     val lazyListState = rememberLazyListState()
@@ -95,7 +122,7 @@ fun SuccessSpecializationsScreen(
             ) { specialization ->
                 SpecilializationButton(
                     title = specialization.title,
-                    onClick = { }
+                    onSpecialClick = onSpecialClick
                 )
             }
         }
@@ -117,5 +144,8 @@ fun SpecializationsScreenReview() {
         exampleList.add(VoSpecilialization(id = i, title = names[i % names.size]))
     }
 
-    SuccessSpecializationsScreen(list = exampleList)
+    SuccessSpecializationsScreen(
+        list = exampleList,
+        onSpecialClick = { id -> println("pressed id=$id") }
+    )
 }

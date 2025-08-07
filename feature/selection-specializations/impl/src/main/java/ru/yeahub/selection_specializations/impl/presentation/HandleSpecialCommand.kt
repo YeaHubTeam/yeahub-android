@@ -5,29 +5,34 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.flowWithLifecycle
 import kotlinx.coroutines.flow.Flow
-import ru.yeahub.selection_specializations.api.domain.GetOnbordingUseCase
-import ru.yeahub.selection_specializations.api.domain.GetSpecializationUseCase
+import ru.yeahub.selection_specializations.impl.domain.GetOnbordingUseCaseImpl
+import ru.yeahub.selection_specializations.impl.domain.GetSpecializationUseCaseImpl
 
 @Composable
 fun HandleSpecialCommand(
     commandFlow: Flow<OnSpecialScreenCommand>,
+    currentUseCase: OnSpecialFeatureUseCase,
     onNavigate: (nextRoute: String) -> Unit,
-    onBoardUseCase: GetOnbordingUseCase,
-    specialUseCase: GetSpecializationUseCase,
     onBackClick: () -> Unit
 ) {
+    val onBoardUseCase = GetOnbordingUseCaseImpl()
+    val specialUseCase = GetSpecializationUseCaseImpl()
+
     val lifecycleOwner = LocalLifecycleOwner.current
     LaunchedEffect(commandFlow, lifecycleOwner) {
         commandFlow
             .flowWithLifecycle(lifecycleOwner.lifecycle)
             .collect { command ->
                 when (command) {
-                    is OnSpecialScreenCommand.ByOnBoardOnClick -> {
-                        onNavigate(onBoardUseCase.getNextRoute(command.onClickedSpecId))
-                    }
-
-                    is OnSpecialScreenCommand.BySpecialOnClick -> {
-                        onNavigate(specialUseCase.getNextRoute(command.onClickedSpecId))
+                    is OnSpecialScreenCommand.OnSpecialClick -> {
+                        when (currentUseCase) {
+                            OnSpecialFeatureUseCase.OnBoard -> {
+                                onNavigate(onBoardUseCase.getNextRoute(command.onClickedSpecId))
+                            }
+                            OnSpecialFeatureUseCase.Specilialization -> {
+                                onNavigate(specialUseCase.getNextRoute(command.onClickedSpecId))
+                            }
+                        }
                     }
 
                     OnSpecialScreenCommand.OnBackClick -> {

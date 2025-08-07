@@ -20,6 +20,7 @@ fun SpecializationsLoadingScreen(
     ) {
         SpecilializationButton(
             title = "Loading specializations...",
+            onSpecialClick = {},
             modifier = modifier
                 .clickable(
                     enabled = false,
