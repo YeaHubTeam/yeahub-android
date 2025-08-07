@@ -8,7 +8,7 @@ val questionsViewModelModule = module {
     viewModel { (skills: List<String>?, skillFilter: String?) ->
         PublicQuestionsViewModel(
             getPublicQuestionsUseCase = get(),
-            mapper1 = get(),
+            mapper = get(),
             skills = skills,
             skillFilter = skillFilter
         )

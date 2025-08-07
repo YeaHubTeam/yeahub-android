@@ -48,8 +48,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.valentinilk.shimmer.shimmer
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import org.koin.androidx.compose.koinViewModel
@@ -72,13 +70,13 @@ fun PublicQuestionsScreen(
     onDetailsClick: (itemId: String) -> Unit,
     skills: List<String>? = null,
     skillFilter: String? = null,
-    heading: String
+    heading: String,
+    lazyListState: LazyListState = rememberLazyListState()
 ) {
     val viewModel: PublicQuestionsViewModel = koinViewModel(
         parameters = { parametersOf(skills, skillFilter) }
     )
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
-    val lazyListState = rememberLazyListState()
 
     HandlePublicQuestionsCommand(
         commandFlow = viewModel.commandState,
@@ -87,18 +85,16 @@ fun PublicQuestionsScreen(
     )
 
     LaunchedEffect(lazyListState, screenState) {
-        snapshotFlow { lazyListState.layoutInfo }.map { layout ->
-            val lastItem = layout.visibleItemsInfo.lastOrNull()
-            val totalItems = layout.totalItemsCount
-            val isAlmostAtEnd =
-                lastItem != null && totalItems > 0 && lastItem.index >= totalItems - RESPONSE_THRESHOLD
-            isAlmostAtEnd
-        }.distinctUntilChanged()
-            .filter { shouldTriggerLoad -> shouldTriggerLoad }
-            .debounce(DELAY_BEFORE_LOADING)
+        snapshotFlow { lazyListState.layoutInfo }
+            .map { layout ->
+                val lastItem = layout.visibleItemsInfo.lastOrNull()
+                val totalItems = layout.totalItemsCount
+                val isAlmostAtEnd =
+                    lastItem != null && totalItems > 0 && lastItem.index >= totalItems - RESPONSE_THRESHOLD
+                isAlmostAtEnd
+            }.filter { shouldTriggerLoad -> shouldTriggerLoad }
             .collect {
-                val currentScreenState = viewModel.screenState.value
-                val canLoadMore = when (currentScreenState) {
+                val canLoadMore = when (val currentScreenState = viewModel.screenState.value) {
                     is PublicQuestionsScreenState.Loaded -> {
                         !currentScreenState.isEndReached && !currentScreenState.isLoadingNextPage
                     }
@@ -111,11 +107,6 @@ fun PublicQuestionsScreen(
             }
     }
 
-    LaunchedEffect(Unit) {
-        if (viewModel.screenState.value is PublicQuestionsScreenState.Initial) {
-            viewModel.onEvent(PublicQuestionsScreenEvent.LoadInitial)
-        }
-    }
     Scaffold(
         topBar = {
             TopAppBarWithBottomBorder(
@@ -424,6 +415,5 @@ private fun EmptyState(modifier: Modifier = Modifier) {
     }
 }
 
-private const val RESPONSE_THRESHOLD = 5
-private const val DELAY_BEFORE_LOADING = 300L
+private const val RESPONSE_THRESHOLD = 8
 private const val COUNT_PLACEHOLDER = 11

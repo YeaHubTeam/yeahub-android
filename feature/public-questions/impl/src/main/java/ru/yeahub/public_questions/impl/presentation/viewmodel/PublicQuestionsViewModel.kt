@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -24,7 +25,7 @@ import ru.yeahub.public_questions.impl.presentation.screen.PublicQuestionsScreen
 
 class PublicQuestionsViewModel(
     private val getPublicQuestionsUseCase: GetPublicQuestionsUseCase,
-    private val mapper1: PublicQuestionDomainToPresentationMapper,
+    private val mapper: PublicQuestionDomainToPresentationMapper,
     private val skills: List<String>?,
     private val skillFilter: String?
 ) : BaseViewModel() {
@@ -64,7 +65,7 @@ class PublicQuestionsViewModel(
                         PublicQuestionsScreenState.Loading
                     } else {
                         PublicQuestionsScreenState.Loaded(
-                            questions = mapper1.mapQuestionModelListToUiModelList(
+                            questions = mapper.mapQuestionModelListToUiModelList(
                                 pagerState.items
                             ),
                             isEndReached = false,
@@ -75,7 +76,7 @@ class PublicQuestionsViewModel(
 
                 is YeaHubPagerState.Loaded -> {
                     PublicQuestionsScreenState.Loaded(
-                        questions = mapper1.mapQuestionModelListToUiModelList(
+                        questions = mapper.mapQuestionModelListToUiModelList(
                             pagerState.items
                         ),
                         isEndReached = pagerState.isEndReached,
@@ -85,14 +86,14 @@ class PublicQuestionsViewModel(
 
                 is YeaHubPagerState.Error -> {
                     PublicQuestionsScreenState.Error(
-                        questions = mapper1.mapQuestionModelListToUiModelList(
+                        questions = mapper.mapQuestionModelListToUiModelList(
                             pagerState.items
                         ),
                         throwable = pagerState.throwable
                     )
                 }
             }
-        }
+        }.distinctUntilChanged()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(TIME_TO_CLEAN_UP_RESOURCES),
@@ -110,6 +111,9 @@ class PublicQuestionsViewModel(
             is PublicQuestionsScreenEvent.OnMoreClick -> onMoreClick(event.id)
             is PublicQuestionsScreenEvent.OnBackClick -> onBackClick()
         }
+    }
+    init {
+        loadInitial()
     }
 
     private fun loadInitial() {
@@ -143,5 +147,4 @@ class PublicQuestionsViewModel(
         }
     }
 }
-
 private const val TIME_TO_CLEAN_UP_RESOURCES = 500L
