@@ -1,10 +1,8 @@
 package ru.yeahub.navigation_impl.model
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.QuestionMark
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.annotation.DrawableRes
 import ru.yeahub.navigation_api.FeatureRoute
+import ru.yeahub.navigation_impl.R
 
 /**
  * Модель для элементов нижней навигации.
@@ -32,17 +30,23 @@ import ru.yeahub.navigation_api.FeatureRoute
 sealed class BottomNavigationItem(
     val route: String,
     val label: String,
-    val icon: ImageVector
+    @DrawableRes val icon: Int
 ) {
+    data object Collections : BottomNavigationItem(
+        route = FeatureRoute.StubFeature.FEATURE_NAME,
+        label = "Коллекции",
+        icon = R.drawable.icon_tab_questions
+    )
+
     data object Home : BottomNavigationItem(
         route = FeatureRoute.HomeFeature.FEATURE_NAME,
         label = "Главная",
-        icon = Icons.Default.Home
+        icon = R.drawable.icon_tab_home
     )
 
-    data object Stub : BottomNavigationItem(
-        route = FeatureRoute.StubFeature.FEATURE_NAME,
-        label = "Заглушка",
-        icon = Icons.Default.QuestionMark
+    data object Questions : BottomNavigationItem(
+        route = FeatureRoute.QuestionsFeature.FEATURE_NAME,
+        label = "Вопросы",
+        icon =  R.drawable.icon_tab_collections
     )
 } 
