@@ -7,6 +7,7 @@ val questionsModule = module {
         publicQuestionsRepositoryModule,
         publicQuestionsUseCase,
         publicQuestionsToUiMapperModule,
-        publicQuestionsToDomainMapperModule
+        publicQuestionsToDomainMapperModule,
+        questionsViewModelModule
     )
 }
