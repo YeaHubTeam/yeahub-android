@@ -1,4 +1,4 @@
-package ru.yeahub.public_questions.impl.presentation
+package ru.yeahub.public_questions.impl.presentation.viewmodel
 
 data class RequestPublicQuestionsData(
     val page: Int,

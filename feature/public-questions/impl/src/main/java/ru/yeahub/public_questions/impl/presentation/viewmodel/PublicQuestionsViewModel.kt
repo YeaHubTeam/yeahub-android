@@ -17,9 +17,8 @@ import ru.yeahub.core_utils.pagerImpl.YeaHubPager
 import ru.yeahub.core_utils.pagerImpl.YeaHubPagerState
 import ru.yeahub.public_questions.impl.domain.entity.PublicQuestionsModel
 import ru.yeahub.public_questions.impl.domain.usecase.GetPublicQuestionsUseCase
-import ru.yeahub.public_questions.impl.presentation.RequestPublicQuestionsData
-import ru.yeahub.public_questions.impl.presentation.command.PublicQuestionsScreenCommand
-import ru.yeahub.public_questions.impl.presentation.event.PublicQuestionsScreenEvent
+import ru.yeahub.public_questions.impl.presentation.intents.PublicQuestionsScreenCommand
+import ru.yeahub.public_questions.impl.presentation.intents.PublicQuestionsScreenEvent
 import ru.yeahub.public_questions.impl.presentation.mapper.PublicQuestionDomainToPresentationMapper
 import ru.yeahub.public_questions.impl.presentation.screen.PublicQuestionsScreenState
 

@@ -45,17 +45,22 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.flowWithLifecycle
 import com.valentinilk.shimmer.shimmer
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.public_questions.impl.R
-import ru.yeahub.public_questions.impl.presentation.command.HandlePublicQuestionsCommand
-import ru.yeahub.public_questions.impl.presentation.event.PublicQuestionsScreenEvent
+import ru.yeahub.public_questions.impl.presentation.intents.PublicQuestionsResult
+import ru.yeahub.public_questions.impl.presentation.intents.PublicQuestionsScreenCommand
+import ru.yeahub.public_questions.impl.presentation.intents.PublicQuestionsScreenEvent
 import ru.yeahub.public_questions.impl.presentation.viewmodel.PublicQuestionsViewModel
 import ru.yeahub.public_questions.impl.presentation.views.ErrorItem
 import ru.yeahub.public_questions.impl.presentation.views.PlaceholderItem
@@ -66,8 +71,7 @@ import java.util.concurrent.TimeoutException
 @OptIn(FlowPreview::class, ExperimentalMaterial3Api::class)
 @Composable
 fun PublicQuestionsScreen(
-    onBackClick: () -> Unit,
-    onDetailsClick: (itemId: String) -> Unit,
+    onResult: (PublicQuestionsResult) -> Unit,
     skills: List<String>? = null,
     skillFilter: String? = null,
     heading: String,
@@ -80,8 +84,7 @@ fun PublicQuestionsScreen(
 
     HandlePublicQuestionsCommand(
         commandFlow = viewModel.commandState,
-        onNavigateToDetail = { id -> onDetailsClick(id) },
-        onBackClick = { onBackClick() },
+        onResult = { result -> onResult(result) }
     )
 
     LaunchedEffect(lazyListState, screenState) {
@@ -129,6 +132,29 @@ fun PublicQuestionsScreen(
                 )
             }
         )
+    }
+}
+
+@Composable
+fun HandlePublicQuestionsCommand(
+    commandFlow: Flow<PublicQuestionsScreenCommand>,
+    onResult: (PublicQuestionsResult) -> Unit
+) {
+    val lifecycleOwner = LocalLifecycleOwner.current
+    LaunchedEffect(key1 = commandFlow, key2 = lifecycleOwner) {
+        commandFlow
+            .flowWithLifecycle(lifecycleOwner.lifecycle, Lifecycle.State.STARTED)
+            .collect { command ->
+                when (command) {
+                    is PublicQuestionsScreenCommand.OnMoreClick -> {
+                        onResult(PublicQuestionsResult.NavigateToDetail(command.id))
+                    }
+
+                    PublicQuestionsScreenCommand.OnBackClick -> {
+                        onResult(PublicQuestionsResult.NavigateBack)
+                    }
+                }
+            }
     }
 }
 
