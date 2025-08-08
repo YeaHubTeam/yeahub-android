@@ -5,18 +5,23 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.valentinilk.shimmer.shimmer
 import org.koin.androidx.compose.koinViewModel
 import ru.yeahub.core_ui.component.ErrorScreen
+import ru.yeahub.core_ui.component.PrimaryButton
 import ru.yeahub.core_ui.theme.LocalAppTypography
 import ru.yeahub.core_ui.theme.colors
 import ru.yeahub.selection_specializations.impl.model.VoSpecilialization
@@ -50,8 +55,9 @@ fun SpecializationsScreen(
 
     when (screenState) {
         is SpecilializationScreenState.Loaded -> {
-            SuccessSpecializationsScreen(
+            BaseSpecializationsScreen(
                 list = screenState.resultList,
+                isPagerLoading = screenState.isLoadingNextPage,
                 onSpecialClick = { id ->
                     specialViewModel.onEvent(
                         SpecilializationScreenEvent.OnSpecialClick(
@@ -80,23 +86,21 @@ fun SpecializationsScreen(
             )
             SpecializationsLoadingScreen(padding = padding)
         }
-
-        SpecilializationScreenState.PagerLoading -> {}
     }
 }
 
 @Composable
-fun SuccessSpecializationsScreen(
+fun BaseSpecializationsScreen(
     modifier: Modifier = Modifier,
     onSpecialClick: (id: Int) -> Unit,
+    isPagerLoading: Boolean,
     list: List<VoSpecilialization>
 ) {
     val lazyListState = rememberLazyListState()
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(colors.black10)
-            .padding(horizontal = FIGMA_HORIZONTAL_PADDING),
+            .background(colors.black10),
     ) {
         val titleTextStyle = LocalAppTypography.current.body5Strong
         Text(
@@ -112,7 +116,7 @@ fun SuccessSpecializationsScreen(
         )
 
         LazyColumn(
-            modifier = modifier,
+            modifier = modifier.padding(horizontal = FIGMA_HORIZONTAL_PADDING),
             state = lazyListState,
             verticalArrangement = Arrangement.spacedBy(FIGMA_VERTICAL_CARD_PADDING)
         ) {
@@ -126,9 +130,23 @@ fun SuccessSpecializationsScreen(
                 )
             }
         }
+
+        //shimmer bottom part
+        if (isPagerLoading){
+            PrimaryButton(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .shimmer()
+                    .background(colors.purple900),
+                shape = RoundedCornerShape(0.dp),
+                contentPadding = PaddingValues(0.dp),
+                onClick = {}
+            ){}
+        }
     }
 }
 
+//with paging loading
 @Preview
 @Composable
 fun SpecializationsScreenReview() {
@@ -144,8 +162,9 @@ fun SpecializationsScreenReview() {
         exampleList.add(VoSpecilialization(id = i, title = names[i % names.size]))
     }
 
-    SuccessSpecializationsScreen(
+    BaseSpecializationsScreen(
         list = exampleList,
-        onSpecialClick = { id -> println("pressed id=$id") }
+        onSpecialClick = { id -> println("pressed id=$id") },
+        isPagerLoading = true
     )
 }

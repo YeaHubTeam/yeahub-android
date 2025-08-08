@@ -6,8 +6,6 @@ sealed class SpecilializationScreenState {
 
     data object InitLoading : SpecilializationScreenState()
 
-    data object PagerLoading : SpecilializationScreenState()
-
     data class Loaded(
         val resultList: List<VoSpecilialization>,
         val isEndReached: Boolean,

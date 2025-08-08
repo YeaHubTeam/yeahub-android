@@ -56,7 +56,7 @@ class SpecilializationViewModel(
                 is YeaHubPagerState.Initial -> SpecilializationScreenState.InitLoading
                 is YeaHubPagerState.Loading<DomainSpecilialization> -> {
                     if (pagerState.items.isEmpty()) {
-                        SpecilializationScreenState.PagerLoading
+                        SpecilializationScreenState.InitLoading
                     } else {
                         SpecilializationScreenState.Loaded(
                             resultList = pagerState.items.toVoList(),

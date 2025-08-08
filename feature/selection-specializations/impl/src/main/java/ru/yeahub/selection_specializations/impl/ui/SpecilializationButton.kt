@@ -7,6 +7,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -20,7 +21,7 @@ import timber.log.Timber
 
 val FIGMA_CARD_HEIGHT = 64.dp
 val FIGMA_CARD_CORNER_ROUND = 8.dp
-val FIGMA_CARD_ELEVATION = 4.dp //where elevation set up?
+val FIGMA_CARD_ELEVATION = 4.dp
 
 @Composable
 fun SpecilializationButton(
@@ -32,7 +33,11 @@ fun SpecilializationButton(
     PrimaryButton(
         modifier = modifier
             .fillMaxWidth()
-            .height(FIGMA_CARD_HEIGHT),
+            .height(FIGMA_CARD_HEIGHT)
+            .shadow(
+                elevation = FIGMA_CARD_ELEVATION,
+                ambientColor = colors.mainShadow
+            ),
         onClick = { onSpecialClick },
         shape = RoundedCornerShape(FIGMA_CARD_CORNER_ROUND),
         colors = YeahubButtonDefaults.primaryButtonColors(
