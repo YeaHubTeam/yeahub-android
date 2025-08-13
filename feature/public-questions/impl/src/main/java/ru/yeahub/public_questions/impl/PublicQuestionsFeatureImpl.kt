@@ -27,28 +27,28 @@ class PublicQuestionsFeatureImpl : FeatureApi {
     ) {
         val featurePath = pathManager.createParametrizedPath(
             getFeatureName(),
-            "skillFilter",
-            "skills",
-            "heading"
+            SKILL_FILTER,
+            SKILLS,
+            HEADING
         )
 
         navGraphBuilder.composable(
             route = featurePath,
             arguments = listOf(
-                navArgument("skillFilter") { type = NavType.StringType },
-                navArgument("skills") { type = NavType.StringType },
-                navArgument("heading") { type = NavType.StringType }
+                navArgument(SKILL_FILTER) { type = NavType.StringType },
+                navArgument(SKILLS) { type = NavType.StringType },
+                navArgument(HEADING) { type = NavType.StringType }
             )
         ) { backStackEntry ->
             val heading = backStackEntry
                 .arguments
-                ?.getString("heading") ?: ""
+                ?.getString(HEADING) ?: ""
             val skills = backStackEntry.arguments
-                ?.getString("skills")
+                ?.getString(SKILLS)
                 ?.split(",") ?: listOf()
             val skillFilter = backStackEntry
                 .arguments
-                ?.getString("skillFilter") ?: ""
+                ?.getString(SKILL_FILTER) ?: ""
             PublicQuestionsScreen(
                 onResult = { result ->
                     when (result) {
@@ -92,3 +92,7 @@ class PublicQuestionsFeatureImpl : FeatureApi {
         }
     }
 }
+
+private const val SKILL_FILTER = "skillFilter"
+private const val SKILLS = "skills"
+private const val HEADING = "skills"
