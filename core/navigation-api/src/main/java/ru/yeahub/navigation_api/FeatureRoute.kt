@@ -46,4 +46,7 @@ object FeatureRoute {
     object DetailsFeature {
         const val FEATURE_NAME = "details"
     }
+    object PublicQuestionsFeature {
+        const val FEATURE_NAME = "public_questions"
+    }
 }

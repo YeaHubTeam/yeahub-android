@@ -1,4 +1,4 @@
-package ru.yeahub.public_questions.impl.presentation.event
+package ru.yeahub.public_questions.impl.presentation.intents
 
 sealed class PublicQuestionsScreenEvent {
 

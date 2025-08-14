@@ -1,4 +1,4 @@
-package ru.yeahub.public_questions.impl.presentation.command
+package ru.yeahub.public_questions.impl.presentation.intents
 
 sealed class PublicQuestionsScreenCommand {
     data object OnBackClick : PublicQuestionsScreenCommand()
