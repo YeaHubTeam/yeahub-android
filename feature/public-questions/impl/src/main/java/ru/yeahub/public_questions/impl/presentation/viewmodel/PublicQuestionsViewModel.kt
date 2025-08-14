@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import ru.yeahub.core_utils.baseviewmodel.BaseViewModel
+import ru.yeahub.core_utils.BaseViewModel
 import ru.yeahub.core_utils.pager.YeaHubPagerLoader
 import ru.yeahub.core_utils.pagerImpl.YeaHubPager
 import ru.yeahub.core_utils.pagerImpl.YeaHubPagerState
