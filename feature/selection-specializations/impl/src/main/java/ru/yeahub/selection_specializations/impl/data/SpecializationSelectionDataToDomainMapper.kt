@@ -16,8 +16,8 @@ object SpecializationSelectionDataToDomainMapper {
         dataResponce: GetSpecializationsResponse
     ): DomainSpecilializationListResponse =
         DomainSpecilializationListResponse(
-            page = dataResponce.page,
-            limit = dataResponce.limit,
+            page = dataResponce.page ?: 1L,
+            limit = dataResponce.limit ?: 10L,
             data = dataResponce.data.map { dataItem -> dataToDomain(dataItem) },
             total = dataResponce.total
         )
