@@ -4,15 +4,15 @@ import ru.yeahub.selection_specializations.impl.model.DomainSpecilializationList
 import ru.yeahub.selection_specializations.impl.model.SpecializationsRequest
 
 class SpecializationsRepositoryImpl(
-    val remoteRepository: SpecializationsRemoteRepository,
-    val mapper: MapperDataToDomain
+    private val remoteRepository: SpecializationsRemoteRepository,
+    private val mapper: SpecializationSelectionDataToDomainMapper
 ) : SpecializationsRepository {
     //without responses cache impl, only online
-    override suspend fun getSpecilizationsList(
+    override suspend fun getSpecializationsList(
         request: SpecializationsRequest
     ): DomainSpecilializationListResponse =
         mapper
-            .mapListResponceToDomain(
-                remoteRepository.requestSpecilizationsList(request)
+            .dataListToDomainList(
+                remoteRepository.requestSpecializationsList(request)
             )
 }

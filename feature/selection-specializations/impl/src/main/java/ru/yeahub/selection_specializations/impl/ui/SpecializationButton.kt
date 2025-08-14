@@ -24,7 +24,7 @@ val FIGMA_CARD_CORNER_ROUND = 8.dp
 val FIGMA_CARD_ELEVATION = 4.dp
 
 @Composable
-fun SpecilializationButton(
+fun SpecializationButton(
     modifier: Modifier = Modifier,
     onSpecialClick: (id: Int) -> Unit,
     textStyle: TextStyle = LocalAppTypography.current.body3Accent,
@@ -63,7 +63,7 @@ fun SpecilializationButton(
 @Composable
 fun SpecializationButtonPreview() {
     val title = "Some spec"
-    SpecilializationButton(
+    SpecializationButton(
         title = title,
         onSpecialClick = {
             Timber.d("Example SpecilializationScreenEvent.OnSpecialClick")

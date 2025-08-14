@@ -1,44 +1,34 @@
 package ru.yeahub.selection_specializations.impl.presentation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.flowWithLifecycle
-import kotlinx.coroutines.flow.Flow
-import ru.yeahub.selection_specializations.impl.domain.GetOnbordingUseCaseImpl
-import ru.yeahub.selection_specializations.impl.domain.GetSpecializationUseCaseImpl
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.flow.SharedFlow
 
 @Composable
 fun HandleSpecialCommand(
-    commandFlow: Flow<OnSpecialScreenCommand>,
-    currentUseCase: OnSpecialFeatureUseCase,
-    onNavigate: (nextRoute: String) -> Unit,
+    commandFlow: SharedFlow<SpecializationSelectionScreenCommand>,
+    parentRoute: String,
+    onNavigate: (parentRoute: String, specId: String) -> Unit,
     onBackClick: () -> Unit
 ) {
-    val onBoardUseCase = GetOnbordingUseCaseImpl()
-    val specialUseCase = GetSpecializationUseCaseImpl()
-
     val lifecycleOwner = LocalLifecycleOwner.current
-    LaunchedEffect(commandFlow, lifecycleOwner) {
-        commandFlow
-            .flowWithLifecycle(lifecycleOwner.lifecycle)
-            .collect { command ->
-                when (command) {
-                    is OnSpecialScreenCommand.OnSpecialClick -> {
-                        when (currentUseCase) {
-                            OnSpecialFeatureUseCase.OnBoard -> {
-                                onNavigate(onBoardUseCase.getNextRoute(command.onClickedSpecId))
-                            }
-                            OnSpecialFeatureUseCase.Specilialization -> {
-                                onNavigate(specialUseCase.getNextRoute(command.onClickedSpecId))
-                            }
-                        }
-                    }
+    val commandState by commandFlow.collectAsStateWithLifecycle(
+            initialValue = null,
+            lifecycleOwner = lifecycleOwner,
+        )
 
-                    OnSpecialScreenCommand.OnBackClick -> {
-                        onBackClick
-                    }
+    commandState
+        ?.let { command ->
+            when (command) {
+                is SpecializationSelectionScreenCommand.SpecializationSelectionClick -> {
+                    onNavigate("$parentRoute as parent route", "${command.onClickedSpecId} as specId")
+                }
+
+                SpecializationSelectionScreenCommand.OnBackClick -> {
+                    onBackClick
                 }
             }
-    }
+        }
 }

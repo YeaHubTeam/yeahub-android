@@ -8,6 +8,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.valentinilk.shimmer.shimmer
+import ru.yeahub.selection_specializations.impl.ui.SpecializationScreen.Companion.FIGMA_HORIZONTAL_PADDING
+import ru.yeahub.selection_specializations.impl.ui.SpecializationScreen.Companion.FIGMA_VERTICAL_TITLE_PADDING
 
 @Composable
 fun SpecializationsLoadingScreen(
@@ -18,7 +20,7 @@ fun SpecializationsLoadingScreen(
         modifier = modifier
             .padding(padding)
     ) {
-        SpecilializationButton(
+        SpecializationButton(
             title = "Loading specializations...",
             onSpecialClick = {},
             modifier = modifier

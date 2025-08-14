@@ -3,7 +3,7 @@ package ru.yeahub.selection_specializations.impl.presentation
 import ru.yeahub.selection_specializations.impl.model.DomainSpecilialization
 import ru.yeahub.selection_specializations.impl.model.VoSpecilialization
 
-object DomainToVoMapper {
+object SpecializationSelectionDomainToVoMapper {
     fun List<DomainSpecilialization>.toVoList() = this
         .map { domain ->
             VoSpecilialization(

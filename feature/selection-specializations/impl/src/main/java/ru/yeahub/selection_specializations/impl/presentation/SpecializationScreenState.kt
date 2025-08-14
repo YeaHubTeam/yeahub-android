@@ -2,18 +2,18 @@ package ru.yeahub.selection_specializations.impl.presentation
 
 import ru.yeahub.selection_specializations.impl.model.VoSpecilialization
 
-sealed class SpecilializationScreenState {
+sealed class SpecializationScreenState {
 
-    data object InitLoading : SpecilializationScreenState()
+    data object InitLoading : SpecializationScreenState()
 
     data class Loaded(
         val resultList: List<VoSpecilialization>,
         val isEndReached: Boolean,
         val isLoadingNextPage: Boolean
-    ) : SpecilializationScreenState()
+    ) : SpecializationScreenState()
 
     data class Error(
         val currentList: List<VoSpecilialization>,
         val throwable: Throwable
-    ) : SpecilializationScreenState()
+    ) : SpecializationScreenState()
 }

@@ -7,7 +7,7 @@ import ru.yeahub.selection_specializations.impl.model.SpecializationsRequest
 class SpecializationsRemoteRepositoryImpl(
     private val apiService: NetworkProvider
 ) : SpecializationsRemoteRepository {
-    override suspend fun requestSpecilizationsList(
+    override suspend fun requestSpecializationsList(
         request: SpecializationsRequest
     ): GetSpecializationsResponse =
         apiService.apiService.getSpecializations(
