@@ -37,7 +37,6 @@ private object PopoverQuestionControlConstants {
     val LARGE_SCREEN_THRESHOLD = 440.dp
     val LARGE_ROW_SPACING = 32.dp
     val SMALL_ROW_SPACING = 10.dp
-    val SURFACE_PADDING = 5.dp
     val CORNER_RADIUS = 16.dp
     val SHADOW_ELEVATION = 10.dp
     val CONTENT_PADDING_VERTICAL = 16.dp
@@ -77,10 +76,10 @@ fun PopoverQuestion(
     Surface(
         modifier = modifier
             .wrapContentWidth()
-            .padding(PopoverQuestionControlConstants.SURFACE_PADDING)
             .widthIn(max = PopoverQuestionControlConstants.MAX_WIDTH),
         shape = RoundedCornerShape(PopoverQuestionControlConstants.CORNER_RADIUS),
-        shadowElevation = PopoverQuestionControlConstants.SHADOW_ELEVATION
+        shadowElevation = PopoverQuestionControlConstants.SHADOW_ELEVATION,
+        color = Theme.colors.white900,
     ) {
         BoxWithConstraints {
             val screenWidth = maxWidth
@@ -102,7 +101,7 @@ fun PopoverQuestion(
                         bottom = PopoverQuestionControlConstants.CONTENT_PADDING_VERTICAL,
                         end = PopoverQuestionControlConstants.CONTENT_PADDING_HORIZONTAL
                     ),
-                verticalArrangement = Arrangement.spacedBy(rowSpacing)
+                verticalArrangement = Arrangement.spacedBy(rowSpacing),
             ) {
                 // Первый ряд: Изучить, Повторить, Избранное
                 Row(

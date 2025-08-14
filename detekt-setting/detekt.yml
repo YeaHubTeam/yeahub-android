@@ -9,6 +9,7 @@ style:
       - '**/build.gradle.kts'
       - '**/CheckFile.kt'
       - '**/core_ui/component/**'
+      - '**/example_questions/impl/**'
   NewLineAtEndOfFile:
     active: false
   MayBeConst:

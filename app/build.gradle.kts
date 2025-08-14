@@ -49,9 +49,6 @@ dependencies {
     implementation(project(":core:ui"))
     implementation(project(":core:navigation-impl"))
 
-    //ViewModel
-    implementation(libs.androidx.lifecycle.viewmodel.ktx)
-
     //Timber
     implementation(libs.timber)
 
@@ -90,12 +87,14 @@ dependencies {
     implementation(project(":feature:example-profile:api"))
     implementation(project(":feature:example-questions:api"))
     implementation(project(":feature:example-details:api"))
+    implementation(project(":feature:detail-question:api"))
     implementation(project(":feature:public-questions:api"))
     implementation(project(":feature:example-home:impl"))
     implementation(project(":feature:example-profile:impl"))
     implementation(project(":feature:example-questions:impl"))
     implementation(project(":feature:example-details:impl"))
     implementation(project(":feature:public-questions:impl"))
+    implementation(project(":feature:detail-question:impl"))
 }
 
 tasks.withType<Test> {

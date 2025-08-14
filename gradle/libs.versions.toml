@@ -48,7 +48,7 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "nav_version" }
 androidx-icons = { group = "androidx.compose.material", name = "material-icons-extended", version = "1.6.1" }
-
+compose-markdown = { group = "com.github.jeziellago", name = "compose-markdown", version = "0.5.7" }
 #androidx-material = { module = "androidx.compose.material:material", version.ref = "composeBom" }
 
 #RETROFIT

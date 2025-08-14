@@ -1,5 +1,6 @@
 package ru.yeahub.example_details.impl
 
+import org.koin.dsl.bind
 import org.koin.dsl.module
 import ru.yeahub.example_details.api.DetailsScreenApi
 import ru.yeahub.navigation_api.FeatureApi
@@ -13,5 +14,5 @@ import ru.yeahub.navigation_api.FeatureApi
  */
 val detailsFeatureModule = module {
     single<DetailsScreenApi> { DetailsScreenApiImpl() }
-    single<FeatureApi> { DetailsFeatureImpl(get()) }
+    single { DetailsFeatureImpl(get()) } bind FeatureApi::class
 } 
