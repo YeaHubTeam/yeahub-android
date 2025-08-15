@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.SharedFlow
 fun HandleSpecialCommand(
     commandFlow: SharedFlow<SpecializationSelectionScreenCommand>,
     parentRoute: String,
-    onNavigate: (parentRoute: String, specId: String) -> Unit,
+    onNavigate: (specId: String) -> Unit,
     onBackClick: () -> Unit
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -23,7 +23,7 @@ fun HandleSpecialCommand(
         ?.let { command ->
             when (command) {
                 is SpecializationSelectionScreenCommand.SpecializationSelectionClick -> {
-                    onNavigate("$parentRoute as parent route", "${command.onClickedSpecId} as specId")
+                    onNavigate("$parentRoute as parent route and ${command.onClickedSpecId} as specId")
                 }
 
                 SpecializationSelectionScreenCommand.OnBackClick -> {

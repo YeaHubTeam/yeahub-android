@@ -43,7 +43,7 @@ class SpecializationScreen : SpecializationsScreenApi {
     @Composable
     override fun SpecializationScreen(
         parentRoute: String,
-        onSpecializationClick: (parentRoute: String, specId: String) -> Unit,
+        onSpecializationClick: (specId: String) -> Unit,
         onBackClick: () -> Unit
     ) {
         val specialViewModel: SpecializationViewModel = koinViewModel()
@@ -64,10 +64,7 @@ class SpecializationScreen : SpecializationsScreenApi {
                     isPagerLoading = screenState.isLoadingNextPage,
                     onSpecialClick = { id ->
                         specialViewModel.onEvent(
-                            SpecializationScreenEvent.OnSpecialClick(
-                                parentRoute = parentRoute,
-                                id = id
-                            )
+                            SpecializationScreenEvent.OnSpecialClick(id = id)
                         )
                     }
                 )

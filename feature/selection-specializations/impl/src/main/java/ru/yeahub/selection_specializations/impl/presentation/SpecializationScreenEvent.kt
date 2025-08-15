@@ -9,7 +9,6 @@ sealed class SpecializationScreenEvent {
     data object Refresh : SpecializationScreenEvent()
 
     data class OnSpecialClick(
-        val parentRoute: String,
         val id: Int
     ) : SpecializationScreenEvent()
 

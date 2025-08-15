@@ -7,7 +7,7 @@ interface SpecializationsScreenApi {
     @Composable
     fun SpecializationScreen(
         parentRoute: String,
-        onSpecializationClick: (parentRoute: String, specId: String) -> Unit,
+        onSpecializationClick: (specId: String) -> Unit,
         onBackClick: () -> Unit
     )
 }

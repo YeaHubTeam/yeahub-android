@@ -25,8 +25,7 @@ import ru.yeahub.selection_specializations.impl.presentation.SpecializationSelec
 private const val TIME_TO_CLEAN_UP_RESOURCES = 500L
 
 class SpecializationViewModel(
-    private val repository: SpecializationsRepository,
-    private val parentRoute: String
+    private val repository: SpecializationsRepository
 ) : BaseViewModel() {
     private val pagerLoader =
         object : YeaHubPagerLoader<DomainSpecilializationListResponse, SpecializationsRequest> {
@@ -98,7 +97,7 @@ class SpecializationViewModel(
             is SpecializationScreenEvent.LoadInitial -> initLoad()
             is SpecializationScreenEvent.LoadNextPage -> loadNextPage()
             is SpecializationScreenEvent.OnBackClick -> backClick()
-            is SpecializationScreenEvent.OnSpecialClick -> onSpecialClick(parentRoute, event.id)
+            is SpecializationScreenEvent.OnSpecialClick -> onSpecialClick(event.id)
             is SpecializationScreenEvent.Refresh -> refresh()
         }
     }
@@ -115,12 +114,10 @@ class SpecializationViewModel(
         }
 
     private fun onSpecialClick(
-        parentRoute: String,
         id: Int
     ) = viewModelScopeSafe.launch(Dispatchers.IO) {
         _commands.emit(
             SpecializationSelectionClick(
-                parentRoute = parentRoute,
                 onClickedSpecId = id
             )
         )
