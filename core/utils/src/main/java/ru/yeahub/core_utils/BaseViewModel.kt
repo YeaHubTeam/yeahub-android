@@ -18,6 +18,6 @@ abstract class BaseViewModel : ViewModel() {
         }
 
     protected open fun onDefaultCEH(throwable: Throwable) {
-        Timber.e(throwable, "Unhandled exception in ${this.javaClass.simpleName}")
+        Timber.Forest.e(throwable, "Unhandled exception in ${this.javaClass.simpleName}")
     }
 }
