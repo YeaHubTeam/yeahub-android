@@ -95,14 +95,19 @@ class HomeFeatureImpl(private val homeScreen: HomeScreenApi) : FeatureApi {
         navController: NavHostController
     ) {
         // Сбрасываем текущий путь на корневую фичу
-        pathManager.setCurrentPath(getFeatureName())
+        pathManager.setCurrentPath(FeatureRoute.QuestionsFeature.FEATURE_NAME)
         
-        val questionsPath = pathManager.createChildPath(FeatureRoute.QuestionsFeature.FEATURE_NAME)
+        val questionsPath = pathManager.getCurrentPath()
         
         Timber.d("HomeFeatureImpl handleQuestionsNavigation: Navigating to: $questionsPath")
-        
-        pathManager.setCurrentPath(questionsPath)
-        navController.navigate(questionsPath)
+
+        navController.navigate(questionsPath) {
+            popUpTo(navController.graph.startDestinationId) {
+                saveState = true
+            }
+            launchSingleTop = true
+            restoreState = true
+        }
     }
     
     /**
