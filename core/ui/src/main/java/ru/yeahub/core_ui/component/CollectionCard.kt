@@ -25,7 +25,6 @@ import ru.yeahub.core_ui.example.staticPreview.StaticPreview
 import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.ui.R
 
-
 @Composable
 fun CollectionCard(
     modifier: Modifier = Modifier,
@@ -99,7 +98,6 @@ fun CollectionCard(
     }
 }
 
-
 @StaticPreview
 @Composable
 fun CollectionCardPreview() {
@@ -108,5 +106,7 @@ fun CollectionCardPreview() {
         descriptionText = "Техническое собеседование для экспертов по основным вопросам React",
         imageUrl = "123",
         questionsCount = 30,
-        onCollectionClick = {})
+        onCollectionClick = {
+        }
+    )
 }
