@@ -13,4 +13,5 @@
     <string name="difficulty">Сложность:</string>
     <string name="read_more">Подробнее</string>
     <string name="go_to_questions">Перейти к вопросам</string>
+    <string name="questions">%1$d вопросов</string>
 </resources>
