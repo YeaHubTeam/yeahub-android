@@ -4,7 +4,7 @@ import ru.yeahub.selection_specializations.impl.model.DomainSpecilializationList
 import ru.yeahub.selection_specializations.impl.model.SpecializationsRequest
 
 interface SpecializationsRepository {
-    suspend fun invoke(
+    suspend fun getSpecializationList(
         request: SpecializationsRequest,
     ): DomainSpecilializationListResponse
 }
