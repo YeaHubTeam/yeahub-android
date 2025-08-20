@@ -8,6 +8,7 @@ import ru.yeahub.navigation_api.FeatureApi
 import ru.yeahub.navigation_api.FeatureRoute
 import ru.yeahub.navigation_api.NavigationPathManager
 import ru.yeahub.selection_specializations.api.domain.SpecializationsScreenApi
+import ru.yeahub.selection_specializations.api.presentation.SpecializationsScreenResult
 import timber.log.Timber
 
 class SpecializationsFeatureImpl(
@@ -41,12 +42,23 @@ class SpecializationsFeatureImpl(
             //связываем коллбеки из конструктора экрана с логикой навигации
             specializationScreen.SpecializationScreen(
                 parentRoute = pathManager.getParentPath(),
-                onSpecializationClick = { specId ->
-                    handleSpecializationsNavigation(pathManager, navController, specId)
+                onResult = { result ->
+                    when (result) {
+                        SpecializationsScreenResult.NavigateBack -> {
+                            handleBackNavigation(
+                                pathManager = pathManager,
+                                navController = navController
+                            )
+                        }
+                        is SpecializationsScreenResult.SpecializationClick -> {
+                            handleSpecializationsNavigation(
+                                pathManager = pathManager,
+                                navController = navController,
+                                specId = result.specId
+                            )
+                        }
+                    }
                 },
-                onBackClick = {
-                    handleBackNavigation(pathManager, navController)
-                }
             )
         }
     }
@@ -55,18 +67,22 @@ class SpecializationsFeatureImpl(
      * Обработка навигации к специализации.
      * Переход осуществляется изходя из
      * родительской фичи в pathManager и specId.
+     *     TODO: use SpecialScreenResult
      */
     fun handleSpecializationsNavigation(
         pathManager: NavigationPathManager,
         navController: NavHostController,
-        specId: String
+        specId: String,
+        //onResult: (SpecializationsScreenResult) -> Unit,
     ) {
         // Сбрасываем текущий путь на корневую фичу
         pathManager.setCurrentPath(getFeatureName())
 
+        // parentPath (colections(не готово),questions)
+        // TODO() - video process (navigate)
         val profilePath = pathManager.createParametrizedPath(
-            featureName = FeatureRoute.ProfileFeature.FEATURE_NAME,
-            "specId"
+            featureName = FeatureRoute.SpecializationsFeature.FEATURE_NAME,
+            specId
         )
 
         val concretePath = pathManager.createConcretePath(

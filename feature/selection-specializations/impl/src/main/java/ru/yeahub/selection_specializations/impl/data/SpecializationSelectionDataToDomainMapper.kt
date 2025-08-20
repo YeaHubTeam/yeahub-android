@@ -5,13 +5,7 @@ import ru.yeahub.network_api.models.GetSpecializationsResponse
 import ru.yeahub.selection_specializations.impl.model.DomainSpecilialization
 import ru.yeahub.selection_specializations.impl.model.DomainSpecilializationListResponse
 
-object SpecializationSelectionDataToDomainMapper {
-   fun dataToDomain(data: GetSpecializationResponse): DomainSpecilialization =
-        DomainSpecilialization(
-            id = data.id,
-            title = data.title
-        )
-
+class SpecializationSelectionDataToDomainMapper {
     fun dataListToDomainList(
         dataResponce: GetSpecializationsResponse
     ): DomainSpecilializationListResponse =
@@ -20,5 +14,12 @@ object SpecializationSelectionDataToDomainMapper {
             limit = dataResponce.limit ?: 10L,
             data = dataResponce.data.map { dataItem -> dataToDomain(dataItem) },
             total = dataResponce.total
+        )
+
+    //none private for using in unit-tests
+    fun dataToDomain(data: GetSpecializationResponse): DomainSpecilialization =
+        DomainSpecilialization(
+            id = data.id,
+            title = data.title
         )
 }

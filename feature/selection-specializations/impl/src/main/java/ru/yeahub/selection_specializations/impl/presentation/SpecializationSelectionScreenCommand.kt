@@ -2,7 +2,7 @@ package ru.yeahub.selection_specializations.impl.presentation
 
 sealed class SpecializationSelectionScreenCommand {
     data class SpecializationSelectionClick(
-        val onClickedSpecId: Int
+        val onClickedSpecId: String
     ) : SpecializationSelectionScreenCommand()
 
     data object OnBackClick : SpecializationSelectionScreenCommand()

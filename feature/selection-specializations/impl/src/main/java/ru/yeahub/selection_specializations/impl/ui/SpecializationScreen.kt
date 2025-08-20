@@ -19,16 +19,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.valentinilk.shimmer.shimmer
+import kotlinx.coroutines.flow.Flow
 import org.koin.androidx.compose.koinViewModel
 import ru.yeahub.core_ui.component.ErrorScreen
 import ru.yeahub.core_ui.component.PrimaryButton
 import ru.yeahub.core_ui.theme.LocalAppTypography
 import ru.yeahub.core_ui.theme.colors
+import ru.yeahub.core_utils.common.observe
 import ru.yeahub.selection_specializations.api.domain.SpecializationsScreenApi
+import ru.yeahub.selection_specializations.api.presentation.SpecializationsScreenResult
 import ru.yeahub.selection_specializations.impl.model.VoSpecilialization
-import ru.yeahub.selection_specializations.impl.presentation.HandleSpecialCommand
 import ru.yeahub.selection_specializations.impl.presentation.SpecializationScreenEvent
 import ru.yeahub.selection_specializations.impl.presentation.SpecializationScreenState
+import ru.yeahub.selection_specializations.impl.presentation.SpecializationSelectionScreenCommand
 import ru.yeahub.selection_specializations.impl.presentation.SpecializationViewModel
 
 class SpecializationScreen : SpecializationsScreenApi {
@@ -43,18 +46,15 @@ class SpecializationScreen : SpecializationsScreenApi {
     @Composable
     override fun SpecializationScreen(
         parentRoute: String,
-        onSpecializationClick: (specId: String) -> Unit,
-        onBackClick: () -> Unit
+        onResult: (SpecializationsScreenResult) -> Unit,
     ) {
         val specialViewModel: SpecializationViewModel = koinViewModel()
         val screenState = specialViewModel.uiStatus.collectAsStateWithLifecycle()
 
         //command handler
-        HandleSpecialCommand(
+        HandleCommand(
             commandFlow = specialViewModel.commands,
-            parentRoute = parentRoute,
-            onNavigate = onSpecializationClick,
-            onBackClick = onBackClick
+            onResult = onResult,
         )
 
         when (screenState) {
@@ -76,7 +76,7 @@ class SpecializationScreen : SpecializationsScreenApi {
                     titleText = "Crash",
                     backText = "Back",
                     unknownErrorText = "Something went wrong...",
-                    onBack = onBackClick
+                    onBack = { SpecializationsScreenResult.NavigateBack }
                 )
             }
 
@@ -86,6 +86,23 @@ class SpecializationScreen : SpecializationsScreenApi {
                     horizontal = FIGMA_HORIZONTAL_PADDING
                 )
                 SpecializationsLoadingScreen(padding = padding)
+            }
+        }
+    }
+
+    @Composable
+    fun HandleCommand(
+        commandFlow: Flow<SpecializationSelectionScreenCommand>,
+        onResult: (SpecializationsScreenResult) -> Unit,
+    ) {
+        commandFlow.observe { command ->
+            when (command) {
+                is SpecializationSelectionScreenCommand.OnBackClick -> {
+                    onResult(SpecializationsScreenResult.NavigateBack)
+                }
+                is SpecializationSelectionScreenCommand.SpecializationSelectionClick -> {
+                    onResult(SpecializationsScreenResult.SpecializationClick(command.onClickedSpecId))
+                }
             }
         }
     }

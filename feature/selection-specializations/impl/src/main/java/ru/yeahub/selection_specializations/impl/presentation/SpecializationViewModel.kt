@@ -14,7 +14,7 @@ import ru.yeahub.core_utils.BaseViewModel
 import ru.yeahub.core_utils.pager.YeaHubPagerLoader
 import ru.yeahub.core_utils.pagerImpl.YeaHubPager
 import ru.yeahub.core_utils.pagerImpl.YeaHubPagerState
-import ru.yeahub.selection_specializations.impl.data.SpecializationsRepository
+import ru.yeahub.selection_specializations.impl.domain.GetSpecializationListUseCase
 import ru.yeahub.selection_specializations.impl.model.DomainSpecilialization
 import ru.yeahub.selection_specializations.impl.model.DomainSpecilializationListResponse
 import ru.yeahub.selection_specializations.impl.model.SpecializationsRequest
@@ -25,14 +25,14 @@ import ru.yeahub.selection_specializations.impl.presentation.SpecializationSelec
 private const val TIME_TO_CLEAN_UP_RESOURCES = 500L
 
 class SpecializationViewModel(
-    private val repository: SpecializationsRepository
+    private val getSpecializationListUseCase: GetSpecializationListUseCase,
 ) : BaseViewModel() {
     private val pagerLoader =
         object : YeaHubPagerLoader<DomainSpecilializationListResponse, SpecializationsRequest> {
             override suspend fun loadPage(
                 request: SpecializationsRequest
             ): DomainSpecilializationListResponse =
-                repository.getSpecializationsList(request)
+                getSpecializationListUseCase(request)
 
             override fun updatePage(
                 request: SpecializationsRequest,
@@ -118,7 +118,7 @@ class SpecializationViewModel(
     ) = viewModelScopeSafe.launch(Dispatchers.IO) {
         _commands.emit(
             SpecializationSelectionClick(
-                onClickedSpecId = id
+                onClickedSpecId = id.toString()
             )
         )
     }

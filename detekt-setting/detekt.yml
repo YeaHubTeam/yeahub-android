@@ -21,6 +21,8 @@ style:
       - 'java.util.*'
   UnusedParameter:
     active: false
+  ForbiddenComment:
+    active: false
 
 naming:
   FunctionNaming:
