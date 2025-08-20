@@ -9,6 +9,7 @@ internal val specializationFeatureModule = module {
     includes(
         specializationRepositoryModule,
         specializationMapperModule,
+        specializationListUseCaseModule,
         specializationsViewModelModule,
         specializationScreenModule,
     )
