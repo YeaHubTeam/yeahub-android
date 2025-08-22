@@ -1,4 +1,4 @@
-package ru.yeahub.public_collections.impl.ui.views
+package ru.yeahub.public_collections.impl.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

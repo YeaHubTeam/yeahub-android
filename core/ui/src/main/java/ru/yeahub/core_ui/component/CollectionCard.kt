@@ -70,7 +70,6 @@ fun CollectionCard(
                     overflow = TextOverflow.Ellipsis
                 )
             }
-
             Text(
                 text = descriptionText,
                 style = Theme.typography.body2Accent,
