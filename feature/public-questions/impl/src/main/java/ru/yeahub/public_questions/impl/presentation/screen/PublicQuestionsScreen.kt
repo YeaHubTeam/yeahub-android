@@ -289,7 +289,7 @@ private fun FullScreenPlaceholders(
                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
             ) {
                 Text(
-                    text = stringResource(id = R.string.questions_list_header, nameQuestion),
+                    text = stringResource(id = R.string.public_collection_screen_questions_list_header, nameQuestion),
                     style = Theme.typography.body5Strong
                 )
             }
@@ -329,7 +329,7 @@ private fun QuestionsListWithFooter(
         item {
             Box(modifier = Modifier.padding(start = 15.dp, bottom = 20.dp, top = 20.dp)) {
                 Text(
-                    text = stringResource(id = R.string.questions_list_header, nameQuestion),
+                    text = stringResource(id = R.string.public_collection_screen_questions_list_header, nameQuestion),
                     style = Theme.typography.body5Strong,
                     color = Theme.colors.black900
                 )
@@ -392,13 +392,13 @@ private fun PaginationFooter(
                         modifier = Modifier.padding(horizontal = 16.dp)
                     )
                     Button(onClick = onRetry) {
-                        Text(stringResource(id = R.string.try_again))
+                        Text(stringResource(id = R.string.public_collection_screen_try_again))
                     }
                 }
             }
 
             isEndReached -> {
-                Text(stringResource(id = R.string.error))
+                Text(stringResource(id = R.string.public_collection_screen_error))
             }
 
             else -> {
@@ -412,16 +412,16 @@ private fun PaginationFooter(
 fun getReadableErrorMessage(context: Context, throwable: Throwable): String {
     return when (throwable) {
         is UnknownHostException -> {
-            context.getString(R.string.there_i_no_internet)
+            context.getString(R.string.public_collection_screen_there_i_no_internet)
         }
 
         is TimeoutException -> {
             context.getString(
-                R.string.the_response_timeout_expired
+                R.string.public_collection_screen_the_response_timeout_expired
             )
         }
 
-        else -> throwable.localizedMessage ?: context.getString(R.string.error)
+        else -> throwable.localizedMessage ?: context.getString(R.string.public_collection_screen_error)
     }
 }
 
@@ -434,7 +434,7 @@ private fun EmptyState(modifier: Modifier = Modifier) {
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = stringResource(R.string.there_is_nothing),
+            text = stringResource(R.string.public_collection_screen_there_is_nothing),
             style = MaterialTheme.typography.headlineSmall,
             textAlign = TextAlign.Center
         )

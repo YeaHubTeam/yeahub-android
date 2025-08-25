@@ -28,7 +28,7 @@ import ru.yeahub.core_ui.example.staticPreview.StaticPreview
 import ru.yeahub.ui.R
 
 @Composable
-fun PlaceholderItem() {
+fun PublicCollectionLoading() {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -95,7 +95,7 @@ fun PlaceholderItemPreview() {
     ) {
         LazyColumn {
             items(TEST) {
-                PlaceholderItem()
+                PublicCollectionLoading()
             }
         }
     }

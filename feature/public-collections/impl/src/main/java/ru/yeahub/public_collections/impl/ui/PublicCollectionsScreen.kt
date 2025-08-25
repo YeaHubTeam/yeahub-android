@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ru.yeahub.core_ui.component.CollectionCard
+import ru.yeahub.core_ui.component.ErrorScreen
 import ru.yeahub.core_ui.example.staticPreview.StaticPreview
 import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.core_ui.theme.Theme.colors
@@ -32,19 +33,22 @@ fun PublicCollectionScreen(
     val state by viewModel.screenState.collectAsStateWithLifecycle()
 
     when (state) {
-        is PublicCollectionsScreenState.Error -> ErrorItem(
-            modifier = Modifier,
-            error = (state as PublicCollectionsScreenState.Error).throwable,
-            onRetry = {}
+        is PublicCollectionsScreenState.Error -> ErrorScreen(
+            error = (state as PublicCollectionsScreenState.Error).throwable.message ?: "",
+            titleText = "УПС!",
+            backText = "Назад",
+            unknownErrorText = "Не удалось загрузить данные",
+            onBack = {}
         )
 
         PublicCollectionsScreenState.Initial -> TODO()
+
         is PublicCollectionsScreenState.Loaded -> BasePublicCollectionScreen(
             state = state as PublicCollectionsScreenState.Loaded,
             onClickItem = {}
         )
 
-        PublicCollectionsScreenState.Loading -> TODO()
+        PublicCollectionsScreenState.Loading -> PublicCollectionLoading()
     }
 }
 
@@ -60,6 +64,17 @@ fun BasePublicCollectionScreen(
             .fillMaxSize()
             .background(colors.black10),
     ) {
+        Text(
+            modifier = modifier.padding(
+                vertical = FIGMA_VERTICAL_TITLE_PADDING,
+                horizontal = FIGMA_HORIZONTAL_PADDING
+            ),
+            text = state.specializationFilter,
+            style = Theme.typography.body3Accent,
+            color = colors.black900
+        )
+
+
         Text(
             modifier = modifier.padding(
                 vertical = FIGMA_VERTICAL_TITLE_PADDING,
@@ -93,7 +108,7 @@ fun BasePublicCollectionScreen(
 
 @StaticPreview
 @Composable
-fun PublicCollectionPreview2() {
+fun PublicCollectionPreview() {
     val mockCollections = listOf(
         PublicCollectionsScreenState.Loaded.Item(
             id = 1,
@@ -141,10 +156,32 @@ fun PublicCollectionPreview2() {
     val state = PublicCollectionsScreenState.Loaded(
         collectionItemList = mockCollections,
         isEndReached = false,
-        isLoadingNextPage = false
+        isLoadingNextPage = false,
+        specializationFilter = "React"
     )
     BasePublicCollectionScreen(
         state = state,
         onClickItem = {}
     )
+}
+
+@StaticPreview
+@Composable
+fun PublicCollectionPreviewError() {
+    val state = PublicCollectionsScreenState.Error(listOf(), throwable = Throwable("Не удалось загрузить данные"))
+    ErrorScreen(
+        error = state.throwable.message ?: "",
+        titleText = "УПС!",
+        backText = "Назад",
+        unknownErrorText = "Не удалось загрузить данные",
+        onBack = {}
+    )
+}
+
+
+@StaticPreview
+@Composable
+fun PublicCollectionPreviewLoading() {
+    val state = PublicCollectionsScreenState.Loading
+    PublicCollectionLoading()
 }
