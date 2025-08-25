@@ -10,7 +10,6 @@ sealed class PublicCollectionsScreenState() {
         val collectionItemList: List<Item>,
         val isEndReached: Boolean,
         val isLoadingNextPage: Boolean,
-        val specializationFilter: String
     ) : PublicCollectionsScreenState() {
         data class Item(
             val id: Int,

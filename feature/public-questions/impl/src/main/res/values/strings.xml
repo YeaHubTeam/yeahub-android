@@ -1,10 +1,10 @@
 <resources>
     <string name="app_name">impl</string>
-    <string name="public_collection_screen_try_again">Повторить попытку</string>
-    <string name="public_collection_screen_loading_error">Ошибка загрузки</string>
-    <string name="public_collection_screen_there_i_no_internet">Отсутствует интернет</string>
-    <string name="public_collection_screen_the_response_timeout_expired">Время ожидания ответа истекло</string>
-    <string name="public_collection_screen_error">Ошибка</string>
-    <string name="public_collection_screen_questions_list_header">Вопросы: %1$s</string>
-    <string name="public_collection_screen_there_is_nothing">Здесь пока ничего нет</string>
+    <string name="try_again">Повторить попытку</string>
+    <string name="loading_error">Ошибка загрузки</string>
+    <string name="there_i_no_internet">Отсутствует интернет</string>
+    <string name="the_response_timeout_expired">Время ожидания ответа истекло</string>
+    <string name="error">Ошибка</string>
+    <string name="questions_list_header">Вопросы: %1$s</string>
+    <string name="there_is_nothing">Здесь пока ничего нет</string>
 </resources>

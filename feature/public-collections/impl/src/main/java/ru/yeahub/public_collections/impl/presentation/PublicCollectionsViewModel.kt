@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.stateIn
 import ru.yeahub.core_utils.BaseViewModel
 
 class PublicCollectionsViewModel(
-    private val publicCollectionsScreenMapper: PublicCollectionsScreenMapper
+    private val publicCollectionsScreenMapper: PublicCollectionsScreenMapper,
 ) : BaseViewModel() {
 
     val screenState: StateFlow<PublicCollectionsScreenState> =
