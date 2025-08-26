@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="selection_specializations_list_header">IT Specilializations</string>
+    <string name="selection_specialization_loading_specializations">Loading specializations...</string>
+    <string name="selection_specializations_header_text">Specializations</string>
+    <string name="selection_specializations_top_bar_title">Selection specializations</string>
+</resources>

@@ -3,8 +3,14 @@ package test
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ArgumentsSource
+import ru.yeahub.network_api.models.GetSpecializationResponse
+import ru.yeahub.network_api.models.GetSpecializationsResponse
 import ru.yeahub.selection_specializations.impl.data.SpecializationSelectionDataToDomainMapper
+import ru.yeahub.selection_specializations.impl.model.DomainSpecilialization
+import ru.yeahub.selection_specializations.impl.model.DomainSpecilializationListResponse
+import ru.yeahub.selection_specializations.impl.model.VoSpecilialization
 import ru.yeahub.selection_specializations.impl.presentation.SpecializationSelectionDomainToVoMapper.toVoList
+import ru.yeahub.test.TestArgumentsProvider
 import test.SpecializationExampleDataClasses.defaultDomainSpecial
 import test.SpecializationExampleDataClasses.defaultDomainSpecialListResponse
 import test.SpecializationExampleDataClasses.defaultDomainSpecialWithImage
@@ -76,4 +82,19 @@ class SpecializationSelectionMapperTest(
         assertEquals(testCase.expectedResult, result)
     }
 }
+
+data class SpecializationSelectionDataToDomainMapperTestCase1(
+    val dataToTest: GetSpecializationResponse,
+    val expectedResult: DomainSpecilialization
+)
+
+data class SpecializationSelectionDataToDomainMapperTestCase2(
+    val dataToTest: GetSpecializationsResponse,
+    val expectedResult: DomainSpecilializationListResponse
+)
+
+data class SpecializationSelectionDomainToVoMapperTestCase(
+    val dataToTest: List<DomainSpecilialization>,
+    val expectedResult: List<VoSpecilialization>
+)
 

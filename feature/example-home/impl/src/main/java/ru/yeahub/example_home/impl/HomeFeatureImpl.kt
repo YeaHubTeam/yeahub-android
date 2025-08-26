@@ -39,6 +39,8 @@ class HomeFeatureImpl(private val homeScreen: HomeScreenApi) : FeatureApi {
         } else {
             pathManager.createChildPath(getFeatureName())
         }
+
+        println("curr path = $currentPath")
         
         Timber.d("HomeFeatureImpl registerGraph: Registering route: $currentHomeRoute")
         
@@ -52,7 +54,13 @@ class HomeFeatureImpl(private val homeScreen: HomeScreenApi) : FeatureApi {
                 },
                 onDetailsClick = { itemId, title ->
                     handleDetailsNavigation(pathManager, navController, itemId, title)
-                }
+                },
+                onSpecializationsAfterCollectionsClick = {
+                    //TODO()
+                },
+                onSpecializationsAfterBaseQuestionClick = {
+                    //TODO()
+                },
             )
         }
     }

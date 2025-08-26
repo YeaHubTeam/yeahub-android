@@ -54,10 +54,12 @@ class HomeScreenApiImpl : HomeScreenApi {
     override fun HomeScreen(
         onProfileClick: (userId: String, userName: String) -> Unit,
         onQuestionClick: () -> Unit,
-        onDetailsClick: (itemId: String, title: String) -> Unit
+        onDetailsClick: (itemId: String, title: String) -> Unit,
+        onSpecializationsAfterCollectionsClick: () -> Unit,
+        onSpecializationsAfterBaseQuestionClick: () -> Unit,
     ) {
         val notificationService: NotificationService = koinInject()
-        
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -119,6 +121,20 @@ class HomeScreenApiImpl : HomeScreenApi {
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(text = "📋 Перейти к деталям")
+                    }
+
+                    Button(
+                        onClick = onSpecializationsAfterCollectionsClick,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("✪ Спецификации из коллекции")
+                    }
+
+                    Button(
+                        onClick = onSpecializationsAfterBaseQuestionClick,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("✪ Спецификации из базы вопросов")
                     }
                 }
             }

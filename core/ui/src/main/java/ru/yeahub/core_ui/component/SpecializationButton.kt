@@ -1,4 +1,4 @@
-package ru.yeahub.selection_specializations.impl.ui
+package ru.yeahub.core_ui.component
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -8,16 +8,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import ru.yeahub.core_ui.component.PrimaryButton
-import ru.yeahub.core_ui.component.YeahubButtonDefaults
+import ru.yeahub.core_ui.example.staticPreview.StaticPreview
 import ru.yeahub.core_ui.theme.LocalAppTypography
 import ru.yeahub.core_ui.theme.colors
-import timber.log.Timber
+import ru.yeahub.core_utils.common.TextOrResource
 
 val FIGMA_CARD_HEIGHT = 64.dp
 val FIGMA_CARD_CORNER_ROUND = 8.dp
@@ -28,7 +27,7 @@ fun SpecializationButton(
     modifier: Modifier = Modifier,
     onSpecialClick: (id: Int) -> Unit,
     textStyle: TextStyle = LocalAppTypography.current.body3Accent,
-    title: String
+    title: TextOrResource
 ) {
     PrimaryButton(
         modifier = modifier
@@ -45,28 +44,28 @@ fun SpecializationButton(
             containerColor = colors.white900
         ),
     ) {
+        val context = LocalContext.current
+
         Text(
             modifier = modifier.align(Alignment.CenterVertically),
-            fontSize = textStyle.fontSize,
-            fontStyle = textStyle.fontStyle,
-            fontWeight = textStyle.fontWeight,
-            fontFamily = textStyle.fontFamily,
+            style = textStyle,
             textAlign = TextAlign.Center,
-            text = title,
+            text = title.getString(context),
             overflow = TextOverflow.Ellipsis,
             maxLines = 1
         )
     }
 }
 
-@Preview
+@StaticPreview
 @Composable
 fun SpecializationButtonPreview() {
     val title = "Some spec"
+
     SpecializationButton(
-        title = title,
+        title = TextOrResource.Text(title),
         onSpecialClick = {
-            Timber.d("Example SpecilializationScreenEvent.OnSpecialClick")
+            println("Example SpecilializationScreenEvent.OnSpecialClick")
         }
     )
 }

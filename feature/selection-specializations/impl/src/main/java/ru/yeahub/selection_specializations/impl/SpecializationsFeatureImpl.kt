@@ -7,8 +7,13 @@ import androidx.navigation.compose.composable
 import ru.yeahub.navigation_api.FeatureApi
 import ru.yeahub.navigation_api.FeatureRoute
 import ru.yeahub.navigation_api.NavigationPathManager
-import ru.yeahub.selection_specializations.api.domain.SpecializationsScreenApi
-import ru.yeahub.selection_specializations.api.presentation.SpecializationsScreenResult
+import SpecializationsScreenApi
+import SpecializationsScreenResult
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
+import androidx.compose.ui.res.stringResource
+import ru.yeahub.core_ui.component.TopAppBarWithBottomBorder
+import ru.yeahub.core_utils.common.TextOrResource
 import timber.log.Timber
 
 class SpecializationsFeatureImpl(
@@ -39,27 +44,39 @@ class SpecializationsFeatureImpl(
 
         navGraphBuilder.composable(currentHomeRoute) { backStackEntry ->
 
-            //связываем коллбеки из конструктора экрана с логикой навигации
-            specializationScreen.SpecializationScreen(
-                parentRoute = pathManager.getParentPath(),
-                onResult = { result ->
-                    when (result) {
-                        SpecializationsScreenResult.NavigateBack -> {
-                            handleBackNavigation(
-                                pathManager = pathManager,
-                                navController = navController
-                            )
+            Scaffold(
+                topBar = {
+                    TopAppBarWithBottomBorder(
+                        title = TextOrResource.Resource(R.string.selection_specializations_top_bar_title),
+                        onBackClick = { SpecializationsScreenResult.NavigateBack }
+                    )
+                }
+            ) { paddingValues ->
+                //связываем коллбеки из конструктора экрана с логикой навигации
+                specializationScreen.SpecializationScreen(
+                    modifier = Modifier.padding(paddingValues),
+                    headerText = TextOrResource.Resource(R.string.selection_specializations_header_text),
+                    parentRoute = pathManager.getParentPath(),
+                    onResult = { result ->
+                        when (result) {
+                            SpecializationsScreenResult.NavigateBack -> {
+                                handleBackNavigation(
+                                    pathManager = pathManager,
+                                    navController = navController
+                                )
+                            }
+
+                            is SpecializationsScreenResult.SpecializationClick -> {
+                                handleSpecializationsNavigation(
+                                    pathManager = pathManager,
+                                    navController = navController,
+                                    specId = result.specId
+                                )
+                            }
                         }
-                        is SpecializationsScreenResult.SpecializationClick -> {
-                            handleSpecializationsNavigation(
-                                pathManager = pathManager,
-                                navController = navController,
-                                specId = result.specId
-                            )
-                        }
-                    }
-                },
-            )
+                    },
+                )
+            }
         }
     }
 
@@ -67,13 +84,11 @@ class SpecializationsFeatureImpl(
      * Обработка навигации к специализации.
      * Переход осуществляется изходя из
      * родительской фичи в pathManager и specId.
-     *     TODO: use SpecialScreenResult
      */
     fun handleSpecializationsNavigation(
         pathManager: NavigationPathManager,
         navController: NavHostController,
-        specId: String,
-        //onResult: (SpecializationsScreenResult) -> Unit,
+        specId: String
     ) {
         // Сбрасываем текущий путь на корневую фичу
         pathManager.setCurrentPath(getFeatureName())

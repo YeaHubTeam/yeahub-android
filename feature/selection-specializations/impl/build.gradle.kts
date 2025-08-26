@@ -1,3 +1,6 @@
+import com.android.build.api.dsl.Packaging
+import com.android.builder.merge.StreamMergeAlgorithms.pickFirst
+
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
@@ -13,6 +16,12 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
+    }
+
+    packaging {
+        resources {
+            resources.excludes.add("META-INF/*")
+        }
     }
 
     buildTypes {
@@ -37,6 +46,7 @@ dependencies {
     implementation(project(":core:navigation-api"))
     implementation(project(":core:network-api"))
     implementation(project(":feature:selection-specializations:api"))
+    implementation(project(":core:test"))
     implementation(project(":core:utils"))
     implementation(project(":core:ui"))
 

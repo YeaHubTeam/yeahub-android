@@ -23,18 +23,31 @@ import kotlinx.coroutines.flow.Flow
 import org.koin.androidx.compose.koinViewModel
 import ru.yeahub.core_ui.component.ErrorScreen
 import ru.yeahub.core_ui.component.PrimaryButton
+import ru.yeahub.core_ui.component.SpecializationButton
+import ru.yeahub.core_ui.example.dynamicPreview.ProvidePreviewCompositionLocals
+import ru.yeahub.core_ui.example.staticPreview.StaticPreview
 import ru.yeahub.core_ui.theme.LocalAppTypography
 import ru.yeahub.core_ui.theme.colors
 import ru.yeahub.core_utils.common.observe
-import ru.yeahub.selection_specializations.api.domain.SpecializationsScreenApi
-import ru.yeahub.selection_specializations.api.presentation.SpecializationsScreenResult
+import ru.yeahub.navigation_api.FeatureRoute
+import SpecializationsScreenApi
+import SpecializationsScreenResult
+import androidx.compose.ui.platform.LocalContext
+import ru.yeahub.core_utils.common.TextOrResource
+import ru.yeahub.selection_specializations.impl.R
+import ru.yeahub.selection_specializations.impl.domain.GetSpecializationListUseCase
+import ru.yeahub.selection_specializations.impl.dynamic_preview.mockResponse
+import ru.yeahub.selection_specializations.impl.model.DomainSpecilializationListResponse
+import ru.yeahub.selection_specializations.impl.model.SpecializationsRequest
 import ru.yeahub.selection_specializations.impl.model.VoSpecilialization
 import ru.yeahub.selection_specializations.impl.presentation.SpecializationScreenEvent
 import ru.yeahub.selection_specializations.impl.presentation.SpecializationScreenState
 import ru.yeahub.selection_specializations.impl.presentation.SpecializationSelectionScreenCommand
 import ru.yeahub.selection_specializations.impl.presentation.SpecializationViewModel
+import timber.log.Timber
 
-class SpecializationScreen : SpecializationsScreenApi {
+class SpecializationScreen: SpecializationsScreenApi {
+    //TODO: TOP BAR LIKE PUBLIC QUESTION
 
     companion object {
         val FIGMA_HORIZONTAL_PADDING = 16.dp
@@ -45,37 +58,61 @@ class SpecializationScreen : SpecializationsScreenApi {
     @SuppressLint("NotConstructor")
     @Composable
     override fun SpecializationScreen(
+        modifier: Modifier,
+        headerText: TextOrResource,
         parentRoute: String,
         onResult: (SpecializationsScreenResult) -> Unit,
     ) {
         val specialViewModel: SpecializationViewModel = koinViewModel()
-        val screenState = specialViewModel.uiStatus.collectAsStateWithLifecycle()
+
+        SpecializationScreenWithViewModel(
+            modifier = modifier,
+            viewModel = specialViewModel,
+            parentRoute = parentRoute,
+            onResult = onResult
+        )
+    }
+
+    @Composable
+    fun SpecializationScreenWithViewModel(
+        modifier: Modifier = Modifier,
+        viewModel : SpecializationViewModel,
+        parentRoute: String,
+        onResult: (SpecializationsScreenResult) -> Unit,
+    ){
+        val screenState = viewModel.uiStatus.collectAsStateWithLifecycle()
 
         //command handler
         HandleCommand(
-            commandFlow = specialViewModel.commands,
+            commandFlow = viewModel.commands,
             onResult = onResult,
         )
 
         when (screenState) {
             is SpecializationScreenState.Loaded -> {
                 BaseSpecializationsScreen(
+                    modifier = modifier,
                     list = screenState.resultList,
                     isPagerLoading = screenState.isLoadingNextPage,
                     onSpecialClick = { id ->
-                        specialViewModel.onEvent(
+                        viewModel.onEvent(
                             SpecializationScreenEvent.OnSpecialClick(id = id)
                         )
                     }
                 )
             }
 
+            //difficult to rewrite with res-string
             is SpecializationScreenState.Error -> {
+                val context = LocalContext.current
+
                 ErrorScreen(
-                    error = screenState.throwable.message ?: "... no message about throwable",
-                    titleText = "Crash",
-                    backText = "Back",
-                    unknownErrorText = "Something went wrong...",
+                    error =
+                        screenState.throwable.message ?:
+                        TextOrResource.Text("... no message about throwable").getString(context),
+                    titleText = TextOrResource.Text("Crash").getString(context),
+                    backText = TextOrResource.Text("Back").getString(context),
+                    unknownErrorText = TextOrResource.Text("Something went wrong...").getString(context),
                     onBack = { SpecializationsScreenResult.NavigateBack }
                 )
             }
@@ -115,22 +152,23 @@ class SpecializationScreen : SpecializationsScreenApi {
         list: List<VoSpecilialization>
     ) {
         val lazyListState = rememberLazyListState()
+        val context = LocalContext.current
+
         Column(
             modifier = modifier
                 .fillMaxSize()
                 .background(colors.black10),
         ) {
-            val titleTextStyle = LocalAppTypography.current.body5Strong
             Text(
                 modifier = modifier.padding(
                     vertical = FIGMA_VERTICAL_TITLE_PADDING,
                     horizontal = FIGMA_HORIZONTAL_PADDING
                 ),
-                fontSize = titleTextStyle.fontSize,
-                fontStyle = titleTextStyle.fontStyle,
-                fontWeight = titleTextStyle.fontWeight,
-                fontFamily = titleTextStyle.fontFamily,
-                text = "IT Specilializations",
+                style = LocalAppTypography.current.body5Strong,
+                text =
+                    TextOrResource
+                        .Resource(R.string.selection_specializations_list_header)
+                        .getString(context),
             )
 
             LazyColumn(
@@ -140,10 +178,10 @@ class SpecializationScreen : SpecializationsScreenApi {
             ) {
                 items(
                     items = list,
-                    key = { it.hashCode() }
+                    key = { it.id }
                 ) { specialization ->
                     SpecializationButton(
-                        title = specialization.title,
+                        title = TextOrResource.Text(specialization.title),
                         onSpecialClick = onSpecialClick
                     )
                 }
@@ -165,7 +203,7 @@ class SpecializationScreen : SpecializationsScreenApi {
     }
 
     //with paging loading
-    @Preview
+    @StaticPreview
     @Composable
     fun SpecializationsScreenPreview() {
         val exampleList =
@@ -185,5 +223,52 @@ class SpecializationScreen : SpecializationsScreenApi {
             onSpecialClick = { id -> println("pressed id=$id") },
             isPagerLoading = true
         )
+    }
+
+    @SuppressLint("ViewModelConstructorInComposable")
+    @Preview
+    @Composable
+    fun SpecializationDynamicPreview(){
+
+        val parentRoute = FeatureRoute.createFeatureRoute(
+            parentRoute = "main screen",
+            featureName = "collections"
+        )
+
+        fun nextRoute(id: String) =  FeatureRoute.createFeatureRoute(
+            parentRoute = parentRoute,
+            featureName = "$parentRoute with specialization id=$id"
+        )
+
+        val mockOnResult: (SpecializationsScreenResult) -> Unit = { result ->
+            when (result) {
+                SpecializationsScreenResult.NavigateBack -> {
+                    Timber.d("MockBaseSpecializationScreen - nav back to $parentRoute")
+                }
+
+                is SpecializationsScreenResult.SpecializationClick -> {
+                    Timber.d("MockBaseSpecializationScreen - nav to ${nextRoute(result.specId)}")
+                }
+            }
+        }
+
+        ProvidePreviewCompositionLocals {
+
+            SpecializationScreenWithViewModel(
+                viewModel = SpecializationViewModel(
+                    getSpecializationListUseCase = object: GetSpecializationListUseCase {
+                        override suspend fun invoke(
+                            request: SpecializationsRequest
+                        ): DomainSpecilializationListResponse =
+                            mockResponse.copy(
+                                page = request.page.toLong(),
+                                limit = request.limit.toLong()
+                            )
+                    }
+                ),
+                parentRoute =  parentRoute,
+                onResult = mockOnResult
+            )
+        }
     }
 }
