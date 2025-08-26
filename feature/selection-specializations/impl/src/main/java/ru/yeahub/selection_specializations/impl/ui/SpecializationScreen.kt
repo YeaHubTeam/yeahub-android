@@ -1,5 +1,7 @@
 package ru.yeahub.selection_specializations.impl.ui
 
+import SpecializationsScreenApi
+import SpecializationsScreenResult
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -15,6 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -28,12 +31,9 @@ import ru.yeahub.core_ui.example.dynamicPreview.ProvidePreviewCompositionLocals
 import ru.yeahub.core_ui.example.staticPreview.StaticPreview
 import ru.yeahub.core_ui.theme.LocalAppTypography
 import ru.yeahub.core_ui.theme.colors
+import ru.yeahub.core_utils.common.TextOrResource
 import ru.yeahub.core_utils.common.observe
 import ru.yeahub.navigation_api.FeatureRoute
-import SpecializationsScreenApi
-import SpecializationsScreenResult
-import androidx.compose.ui.platform.LocalContext
-import ru.yeahub.core_utils.common.TextOrResource
 import ru.yeahub.selection_specializations.impl.R
 import ru.yeahub.selection_specializations.impl.domain.GetSpecializationListUseCase
 import ru.yeahub.selection_specializations.impl.dynamic_preview.mockResponse
@@ -46,7 +46,7 @@ import ru.yeahub.selection_specializations.impl.presentation.SpecializationSelec
 import ru.yeahub.selection_specializations.impl.presentation.SpecializationViewModel
 import timber.log.Timber
 
-class SpecializationScreen: SpecializationsScreenApi {
+class SpecializationScreen : SpecializationsScreenApi {
     //TODO: TOP BAR LIKE PUBLIC QUESTION
 
     companion object {
@@ -76,10 +76,10 @@ class SpecializationScreen: SpecializationsScreenApi {
     @Composable
     fun SpecializationScreenWithViewModel(
         modifier: Modifier = Modifier,
-        viewModel : SpecializationViewModel,
+        viewModel: SpecializationViewModel,
         parentRoute: String,
         onResult: (SpecializationsScreenResult) -> Unit,
-    ){
+    ) {
         val screenState = viewModel.uiStatus.collectAsStateWithLifecycle()
 
         //command handler
@@ -105,11 +105,10 @@ class SpecializationScreen: SpecializationsScreenApi {
             //difficult to rewrite with res-string
             is SpecializationScreenState.Error -> {
                 val context = LocalContext.current
+                val defaultErrorText = TextOrResource.Text("... no message about throwable").getString(context)
 
                 ErrorScreen(
-                    error =
-                        screenState.throwable.message ?:
-                        TextOrResource.Text("... no message about throwable").getString(context),
+                    error = screenState.throwable.message ?: defaultErrorText,
                     titleText = TextOrResource.Text("Crash").getString(context),
                     backText = TextOrResource.Text("Back").getString(context),
                     unknownErrorText = TextOrResource.Text("Something went wrong...").getString(context),
@@ -228,14 +227,13 @@ class SpecializationScreen: SpecializationsScreenApi {
     @SuppressLint("ViewModelConstructorInComposable")
     @Preview
     @Composable
-    fun SpecializationDynamicPreview(){
-
+    fun SpecializationDynamicPreview() {
         val parentRoute = FeatureRoute.createFeatureRoute(
             parentRoute = "main screen",
             featureName = "collections"
         )
 
-        fun nextRoute(id: String) =  FeatureRoute.createFeatureRoute(
+        fun nextRoute(id: String) = FeatureRoute.createFeatureRoute(
             parentRoute = parentRoute,
             featureName = "$parentRoute with specialization id=$id"
         )
@@ -253,10 +251,9 @@ class SpecializationScreen: SpecializationsScreenApi {
         }
 
         ProvidePreviewCompositionLocals {
-
             SpecializationScreenWithViewModel(
                 viewModel = SpecializationViewModel(
-                    getSpecializationListUseCase = object: GetSpecializationListUseCase {
+                    getSpecializationListUseCase = object : GetSpecializationListUseCase {
                         override suspend fun invoke(
                             request: SpecializationsRequest
                         ): DomainSpecilializationListResponse =

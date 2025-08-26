@@ -1,10 +1,10 @@
 package ru.yeahub.selection_specializations.impl.di
 
+import SpecializationsScreenApi
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import ru.yeahub.navigation_api.FeatureApi
-import SpecializationsScreenApi
 import ru.yeahub.selection_specializations.impl.SpecializationsFeatureImpl
 import ru.yeahub.selection_specializations.impl.data.SpecializationSelectionDataToDomainMapper
 import ru.yeahub.selection_specializations.impl.data.SpecializationsRepositoryImpl

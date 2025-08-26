@@ -1,6 +1,3 @@
-import com.android.build.api.dsl.Packaging
-import com.android.builder.merge.StreamMergeAlgorithms.pickFirst
-
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)

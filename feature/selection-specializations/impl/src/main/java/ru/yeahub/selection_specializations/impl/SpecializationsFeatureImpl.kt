@@ -1,19 +1,18 @@
 package ru.yeahub.selection_specializations.impl
 
-import androidx.compose.ui.Modifier
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.composable
-import ru.yeahub.navigation_api.FeatureApi
-import ru.yeahub.navigation_api.FeatureRoute
-import ru.yeahub.navigation_api.NavigationPathManager
 import SpecializationsScreenApi
 import SpecializationsScreenResult
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.Modifier
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.composable
 import ru.yeahub.core_ui.component.TopAppBarWithBottomBorder
 import ru.yeahub.core_utils.common.TextOrResource
+import ru.yeahub.navigation_api.FeatureApi
+import ru.yeahub.navigation_api.FeatureRoute
+import ru.yeahub.navigation_api.NavigationPathManager
 import timber.log.Timber
 
 class SpecializationsFeatureImpl(

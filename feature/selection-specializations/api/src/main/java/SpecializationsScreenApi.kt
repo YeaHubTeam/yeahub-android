@@ -1,6 +1,6 @@
 import androidx.compose.runtime.Composable
-import ru.yeahub.core_utils.common.TextOrResource
 import androidx.compose.ui.Modifier
+import ru.yeahub.core_utils.common.TextOrResource
 
 interface SpecializationsScreenApi {
 
