@@ -1,5 +1,5 @@
 package ru.yeahub.public_collections.impl.presentation
 
-sealed class PublicCollectionsScreenResult {
-    data object TODO
+sealed interface PublicCollectionsScreenResult {
+    data object TODO: PublicCollectionsScreenResult
 }

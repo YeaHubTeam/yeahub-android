@@ -45,7 +45,7 @@ fun ErrorItem(
     ) {
         Icon(
             imageVector = Icons.Default.Warning,
-            contentDescription = stringResource(R.string.public_collection_screen_error),
+            contentDescription = stringResource(R.string.error),
             tint = MaterialTheme.colorScheme.error,
             modifier = Modifier.size(48.dp)
         )
@@ -53,7 +53,7 @@ fun ErrorItem(
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = stringResource(R.string.public_collection_screen_loading_error),
+            text = stringResource(R.string.loading_error),
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.error
         )
@@ -75,7 +75,7 @@ fun ErrorItem(
                 contentColor = MaterialTheme.colorScheme.onErrorContainer
             )
         ) {
-            Text(stringResource(R.string.public_collection_screen_try_again))
+            Text(stringResource(R.string.try_again))
         }
     }
 }
@@ -84,16 +84,16 @@ fun ErrorItem(
 fun getReadableErrorMessage(context: Context, throwable: Throwable): String {
     return when (throwable) {
         is UnknownHostException -> {
-            context.getString(R.string.public_collection_screen_there_i_no_internet)
+            context.getString(R.string.there_i_no_internet)
         }
 
         is TimeoutException -> {
             context.getString(
-                R.string.public_collection_screen_the_response_timeout_expired
+                R.string.the_response_timeout_expired
             )
         }
 
-        else -> throwable.localizedMessage ?: context.getString(R.string.public_collection_screen_error)
+        else -> throwable.localizedMessage ?: context.getString(R.string.error)
     }
 }
 

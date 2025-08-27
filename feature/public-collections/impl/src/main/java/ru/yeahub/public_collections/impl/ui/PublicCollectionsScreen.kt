@@ -21,38 +21,55 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ru.yeahub.core_ui.component.CollectionCard
 import ru.yeahub.core_ui.component.ErrorScreen
+import ru.yeahub.core_ui.example.dynamicPreview.ProvidePreviewCompositionLocals
 import ru.yeahub.core_ui.example.staticPreview.StaticPreview
 import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.core_ui.theme.Theme.colors
+import ru.yeahub.core_utils.common.TextOrResource
 import ru.yeahub.public_collections.impl.R
+import ru.yeahub.public_collections.impl.presentation.PublicCollectionsScreenEvent
 import ru.yeahub.public_collections.impl.presentation.PublicCollectionsScreenMapper
 import ru.yeahub.public_collections.impl.presentation.PublicCollectionsScreenState
 import ru.yeahub.public_collections.impl.presentation.PublicCollectionsViewModel
 
 @Composable
-fun PublicCollectionScreen(
-    state: PublicCollectionsScreenState,
-//    viewModel: PublicCollectionsViewModel,
-    heading: String
+fun PublicCollectionsScreen(
+    viewModel: PublicCollectionsViewModel
 ) {
-//    val state by viewModel.screenState.collectAsStateWithLifecycle()
+    val state by viewModel.screenState.collectAsStateWithLifecycle()
+    ScreenUI(
+        state = state,
+        onEvent = viewModel::onEvent
+    )
 
+    //fun HandleCommand  у рината
+    // launched effect
+}
+
+@Composable
+fun ScreenUI(
+    state: PublicCollectionsScreenState,
+    onEvent: (PublicCollectionsScreenEvent) -> Unit
+) {
     Scaffold(
         topBar = {
             TopAppBarWithBottomBorder(
-                title = heading,
+                title = "",
                 onBackClick = {}
             )
         }
@@ -60,22 +77,20 @@ fun PublicCollectionScreen(
 
         when (state) {
             is PublicCollectionsScreenState.Error -> ErrorScreen(
-                error = (state as PublicCollectionsScreenState.Error).throwable.message ?: "",
+                error = state.throwable.message ?: "",
                 titleText = "УПС!",
                 backText = "Назад",
                 unknownErrorText = "Не удалось загрузить данные",
                 onBack = {}
             )
 
-            PublicCollectionsScreenState.Initial -> TODO()
-
             is PublicCollectionsScreenState.Loaded -> BasePublicCollectionScreen(
                 modifier = Modifier.padding(innerPadding),
-                state = state as PublicCollectionsScreenState.Loaded,
+                state = state,
                 onClickItem = {}
             )
 
-            PublicCollectionsScreenState.Loading -> PublicCollectionLoading()
+            is PublicCollectionsScreenState.Loading -> PublicCollectionLoading()
         }
     }
 }
@@ -171,9 +186,6 @@ fun BasePublicCollectionScreen(
 }
 
 class ListPublicCollectionScreenProvider : PreviewParameterProvider<ScreenParams> {
-
-    val mockViewModel = PublicCollectionsViewModel(publicCollectionsScreenMapper = PublicCollectionsScreenMapper())
-
     override val values: Sequence<ScreenParams> = sequenceOf(
         ScreenParams(
             state = PublicCollectionsScreenState.Loaded(
@@ -222,24 +234,25 @@ class ListPublicCollectionScreenProvider : PreviewParameterProvider<ScreenParams
                     ),
                 ),
                 isEndReached = false,
-                isLoadingNextPage = false
+                isLoadingNextPage = false,
+                header = TextOrResource.Text(text = "React")
             ),
         ),
         ScreenParams(
             state = PublicCollectionsScreenState.Error(
                 currentList = listOf(),
-                throwable = Throwable("Не удалось загрузить данные")
+                throwable = Throwable("Не удалось загрузить данные"),
+                header = TextOrResource.Text(text = "React")
             ),
         ),
         ScreenParams(
-            state = PublicCollectionsScreenState.Loading,
+            state = PublicCollectionsScreenState.Loading(header = TextOrResource.Text(text = "React"))
         )
     )
 }
 
 data class ScreenParams(
     val state: PublicCollectionsScreenState,
-    val heading: String = "React"
 )
 
 @StaticPreview
@@ -247,5 +260,13 @@ data class ScreenParams(
 fun ShowScreenPreview(
     @PreviewParameter(ListPublicCollectionScreenProvider::class) params: ScreenParams
 ) {
-    PublicCollectionScreen(state = params.state, heading = params.heading)
+    ScreenUI(state = params.state, onEvent = {})
+}
+
+@Preview
+@Composable
+private fun PublicCollectionsScreenDynamicPreview() {
+    ProvidePreviewCompositionLocals {
+        PublicCollectionsScreen(viewModel = PublicCollectionsViewModel(PublicCollectionsScreenMapper()))
+    }
 }

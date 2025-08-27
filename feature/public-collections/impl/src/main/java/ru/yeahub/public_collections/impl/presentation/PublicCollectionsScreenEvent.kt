@@ -1,5 +1,5 @@
 package ru.yeahub.public_collections.impl.presentation
 
-sealed class PublicCollectionsScreenEvent {
-    data object TODO
+sealed interface PublicCollectionsScreenEvent {
+    data object TODO : PublicCollectionsScreenEvent
 }

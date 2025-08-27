@@ -34,11 +34,9 @@ fun CollectionCard(
     questionsCount: Int,
     onCollectionClick: () -> Unit,
 ) {
-    val shape = RoundedCornerShape(8.dp)
-
     Card(
         modifier = modifier.fillMaxWidth(),
-        shape = shape,
+        shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(containerColor = Theme.colors.white900),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         onClick = onCollectionClick
