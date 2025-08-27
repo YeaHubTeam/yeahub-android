@@ -36,10 +36,6 @@ dependencies {
     implementation(project(":core:network-api"))
     implementation(project(":core:utils"))
 
-    //for modifier param in screen api
-    implementation(platform(libs.androidx.compose.bom)) //TODO: need only androidx.compose.ui:ui
-    implementation(libs.androidx.ui)
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)

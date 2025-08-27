@@ -1,8 +1,8 @@
-package ru.yeahub.selection_specializations.impl.dynamic_preview
+package ru.yeahub.selection_specializations.impl.presentation
 
-import ru.yeahub.selection_specializations.impl.model.DomainSpecilialization
-import ru.yeahub.selection_specializations.impl.model.DomainSpecilializationListResponse
-import ru.yeahub.selection_specializations.impl.model.SpecializationsRequest
+import ru.yeahub.selection_specializations.impl.domain.DomainSpecilialization
+import ru.yeahub.selection_specializations.impl.domain.DomainSpecilializationListResponse
+import ru.yeahub.selection_specializations.impl.domain.SpecializationsRequest
 
 //TODO: mockUseCase with return mock data
 val mockRequest = SpecializationsRequest(

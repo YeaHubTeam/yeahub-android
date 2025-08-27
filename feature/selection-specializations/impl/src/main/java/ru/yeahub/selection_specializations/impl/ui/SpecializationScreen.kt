@@ -35,15 +35,15 @@ import ru.yeahub.core_utils.common.TextOrResource
 import ru.yeahub.core_utils.common.observe
 import ru.yeahub.navigation_api.FeatureRoute
 import ru.yeahub.selection_specializations.impl.R
+import ru.yeahub.selection_specializations.impl.domain.DomainSpecilializationListResponse
 import ru.yeahub.selection_specializations.impl.domain.GetSpecializationListUseCase
-import ru.yeahub.selection_specializations.impl.dynamic_preview.mockResponse
-import ru.yeahub.selection_specializations.impl.model.DomainSpecilializationListResponse
-import ru.yeahub.selection_specializations.impl.model.SpecializationsRequest
-import ru.yeahub.selection_specializations.impl.model.VoSpecilialization
+import ru.yeahub.selection_specializations.impl.domain.SpecializationsRequest
 import ru.yeahub.selection_specializations.impl.presentation.SpecializationScreenEvent
 import ru.yeahub.selection_specializations.impl.presentation.SpecializationScreenState
 import ru.yeahub.selection_specializations.impl.presentation.SpecializationSelectionScreenCommand
 import ru.yeahub.selection_specializations.impl.presentation.SpecializationViewModel
+import ru.yeahub.selection_specializations.impl.presentation.VoSpecilialization
+import ru.yeahub.selection_specializations.impl.presentation.mockResponse
 import timber.log.Timber
 
 class SpecializationScreen : SpecializationsScreenApi {
@@ -58,7 +58,6 @@ class SpecializationScreen : SpecializationsScreenApi {
     @SuppressLint("NotConstructor")
     @Composable
     override fun SpecializationScreen(
-        modifier: Modifier,
         headerText: TextOrResource,
         parentRoute: String,
         onResult: (SpecializationsScreenResult) -> Unit,
@@ -66,7 +65,7 @@ class SpecializationScreen : SpecializationsScreenApi {
         val specialViewModel: SpecializationViewModel = koinViewModel()
 
         SpecializationScreenWithViewModel(
-            modifier = modifier,
+            headerText = headerText,
             viewModel = specialViewModel,
             parentRoute = parentRoute,
             onResult = onResult
@@ -76,6 +75,7 @@ class SpecializationScreen : SpecializationsScreenApi {
     @Composable
     fun SpecializationScreenWithViewModel(
         modifier: Modifier = Modifier,
+        headerText: TextOrResource,
         viewModel: SpecializationViewModel,
         parentRoute: String,
         onResult: (SpecializationsScreenResult) -> Unit,
@@ -92,6 +92,7 @@ class SpecializationScreen : SpecializationsScreenApi {
             is SpecializationScreenState.Loaded -> {
                 BaseSpecializationsScreen(
                     modifier = modifier,
+                    headerText = headerText,
                     list = screenState.resultList,
                     isPagerLoading = screenState.isLoadingNextPage,
                     onSpecialClick = { id ->
@@ -105,10 +106,10 @@ class SpecializationScreen : SpecializationsScreenApi {
             //difficult to rewrite with res-string
             is SpecializationScreenState.Error -> {
                 val context = LocalContext.current
-                val defaultErrorText = TextOrResource.Text("... no message about throwable").getString(context)
+                val defaultErrorText = TextOrResource.Text("... no message about throwable")
 
                 ErrorScreen(
-                    error = screenState.throwable.message ?: defaultErrorText,
+                    error = screenState.throwable.message ?: defaultErrorText.getString(context),
                     titleText = TextOrResource.Text("Crash").getString(context),
                     backText = TextOrResource.Text("Back").getString(context),
                     unknownErrorText = TextOrResource.Text("Something went wrong...").getString(context),
@@ -146,28 +147,27 @@ class SpecializationScreen : SpecializationsScreenApi {
     @Composable
     fun BaseSpecializationsScreen(
         modifier: Modifier = Modifier,
+        headerText: TextOrResource,
         onSpecialClick: (id: Int) -> Unit,
         isPagerLoading: Boolean,
         list: List<VoSpecilialization>
     ) {
         val lazyListState = rememberLazyListState()
-        val context = LocalContext.current
 
         Column(
             modifier = modifier
                 .fillMaxSize()
                 .background(colors.black10),
         ) {
+            val context = LocalContext.current
+
             Text(
                 modifier = modifier.padding(
                     vertical = FIGMA_VERTICAL_TITLE_PADDING,
                     horizontal = FIGMA_HORIZONTAL_PADDING
                 ),
                 style = LocalAppTypography.current.body5Strong,
-                text =
-                    TextOrResource
-                        .Resource(R.string.selection_specializations_list_header)
-                        .getString(context),
+                text = headerText.getString(context),
             )
 
             LazyColumn(
@@ -218,6 +218,7 @@ class SpecializationScreen : SpecializationsScreenApi {
         }
 
         BaseSpecializationsScreen(
+            headerText = TextOrResource.Resource(R.string.selection_specializations_list_header),
             list = exampleList,
             onSpecialClick = { id -> println("pressed id=$id") },
             isPagerLoading = true
@@ -233,7 +234,7 @@ class SpecializationScreen : SpecializationsScreenApi {
             featureName = "collections"
         )
 
-        fun nextRoute(id: String) = FeatureRoute.createFeatureRoute(
+        fun mockNextRoute(id: String) = FeatureRoute.createFeatureRoute(
             parentRoute = parentRoute,
             featureName = "$parentRoute with specialization id=$id"
         )
@@ -245,13 +246,15 @@ class SpecializationScreen : SpecializationsScreenApi {
                 }
 
                 is SpecializationsScreenResult.SpecializationClick -> {
-                    Timber.d("MockBaseSpecializationScreen - nav to ${nextRoute(result.specId)}")
+                    Timber.d("MockBaseSpecializationScreen - nav to ${mockNextRoute(result.specId)}")
                 }
             }
         }
 
         ProvidePreviewCompositionLocals {
             SpecializationScreenWithViewModel(
+                headerText =
+                    TextOrResource.Resource(R.string.selection_specializations_list_header),
                 viewModel = SpecializationViewModel(
                     getSpecializationListUseCase = object : GetSpecializationListUseCase {
                         override suspend fun invoke(

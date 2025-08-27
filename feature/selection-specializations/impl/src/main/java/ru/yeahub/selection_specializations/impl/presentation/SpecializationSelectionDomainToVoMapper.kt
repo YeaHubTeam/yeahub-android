@@ -1,7 +1,6 @@
 package ru.yeahub.selection_specializations.impl.presentation
 
-import ru.yeahub.selection_specializations.impl.model.DomainSpecilialization
-import ru.yeahub.selection_specializations.impl.model.VoSpecilialization
+import ru.yeahub.selection_specializations.impl.domain.DomainSpecilialization
 
 object SpecializationSelectionDomainToVoMapper {
     fun List<DomainSpecilialization>.toVoList() = this

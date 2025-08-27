@@ -14,10 +14,10 @@ import ru.yeahub.core_utils.BaseViewModel
 import ru.yeahub.core_utils.pager.YeaHubPagerLoader
 import ru.yeahub.core_utils.pagerImpl.YeaHubPager
 import ru.yeahub.core_utils.pagerImpl.YeaHubPagerState
+import ru.yeahub.selection_specializations.impl.domain.DomainSpecilialization
+import ru.yeahub.selection_specializations.impl.domain.DomainSpecilializationListResponse
 import ru.yeahub.selection_specializations.impl.domain.GetSpecializationListUseCase
-import ru.yeahub.selection_specializations.impl.model.DomainSpecilialization
-import ru.yeahub.selection_specializations.impl.model.DomainSpecilializationListResponse
-import ru.yeahub.selection_specializations.impl.model.SpecializationsRequest
+import ru.yeahub.selection_specializations.impl.domain.SpecializationsRequest
 import ru.yeahub.selection_specializations.impl.presentation.SpecializationSelectionDomainToVoMapper.toVoList
 import ru.yeahub.selection_specializations.impl.presentation.SpecializationSelectionScreenCommand.OnBackClick
 import ru.yeahub.selection_specializations.impl.presentation.SpecializationSelectionScreenCommand.SpecializationSelectionClick

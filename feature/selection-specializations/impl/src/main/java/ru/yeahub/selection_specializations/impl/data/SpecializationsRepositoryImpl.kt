@@ -1,9 +1,9 @@
 package ru.yeahub.selection_specializations.impl.data
 
 import ru.yeahub.network_api.NetworkProvider
+import ru.yeahub.selection_specializations.impl.domain.DomainSpecilializationListResponse
 import ru.yeahub.selection_specializations.impl.domain.SpecializationsRepository
-import ru.yeahub.selection_specializations.impl.model.DomainSpecilializationListResponse
-import ru.yeahub.selection_specializations.impl.model.SpecializationsRequest
+import ru.yeahub.selection_specializations.impl.domain.SpecializationsRequest
 
 class SpecializationsRepositoryImpl(
     private val apiService: NetworkProvider,

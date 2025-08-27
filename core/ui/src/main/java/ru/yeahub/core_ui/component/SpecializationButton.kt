@@ -29,6 +29,8 @@ fun SpecializationButton(
     textStyle: TextStyle = LocalAppTypography.current.body3Accent,
     title: TextOrResource
 ) {
+    val context = LocalContext.current
+
     PrimaryButton(
         modifier = modifier
             .fillMaxWidth()
@@ -60,10 +62,10 @@ fun SpecializationButton(
 @StaticPreview
 @Composable
 fun SpecializationButtonPreview() {
-    val title = "Some spec"
+    val title = TextOrResource.Text("Some spec")
 
     SpecializationButton(
-        title = TextOrResource.Text(title),
+        title = title,
         onSpecialClick = {
             println("Example SpecilializationScreenEvent.OnSpecialClick")
         }

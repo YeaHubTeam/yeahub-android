@@ -2,6 +2,7 @@ package ru.yeahub.selection_specializations.impl
 
 import SpecializationsScreenApi
 import SpecializationsScreenResult
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
@@ -51,30 +52,33 @@ class SpecializationsFeatureImpl(
                     )
                 }
             ) { paddingValues ->
-                //связываем коллбеки из конструктора экрана с логикой навигации
-                specializationScreen.SpecializationScreen(
-                    modifier = Modifier.padding(paddingValues),
-                    headerText = TextOrResource.Resource(R.string.selection_specializations_header_text),
-                    parentRoute = pathManager.getParentPath(),
-                    onResult = { result ->
-                        when (result) {
-                            SpecializationsScreenResult.NavigateBack -> {
-                                handleBackNavigation(
-                                    pathManager = pathManager,
-                                    navController = navController
-                                )
-                            }
+                Box(
+                    modifier = Modifier.padding(paddingValues)
+                ) {
+                    //связываем коллбеки из конструктора экрана с логикой навигации
+                    specializationScreen.SpecializationScreen(
+                        headerText = TextOrResource.Resource(R.string.selection_specializations_list_header),
+                        parentRoute = pathManager.getParentPath(),
+                        onResult = { result ->
+                            when (result) {
+                                SpecializationsScreenResult.NavigateBack -> {
+                                    handleBackNavigation(
+                                        pathManager = pathManager,
+                                        navController = navController
+                                    )
+                                }
 
-                            is SpecializationsScreenResult.SpecializationClick -> {
-                                handleSpecializationsNavigation(
-                                    pathManager = pathManager,
-                                    navController = navController,
-                                    specId = result.specId
-                                )
+                                is SpecializationsScreenResult.SpecializationClick -> {
+                                    handleSpecializationsNavigation(
+                                        pathManager = pathManager,
+                                        navController = navController,
+                                        specId = result.specId
+                                    )
+                                }
                             }
-                        }
-                    },
-                )
+                        },
+                    )
+                }
             }
         }
     }

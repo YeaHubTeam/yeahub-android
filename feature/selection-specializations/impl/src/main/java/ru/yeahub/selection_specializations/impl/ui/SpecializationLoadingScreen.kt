@@ -6,9 +6,9 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import com.valentinilk.shimmer.shimmer
 import ru.yeahub.core_ui.component.SpecializationButton
-import ru.yeahub.core_ui.example.staticPreview.StaticPreview
 import ru.yeahub.core_utils.common.TextOrResource
 import ru.yeahub.selection_specializations.impl.R
 import ru.yeahub.selection_specializations.impl.ui.SpecializationScreen.Companion.FIGMA_HORIZONTAL_PADDING
@@ -38,7 +38,7 @@ fun SpecializationsLoadingScreen(
     }
 }
 
-@StaticPreview
+@Preview
 @Composable
 fun SpecializationsLoadingReview() {
     val padding = PaddingValues(

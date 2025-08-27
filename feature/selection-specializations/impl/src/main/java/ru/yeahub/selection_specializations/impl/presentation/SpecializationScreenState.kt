@@ -1,7 +1,5 @@
 package ru.yeahub.selection_specializations.impl.presentation
 
-import ru.yeahub.selection_specializations.impl.model.VoSpecilialization
-
 sealed class SpecializationScreenState {
 
     data object InitLoading : SpecializationScreenState()

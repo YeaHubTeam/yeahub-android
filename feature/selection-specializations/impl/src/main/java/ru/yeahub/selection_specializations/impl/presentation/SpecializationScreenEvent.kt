@@ -14,3 +14,8 @@ sealed class SpecializationScreenEvent {
 
     data object OnBackClick : SpecializationScreenEvent()
 }
+
+data class VoSpecilialization(
+    val id: Int,
+    val title: String
+)
