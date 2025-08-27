@@ -53,6 +53,4 @@ class PublicCollectionsScreenMapper {
             isEndReached = false,
             isLoadingNextPage = false
         )
-
-
 }

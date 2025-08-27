@@ -71,7 +71,6 @@ fun ScreenUI(
     state: PublicCollectionsScreenState,
     onEvent: (PublicCollectionsScreenEvent) -> Unit
 ) {
-
     Scaffold(
         containerColor = colors.black10,
         topBar = {
@@ -109,13 +108,12 @@ fun HandleCommand(
     commandFlow: Flow<PublicCollectionsScreenCommand>,
 ) {
     commandFlow.observe { command ->
-        when(command){
+        when (command) {
             PublicCollectionsScreenCommand.TODO -> {
             }
         }
     }
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

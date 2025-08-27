@@ -11,12 +11,13 @@ import ru.yeahub.core_utils.BaseViewModel
 import ru.yeahub.core_utils.common.TextOrResource
 
 private const val TIME_TO_CLEAN_UP_RESOURCES = 5000L
+
 class PublicCollectionsViewModel(
     private val publicCollectionsScreenMapper: PublicCollectionsScreenMapper,
 ) : BaseViewModel() {
 
     val screenState: StateFlow<PublicCollectionsScreenState> =
-        flow{
+        flow {
             emit(publicCollectionsScreenMapper.getScreenState())
         }.stateIn(
             scope = viewModelScopeSafe,
