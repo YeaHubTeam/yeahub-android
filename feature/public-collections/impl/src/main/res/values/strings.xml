@@ -1,10 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="Error">Ошибка</string>
-    <string name="there_i_no_internet">Отсутствует интернет</string>
-    <string name="the_response_timeout_expired">Время ожидания ответа истекло</string>
-    <string name="error">Ошибка</string>
-    <string name="try_again">Повторить попытку</string>
-    <string name="loading_error">Ошибка загрузки</string>
     <string name="collections">Коллекции</string>
 </resources>

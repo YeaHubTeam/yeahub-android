@@ -1,6 +1,5 @@
 package ru.yeahub.public_collections.impl.ui
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -34,6 +34,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.flow.Flow
 import ru.yeahub.core_ui.component.CollectionCard
 import ru.yeahub.core_ui.component.ErrorScreen
 import ru.yeahub.core_ui.example.dynamicPreview.ProvidePreviewCompositionLocals
@@ -41,7 +42,9 @@ import ru.yeahub.core_ui.example.staticPreview.StaticPreview
 import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.core_ui.theme.Theme.colors
 import ru.yeahub.core_utils.common.TextOrResource
+import ru.yeahub.core_utils.common.observe
 import ru.yeahub.public_collections.impl.R
+import ru.yeahub.public_collections.impl.presentation.PublicCollectionsScreenCommand
 import ru.yeahub.public_collections.impl.presentation.PublicCollectionsScreenEvent
 import ru.yeahub.public_collections.impl.presentation.PublicCollectionsScreenMapper
 import ru.yeahub.public_collections.impl.presentation.PublicCollectionsScreenState
@@ -52,13 +55,15 @@ fun PublicCollectionsScreen(
     viewModel: PublicCollectionsViewModel
 ) {
     val state by viewModel.screenState.collectAsStateWithLifecycle()
+
     ScreenUI(
         state = state,
         onEvent = viewModel::onEvent
     )
 
-    //fun HandleCommand  у рината
-    // launched effect
+    HandleCommand(
+        commandFlow = viewModel.commands
+    )
 }
 
 @Composable
@@ -66,10 +71,12 @@ fun ScreenUI(
     state: PublicCollectionsScreenState,
     onEvent: (PublicCollectionsScreenEvent) -> Unit
 ) {
+
     Scaffold(
+        containerColor = colors.black10,
         topBar = {
             TopAppBarWithBottomBorder(
-                title = "",
+                title = state.header.getString(LocalContext.current),
                 onBackClick = {}
             )
         }
@@ -90,10 +97,25 @@ fun ScreenUI(
                 onClickItem = {}
             )
 
-            is PublicCollectionsScreenState.Loading -> PublicCollectionLoading()
+            is PublicCollectionsScreenState.Loading -> PublicCollectionLoading(
+                modifier = Modifier.padding(innerPadding),
+            )
         }
     }
 }
+
+@Composable
+fun HandleCommand(
+    commandFlow: Flow<PublicCollectionsScreenCommand>,
+) {
+    commandFlow.observe { command ->
+        when(command){
+            PublicCollectionsScreenCommand.TODO -> {
+            }
+        }
+    }
+}
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -153,7 +175,6 @@ fun BasePublicCollectionScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(colors.black10),
     ) {
         Text(
             modifier = Modifier
@@ -265,7 +286,7 @@ fun ShowScreenPreview(
 
 @Preview
 @Composable
-private fun PublicCollectionsScreenDynamicPreview() {
+fun PublicCollectionsScreenDynamicPreview() {
     ProvidePreviewCompositionLocals {
         PublicCollectionsScreen(viewModel = PublicCollectionsViewModel(PublicCollectionsScreenMapper()))
     }

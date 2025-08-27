@@ -10,16 +10,17 @@ import kotlinx.coroutines.flow.stateIn
 import ru.yeahub.core_utils.BaseViewModel
 import ru.yeahub.core_utils.common.TextOrResource
 
+private const val TIME_TO_CLEAN_UP_RESOURCES = 5000L
 class PublicCollectionsViewModel(
     private val publicCollectionsScreenMapper: PublicCollectionsScreenMapper,
 ) : BaseViewModel() {
 
     val screenState: StateFlow<PublicCollectionsScreenState> =
-        flow<PublicCollectionsScreenState> {
-            publicCollectionsScreenMapper.getScreenState()
+        flow{
+            emit(publicCollectionsScreenMapper.getScreenState())
         }.stateIn(
             scope = viewModelScopeSafe,
-            started = SharingStarted.WhileSubscribed(5000),
+            started = SharingStarted.WhileSubscribed(TIME_TO_CLEAN_UP_RESOURCES),
             initialValue = PublicCollectionsScreenState.Loading(header = TextOrResource.Text(""))
         )
 
@@ -28,7 +29,8 @@ class PublicCollectionsViewModel(
 
     fun onEvent(event: PublicCollectionsScreenEvent) {
         when (event) {
-            PublicCollectionsScreenEvent.TODO -> TODO()
+            PublicCollectionsScreenEvent.TODO -> {
+            }
         }
     }
 }

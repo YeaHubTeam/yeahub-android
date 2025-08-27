@@ -53,7 +53,6 @@ fun CollectionCard(
                 AsyncImage(
                     model = imageUrl,
                     contentDescription = null,
-                    placeholder = painterResource(R.drawable.collections),
                     modifier = Modifier
                         .size(40.dp)
                         .clip(RoundedCornerShape(4.dp)),
