@@ -4,6 +4,7 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
 import ru.yeahub.network_api.ApiService
+import ru.yeahub.network_api.models.GetCollectionsResponse
 import ru.yeahub.network_api.models.GetPublicQuestionResponse
 import ru.yeahub.network_api.models.GetPublicQuestionsResponse
 import ru.yeahub.network_api.models.GetSkillsResponse
@@ -52,4 +53,11 @@ interface RetrofitApiService : ApiService {
     override suspend fun getSpecializationById(
         @Path("id") id: Long
     ): GetSpecializationResponse
+
+    @GET("collections/public")
+    override suspend fun getPublicCollections(
+        @Query("page") page: Int,
+        @Query("limit") limit: Int,
+        //что дописывать для специальности
+    ): GetCollectionsResponse
 }
