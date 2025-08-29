@@ -58,6 +58,6 @@ interface RetrofitApiService : ApiService {
     override suspend fun getPublicCollections(
         @Query("page") page: Int,
         @Query("limit") limit: Int,
-        //что дописывать для специальности
+        @Query("specializations") specializationsId: Long
     ): GetCollectionsResponse
 }

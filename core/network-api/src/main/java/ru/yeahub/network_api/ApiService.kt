@@ -48,6 +48,6 @@ interface ApiService {
     suspend fun getPublicCollections(
         page: Int,
         limit: Int,
-        //досписать для специальности
+        specializationsId: Long
     ): GetCollectionsResponse
 }
