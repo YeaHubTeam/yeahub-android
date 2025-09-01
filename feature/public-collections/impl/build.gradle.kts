@@ -32,7 +32,6 @@ android {
 
 dependencies {
     //modules
-
     implementation(project(":core:navigation-api"))
     implementation(project(":core:network-api"))
     implementation(project(":core:utils"))
@@ -53,7 +52,14 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
+
+    //test
+    testImplementation(libs.junit.jupiter)
+    testImplementation(platform(libs.junit.bom))
+    testRuntimeOnly(libs.junit.platform.launcher)
+    implementation(libs.androidx.junit.ktx)
+    testImplementation(libs.mockk)
+    tasks.withType<Test> {
+        useJUnitPlatform()
+    }
 }
