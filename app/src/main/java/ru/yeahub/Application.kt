@@ -10,6 +10,7 @@ import ru.yeahub.example_profile.impl.profileFeatureModule
 import ru.yeahub.example_questions.impl.di.questionsFeatureModule
 import ru.yeahub.navigation_impl.navigationPathModule
 import ru.yeahub.network_impl.networkModule
+import ru.yeahub.public_questions.impl.data.di.questionsModule
 import timber.log.Timber
 
 /**
@@ -42,6 +43,7 @@ class Application : Application() {
             modules(
                 networkModule,
                 navigationPathModule,
+                questionsModule,
                 homeFeatureModule,
                 profileFeatureModule,
                 questionsFeatureModule,
