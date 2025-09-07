@@ -30,14 +30,14 @@ import ru.yeahub.ui.R
 
 @Composable
 fun QuestionCard(
+    modifier: Modifier = Modifier,
     title: String,
     description: String,
     imageRes: Int,
     onClick: () -> Unit
 ) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
+        modifier = modifier
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .clip(RoundedCornerShape(8.dp))
             .clickable { onClick() },
