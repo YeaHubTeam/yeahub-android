@@ -54,6 +54,9 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
 
+    implementation(libs.koin.core)
+    implementation(libs.koin.android)
+    implementation(libs.koin.compose)
     //test
     testImplementation(libs.junit.jupiter)
     testImplementation(platform(libs.junit.bom))
