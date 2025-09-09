@@ -1,9 +1,10 @@
-package ru.yeahub.public_collections.impl.data
+package ru.yeahub.public_collections.impl.data.repository
 
 import ru.yeahub.network_api.NetworkProvider
-import ru.yeahub.public_collections.impl.domain.GetCollectionsResponseEntity
-import ru.yeahub.public_collections.impl.domain.PublicCollectionRepository
-import ru.yeahub.public_collections.impl.domain.PublicCollectionsRequest
+import ru.yeahub.public_collections.impl.data.mapper.PublicCollectionDataToDomainMapper
+import ru.yeahub.public_collections.impl.domain.entity.GetCollectionsResponseEntity
+import ru.yeahub.public_collections.impl.domain.repository.PublicCollectionRepository
+import ru.yeahub.public_collections.impl.presentation.viewmodel.PublicCollectionsRequest
 
 class PublicCollectionRepositoryImpl(
     private val networkProvider: NetworkProvider,

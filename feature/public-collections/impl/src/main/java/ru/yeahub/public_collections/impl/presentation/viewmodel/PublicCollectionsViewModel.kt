@@ -1,4 +1,4 @@
-package ru.yeahub.public_collections.impl.presentation
+package ru.yeahub.public_collections.impl.presentation.viewmodel
 
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow

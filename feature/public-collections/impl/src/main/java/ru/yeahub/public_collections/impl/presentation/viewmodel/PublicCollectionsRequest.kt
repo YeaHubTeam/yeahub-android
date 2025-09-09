@@ -1,4 +1,4 @@
-package ru.yeahub.public_collections.impl.domain
+package ru.yeahub.public_collections.impl.presentation.viewmodel
 
 data class PublicCollectionsRequest(
     val page: Int,

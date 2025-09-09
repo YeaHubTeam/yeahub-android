@@ -1,4 +1,4 @@
-package ru.yeahub.public_collections.impl.presentation
+package ru.yeahub.public_collections.impl.presentation.mapper
 
 import ru.yeahub.core_utils.common.TextOrResource
 
