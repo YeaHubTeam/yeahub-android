@@ -5,5 +5,5 @@ import ru.yeahub.public_collections.impl.presentation.viewmodel.PublicCollection
 
 interface GetPublicCollectionsUseCase {
 
-    suspend operator fun invoke(request: PublicCollectionsRequest) : GetCollectionsResponseEntity
+    suspend operator fun invoke(request: PublicCollectionsRequest): GetCollectionsResponseEntity
 }

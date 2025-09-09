@@ -52,7 +52,13 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
+import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 import ru.yeahub.core_ui.component.CollectionCard
 import ru.yeahub.core_ui.component.ErrorScreen
 import ru.yeahub.core_ui.example.dynamicPreview.ProvidePreviewCompositionLocals
@@ -61,22 +67,16 @@ import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.core_ui.theme.Theme.colors
 import ru.yeahub.core_utils.common.TextOrResource
 import ru.yeahub.public_collections.impl.R
-import ru.yeahub.public_collections.impl.presentation.intents.PublicCollectionsScreenCommand
-import ru.yeahub.public_collections.impl.presentation.intents.PublicCollectionsScreenEvent
-import ru.yeahub.public_collections.impl.presentation.mapper.PublicCollectionsScreenMapper
-import ru.yeahub.public_collections.impl.presentation.PublicCollectionsScreenState
-import ru.yeahub.public_collections.impl.presentation.viewmodel.PublicCollectionsViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.map
-import org.koin.androidx.compose.koinViewModel
-import org.koin.core.parameter.parametersOf
 import ru.yeahub.public_collections.impl.domain.entity.GetCollectionResponseEntity
 import ru.yeahub.public_collections.impl.domain.entity.GetCollectionsResponseEntity
 import ru.yeahub.public_collections.impl.domain.usecase.GetPublicCollectionsUseCase
+import ru.yeahub.public_collections.impl.presentation.PublicCollectionsScreenState
+import ru.yeahub.public_collections.impl.presentation.intents.PublicCollectionsScreenCommand
+import ru.yeahub.public_collections.impl.presentation.intents.PublicCollectionsScreenEvent
 import ru.yeahub.public_collections.impl.presentation.intents.PublicCollectionsScreenResult
+import ru.yeahub.public_collections.impl.presentation.mapper.PublicCollectionsScreenMapper
 import ru.yeahub.public_collections.impl.presentation.viewmodel.PublicCollectionsRequest
+import ru.yeahub.public_collections.impl.presentation.viewmodel.PublicCollectionsViewModel
 import java.net.UnknownHostException
 import java.util.concurrent.TimeoutException
 
@@ -356,7 +356,6 @@ fun HandleCommand(
     }
 }
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopAppBarWithBottomBorder(
@@ -404,7 +403,6 @@ fun TopAppBarWithBottomBorder(
             }
     )
 }
-
 
 class ListPublicCollectionScreenProvider : PreviewParameterProvider<ScreenParams> {
     override val values: Sequence<ScreenParams> = sequenceOf(
@@ -482,7 +480,8 @@ fun ShowScreenPreview(
     @PreviewParameter(ListPublicCollectionScreenProvider::class) params: ScreenParams
 ) {
     ScreenUI(
-        state = params.state, onEvent = {},
+        state = params.state,
+        onEvent = {},
         listState = rememberLazyListState(),
     )
 }
@@ -498,7 +497,7 @@ fun PublicCollectionsScreenDynamicPreview() {
 
     val mockGetPublicCollectionsByIUseCase = object : GetPublicCollectionsUseCase {
         override suspend fun invoke(request: PublicCollectionsRequest): GetCollectionsResponseEntity {
-            delay(1000)
+            delay(RESPONSE_DELAY)
             return GetCollectionsResponseEntity(
                 page = request.page,
                 limit = request.limit,
@@ -527,10 +526,9 @@ fun PublicCollectionsScreenDynamicPreview() {
 
     val state by mockViewModel.screenState.collectAsState()
 
-
     LaunchedEffect(Unit) {
         mockViewModel.onEvent(PublicCollectionsScreenEvent.LoadInitial)
-        delay(1500)
+        delay(RESPONSE_DELAY)
         mockViewModel.onEvent(PublicCollectionsScreenEvent.LoadNextPage)
     }
 
@@ -542,7 +540,6 @@ fun PublicCollectionsScreenDynamicPreview() {
         )
     }
 }
-
 
 typealias ViewModelCreator = () -> ViewModel?
 
@@ -559,3 +556,4 @@ inline fun <reified VM : ViewModel> viewModelCreator(noinline creator: ViewModel
     viewModel(factory = remember { ViewModelFactory(creator) })
 
 private const val RESPONSE_THRESHOLD = 8
+private const val RESPONSE_DELAY = 1500L

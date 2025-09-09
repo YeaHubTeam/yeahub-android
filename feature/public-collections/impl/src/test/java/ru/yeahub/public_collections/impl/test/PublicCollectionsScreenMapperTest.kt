@@ -13,14 +13,14 @@ import ru.yeahub.public_collections.impl.presentation.PublicCollectionsScreenSta
 import ru.yeahub.public_collections.impl.presentation.mapper.PublicCollectionsScreenMapper
 import java.util.stream.Stream
 
-
 class PublicCollectionsScreenMapperTest {
 
     private val mapper = PublicCollectionsScreenMapper()
 
     @ParameterizedTest
     @ArgumentsSource(PublicCollectionsScreenMapperArgumentsProvider::class)
-    fun `should map GetCollectionResponseEntity to PublicCollectionsScreenState`(testCase: PublicCollectionsScreenMapperTestCase){
+    fun `should map GetCollectionResponseEntity to PublicCollectionsScreenState`(
+        testCase: PublicCollectionsScreenMapperTestCase) {
         val result = mapper.mapPagerStateToScreenState(
             testCase.dataToTest,
             header = TODO()
@@ -33,9 +33,7 @@ class PublicCollectionsScreenMapperTest {
         val expectedResult: PublicCollectionsScreenState
     )
 
-
     class PublicCollectionsScreenMapperArgumentsProvider : ArgumentsProvider {
-
         private val testError = RuntimeException("Test error")
 
         override fun provideArguments(context: ExtensionContext?): Stream<out Arguments> {
@@ -48,7 +46,6 @@ class PublicCollectionsScreenMapperTest {
                         )
                     )
                 ),
-
                 Arguments.of(
                     PublicCollectionsScreenMapperTestCase(
                         dataToTest = YeaHubPagerState.Loading(
@@ -59,7 +56,6 @@ class PublicCollectionsScreenMapperTest {
                         )
                     )
                 ),
-
                 Arguments.of(
                     PublicCollectionsScreenMapperTestCase(
                         dataToTest = YeaHubPagerState.Loading(
@@ -89,7 +85,6 @@ class PublicCollectionsScreenMapperTest {
                         )
                     )
                 ),
-
                 Arguments.of(
                     PublicCollectionsScreenMapperTestCase(
                         dataToTest = YeaHubPagerState.Loaded(
@@ -134,7 +129,6 @@ class PublicCollectionsScreenMapperTest {
                         )
                     )
                 ),
-
                 Arguments.of(
                     PublicCollectionsScreenMapperTestCase(
                         dataToTest = YeaHubPagerState.Error(

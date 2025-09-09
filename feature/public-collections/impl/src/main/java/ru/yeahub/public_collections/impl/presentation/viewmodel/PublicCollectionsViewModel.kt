@@ -102,5 +102,4 @@ class PublicCollectionsViewModel(
             _commands.emit(PublicCollectionsScreenCommand.OnQuestionsListClick(id))
         }
     }
-
 }

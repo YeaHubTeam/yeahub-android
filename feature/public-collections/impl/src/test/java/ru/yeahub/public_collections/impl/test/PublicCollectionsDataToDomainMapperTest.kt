@@ -22,7 +22,7 @@ class PublicCollectionsDataToDomainMapperTest {
 
     @ParameterizedTest
     @ArgumentsSource(PublicCollectionMapperArgumentsProvider::class)
-    fun `should map GetCollectionsResponse to GetCollectionsResponseEntity`(testCase: PublicCollectionsMapperTestCase){
+    fun `should map GetCollectionsResponse to GetCollectionsResponseEntity`(testCase: PublicCollectionsMapperTestCase) {
         val result = mapper.dataListToDomainList(testCase.dto)
         Assertions.assertEquals(testCase.expectedResult, result)
     }
@@ -38,7 +38,9 @@ class PublicCollectionsDataToDomainMapperTest {
                 Arguments.of(
                     PublicCollectionsMapperTestCase(
                         dto = GetCollectionsResponse(
-                            page = 1, limit = 10, data = listOf(
+                            page = 1,
+                            limit = 10,
+                            data = listOf(
                                 GetCollectionResponse(
                                     id = 1,
                                     title = "Title 1",
@@ -68,15 +70,21 @@ class PublicCollectionsDataToDomainMapperTest {
                                         createdAt = "2024-01-01",
                                         updatedAt = "2024-01-01"
                                     ),
-                                    createdBy = NestedUserReferenceDto(
-                                        id = "user_1", username = "User 1"
-                                    ),
+                                    createdBy =
+                                        NestedUserReferenceDto(
+                                            id = "user_1",
+                                            username = "User 1"
+                                        ),
                                     createdAt = "2024-01-01",
                                     updatedAt = "2024-01-01"
                                 )
-                            ), total = 1
-                        ), expectedResult = GetCollectionsResponseEntity(
-                            page = 1, limit = 10, data = listOf(
+                            ),
+                            total = 1
+                        ),
+                        expectedResult = GetCollectionsResponseEntity(
+                            page = 1,
+                            limit = 10,
+                            data = listOf(
                                 GetCollectionResponseEntity(
                                     id = 1,
                                     title = "Title 1",
@@ -84,7 +92,8 @@ class PublicCollectionsDataToDomainMapperTest {
                                     imageSrc = "123",
                                     questionsCount = 1
                                 )
-                            ), total = 1
+                            ),
+                            total = 1
                         )
                     )
                 )

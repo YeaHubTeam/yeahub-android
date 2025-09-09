@@ -7,7 +7,6 @@ import ru.yeahub.public_collections.impl.presentation.PublicCollectionsScreenSta
 
 class PublicCollectionsScreenMapper {
 
-
     fun mapPagerStateToScreenState(
         pagerState: YeaHubPagerState<GetCollectionResponseEntity>,
         header: String

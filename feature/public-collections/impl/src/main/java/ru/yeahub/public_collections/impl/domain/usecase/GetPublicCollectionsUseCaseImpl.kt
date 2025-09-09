@@ -4,7 +4,8 @@ import ru.yeahub.public_collections.impl.domain.entity.GetCollectionsResponseEnt
 import ru.yeahub.public_collections.impl.domain.repository.PublicCollectionRepository
 import ru.yeahub.public_collections.impl.presentation.viewmodel.PublicCollectionsRequest
 
-class GetPublicCollectionsUseCaseImpl(private val publicCollectionRepository: PublicCollectionRepository) : GetPublicCollectionsUseCase {
+class GetPublicCollectionsUseCaseImpl(private val publicCollectionRepository: PublicCollectionRepository) :
+    GetPublicCollectionsUseCase {
 
     override suspend fun invoke(request: PublicCollectionsRequest): GetCollectionsResponseEntity {
         return publicCollectionRepository.getPublicCollection(request)
