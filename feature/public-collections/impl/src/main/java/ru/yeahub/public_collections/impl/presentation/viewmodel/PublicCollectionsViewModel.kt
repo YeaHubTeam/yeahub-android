@@ -6,11 +6,14 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import ru.yeahub.core_utils.BaseViewModel
 import ru.yeahub.core_utils.common.TextOrResource
+import ru.yeahub.core_utils.pager.YeaHubPagerLoader
+import ru.yeahub.core_utils.pagerImpl.YeaHubPager
 import ru.yeahub.public_collections.impl.domain.entity.GetCollectionsResponseEntity
 import ru.yeahub.public_collections.impl.domain.usecase.GetPublicCollectionsUseCase
 import ru.yeahub.public_collections.impl.presentation.PublicCollectionsScreenState
@@ -27,10 +30,36 @@ class PublicCollectionsViewModel(
     private val header: String,
 ) : BaseViewModel() {
 
-    val screenState: StateFlow<PublicCollectionsScreenState> =
-        flow {
-            emit(publicCollectionsScreenMapper.getScreenState())
-        }.stateIn(
+    private val loader =
+        object : YeaHubPagerLoader<GetCollectionsResponseEntity, PublicCollectionsRequest> {
+            override suspend fun loadPage(request: PublicCollectionsRequest): GetCollectionsResponseEntity {
+                return getPublicCollectionsUseCase.invoke(request)
+            }
+
+            override fun updatePage(
+                request: PublicCollectionsRequest,
+                page: Int
+            ): PublicCollectionsRequest {
+                return request.copy(page = page)
+            }
+        }
+
+    private val pager = YeaHubPager(
+        pagerLoader = loader,
+        requestData = PublicCollectionsRequest(
+            page = 1,
+            limit = 10,
+            specializationsId = specializationsId,
+        ),
+        data = { it.data },
+        total = { it.total.toLong() },
+        limit = { it.limit?.toLong() }
+    )
+
+    val screenState: StateFlow<PublicCollectionsScreenState> = pager.state
+        .map { publicCollectionsScreenMapper.mapPagerStateToScreenState(it, header) }
+        .distinctUntilChanged()
+        .stateIn(
             scope = viewModelScopeSafe,
             started = SharingStarted.WhileSubscribed(TIME_TO_CLEAN_UP_RESOURCES),
             initialValue = PublicCollectionsScreenState.Loading(header = TextOrResource.Text(""))

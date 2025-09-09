@@ -5,6 +5,8 @@ import ru.yeahub.core_utils.common.TextOrResource
 sealed interface PublicCollectionsScreenState {
     val header: TextOrResource
 
+    data class Initial(override val header: TextOrResource) : PublicCollectionsScreenState
+
     data class Loading(override val header: TextOrResource) : PublicCollectionsScreenState
 
     data class Loaded(
