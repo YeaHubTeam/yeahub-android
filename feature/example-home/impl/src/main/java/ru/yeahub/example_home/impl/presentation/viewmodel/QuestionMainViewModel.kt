@@ -1,38 +1,39 @@
-package ru.yeahub.example_questions.impl.presentation.viewmodel
+package ru.yeahub.example_home.impl.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import ru.yeahub.example_questions.impl.presentation.intents.QuestionMainScreenCommand
-import ru.yeahub.example_questions.impl.presentation.intents.QuestionMainScreenEvent
-import ru.yeahub.example_questions.impl.presentation.mapper.QuestionMainScreenMapper
-import ru.yeahub.example_questions.impl.presentation.model.QuestionMainItemType
-import ru.yeahub.example_questions.impl.presentation.state.QuestionMainScreenState
+import ru.yeahub.example_home.impl.presentation.intents.QuestionMainScreenCommand
+import ru.yeahub.example_home.impl.presentation.intents.QuestionMainScreenEvent
+import ru.yeahub.example_home.impl.presentation.mapper.QuestionMainScreenMapper
+import ru.yeahub.example_home.impl.presentation.model.QuestionMainItemType
+import ru.yeahub.example_home.impl.presentation.state.QuestionMainScreenState
 
 class QuestionMainViewModel(
     private val domainMapper: QuestionMainScreenMapper,
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow<QuestionMainScreenState>(QuestionMainScreenState.Loading)
-    val state: StateFlow<QuestionMainScreenState> = _state
-
     private val _command = MutableSharedFlow<QuestionMainScreenCommand>()
     val command: SharedFlow<QuestionMainScreenCommand> = _command
 
-    init {
-        viewModelScope.launch {
-            getInitialState()
-        }
+    private val initialStateFlow = flow {
+        emit(QuestionMainScreenState.Loading)
+        val uiModels = domainMapper.getInitialUiModels()
+        emit(QuestionMainScreenState.Content(uiModels))
     }
 
-    fun getInitialState() {
-        val uiModels = domainMapper.getInitialUiModels()
-        _state.value = QuestionMainScreenState.Content(uiModels)
-    }
+    val state: StateFlow<QuestionMainScreenState> = initialStateFlow
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Lazily,
+            initialValue = QuestionMainScreenState.Loading
+        )
 
     fun onEvent(event: QuestionMainScreenEvent) {
         viewModelScope.launch {
