@@ -11,9 +11,9 @@ import ru.yeahub.network_api.models.GetCollectionsResponse
 import ru.yeahub.network_api.models.GetCompanyResponse
 import ru.yeahub.network_api.models.NestedSpecializationResponse
 import ru.yeahub.network_api.models.NestedUserReferenceDto
-import ru.yeahub.public_collections.impl.data.PublicCollectionDataToDomainMapper
-import ru.yeahub.public_collections.impl.domain.GetCollectionResponseEntity
-import ru.yeahub.public_collections.impl.domain.GetCollectionsResponseEntity
+import ru.yeahub.public_collections.impl.data.mapper.PublicCollectionDataToDomainMapper
+import ru.yeahub.public_collections.impl.domain.entity.GetCollectionResponseEntity
+import ru.yeahub.public_collections.impl.domain.entity.GetCollectionsResponseEntity
 import java.util.stream.Stream
 
 class PublicCollectionsDataToDomainMapperTest {
