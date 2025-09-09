@@ -1,4 +1,4 @@
-package ru.yeahub.example_questions.impl.presentation.view
+package ru.yeahub.example_home.impl.presentation.view
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,14 +16,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.compose.koinViewModel
+import ru.yeahub.core_ui.component.ErrorScreen
 import ru.yeahub.core_ui.component.QuestionCard
 import ru.yeahub.core_ui.theme.Theme
-import ru.yeahub.example_questions.impl.presentation.ErrorScreen
-import ru.yeahub.example_questions.impl.presentation.PlaceholderItem
-import ru.yeahub.example_questions.impl.presentation.intents.QuestionMainScreenCommand
-import ru.yeahub.example_questions.impl.presentation.intents.QuestionMainScreenEvent
-import ru.yeahub.example_questions.impl.presentation.state.QuestionMainScreenState
-import ru.yeahub.example_questions.impl.presentation.viewmodel.QuestionMainViewModel
+import ru.yeahub.core_utils.common.observe
+import ru.yeahub.example_home.impl.presentation.intents.QuestionMainScreenCommand
+import ru.yeahub.example_home.impl.presentation.intents.QuestionMainScreenEvent
+import ru.yeahub.example_home.impl.presentation.state.QuestionMainScreenState
+import ru.yeahub.example_home.impl.presentation.viewmodel.QuestionMainViewModel
 import ru.yeahub.ui.R
 
 @Composable
@@ -38,14 +37,12 @@ fun QuestionsMainScreen(
     val viewModel: QuestionMainViewModel = koinViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    LaunchedEffect(Unit) {
-        viewModel.command.collect { cmd ->
-            when (cmd) {
+        viewModel.command.observe { command ->
+            when (command) {
                 is QuestionMainScreenCommand.NavigateToBaseQuestions -> onNavigateToBaseQuestions()
                 is QuestionMainScreenCommand.NavigateToCollections -> onNavigateToCollections()
             }
         }
-    }
 
     when (state) {
         is QuestionMainScreenState.Loading -> {
@@ -53,16 +50,17 @@ fun QuestionsMainScreen(
                 Modifier.Companion.fillMaxSize(),
                 contentAlignment = Alignment.Companion.Center
             ) {
-                PlaceholderItem() //todo нужен не Item
+//                PlaceholderItem() //todo нужен экран при загрузке
             }
         }
 
         is QuestionMainScreenState.Error -> {
             ErrorScreen(
-                error = Throwable("Ошибка загрузки"),
-                onRetry = {
-                    viewModel.getInitialState()
-                }
+                error = (state as QuestionMainScreenState.Error).message.getString(context),
+                titleText = "Ошибка загрузки",
+                backText = "",
+                unknownErrorText = "",
+                onBack = { }
             )
         }
 
