@@ -58,6 +58,7 @@ interface RetrofitApiService : ApiService {
     override suspend fun getPublicCollections(
         @Query("page") page: Int,
         @Query("limit") limit: Int,
-        @Query("specializations") specializationsId: Long
+        @Query("specializations") specializationsId: Long,
+        @Query("isFree") isFree: Boolean
     ): GetCollectionsResponse
 }

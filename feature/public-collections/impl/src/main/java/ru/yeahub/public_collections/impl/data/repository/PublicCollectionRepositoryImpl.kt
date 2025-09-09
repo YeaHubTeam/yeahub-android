@@ -15,7 +15,8 @@ class PublicCollectionRepositoryImpl(
             networkProvider.apiService.getPublicCollections(
                 page = request.page,
                 limit = request.limit,
-                specializationsId = request.specializationsId
+                specializationsId = request.specializationsId,
+                isFree = request.isFree
             )
         )
 }

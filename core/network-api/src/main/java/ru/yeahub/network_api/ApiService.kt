@@ -48,6 +48,7 @@ interface ApiService {
     suspend fun getPublicCollections(
         page: Int,
         limit: Int,
-        specializationsId: Long
+        specializationsId: Long,
+        isFree: Boolean
     ): GetCollectionsResponse
 }
