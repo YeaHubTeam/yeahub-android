@@ -9,22 +9,22 @@ sealed interface PublicCollectionsScreenState {
 
     data class Loaded(
         override val header: TextOrResource,
-        val collectionItemList: List<Item>,
+        val collectionPublicCollectionVOList: List<PublicCollectionVO>,
         val isEndReached: Boolean,
         val isLoadingNextPage: Boolean,
     ) : PublicCollectionsScreenState {
-        data class Item(
+        data class PublicCollectionVO(
             val id: Int,
             val collectionTitle: String,
             val descriptionText: String,
-            val imageUrl: String,
+            val imageUrl: String?,
             val questionsCount: Int,
         )
     }
 
     data class Error(
         override val header: TextOrResource,
-        val currentList: List<Loaded.Item>,
+        val currentList: List<Loaded.PublicCollectionVO>,
         val throwable: Throwable
     ) : PublicCollectionsScreenState
 }

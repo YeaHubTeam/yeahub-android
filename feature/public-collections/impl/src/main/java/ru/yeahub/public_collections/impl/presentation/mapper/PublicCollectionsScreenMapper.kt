@@ -1,56 +1,79 @@
 package ru.yeahub.public_collections.impl.presentation.mapper
 
 import ru.yeahub.core_utils.common.TextOrResource
+import ru.yeahub.core_utils.pagerImpl.YeaHubPagerState
+import ru.yeahub.public_collections.impl.domain.entity.GetCollectionResponseEntity
+import ru.yeahub.public_collections.impl.presentation.PublicCollectionsScreenState
 
 class PublicCollectionsScreenMapper {
-    fun getScreenState(): PublicCollectionsScreenState =
-        PublicCollectionsScreenState.Loaded(
-            header = TextOrResource.Text("React"),
-            collectionItemList = listOf(
-                PublicCollectionsScreenState.Loaded.Item(
-                    id = 1,
-                    collectionTitle = "Собеседование Middle Сбер",
-                    descriptionText = "Техническое собеседование для экспертов по основным вопросам React",
-                    imageUrl = "",
-                    questionsCount = 35
-                ),
-                PublicCollectionsScreenState.Loaded.Item(
-                    id = 2,
-                    collectionTitle = "Собеседование Middle Т-банк",
-                    descriptionText = "Техническое собеседование для экспертов по основным вопросам React",
-                    imageUrl = "",
-                    questionsCount = 50
-                ),
-                PublicCollectionsScreenState.Loaded.Item(
-                    id = 3,
-                    collectionTitle = "Собеседование Middle Ozon",
-                    descriptionText = "Техническое собеседование для экспертов по основным вопросам React",
-                    imageUrl = "",
-                    questionsCount = 24
-                ),
-                PublicCollectionsScreenState.Loaded.Item(
-                    id = 4,
-                    collectionTitle = "Собеседование Middle WB",
-                    descriptionText = "Техническое собеседование для экспертов по основным вопросам React",
-                    imageUrl = "",
-                    questionsCount = 54
-                ),
-                PublicCollectionsScreenState.Loaded.Item(
-                    id = 5,
-                    collectionTitle = "Собеседование Middle Яндекс",
-                    descriptionText = "Техническое собеседование для экспертов по основным вопросам React",
-                    imageUrl = "",
-                    questionsCount = 154
-                ),
-                PublicCollectionsScreenState.Loaded.Item(
-                    id = 6,
-                    collectionTitle = "Собеседование Middle ВТБ",
-                    descriptionText = "Техническое собеседование для экспертов по основным вопросам React",
-                    imageUrl = "",
-                    questionsCount = 154
+
+
+    fun mapPagerStateToScreenState(
+        pagerState: YeaHubPagerState<GetCollectionResponseEntity>,
+        header: String
+    ): PublicCollectionsScreenState {
+        return when (pagerState) {
+            is YeaHubPagerState.Initial -> PublicCollectionsScreenState.Initial(
+                header = TextOrResource.Text(header)
+            )
+
+            is YeaHubPagerState.Loading -> {
+                if (pagerState.items.isEmpty()) {
+                    PublicCollectionsScreenState.Loading(
+                        header = TextOrResource.Text(header)
+                    )
+                } else {
+                    PublicCollectionsScreenState.Loaded(
+                        collectionPublicCollectionVOList = mapCollectionResponseEntityListToResponseVOList(
+                            pagerState.items
+                        ),
+                        isEndReached = false,
+                        isLoadingNextPage = true,
+                        header = TextOrResource.Text(header)
+                    )
+                }
+            }
+
+            is YeaHubPagerState.Loaded -> {
+                PublicCollectionsScreenState.Loaded(
+                    collectionPublicCollectionVOList = mapCollectionResponseEntityListToResponseVOList(
+                        pagerState.items
+                    ),
+                    isEndReached = pagerState.isEndReached,
+                    isLoadingNextPage = false,
+                    header = TextOrResource.Text(header)
                 )
-            ),
-            isEndReached = false,
-            isLoadingNextPage = false
+            }
+
+            is YeaHubPagerState.Error -> {
+                PublicCollectionsScreenState.Error(
+                    currentList = mapCollectionResponseEntityListToResponseVOList(
+                        pagerState.items
+                    ),
+                    throwable = pagerState.throwable,
+                    header = TextOrResource.Text(header)
+                )
+            }
+        }
+    }
+
+    private fun mapCollectionResponseEntityToResponseVO(
+        publicGetCollectionResponseEntity: GetCollectionResponseEntity
+    ): PublicCollectionsScreenState.Loaded.PublicCollectionVO {
+        return PublicCollectionsScreenState.Loaded.PublicCollectionVO(
+            id = publicGetCollectionResponseEntity.id,
+            collectionTitle = publicGetCollectionResponseEntity.title,
+            descriptionText = publicGetCollectionResponseEntity.description,
+            imageUrl = publicGetCollectionResponseEntity.imageSrc,
+            questionsCount = publicGetCollectionResponseEntity.questionsCount
         )
+    }
+
+    private fun mapCollectionResponseEntityListToResponseVOList(
+        publicGetCollectionResponseEntity: List<GetCollectionResponseEntity>
+    ): List<PublicCollectionsScreenState.Loaded.PublicCollectionVO> {
+        return publicGetCollectionResponseEntity.map { entity ->
+            mapCollectionResponseEntityToResponseVO(entity)
+        }
+    }
 }
