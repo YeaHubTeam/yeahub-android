@@ -1,4 +1,4 @@
-package ru.yeahub.example_questions.impl.presentation.intents
+package ru.yeahub.example_home.impl.presentation.intents
 
 sealed class QuestionMainScreenCommand {
     object NavigateToBaseQuestions : QuestionMainScreenCommand()

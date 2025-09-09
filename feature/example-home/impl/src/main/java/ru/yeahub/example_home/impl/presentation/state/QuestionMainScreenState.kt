@@ -1,7 +1,7 @@
-package ru.yeahub.example_questions.impl.presentation.state
+package ru.yeahub.example_home.impl.presentation.state
 
 import ru.yeahub.core_utils.common.TextOrResource
-import ru.yeahub.example_questions.impl.presentation.model.QuestionMainUiModel
+import ru.yeahub.example_home.impl.presentation.model.QuestionMainUiModel
 
 sealed class QuestionMainScreenState {
     object Loading : QuestionMainScreenState()

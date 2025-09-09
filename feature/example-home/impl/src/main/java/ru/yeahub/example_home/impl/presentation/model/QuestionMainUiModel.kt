@@ -1,4 +1,4 @@
-package ru.yeahub.example_questions.impl.presentation.model
+package ru.yeahub.example_home.impl.presentation.model
 
 import ru.yeahub.core_utils.common.TextOrResource
 

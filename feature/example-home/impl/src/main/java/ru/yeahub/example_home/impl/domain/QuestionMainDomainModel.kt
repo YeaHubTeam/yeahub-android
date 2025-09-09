@@ -1,4 +1,4 @@
-package ru.yeahub.example_questions.impl.domain
+package ru.yeahub.example_home.impl.domain
 
 data class QuestionMainDomainModel(
     val title: String,

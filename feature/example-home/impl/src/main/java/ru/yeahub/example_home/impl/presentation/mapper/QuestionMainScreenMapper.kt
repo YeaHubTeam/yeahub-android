@@ -1,8 +1,8 @@
-package ru.yeahub.example_questions.impl.presentation.mapper
+package ru.yeahub.example_home.impl.presentation.mapper
 
 import ru.yeahub.core_utils.common.TextOrResource
-import ru.yeahub.example_questions.impl.presentation.model.QuestionMainItemType
-import ru.yeahub.example_questions.impl.presentation.model.QuestionMainUiModel
+import ru.yeahub.example_home.impl.presentation.model.QuestionMainItemType
+import ru.yeahub.example_home.impl.presentation.model.QuestionMainUiModel
 import ru.yeahub.ui.R
 
 class QuestionMainScreenMapper {
