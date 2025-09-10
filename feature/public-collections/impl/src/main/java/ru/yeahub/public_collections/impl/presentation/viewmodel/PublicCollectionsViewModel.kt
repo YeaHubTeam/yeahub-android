@@ -57,7 +57,7 @@ class PublicCollectionsViewModel(
     )
 
     val screenState: StateFlow<PublicCollectionsScreenState> = pager.state
-        .map { publicCollectionsScreenMapper.mapPagerStateToScreenState(it, header) }
+        .map { publicCollectionsScreenMapper.getScreenState(it, header) }
         .distinctUntilChanged()
         .stateIn(
             scope = viewModelScopeSafe,

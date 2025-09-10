@@ -21,7 +21,7 @@ class PublicCollectionsScreenMapperTest {
     @ArgumentsSource(PublicCollectionsScreenMapperArgumentsProvider::class)
     fun `should map GetCollectionResponseEntity to PublicCollectionsScreenState`(
         testCase: PublicCollectionsScreenMapperTestCase) {
-        val result = mapper.mapPagerStateToScreenState(
+        val result = mapper.getScreenState(
             testCase.dataToTest,
             header = testCase.header
         )
