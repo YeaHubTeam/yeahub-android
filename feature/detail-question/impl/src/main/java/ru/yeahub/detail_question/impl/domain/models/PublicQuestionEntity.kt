@@ -12,13 +12,13 @@ data class PublicQuestionEntity(
     val status: String?,
     val rate: Int?,
     val complexity: Long?,
-    val createdById: String,
+    val createdById: String?,
     val updatedById: String?,
     val questionSpecializations: List<NestedSpecializationEntity>,
     val questionSkills: List<NestedSkillEntity>,
     val createdAt: String,
     val updatedAt: String,
-    val createdBy: NestedUserReferenceEntity,
+    val createdBy: NestedUserReferenceEntity?,
     val updatedBy: NestedUserReferenceEntity?,
     val guru: GuruEntity
 )
