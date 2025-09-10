@@ -38,6 +38,7 @@ dependencies {
     implementation(project(":core:ui"))
 
     implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.material3)
@@ -53,6 +54,9 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
 
+    implementation(libs.koin.core)
+    implementation(libs.koin.android)
+    implementation(libs.koin.compose)
     //test
     testImplementation(libs.junit.jupiter)
     testImplementation(platform(libs.junit.bom))

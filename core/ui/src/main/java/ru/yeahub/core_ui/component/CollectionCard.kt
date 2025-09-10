@@ -30,7 +30,7 @@ fun CollectionCard(
     modifier: Modifier = Modifier,
     collectionTitle: String,
     descriptionText: String,
-    imageUrl: String,
+    imageUrl: String?,
     questionsCount: Int,
     onCollectionClick: () -> Unit,
 ) {

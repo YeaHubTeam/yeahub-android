@@ -13,24 +13,55 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.valentinilk.shimmer.shimmer
 import ru.yeahub.core_ui.example.staticPreview.StaticPreview
-import ru.yeahub.ui.R
+import ru.yeahub.core_ui.theme.Theme
+import ru.yeahub.core_ui.theme.Theme.colors
+import ru.yeahub.public_collections.impl.R
 
 @Composable
 fun PublicCollectionLoading(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    listState: LazyListState,
 ) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+        Text(
+            modifier = modifier
+                .padding(start = 12.dp, top = 16.dp),
+            text = stringResource(R.string.collections),
+            style = Theme.typography.body5Strong,
+            color = colors.black900
+        )
+        LazyColumn(
+            modifier = Modifier
+                .padding(horizontal = 12.dp, vertical = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            state = listState,
+        ) {
+            items(COUNT_PLACEHOLDER) { PlaceholderCollectionsItem() }
+        }
+    }
+}
+
+@Composable
+fun PlaceholderCollectionsItem(modifier: Modifier = Modifier) {
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -77,7 +108,7 @@ fun PublicCollectionLoading(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Image(
-                    painter = painterResource(R.drawable.question_square),
+                    painter = painterResource(ru.yeahub.ui.R.drawable.question_square),
                     contentDescription = null,
                     modifier = Modifier
                         .blur(10.dp)
@@ -106,12 +137,8 @@ fun PlaceholderItemPreview() {
                 end = 10.dp
             )
     ) {
-        LazyColumn {
-            items(TEST) {
-                PublicCollectionLoading()
-            }
-        }
+        PublicCollectionLoading(listState = rememberLazyListState())
     }
 }
 
-private const val TEST = 12
+private const val COUNT_PLACEHOLDER = 11
