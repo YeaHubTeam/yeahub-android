@@ -9,7 +9,7 @@ class PublicQuestionDomainToPresentationMapper {
         publicQuestionModel: PublicQuestionModel
     ): PublicQuestionUiModel {
         return PublicQuestionUiModel(
-            id = publicQuestionModel.id,
+            id = publicQuestionModel.id.toString(),
             title = publicQuestionModel.title
         )
     }
