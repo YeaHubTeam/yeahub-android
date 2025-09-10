@@ -1,9 +1,9 @@
-package ru.yeahub.public_collections.impl.data
+package ru.yeahub.public_collections.impl.data.mapper
 
 import ru.yeahub.network_api.models.GetCollectionResponse
 import ru.yeahub.network_api.models.GetCollectionsResponse
-import ru.yeahub.public_collections.impl.domain.GetCollectionResponseEntity
-import ru.yeahub.public_collections.impl.domain.GetCollectionsResponseEntity
+import ru.yeahub.public_collections.impl.domain.entity.GetCollectionResponseEntity
+import ru.yeahub.public_collections.impl.domain.entity.GetCollectionsResponseEntity
 
 class PublicCollectionDataToDomainMapper {
 
