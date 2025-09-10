@@ -23,13 +23,14 @@ class PublicCollectionsScreenMapperTest {
         testCase: PublicCollectionsScreenMapperTestCase) {
         val result = mapper.mapPagerStateToScreenState(
             testCase.dataToTest,
-            header = TODO()
+            header = testCase.header
         )
         Assertions.assertEquals(testCase.expectedResult, result)
     }
 
     data class PublicCollectionsScreenMapperTestCase(
         val dataToTest: YeaHubPagerState<GetCollectionResponseEntity>,
+        val header: String,
         val expectedResult: PublicCollectionsScreenState
     )
 
@@ -42,8 +43,9 @@ class PublicCollectionsScreenMapperTest {
                     PublicCollectionsScreenMapperTestCase(
                         dataToTest = YeaHubPagerState.Initial,
                         expectedResult = PublicCollectionsScreenState.Initial(
-                            header = TextOrResource.Text("")
-                        )
+                            header = TextOrResource.Text("Public Collections")
+                        ),
+                        header = "Public Collections"
                     )
                 ),
                 Arguments.of(
@@ -52,8 +54,9 @@ class PublicCollectionsScreenMapperTest {
                             items = emptyList()
                         ),
                         expectedResult = PublicCollectionsScreenState.Loading(
-                            header = TextOrResource.Text("")
-                        )
+                            header = TextOrResource.Text("Public Collections")
+                        ),
+                        header = "Public Collections"
                     )
                 ),
                 Arguments.of(
@@ -70,7 +73,7 @@ class PublicCollectionsScreenMapperTest {
                             )
                         ),
                         expectedResult = PublicCollectionsScreenState.Loaded(
-                            header = TextOrResource.Text(""),
+                            header = TextOrResource.Text("Public Collections"),
                             collectionPublicCollectionVOList = listOf(
                                 PublicCollectionsScreenState.Loaded.PublicCollectionVO(
                                     id = 1,
@@ -82,7 +85,8 @@ class PublicCollectionsScreenMapperTest {
                             ),
                             isEndReached = false,
                             isLoadingNextPage = true
-                        )
+                        ),
+                        header = "Public Collections"
                     )
                 ),
                 Arguments.of(
@@ -107,7 +111,7 @@ class PublicCollectionsScreenMapperTest {
                             isEndReached = true
                         ),
                         expectedResult = PublicCollectionsScreenState.Loaded(
-                            header = TextOrResource.Text(""),
+                            header = TextOrResource.Text("Public Collections"),
                             collectionPublicCollectionVOList = listOf(
                                 PublicCollectionsScreenState.Loaded.PublicCollectionVO(
                                     id = 1,
@@ -126,7 +130,8 @@ class PublicCollectionsScreenMapperTest {
                             ),
                             isEndReached = true,
                             isLoadingNextPage = false
-                        )
+                        ),
+                        header = "Public Collections"
                     )
                 ),
                 Arguments.of(
@@ -155,7 +160,8 @@ class PublicCollectionsScreenMapperTest {
                                 )
                             ),
                             throwable = testError
-                        )
+                        ),
+                        header = ""
                     )
                 )
             )
