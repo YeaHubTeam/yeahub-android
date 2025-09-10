@@ -84,12 +84,14 @@ fun QuestionsMainScreenContent(
             )
         }
 
+        //Основной контент
         is QuestionMainScreenState.Content -> {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(top = 24.dp)
             ) {
+                //Заголовок
                 Text(
                     text = stringResource(id = R.string.question_title),
                     style = Theme.typography.head5,
@@ -97,6 +99,7 @@ fun QuestionsMainScreenContent(
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
                 Spacer(modifier = Modifier.height(8.dp))
+                //Описание
                 Text(
                     text = stringResource(id = R.string.question_description),
                     style = Theme.typography.body7,
@@ -105,6 +108,7 @@ fun QuestionsMainScreenContent(
                 )
                 Spacer(modifier = Modifier.height(16.dp))
 
+                //Кнопки для 'База вопросов' & 'Коллекции'
                 state.items.forEach { item ->
                     QuestionCard(
                         title = item.title.getString(context),
@@ -117,70 +121,6 @@ fun QuestionsMainScreenContent(
         }
     }
 }
-
-//
-//
-//    when (state) {
-//        is QuestionMainScreenState.Loading -> {
-//            Box(
-//                Modifier.Companion.fillMaxSize(),
-//                contentAlignment = Alignment.Companion.Center
-//            ) {
-////                PlaceholderItem() //todo нужен экран при загрузке
-//            }
-//        }
-//
-//        is QuestionMainScreenState.Error -> {
-//            ErrorScreen(
-//                error = (state as QuestionMainScreenState.Error).message.getString(context),
-//                titleText = "Ошибка загрузки",
-//                backText = "",
-//                unknownErrorText = "",
-//                onBack = { }
-//            )
-//        }
-//
-//        //Основной контент
-//        is QuestionMainScreenState.Content -> {
-//            val content = state as QuestionMainScreenState.Content
-//
-//            Column(
-//                modifier = Modifier.Companion
-//                    .fillMaxSize()
-//                    .padding(top = 24.dp)
-//            ) {
-//                //Заголовок
-//                Text(
-//                    text = stringResource(id = R.string.question_title),
-//                    style = Theme.typography.head5,
-//                    color = Theme.colors.black900,
-//                    modifier = Modifier.Companion.padding(horizontal = 16.dp)
-//                )
-//                Spacer(modifier = Modifier.Companion.height(8.dp))
-//                //Описание
-//                Text(
-//                    text = stringResource(id = R.string.question_description),
-//                    style = Theme.typography.body7,
-//                    color = Theme.colors.black900,
-//                    modifier = Modifier.Companion.padding(horizontal = 16.dp)
-//                )
-//                Spacer(modifier = Modifier.Companion.height(16.dp))
-//
-//                //Кнопки для 'База вопросов' & 'Коллекции'
-//                content.items.forEach { item ->
-//                    QuestionCard(
-//                        title = item.title.getString(context),
-//                        description = item.description.getString(context),
-//                        imageRes = item.imageRes,
-//                        onClick = {
-//                            viewModel.onEvent(QuestionMainScreenEvent.OnItemClick(item))
-//                        }
-//                    )
-//                }
-//            }
-//        }
-//    }
-//}
 
 @StaticPreview
 @Composable
