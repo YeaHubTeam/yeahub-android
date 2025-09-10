@@ -52,4 +52,7 @@ object FeatureRoute {
     object DetailQuestionFeature {
         const val FEATURE_NAME = "detail_question"
     }
+    object CollectionsFeature {
+        const val FEATURE_NAME = "collections"
+    }
 }

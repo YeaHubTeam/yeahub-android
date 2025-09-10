@@ -1,7 +1,8 @@
-package com.example.impl
+package ru.yeahub.questions_or_collections.impl.screen
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
+import com.yeahub.questions_or_collections.R
 import ru.yeahub.core_ui.component.CollectionsOrQuestionContent
 import ru.yeahub.core_ui.component.QuestionState
 import ru.yeahub.core_ui.example.staticPreview.StaticPreview

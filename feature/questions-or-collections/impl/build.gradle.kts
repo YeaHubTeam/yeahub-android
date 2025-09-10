@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.impl"
+    namespace = "com.yeahub.questions_or_collections"
     compileSdk = 35
 
     defaultConfig {
@@ -35,8 +35,6 @@ android {
 dependencies {
 
     implementation(project(":core:navigation-api"))
-    implementation(project(":core:network-api"))
-    implementation(project(":feature:public-questions:api"))
     implementation(project(":core:utils"))
     implementation(project(":core:ui"))
 
@@ -58,9 +56,15 @@ dependencies {
     // Timber
     implementation(libs.timber)
     implementation(libs.androidx.ui.tooling.preview.android)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.material)
 
     testImplementation(libs.junit.jupiter)
     testImplementation(platform(libs.junit.bom))
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
     testRuntimeOnly(libs.junit.platform.launcher)
     implementation(libs.androidx.junit.ktx)
     testImplementation(libs.mockk)
