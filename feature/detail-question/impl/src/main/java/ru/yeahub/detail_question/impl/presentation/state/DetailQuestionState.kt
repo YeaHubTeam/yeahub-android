@@ -15,13 +15,13 @@ sealed class DetailQuestionState {
             val status: String?,
             val rate: Int?,
             val complexity: Long?,
-            val createdById: String,
+            val createdById: String?,
             val updatedById: String?,
             val questionSpecializations: List<NestedSpecializationVO>,
             val questionSkills: List<NestedSkillVO>,
             val createdAt: String,
             val updatedAt: String,
-            val createdBy: NestedUserReferenceVO,
+            val createdBy: NestedUserReferenceVO?,
             val updatedBy: NestedUserReferenceVO?,
             val guru: GuruVO
         )
