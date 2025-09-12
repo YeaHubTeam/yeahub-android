@@ -1,24 +1,19 @@
 package ru.yeahub.selection_specializations.impl
 
-import SpecializationsScreenApi
-import SpecializationsScreenResult
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
-import ru.yeahub.core_ui.component.TopAppBarWithBottomBorder
+import org.koin.androidx.compose.koinViewModel
 import ru.yeahub.core_utils.common.TextOrResource
 import ru.yeahub.navigation_api.FeatureApi
 import ru.yeahub.navigation_api.FeatureRoute
 import ru.yeahub.navigation_api.NavigationPathManager
+import ru.yeahub.selection_specializations.impl.ui.SpecializationScreen
+import ru.yeahub.selection_specializations.impl.ui.SpecializationsScreenResult
 import timber.log.Timber
 
-class SpecializationsFeatureImpl(
-    val specializationScreen: SpecializationsScreenApi
-) : FeatureApi {
+class SpecializationsFeatureImpl : FeatureApi {
     override fun getFeatureName(): String =
         FeatureRoute.SpecializationsFeature.FEATURE_NAME
 
@@ -44,42 +39,29 @@ class SpecializationsFeatureImpl(
 
         navGraphBuilder.composable(currentHomeRoute) { backStackEntry ->
 
-            Scaffold(
-                topBar = {
-                    TopAppBarWithBottomBorder(
-                        title = TextOrResource.Resource(R.string.selection_specializations_top_bar_title),
-                        onBackClick = { SpecializationsScreenResult.NavigateBack }
-                    )
-                }
-            ) { paddingValues ->
-                Box(
-                    modifier = Modifier.padding(paddingValues)
-                ) {
-                    //связываем коллбеки из конструктора экрана с логикой навигации
-                    specializationScreen.SpecializationScreen(
-                        headerText = TextOrResource.Resource(R.string.selection_specializations_list_header),
-                        parentRoute = pathManager.getParentPath(),
-                        onResult = { result ->
-                            when (result) {
-                                SpecializationsScreenResult.NavigateBack -> {
-                                    handleBackNavigation(
-                                        pathManager = pathManager,
-                                        navController = navController
-                                    )
-                                }
+            SpecializationScreen(
+                headerText = TextOrResource.Resource(R.string.selection_specializations_list_header),
+                parentRoute = pathManager.getParentPath(),
+                onResult = { result ->
+                    when (result) {
+                        SpecializationsScreenResult.NavigateBack -> {
+                            handleBackNavigation(
+                                pathManager = pathManager,
+                                navController = navController
+                            )
+                        }
 
-                                is SpecializationsScreenResult.SpecializationClick -> {
-                                    handleSpecializationsNavigation(
-                                        pathManager = pathManager,
-                                        navController = navController,
-                                        specId = result.specId
-                                    )
-                                }
-                            }
-                        },
-                    )
-                }
-            }
+                        is SpecializationsScreenResult.SpecializationClick -> {
+                            handleSpecializationsNavigation(
+                                pathManager = pathManager,
+                                navController = navController,
+                                specId = result.specId
+                            )
+                        }
+                    }
+                },
+                specializationViewModel = koinViewModel()
+            )
         }
     }
 

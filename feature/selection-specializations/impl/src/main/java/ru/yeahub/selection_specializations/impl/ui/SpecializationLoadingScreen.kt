@@ -11,8 +11,8 @@ import com.valentinilk.shimmer.shimmer
 import ru.yeahub.core_ui.component.SpecializationButton
 import ru.yeahub.core_utils.common.TextOrResource
 import ru.yeahub.selection_specializations.impl.R
-import ru.yeahub.selection_specializations.impl.ui.SpecializationScreen.Companion.FIGMA_HORIZONTAL_PADDING
-import ru.yeahub.selection_specializations.impl.ui.SpecializationScreen.Companion.FIGMA_VERTICAL_TITLE_PADDING
+//import ru.yeahub.selection_specializations.impl.ui.SpecializationScreen.Companion.FIGMA_HORIZONTAL_PADDING
+//import ru.yeahub.selection_specializations.impl.ui.SpecializationScreen.Companion.FIGMA_VERTICAL_TITLE_PADDING
 
 @Composable
 fun SpecializationsLoadingScreen(
