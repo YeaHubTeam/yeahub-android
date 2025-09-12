@@ -83,11 +83,11 @@ import java.util.concurrent.TimeoutException
 @Composable
 fun PublicCollectionsScreen(
     onResult: (PublicCollectionsScreenResult) -> Unit,
-    specializationsId: Long,
+    specializationId: Long,
     header: String
 ) {
     val viewModel: PublicCollectionsViewModel = koinViewModel(
-        parameters = { parametersOf(specializationsId, header) }
+        parameters = { parametersOf(specializationId, header) }
     )
 
     val state by viewModel.screenState.collectAsStateWithLifecycle()
