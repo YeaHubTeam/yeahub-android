@@ -29,12 +29,40 @@ private val gurus: List<Guru> =
             photoUrl = "https://e5e684b1-4a6a-4be5-b7ee-b2b678239d61.selstorage.ru/gurus/рома.jpg",
             youtubeUrl = "https://www.youtube.com/watch?v=VdN4PKgnzRg&ab/_channel=RomanIsakov",
             telegramUrl = "https://t.me/isakov/_ios"
-        )
+        ),
+        Guru(
+            name = "Maxim Lukyanov",
+            title = "Golang Guru",
+            specializationId = 23,
+            photoUrl = "https://e5e684b1-4a6a-4be5-b7ee-b2b678239d61.selstorage.ru/gurus/Автостоп.jpg",
+            youtubeUrl = "https://www.youtube.com/@Avtostopom_po_Go",
+            telegramUrl = "https://t.me/Avtostopom_po_G0"
+        ),
+        Guru(
+            name = "Ziyaev Ed",
+            title = "QA Manual Guru",
+            specializationId = 29,
+            photoUrl = "https://e5e684b1-4a6a-4be5-b7ee-b2b678239d61.selstorage.ru/gurus/%D1%8D%D0%B41.jpg",
+            youtubeUrl = "https://www.youtube.com/@youtubeeda",
+            telegramUrl = "https://t.me/twitereda"
+        ),
+        Guru(
+            name = "Demetra",
+            title = "Node.js Guru",
+            specializationId = 21,
+            photoUrl = "https://e5e684b1-4a6a-4be5-b7ee-b2b678239d61.selstorage.ru/" +
+                    "gurus/%D0%B4%D0%B5%D0%BC%D0%B5%D1%82%D1%80%D0%B0.jpg",
+            youtubeUrl = "",
+            telegramUrl = "https://t.me/DemetraIT"
+        ),
     )
 
 fun getGuru(specializations: List<NestedSpecializationResponse>): Guru {
     val specializationIds = specializations.map { it.id }
-    return gurus.first { guru ->
+    val foundGuru = gurus.firstOrNull { guru ->
         specializationIds.contains(guru.specializationId)
     }
+    return foundGuru ?: gurus.first { it.specializationId == ID_GURU_ANTON }
 }
+
+const val ID_GURU_ANTON = 27L
