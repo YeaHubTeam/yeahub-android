@@ -16,6 +16,9 @@ import androidx.compose.ui.unit.dp
 import com.valentinilk.shimmer.shimmer
 import ru.yeahub.core_ui.theme.Theme
 
+private const val TITLE_WIDTH_FRACTION = 0.6f
+private const val DESCRIPTION_WIDTH_FRACTION = 0.9f
+
 @Composable
 fun QuestionsMainScreenLoading() {
     Column(
@@ -27,7 +30,7 @@ fun QuestionsMainScreenLoading() {
         // Заголовок
         Box(
             modifier = Modifier
-                .fillMaxWidth(0.6f)
+                .fillMaxWidth(TITLE_WIDTH_FRACTION)
                 .height(24.dp)
                 .clip(RoundedCornerShape(8.dp))
                 .background(Theme.colors.black100)
@@ -37,7 +40,7 @@ fun QuestionsMainScreenLoading() {
         // Описание
         Box(
             modifier = Modifier
-                .fillMaxWidth(0.9f)
+                .fillMaxWidth(DESCRIPTION_WIDTH_FRACTION)
                 .height(16.dp)
                 .clip(RoundedCornerShape(8.dp))
                 .background(Theme.colors.black100)
