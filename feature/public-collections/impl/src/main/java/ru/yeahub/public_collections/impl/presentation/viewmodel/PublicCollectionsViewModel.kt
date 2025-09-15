@@ -77,7 +77,9 @@ class PublicCollectionsViewModel(
             PublicCollectionsScreenEvent.Refresh -> refresh()
         }
     }
-
+    init {
+        loadPage()
+    }
     private fun loadPage() {
         viewModelScopeSafe.launch(Dispatchers.IO) {
             pager.load()

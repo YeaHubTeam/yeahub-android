@@ -54,6 +54,7 @@ fun CollectionCard(
                     model = imageUrl,
                     contentDescription = null,
                     placeholder = painterResource(R.drawable.surikatik),
+                    error = painterResource(R.drawable.surikatik),
                     modifier = Modifier
                         .size(40.dp)
                         .clip(RoundedCornerShape(4.dp)),
