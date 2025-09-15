@@ -60,9 +60,11 @@ class PublicCollectionsFeatureImpl : FeatureApi {
         }
     }
 
-    private fun handleQuestionsNavigation( pathManager: NavigationPathManager,
-                                           navController: NavHostController,
-                                           collectionId: String) {
+    private fun handleQuestionsNavigation(
+        pathManager: NavigationPathManager,
+        navController: NavHostController,
+        collectionId: String
+    ) {
         pathManager.setCurrentPath(getFeatureName())
 
         val questionsPath = pathManager.createParametrizedPath(
@@ -100,7 +102,6 @@ class PublicCollectionsFeatureImpl : FeatureApi {
         }
     }
 }
-
 
 const val SPECIALIZATION_ID = "specializationId"
 const val HEADER = "header"
