@@ -40,7 +40,7 @@ class DetailQuestionScreenMapper {
                 },
                 createdAt = publicQuestionEntity.createdAt,
                 updatedAt = publicQuestionEntity.updatedAt,
-                createdBy = getNestedUserReferenceToVO(publicQuestionEntity.createdBy),
+                createdBy = publicQuestionEntity.createdBy?.let { getNestedUserReferenceToVO(it) },
                 updatedBy = publicQuestionEntity.updatedBy?.let { getNestedUserReferenceToVO(it) },
                 guru = getGuruToVO(publicQuestionEntity.guru)
             )
