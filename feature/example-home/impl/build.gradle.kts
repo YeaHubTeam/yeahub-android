@@ -41,6 +41,7 @@ android {
 
 dependencies {
     implementation(project(":core:ui"))
+    implementation(project(":core:utils"))
     implementation(project(":core:navigation-api"))
     implementation(project(":feature:example-home:api"))
 
@@ -57,6 +58,7 @@ dependencies {
     implementation(libs.koin.core)
     implementation(libs.koin.android)
     implementation(libs.koin.compose)
+    implementation(libs.compose.shimmer)
 
     // Timber
     implementation(libs.timber)
