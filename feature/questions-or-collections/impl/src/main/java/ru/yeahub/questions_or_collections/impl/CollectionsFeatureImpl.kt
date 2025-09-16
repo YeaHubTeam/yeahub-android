@@ -21,34 +21,26 @@ class CollectionsFeatureImpl : FeatureApi {
         pathManager: NavigationPathManager,
         modifier: Modifier
     ) {
-        val collectionsRoute = pathManager.createParametrizedPath(getFeatureName())
+        val currentPath = pathManager.getCurrentPath()
 
-        navGraphBuilder.composable(route = collectionsRoute) { backStackEntry ->
+        val collectionsRoute = if (currentPath.isEmpty()) {
+            getFeatureName()
+        } else {
+            pathManager.createChildPath(getFeatureName())
+        }
+
+        navGraphBuilder.composable(route = collectionsRoute) {
             CollectionsScreen {
-                handleBackNavigation(
-                    pathManager,
-                    navController
-                )
+                TODO("Next screen Navigation")
+                handleNavigation(pathManager, navController)
             }
         }
     }
 
-    private fun handleBackNavigation(
+    private fun handleNavigation(
         pathManager: NavigationPathManager,
-        navController: NavHostController
+        navController: NavHostController,
     ) {
-        val parentPath = pathManager.getParentPath()
-
-        pathManager.setCurrentPath(parentPath)
-
-        if (parentPath.isEmpty()) {
-            navController.navigateUp()
-        } else {
-            navController.navigate(parentPath) {
-                popUpTo(parentPath) {
-                    inclusive = true
-                }
-            }
-        }
+        TODO()
     }
 }

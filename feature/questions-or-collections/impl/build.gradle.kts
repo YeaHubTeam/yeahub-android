@@ -1,10 +1,11 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.compose)
 }
 
 android {
-    namespace = "com.yeahub.questions_or_collections"
+    namespace = "com.yeahub.questions_or_collections.impl"
     compileSdk = 35
 
     defaultConfig {
@@ -35,6 +36,7 @@ android {
 dependencies {
 
     implementation(project(":core:navigation-api"))
+    implementation(project(":feature:questions-or-collections:api"))
     implementation(project(":core:utils"))
     implementation(project(":core:ui"))
 

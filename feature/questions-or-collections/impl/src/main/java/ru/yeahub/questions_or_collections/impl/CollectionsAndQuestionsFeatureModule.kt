@@ -4,6 +4,7 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import ru.yeahub.navigation_api.FeatureApi
 
-val collectionsFeatureModule = module {
+val collectionsAndQuestionsFeatureModule = module {
     single { CollectionsFeatureImpl() } bind FeatureApi::class
+    single { QuestionsFeatureImpl() } bind FeatureApi::class
 }

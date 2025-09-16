@@ -7,11 +7,10 @@ import ru.yeahub.detail_question.impl.di.detailQuestionFeatureModule
 import ru.yeahub.example_details.impl.detailsFeatureModule
 import ru.yeahub.example_home.impl.homeFeatureModule
 import ru.yeahub.example_profile.impl.profileFeatureModule
-import ru.yeahub.example_questions.impl.di.questionsFeatureModule
 import ru.yeahub.navigation_impl.navigationPathModule
 import ru.yeahub.network_impl.networkModule
 import ru.yeahub.public_questions.impl.data.di.questionsModule
-import ru.yeahub.questions_or_collections.impl.collectionsFeatureModule
+import ru.yeahub.questions_or_collections.impl.collectionsAndQuestionsFeatureModule
 import timber.log.Timber
 
 /**
@@ -47,10 +46,9 @@ class Application : Application() {
                 questionsModule,
                 homeFeatureModule,
                 profileFeatureModule,
-                questionsFeatureModule,
                 detailsFeatureModule,
                 detailQuestionFeatureModule,
-                collectionsFeatureModule
+                collectionsAndQuestionsFeatureModule
             )
         }
         // проверка, что модули загружены
