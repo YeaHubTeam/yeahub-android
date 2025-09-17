@@ -12,7 +12,19 @@ import ru.yeahub.navigation_api.NavigationPathManager
 import ru.yeahub.public_questions.impl.presentation.intents.PublicQuestionsResult
 import ru.yeahub.public_questions.impl.presentation.screen.PublicQuestionsScreen
 import timber.log.Timber
+import kotlin.text.append
 
+private const val TITTLE_TOP_APP_BAR = "tittle"
+private const val SKILL_FILTER = "skillFilter"
+private const val ID_COLLECTION = "idCollection"
+
+/**
+ * Передача параметра в feature publisc-questions:
+ * - публичная страница вопросов
+ * @public_questions/"tittleTopAppBar + ?skillFilter="Категория вопроса"
+ * - коллекции
+ * @public_questions/tittleTopAppBar + ?idCollection="Категория вопроса"
+ */
 class PublicQuestionsFeatureImpl : FeatureApi {
     override fun getFeatureName(): String = FeatureRoute.PublicQuestionsFeature.FEATURE_NAME
 
@@ -26,20 +38,39 @@ class PublicQuestionsFeatureImpl : FeatureApi {
         pathManager: NavigationPathManager,
         modifier: Modifier
     ) {
-        val featurePath = pathManager.createParametrizedPath(
-            getFeatureName(),
-            SKILL_FILTER
-        )
+        val routePattern = buildString {
+            append(getFeatureName())
+            append("/{$TITTLE_TOP_APP_BAR}")
+            append("?$SKILL_FILTER={$SKILL_FILTER}")
+            append("?$ID_COLLECTION={$ID_COLLECTION}")
+        }
 
         navGraphBuilder.composable(
-            route = featurePath,
+            route = routePattern,
             arguments = listOf(
-                navArgument(SKILL_FILTER) { type = NavType.StringType }
+                navArgument(SKILL_FILTER) {
+                    type = NavType.StringType
+                    nullable = true
+                },
+                navArgument(TITTLE_TOP_APP_BAR) {
+                    type = NavType.StringType
+                },
+                navArgument(ID_COLLECTION) {
+                    type = NavType.StringType
+                    nullable = true
+                }
             )
         ) { backStackEntry ->
             val skillFilter = backStackEntry
                 .arguments
-                ?.getString(SKILL_FILTER) ?: ""
+                ?.getString(SKILL_FILTER) ?: "All"
+            val tittleTopAppBar = backStackEntry
+                .arguments
+                ?.getString(TITTLE_TOP_APP_BAR) ?: "All"
+            val idCollection = backStackEntry
+                .arguments
+                ?.getString(ID_COLLECTION)?.toInt()
+
             PublicQuestionsScreen(
                 onResult = { result ->
                     when (result) {
@@ -59,7 +90,9 @@ class PublicQuestionsFeatureImpl : FeatureApi {
                     }
                 },
                 skillFilter = skillFilter,
-                heading = skillFilter
+                tittleTopAppBar = tittleTopAppBar,
+                idCollection = idCollection,
+                skills = listOf()
             )
         }
     }
@@ -83,5 +116,3 @@ class PublicQuestionsFeatureImpl : FeatureApi {
         }
     }
 }
-
-private const val SKILL_FILTER = "skillFilter"
