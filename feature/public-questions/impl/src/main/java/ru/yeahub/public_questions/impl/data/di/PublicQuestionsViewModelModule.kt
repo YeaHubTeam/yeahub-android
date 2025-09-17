@@ -5,12 +5,13 @@ import org.koin.dsl.module
 import ru.yeahub.public_questions.impl.presentation.viewmodel.PublicQuestionsViewModel
 
 val questionsViewModelModule = module {
-    viewModel { (skills: List<String>?, skillFilter: String?) ->
+    viewModel { (skills: List<String>?, skillFilter: String?, idCollection: Int?) ->
         PublicQuestionsViewModel(
             getPublicQuestionsUseCase = get(),
             mapper = get(),
             skills = skills,
-            skillFilter = skillFilter
+            skillFilter = skillFilter,
+            idCollection = idCollection,
         )
     }
 }

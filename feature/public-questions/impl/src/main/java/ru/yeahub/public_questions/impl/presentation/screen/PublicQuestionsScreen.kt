@@ -73,13 +73,14 @@ import java.util.concurrent.TimeoutException
 @Composable
 fun PublicQuestionsScreen(
     onResult: (PublicQuestionsResult) -> Unit,
-    skills: List<String>? = null,
-    skillFilter: String? = null,
-    heading: String,
+    tittleTopAppBar: String,
+    idCollection: Int?,
+    skills: List<String>?,
+    skillFilter: String = "all",
     lazyListState: LazyListState = rememberLazyListState()
 ) {
     val viewModel: PublicQuestionsViewModel = koinViewModel(
-        parameters = { parametersOf(skills, skillFilter) }
+        parameters = { parametersOf(skills, skillFilter, idCollection) }
     )
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
 
@@ -114,7 +115,7 @@ fun PublicQuestionsScreen(
     Scaffold(
         topBar = {
             TopAppBarWithBottomBorder(
-                title = heading,
+                title = tittleTopAppBar,
                 onBackClick = { viewModel.onEvent(PublicQuestionsScreenEvent.OnBackClick) }
             )
         }
@@ -124,7 +125,7 @@ fun PublicQuestionsScreen(
             screenState = screenState,
             listState = lazyListState,
             onRetryLoadInitial = { viewModel.onEvent(PublicQuestionsScreenEvent.LoadInitial) },
-            title = heading,
+            nameQuestions = skillFilter,
             onMoreCLick = { id ->
                 viewModel.onEvent(
                     PublicQuestionsScreenEvent.OnMoreClick(
@@ -211,7 +212,7 @@ fun TopAppBarWithBottomBorder(
 private fun PublicQuestionsContent(
     modifier: Modifier = Modifier,
     padding: PaddingValues,
-    title: String,
+    nameQuestions: String,
     onMoreCLick: (id: String) -> Unit,
     screenState: PublicQuestionsScreenState,
     listState: LazyListState,
@@ -224,7 +225,7 @@ private fun PublicQuestionsContent(
             is PublicQuestionsScreenState.Initial, PublicQuestionsScreenState.Loading -> {
                 FullScreenPlaceholders(
                     listState = listState,
-                    nameQuestion = title
+                    nameQuestion = nameQuestions
                 )
             }
 
@@ -243,7 +244,7 @@ private fun PublicQuestionsContent(
                         isLoadingNextPage = false,
                         paginationError = screenState.throwable,
                         onRetryPagination = { onRetryLoadInitial() },
-                        nameQuestion = title,
+                        nameQuestion = nameQuestions,
                         onMoreCLick = { id -> onMoreCLick(id) }
                     )
                 }
@@ -263,7 +264,7 @@ private fun PublicQuestionsContent(
                         isLoadingNextPage = screenState.isLoadingNextPage,
                         paginationError = null,
                         onRetryPagination = { onRetryLoadInitial() },
-                        nameQuestion = title,
+                        nameQuestion = nameQuestions,
                         onMoreCLick = { id -> onMoreCLick(id) },
                     )
                 }
@@ -329,7 +330,9 @@ private fun QuestionsListWithFooter(
 ) {
     LazyColumn(
         state = listState,
-        modifier = Modifier.fillMaxSize().padding(padding)
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(padding)
     ) {
         item {
             Box(modifier = Modifier.padding(start = 15.dp, bottom = 20.dp, top = 20.dp)) {
