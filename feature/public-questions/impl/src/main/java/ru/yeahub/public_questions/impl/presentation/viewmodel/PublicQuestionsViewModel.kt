@@ -26,7 +26,8 @@ class PublicQuestionsViewModel(
     private val getPublicQuestionsUseCase: GetPublicQuestionsUseCase,
     private val mapper: PublicQuestionDomainToPresentationMapper,
     private val skills: List<String>?,
-    private val skillFilter: String?
+    private val skillFilter: String?,
+    private val idCollection: Int?
 ) : BaseViewModel() {
     private val loader =
         object : YeaHubPagerLoader<PublicQuestionsModel, RequestPublicQuestionsData> {
@@ -48,7 +49,8 @@ class PublicQuestionsViewModel(
             page = 1,
             limit = 10,
             skills = skills,
-            skillFilter = skillFilter
+            skillFilter = skillFilter,
+            idCollection = idCollection,
         ),
         data = { it.data },
         total = { it.total },

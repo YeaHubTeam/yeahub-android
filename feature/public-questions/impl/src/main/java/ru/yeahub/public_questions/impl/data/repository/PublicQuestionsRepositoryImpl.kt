@@ -14,14 +14,16 @@ class PublicQuestionsRepositoryImpl(
         page: Int,
         limit: Int,
         skills: List<String>?,
-        skillFilter: String?
+        skillFilter: String?,
+        idCollection: Int?
     ): PublicQuestionsModel {
         val response = remoteDataSource.requestPublicQuestionsApi(
-                page = page,
-                limit = limit,
-                skills = skills,
-                skillFilterMode = skillFilter
-            )
+            page = page,
+            limit = limit,
+            skills = skills,
+            skillFilterMode = skillFilter,
+            idCollection = idCollection
+        )
         return mapper.mapGetPublicQuestionsResponseToDomain(response)
     }
 }
