@@ -9,6 +9,7 @@ import ru.yeahub.example_home.impl.data.di.questionsMainFeatureModule
 import ru.yeahub.example_profile.impl.profileFeatureModule
 import ru.yeahub.navigation_impl.navigationPathModule
 import ru.yeahub.network_impl.networkModule
+import ru.yeahub.public_collections.impl.di.CollectionsFeatureModule
 import ru.yeahub.public_questions.impl.data.di.questionsModule
 import ru.yeahub.questions_or_collections.impl.collectionsAndQuestionsFeatureModule
 import timber.log.Timber
@@ -47,6 +48,8 @@ class Application : Application() {
                 profileFeatureModule,
                 questionsMainFeatureModule,
                 detailsFeatureModule,
+                detailQuestionFeatureModule,
+                CollectionsFeatureModule,
                 detailQuestionFeatureModule,
                 collectionsAndQuestionsFeatureModule
             )

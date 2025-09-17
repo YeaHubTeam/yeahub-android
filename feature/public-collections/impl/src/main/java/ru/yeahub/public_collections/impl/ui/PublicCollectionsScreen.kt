@@ -83,11 +83,11 @@ import java.util.concurrent.TimeoutException
 @Composable
 fun PublicCollectionsScreen(
     onResult: (PublicCollectionsScreenResult) -> Unit,
-    specializationsId: Long,
+    specializationId: Long,
     header: String
 ) {
     val viewModel: PublicCollectionsViewModel = koinViewModel(
-        parameters = { parametersOf(specializationsId, header) }
+        parameters = { parametersOf(specializationId, header) }
     )
 
     val state by viewModel.screenState.collectAsStateWithLifecycle()
@@ -165,7 +165,6 @@ fun ScreenUI(
                         modifier = Modifier.padding(innerPadding),
                         listState = listState,
                         collections = state.collectionPublicCollectionVOList,
-                        isEndReached = state.isEndReached,
                         isLoadingNextPage = state.isLoadingNextPage,
                         paginationError = null,
                         onRetryPagination = { onEvent(PublicCollectionsScreenEvent.Refresh) },
@@ -194,7 +193,6 @@ fun ScreenUI(
                         modifier = Modifier.padding(innerPadding),
                         listState = listState,
                         collections = state.currentList,
-                        isEndReached = true,
                         isLoadingNextPage = false,
                         paginationError = state.throwable,
                         onRetryPagination = { onEvent(PublicCollectionsScreenEvent.Refresh) },
@@ -217,7 +215,6 @@ fun CollectionsListWithLoadMore(
     modifier: Modifier = Modifier,
     listState: LazyListState,
     collections: List<PublicCollectionsScreenState.Loaded.PublicCollectionVO>,
-    isEndReached: Boolean,
     isLoadingNextPage: Boolean,
     paginationError: Throwable?,
     onClickItem: (id: Int) -> Unit,
@@ -257,7 +254,6 @@ fun CollectionsListWithLoadMore(
             item {
                 LoadMoreHandler(
                     isLoading = isLoadingNextPage,
-                    isEndReached = isEndReached,
                     error = paginationError,
                     onRetry = onRetryPagination
                 )
@@ -270,7 +266,6 @@ fun CollectionsListWithLoadMore(
 fun LoadMoreHandler(
     modifier: Modifier = Modifier,
     isLoading: Boolean,
-    isEndReached: Boolean,
     error: Throwable?,
     onRetry: () -> Unit
 ) {
@@ -285,7 +280,6 @@ fun LoadMoreHandler(
             isLoading -> {
                 CircularProgressIndicator()
             }
-
             error != null -> {
                 val errorMessage =
                     getReadableErrorMessage(context = context, throwable = error)
@@ -304,11 +298,6 @@ fun LoadMoreHandler(
                     }
                 }
             }
-
-            isEndReached -> {
-                Text(stringResource(id = R.string.error_text))
-            }
-
             else -> {
                 Spacer(modifier = Modifier.height(0.dp))
             }
