@@ -15,7 +15,7 @@ sealed interface PublicCollectionsScreenEvent {
 
     /** Клик по карточке коллекции(подробнее) */
 
-    data class OnQuestionsListClick(val collectionId: Int) : PublicCollectionsScreenEvent
+    data class OnQuestionsListClick(val collectionId: Int, val title: String) : PublicCollectionsScreenEvent
 
     /** Клик назад */
 

@@ -168,10 +168,11 @@ fun ScreenUI(
                         isLoadingNextPage = state.isLoadingNextPage,
                         paginationError = null,
                         onRetryPagination = { onEvent(PublicCollectionsScreenEvent.Refresh) },
-                        onClickItem = {
+                        onClickItem = {  id, title ->
                             onEvent(
                                 PublicCollectionsScreenEvent.OnQuestionsListClick(
-                                    it
+                                    id,
+                                    title
                                 )
                             )
                         }
@@ -196,10 +197,11 @@ fun ScreenUI(
                         isLoadingNextPage = false,
                         paginationError = state.throwable,
                         onRetryPagination = { onEvent(PublicCollectionsScreenEvent.Refresh) },
-                        onClickItem = {
+                        onClickItem = {  id, title ->
                             onEvent(
                                 PublicCollectionsScreenEvent.OnQuestionsListClick(
-                                    it
+                                    id,
+                                    title
                                 )
                             )
                         }
@@ -217,7 +219,7 @@ fun CollectionsListWithLoadMore(
     collections: List<PublicCollectionsScreenState.Loaded.PublicCollectionVO>,
     isLoadingNextPage: Boolean,
     paginationError: Throwable?,
-    onClickItem: (id: Int) -> Unit,
+    onClickItem: (id: Int, title: String) -> Unit,
     onRetryPagination: () -> Unit,
 ) {
     Column(
@@ -247,7 +249,7 @@ fun CollectionsListWithLoadMore(
                         descriptionText = collection.descriptionText,
                         imageUrl = collection.imageUrl,
                         questionsCount = collection.questionsCount,
-                        onCollectionClick = { onClickItem(collection.id) }
+                        onCollectionClick = { onClickItem(collection.id, collection.collectionTitle) }
                     )
                 }
             }
@@ -338,7 +340,7 @@ fun HandleCommand(
                     )
 
                     is PublicCollectionsScreenCommand.OnQuestionsListClick -> onResult(
-                        PublicCollectionsScreenResult.NavigateToQuestions(command.collectionId)
+                        PublicCollectionsScreenResult.NavigateToQuestions(command.collectionId, command.title)
                     )
                 }
             }

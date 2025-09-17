@@ -73,13 +73,18 @@ class PublicCollectionsViewModel(
             PublicCollectionsScreenEvent.LoadInitial -> loadPage()
             PublicCollectionsScreenEvent.LoadNextPage -> loadPage()
             PublicCollectionsScreenEvent.OnBackClick -> onBackClick()
-            is PublicCollectionsScreenEvent.OnQuestionsListClick -> OnQuestionsListClick(event.collectionId)
+            is PublicCollectionsScreenEvent.OnQuestionsListClick -> onQuestionsListClick(
+                event.collectionId,
+                event.title
+            )
             PublicCollectionsScreenEvent.Refresh -> refresh()
         }
     }
+
     init {
         loadPage()
     }
+
     private fun loadPage() {
         viewModelScopeSafe.launch(Dispatchers.IO) {
             pager.load()
@@ -99,9 +104,9 @@ class PublicCollectionsViewModel(
         }
     }
 
-    private fun OnQuestionsListClick(id: Int) {
+    private fun onQuestionsListClick(id: Int, title: String) {
         viewModelScopeSafe.launch(Dispatchers.IO) {
-            _commands.emit(PublicCollectionsScreenCommand.OnQuestionsListClick(id))
+            _commands.emit(PublicCollectionsScreenCommand.OnQuestionsListClick(id, title))
         }
     }
 }

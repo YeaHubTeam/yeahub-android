@@ -50,7 +50,8 @@ class PublicCollectionsFeatureImpl : FeatureApi {
                         is PublicCollectionsScreenResult.NavigateToQuestions -> handleQuestionsNavigation(
                             pathManager,
                             navController,
-                            result.collectionId.toString()
+                            result.collectionId.toString(),
+                            result.title
                         )
                     }
                 },
@@ -63,24 +64,17 @@ class PublicCollectionsFeatureImpl : FeatureApi {
     private fun handleQuestionsNavigation(
         pathManager: NavigationPathManager,
         navController: NavHostController,
-        collectionId: String
+        collectionId: String,
+        title: String
     ) {
-        pathManager.setCurrentPath(getFeatureName())
+        val questionsRoute =
+                getFeatureName() + "/" + FeatureRoute.PublicQuestionsFeature.FEATURE_NAME +
+                        "/" + title + "?idCollection="  + collectionId
 
-        val questionsPath = pathManager.createParametrizedPath(
-            featureName = "public_questions",
-            "collectionId"
-        )
+        Timber.d("PublicCollectionsFeatureImpl handleDetailsNavigation: Navigating to: $questionsRoute")
 
-        val concretePath = pathManager.createConcretePath(
-            questionsPath,
-            collectionId
-        )
-
-        Timber.d("PublicCollectionsFeatureImpl handleDetailsNavigation: Navigating to: $concretePath")
-
-        pathManager.setCurrentPath(concretePath)
-        navController.navigate(concretePath)
+        pathManager.setCurrentPath(questionsRoute)
+        navController.navigate(questionsRoute)
     }
 
     private fun handleBackNavigation(
