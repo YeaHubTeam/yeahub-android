@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -117,9 +118,9 @@ fun PublicQuestionsScreen(
                 onBackClick = { viewModel.onEvent(PublicQuestionsScreenEvent.OnBackClick) }
             )
         }
-    ) { innerPadding ->
+    ) { padding ->
         PublicQuestionsContent(
-            modifier = Modifier.padding(innerPadding),
+            padding = padding,
             screenState = screenState,
             listState = lazyListState,
             onRetryLoadInitial = { viewModel.onEvent(PublicQuestionsScreenEvent.LoadInitial) },
@@ -209,6 +210,7 @@ fun TopAppBarWithBottomBorder(
 @Composable
 private fun PublicQuestionsContent(
     modifier: Modifier = Modifier,
+    padding: PaddingValues,
     title: String,
     onMoreCLick: (id: String) -> Unit,
     screenState: PublicQuestionsScreenState,
@@ -234,6 +236,7 @@ private fun PublicQuestionsContent(
                     )
                 } else {
                     QuestionsListWithFooter(
+                        padding = padding,
                         listState = listState,
                         questions = screenState.questions,
                         isEndReached = true,
@@ -253,6 +256,7 @@ private fun PublicQuestionsContent(
                     EmptyState()
                 } else {
                     QuestionsListWithFooter(
+                        padding = padding,
                         listState = listState,
                         questions = screenState.questions,
                         isEndReached = screenState.isEndReached,
@@ -313,6 +317,7 @@ private fun FullScreenError(
 
 @Composable
 private fun QuestionsListWithFooter(
+    padding: PaddingValues,
     nameQuestion: String,
     listState: LazyListState,
     questions: List<PublicQuestionUiModel>,
@@ -324,7 +329,7 @@ private fun QuestionsListWithFooter(
 ) {
     LazyColumn(
         state = listState,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize().padding(padding)
     ) {
         item {
             Box(modifier = Modifier.padding(start = 15.dp, bottom = 20.dp, top = 20.dp)) {

@@ -11,12 +11,13 @@ import ru.yeahub.navigation_api.FeatureRoute
 import ru.yeahub.navigation_api.NavigationPathManager
 import ru.yeahub.public_questions.impl.presentation.intents.PublicQuestionsResult
 import ru.yeahub.public_questions.impl.presentation.screen.PublicQuestionsScreen
+import timber.log.Timber
 
 class PublicQuestionsFeatureImpl : FeatureApi {
     override fun getFeatureName(): String = FeatureRoute.PublicQuestionsFeature.FEATURE_NAME
 
     override fun isRootFeature(): Boolean {
-        return false
+        return true
     }
 
     override fun registerGraph(
@@ -27,25 +28,15 @@ class PublicQuestionsFeatureImpl : FeatureApi {
     ) {
         val featurePath = pathManager.createParametrizedPath(
             getFeatureName(),
-            SKILL_FILTER,
-            SKILLS,
-            HEADING
+            SKILL_FILTER
         )
 
         navGraphBuilder.composable(
             route = featurePath,
             arguments = listOf(
-                navArgument(SKILL_FILTER) { type = NavType.StringType },
-                navArgument(SKILLS) { type = NavType.StringType },
-                navArgument(HEADING) { type = NavType.StringType }
+                navArgument(SKILL_FILTER) { type = NavType.StringType }
             )
         ) { backStackEntry ->
-            val heading = backStackEntry
-                .arguments
-                ?.getString(HEADING) ?: ""
-            val skills = backStackEntry.arguments
-                ?.getString(SKILLS)
-                ?.split(",") ?: listOf()
             val skillFilter = backStackEntry
                 .arguments
                 ?.getString(SKILL_FILTER) ?: ""
@@ -58,17 +49,17 @@ class PublicQuestionsFeatureImpl : FeatureApi {
                         )
 
                         is PublicQuestionsResult.NavigateToDetail -> {
-                            val detailPath = pathManager.createParametrizedPath(
-                                FeatureRoute.DetailsFeature.FEATURE_NAME,
-                                result.id
-                            )
-                            navController.navigate(detailPath)
+                            val detailRout =
+                                getFeatureName() + "/" + FeatureRoute.DetailQuestionFeature
+                                    .FEATURE_NAME + "/" + result.id
+                            Timber.tag("Test")
+                                .d("PublicQuestionsFeatureImpl registerGraph: $detailRout")
+                            navController.navigate(detailRout)
                         }
                     }
                 },
-                skills = skills,
                 skillFilter = skillFilter,
-                heading = heading
+                heading = skillFilter
             )
         }
     }
@@ -94,5 +85,3 @@ class PublicQuestionsFeatureImpl : FeatureApi {
 }
 
 private const val SKILL_FILTER = "skillFilter"
-private const val SKILLS = "skills"
-private const val HEADING = "skills"
