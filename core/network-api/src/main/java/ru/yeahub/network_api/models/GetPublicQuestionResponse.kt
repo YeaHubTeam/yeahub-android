@@ -12,12 +12,12 @@ data class GetPublicQuestionResponse(
     val status: String?,
     val rate: Int?,
     val complexity: Long?,
-    val createdById: String,
+    val createdById: String?,
     val updatedById: String?,
     val questionSpecializations: List<NestedSpecializationResponse>,
     val questionSkills: List<NestedSkillResponse>,
     val createdAt: String,
     val updatedAt: String,
-    val createdBy: NestedUserReferenceDto,
+    val createdBy: NestedUserReferenceDto?,
     val updatedBy: NestedUserReferenceDto?
 )

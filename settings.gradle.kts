@@ -51,3 +51,7 @@ include(":feature:public-questions:api")
 include(":feature:public-questions:impl")
 include(":feature:public-collections:impl")
 include(":feature:public-collections:api")
+include(":feature:questions-or-collections")
+include(":feature:questions-or-collections:api")
+include(":feature:questions-or-collections:impl")
+
