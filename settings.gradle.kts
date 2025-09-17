@@ -49,3 +49,7 @@ include(":feature:example-details:impl")
 include(":feature:public-questions")
 include(":feature:public-questions:api")
 include(":feature:public-questions:impl")
+include(":feature:questions-or-collections")
+include(":feature:questions-or-collections:api")
+include(":feature:questions-or-collections:impl")
+
