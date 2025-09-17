@@ -10,12 +10,14 @@ class PublicQuestionsRemoteDataSource(private val apiService: NetworkProvider) :
         limit: Int,
         skills: List<String>?,
         skillFilterMode: String?,
+        idCollection: Int?
     ): GetPublicQuestionsResponse {
         return apiService.apiService.getQuestions(
             page = page,
             limit = limit,
             skills = skills,
             skillFilterMode = skillFilterMode,
+            collection = idCollection
         )
     }
 }
