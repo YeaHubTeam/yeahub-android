@@ -19,6 +19,7 @@ plugins {
     alias(libs.plugins.detekt) apply false
     alias(libs.plugins.ktlint) apply false
     alias(libs.plugins.kotlin.parcelize) apply false
+    alias(libs.plugins.jvm) apply false
 }
 
 //DETEKT part
