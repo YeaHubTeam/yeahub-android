@@ -29,7 +29,7 @@ class PublicQuestionsFeatureImpl : FeatureApi {
     override fun getFeatureName(): String = FeatureRoute.PublicQuestionsFeature.FEATURE_NAME
 
     override fun isRootFeature(): Boolean {
-        return true
+        return false
     }
 
     override fun registerGraph(
@@ -38,15 +38,18 @@ class PublicQuestionsFeatureImpl : FeatureApi {
         pathManager: NavigationPathManager,
         modifier: Modifier
     ) {
-        val routePattern = buildString {
-            append(getFeatureName())
-            append("/{$TITTLE_TOP_APP_BAR}")
+        val basePathWithParams = pathManager.createParametrizedPath(
+            featureName = getFeatureName(),
+            TITTLE_TOP_APP_BAR
+        )
+        val currentTabPrefix = pathManager.getCurrentPath()
+        val routePatternWithQuery = buildString {
+            append(basePathWithParams)
             append("?$SKILL_FILTER={$SKILL_FILTER}")
-            append("?$ID_COLLECTION={$ID_COLLECTION}")
+            append("&$ID_COLLECTION={$ID_COLLECTION}")
         }
-
         navGraphBuilder.composable(
-            route = routePattern,
+            route = routePatternWithQuery,
             arguments = listOf(
                 navArgument(SKILL_FILTER) {
                     type = NavType.StringType
@@ -69,8 +72,8 @@ class PublicQuestionsFeatureImpl : FeatureApi {
                 ?.getString(TITTLE_TOP_APP_BAR) ?: "All"
             val idCollection = backStackEntry
                 .arguments
-                ?.getString(ID_COLLECTION)?.toInt()
-
+                ?.getString(ID_COLLECTION)
+            val id = idCollection?.toIntOrNull()
             PublicQuestionsScreen(
                 onResult = { result ->
                     when (result) {
@@ -81,7 +84,7 @@ class PublicQuestionsFeatureImpl : FeatureApi {
 
                         is PublicQuestionsResult.NavigateToDetail -> {
                             val detailRout =
-                                getFeatureName() + "/" + FeatureRoute.DetailQuestionFeature
+                                "$currentTabPrefix/" + FeatureRoute.DetailQuestionFeature
                                     .FEATURE_NAME + "/" + result.id
                             Timber.tag("Test")
                                 .d("PublicQuestionsFeatureImpl registerGraph: $detailRout")
@@ -91,7 +94,7 @@ class PublicQuestionsFeatureImpl : FeatureApi {
                 },
                 skillFilter = skillFilter,
                 tittleTopAppBar = tittleTopAppBar,
-                idCollection = idCollection,
+                idCollection = id,
                 skills = listOf()
             )
         }

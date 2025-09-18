@@ -30,17 +30,15 @@ class CollectionsFeatureImpl : FeatureApi {
         }
 
         navGraphBuilder.composable(route = collectionsRoute) {
-            CollectionsScreen {
-                TODO("Next screen Navigation")
-                handleNavigation(pathManager, navController)
-            }
+            CollectionsScreen(
+                onNextClick = {
+                    val questions =
+                        "collections" + "/" + FeatureRoute
+                            .PublicCollectionsFeature
+                            .FEATURE_NAME + "/" + "11" + "/" + "react"
+                    navController.navigate(questions)
+                }
+            )
         }
-    }
-
-    private fun handleNavigation(
-        pathManager: NavigationPathManager,
-        navController: NavHostController,
-    ) {
-        TODO()
     }
 }
