@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="collections">Коллекции</string>
+    <string name="retry_text">Повторить</string>
+    <string name="error_text">Ошибка</string>
+    <string name="no_internet_text">Нет подключения к сети</string>
+    <string name="no_response_text">Время ожидания ответа истекло</string>
+</resources>
