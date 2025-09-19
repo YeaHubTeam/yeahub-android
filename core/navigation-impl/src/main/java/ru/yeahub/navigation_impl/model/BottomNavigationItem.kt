@@ -45,7 +45,7 @@ sealed class BottomNavigationItem(
     )
 
     data object Questions : BottomNavigationItem(
-        route = FeatureRoute.PublicQuestionsFeature.FEATURE_NAME + "/" + "All",
+        route = FeatureRoute.QuestionsFeature.FEATURE_NAME,
         label = "Вопросы",
         icon = R.drawable.icon_tab_collections
     )

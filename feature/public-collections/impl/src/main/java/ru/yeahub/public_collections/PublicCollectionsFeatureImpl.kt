@@ -68,12 +68,13 @@ class PublicCollectionsFeatureImpl : FeatureApi {
         title: String
     ) {
         val questionsRoute =
-                getFeatureName() + "/" + FeatureRoute.PublicQuestionsFeature.FEATURE_NAME +
-                        "/" + title + "?idCollection="  + collectionId
+            "collections" + "/" + FeatureRoute.PublicQuestionsFeature.FEATURE_NAME +
+                    "/" + title + "?idCollection=" + collectionId
 
-        Timber.d("PublicCollectionsFeatureImpl handleDetailsNavigation: Navigating to: $questionsRoute")
-
-        pathManager.setCurrentPath(questionsRoute)
+        Timber.d(
+            "PublicCollectionsFeatureImpl" +
+                    " handleDetailsNavigation: Navigating to: $questionsRoute"
+        )
         navController.navigate(questionsRoute)
     }
 
