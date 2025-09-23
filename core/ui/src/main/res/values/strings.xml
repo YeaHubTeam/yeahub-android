@@ -20,7 +20,8 @@
     <string name="base_questions_description">Большая база по 50+ технологиям: JavaScript, React, Python, SQL и др.</string>
     <string name="collections_title">Коллекции</string>
     <string name="collections_description">Востребованные вопросы с реальных технических собеседований</string>
-    <string name="unknown_error_screen_text">Что‑то пошло не так</string>
+    <string name="error_screen_text">Что‑то пошло не так</string>
     <string name="error_screen_title_text">УПС!</string>
     <string name="on_back_button_text">Назад</string>
+    <string name="unknown_error_screen_text">Не удалось загрузить данные</string>
 </resources>

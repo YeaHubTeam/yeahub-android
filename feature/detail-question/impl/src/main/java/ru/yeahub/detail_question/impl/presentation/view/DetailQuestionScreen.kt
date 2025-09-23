@@ -39,6 +39,7 @@ import ru.yeahub.core_ui.component.ErrorScreen
 import ru.yeahub.core_ui.example.dynamicPreview.StandardScreenSizePreview
 import ru.yeahub.core_ui.example.staticPreview.StaticPreview
 import ru.yeahub.core_ui.theme.Theme
+import ru.yeahub.core_utils.common.TextOrResource
 import ru.yeahub.detail_question.impl.R
 import ru.yeahub.detail_question.impl.domain.models.GuruEntity
 import ru.yeahub.detail_question.impl.domain.models.NestedSkillEntity
@@ -183,8 +184,7 @@ fun DetailQuestionScreenState(
     onBackClick: () -> Unit,
     onTelegramClick: () -> Unit,
     onYoutubeClick: () -> Unit,
-    padding: PaddingValues,
-    errorStrings: DetailQuestionStrings = rememberDetailQuestionStrings()
+    padding: PaddingValues
 ) {
     when (uiState) {
         is DetailQuestionState.Initial -> Unit
@@ -193,24 +193,24 @@ fun DetailQuestionScreenState(
             onTelegramClick,
             onYoutubeClick,
             padding,
-            errorStrings
+            TextOrResource.Resource(R.string.guru_description_text)
         )
 
         is DetailQuestionState.LoadingState -> LoadingScreen(padding)
         is DetailQuestionState.ErrorState -> ErrorScreen(
-            uiState.message,
+            error = uiState.message,
             onBack = { onBackClick() },
-            titleText = errorStrings.errorScreenTitleText,
-            backText = errorStrings.onBackButtonText,
-            unknownErrorText = errorStrings.unknownErrorScreenText
+            titleText = TextOrResource.Resource(R.string.error_screen_title_text),
+            backText = TextOrResource.Resource(R.string.on_back_button_text),
+            unknownErrorText = TextOrResource.Resource(R.string.unknown_error_screen_text),
+            errorText = TextOrResource.Resource(R.string.error_screen_text),
         )
     }
 }
 
 data class DetailQuestionScreenStateParams(
     val state: DetailQuestionState,
-    val padding: PaddingValues = PaddingValues(),
-    val errorStrings: DetailQuestionStrings = previewErrorScreenStrings()
+    val padding: PaddingValues = PaddingValues()
 )
 
 class ListOfDetailQuestionScreenStateProvider :
@@ -318,7 +318,6 @@ fun StatesDetailQuestionPreview(params: DetailQuestionScreenStateParams) {
     DetailQuestionScreenState(
         uiState = params.state,
         padding = params.padding,
-        errorStrings = params.errorStrings,
         onTelegramClick = {},
         onYoutubeClick = {},
         onBackClick = {}
@@ -433,10 +432,3 @@ fun DetailQuestionScreenDynamicPreview() {
         viewModel = mockViewModel,
     )
 }
-
-fun previewErrorScreenStrings() = DetailQuestionStrings(
-    errorScreenTitleText = "УПС!",
-    unknownErrorScreenText = "Что‑то пошло не так",
-    onBackButtonText = "Назад",
-    guruDescriptionText = "Guru – это эксперты YeaHub, которые помогают развивать комьюнити."
-)

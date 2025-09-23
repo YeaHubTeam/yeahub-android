@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
@@ -21,6 +22,7 @@ import ru.yeahub.core_ui.component.GuruCard
 import ru.yeahub.core_ui.component.GuruData
 import ru.yeahub.core_ui.component.ShortQuestionAnswer
 import ru.yeahub.core_ui.example.staticPreview.StaticPreview
+import ru.yeahub.core_utils.common.TextOrResource
 import ru.yeahub.detail_question.impl.presentation.state.DetailQuestionState
 import ru.yeahub.detail_question.impl.presentation.state.GuruVO
 import ru.yeahub.detail_question.impl.presentation.state.NestedSkillVO
@@ -33,14 +35,14 @@ fun QuestionContent(
     onTelegramClick: () -> Unit,
     onYoutubeClick: () -> Unit,
     padding: PaddingValues,
-    strings: DetailQuestionStrings = rememberDetailQuestionStrings()
+    guruDescriptionText: TextOrResource
 ) {
+    val context = LocalContext.current
     val blocks = listOfNotNull(
         question.longAnswer?.let { DetailedQuestionAnswerBlock.TextBlock(it) },
         question.code?.let { DetailedQuestionAnswerBlock.CodeBlock(it) },
         question.imageSrc?.let { DetailedQuestionAnswerBlock.ImageBlock(it) }
     )
-
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -87,7 +89,10 @@ fun QuestionContent(
                 data = GuruData(
                     name = question.guru.name,
                     position = question.guru.title,
-                    description = strings.guruDescriptionText,
+                    description = when (guruDescriptionText) {
+                        is TextOrResource.Text -> guruDescriptionText.text
+                        is TextOrResource.Resource -> context.getString(guruDescriptionText.resource)
+                    },
                     photoUrl = question.guru.photoUrl,
                     profileUrl = "",
                     youtubeUrl = question.guru.youtubeUrl,
@@ -367,15 +372,8 @@ fun StatesQuestionContentPreview(params: QuestionContentParams) {
     QuestionContent(
         question = params.question,
         padding = params.padding,
-        strings = previewQuestionContentStrings(),
+        guruDescriptionText = TextOrResource.Text("Guru – это эксперты YeaHub, которые помогают развивать комьюнити."),
         onTelegramClick = {},
         onYoutubeClick = {}
     )
 }
-
-fun previewQuestionContentStrings() = DetailQuestionStrings(
-    errorScreenTitleText = "Ошибка",
-    unknownErrorScreenText = "Неизвестная ошибка",
-    onBackButtonText = "Повторить",
-    guruDescriptionText = "Guru – это эксперты YeaHub, которые помогают развивать комьюнити."
-)
