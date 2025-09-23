@@ -27,15 +27,12 @@ import ru.yeahub.core_utils.common.TextOrResource
 @Composable
 fun ErrorScreen(
     error: String?,
-    titleText: String,
-    backText: String,
-    unknownErrorText: String,
-    onBack: () -> Unit
     errorText: TextOrResource,
     titleText: TextOrResource,
     backText: TextOrResource,
     unknownErrorText: TextOrResource,
     onBack: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
     Column(
@@ -46,7 +43,7 @@ fun ErrorScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Surface(
-            modifier = Modifier
+            modifier = modifier
                 .height(IntrinsicSize.Min)
                 .width(IntrinsicSize.Max),
             color = Theme.colors.white900,
