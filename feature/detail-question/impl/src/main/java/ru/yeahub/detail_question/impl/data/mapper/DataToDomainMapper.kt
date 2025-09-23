@@ -41,7 +41,7 @@ class DataToDomainMapper {
             },
             createdAt = getPublicQuestionResponse.createdAt,
             updatedAt = getPublicQuestionResponse.updatedAt,
-            createdBy = getNestedUserReferenceToEntity(getPublicQuestionResponse.createdBy),
+            createdBy = getPublicQuestionResponse.createdBy?.let { getNestedUserReferenceToEntity(it) },
             updatedBy = getPublicQuestionResponse.updatedBy?.let { getNestedUserReferenceToEntity(it) },
             guru = getGuruToEntity(getGuru(getPublicQuestionResponse.questionSpecializations))
         )

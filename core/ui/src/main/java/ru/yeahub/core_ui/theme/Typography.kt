@@ -13,7 +13,15 @@ private val manrope = FontFamily(
     Font(R.font.manrope_regular, FontWeight.Normal),
     Font(R.font.manrope_medium, FontWeight.Medium),
     Font(R.font.manrope_semibold, FontWeight.SemiBold),
-    Font(R.font.manrope_bold, FontWeight.Bold),
+    Font(R.font.manrope_bold, FontWeight.Bold)
+)
+
+private val sfProDisplay = FontFamily(
+    Font(R.font.sf_pro_display_medium, FontWeight.Medium),
+)
+
+private val sfProText = FontFamily(
+    Font(R.font.sf_pro_text_regular, FontWeight.Normal)
 )
 
 data class Typography(
@@ -41,6 +49,18 @@ data class Typography(
         fontWeight = FontWeight.Medium,
         fontSize = 20.sp,
         lineHeight = 23.sp,
+    ),
+    val head5: TextStyle = TextStyle(
+        fontFamily = sfProDisplay,
+        fontWeight = FontWeight.Medium,
+        fontSize = 28.sp,
+        lineHeight = (28 * 1.15).sp,
+    ),
+    val head5Alt: TextStyle = TextStyle(
+        fontFamily = sfProDisplay,
+        fontWeight = FontWeight.Medium,
+        fontSize = 22.sp,
+        lineHeight = 26.sp,
     ),
     //Body
     val body1: TextStyle = TextStyle(
@@ -131,7 +151,13 @@ data class Typography(
         fontWeight = FontWeight.Medium,
         fontSize = 24.sp,
         lineHeight = 29.sp,
-    )
+    ),
+    val body7: TextStyle = TextStyle(
+        fontFamily = sfProText,
+        fontWeight = FontWeight.Normal,
+        fontSize = 16.sp,
+        lineHeight = 21.sp,
+    ),
 )
 
 val LocalAppTypography = staticCompositionLocalOf {

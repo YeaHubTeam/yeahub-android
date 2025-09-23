@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -72,13 +73,14 @@ import java.util.concurrent.TimeoutException
 @Composable
 fun PublicQuestionsScreen(
     onResult: (PublicQuestionsResult) -> Unit,
-    skills: List<String>? = null,
-    skillFilter: String? = null,
-    heading: String,
+    tittleTopAppBar: String,
+    idCollection: Int?,
+    skills: List<String>?,
+    skillFilter: String = "all",
     lazyListState: LazyListState = rememberLazyListState()
 ) {
     val viewModel: PublicQuestionsViewModel = koinViewModel(
-        parameters = { parametersOf(skills, skillFilter) }
+        parameters = { parametersOf(skills, skillFilter, idCollection) }
     )
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
 
@@ -113,17 +115,17 @@ fun PublicQuestionsScreen(
     Scaffold(
         topBar = {
             TopAppBarWithBottomBorder(
-                title = heading,
+                title = tittleTopAppBar,
                 onBackClick = { viewModel.onEvent(PublicQuestionsScreenEvent.OnBackClick) }
             )
         }
-    ) { innerPadding ->
+    ) { padding ->
         PublicQuestionsContent(
-            modifier = Modifier.padding(innerPadding),
+            padding = padding,
             screenState = screenState,
             listState = lazyListState,
             onRetryLoadInitial = { viewModel.onEvent(PublicQuestionsScreenEvent.LoadInitial) },
-            title = heading,
+            nameQuestions = skillFilter,
             onMoreCLick = { id ->
                 viewModel.onEvent(
                     PublicQuestionsScreenEvent.OnMoreClick(
@@ -209,7 +211,8 @@ fun TopAppBarWithBottomBorder(
 @Composable
 private fun PublicQuestionsContent(
     modifier: Modifier = Modifier,
-    title: String,
+    padding: PaddingValues,
+    nameQuestions: String,
     onMoreCLick: (id: String) -> Unit,
     screenState: PublicQuestionsScreenState,
     listState: LazyListState,
@@ -222,7 +225,7 @@ private fun PublicQuestionsContent(
             is PublicQuestionsScreenState.Initial, PublicQuestionsScreenState.Loading -> {
                 FullScreenPlaceholders(
                     listState = listState,
-                    nameQuestion = title
+                    nameQuestion = nameQuestions
                 )
             }
 
@@ -234,13 +237,14 @@ private fun PublicQuestionsContent(
                     )
                 } else {
                     QuestionsListWithFooter(
+                        padding = padding,
                         listState = listState,
                         questions = screenState.questions,
                         isEndReached = true,
                         isLoadingNextPage = false,
                         paginationError = screenState.throwable,
                         onRetryPagination = { onRetryLoadInitial() },
-                        nameQuestion = title,
+                        nameQuestion = nameQuestions,
                         onMoreCLick = { id -> onMoreCLick(id) }
                     )
                 }
@@ -253,13 +257,14 @@ private fun PublicQuestionsContent(
                     EmptyState()
                 } else {
                     QuestionsListWithFooter(
+                        padding = padding,
                         listState = listState,
                         questions = screenState.questions,
                         isEndReached = screenState.isEndReached,
                         isLoadingNextPage = screenState.isLoadingNextPage,
                         paginationError = null,
                         onRetryPagination = { onRetryLoadInitial() },
-                        nameQuestion = title,
+                        nameQuestion = nameQuestions,
                         onMoreCLick = { id -> onMoreCLick(id) },
                     )
                 }
@@ -313,6 +318,7 @@ private fun FullScreenError(
 
 @Composable
 private fun QuestionsListWithFooter(
+    padding: PaddingValues,
     nameQuestion: String,
     listState: LazyListState,
     questions: List<PublicQuestionUiModel>,
@@ -324,7 +330,9 @@ private fun QuestionsListWithFooter(
 ) {
     LazyColumn(
         state = listState,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(padding)
     ) {
         item {
             Box(modifier = Modifier.padding(start = 15.dp, bottom = 20.dp, top = 20.dp)) {

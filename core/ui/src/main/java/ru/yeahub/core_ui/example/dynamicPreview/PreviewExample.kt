@@ -14,12 +14,13 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-@StandardScreenSizePreview
+@Preview
 @Composable
 fun DynamicPreview(@PreviewParameter(NumbersPreviewProvider::class) numbers: Int) {
     val mockViewModel = object : MyViewModel() {
@@ -27,7 +28,9 @@ fun DynamicPreview(@PreviewParameter(NumbersPreviewProvider::class) numbers: Int
             increment(numbers)
         }
     }
-    ScreenCount(viewModel = mockViewModel)
+    ProvidePreviewCompositionLocals {
+        ScreenCount(viewModel = mockViewModel)
+    }
 }
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -78,4 +81,11 @@ fun ProvidePreviewCompositionLocals(content: @Composable () -> Unit) {
 
 class NumbersPreviewProvider : PreviewParameterProvider<Int> {
     override val values: Sequence<Int> = sequenceOf(22, 45, 6666, 123563)
+}
+
+@Composable
+fun ProvidePreviewCompositionLocals(content: @Composable () -> Unit) {
+    CompositionLocalProvider(
+        content = content,
+    )
 }

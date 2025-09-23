@@ -71,7 +71,7 @@ fun HideQuestion(
                     .fillMaxWidth()
                     .clickable {
                         println("Click! isExtended before: $isExtended")
-                        onToggle()
+                        onClickMore()
                     },
             ) {
                 Image(

@@ -11,7 +11,20 @@ import ru.yeahub.navigation_api.FeatureRoute
 import ru.yeahub.navigation_api.NavigationPathManager
 import ru.yeahub.public_questions.impl.presentation.intents.PublicQuestionsResult
 import ru.yeahub.public_questions.impl.presentation.screen.PublicQuestionsScreen
+import timber.log.Timber
+import kotlin.text.append
 
+private const val TITTLE_TOP_APP_BAR = "tittle"
+private const val SKILL_FILTER = "skillFilter"
+private const val ID_COLLECTION = "idCollection"
+
+/**
+ * Передача параметра в feature publisc-questions:
+ * - публичная страница вопросов
+ * @public_questions/"tittleTopAppBar + ?skillFilter="Категория вопроса"
+ * - коллекции
+ * @public_questions/tittleTopAppBar + ?idCollection="Категория вопроса"
+ */
 class PublicQuestionsFeatureImpl : FeatureApi {
     override fun getFeatureName(): String = FeatureRoute.PublicQuestionsFeature.FEATURE_NAME
 
@@ -25,30 +38,42 @@ class PublicQuestionsFeatureImpl : FeatureApi {
         pathManager: NavigationPathManager,
         modifier: Modifier
     ) {
-        val featurePath = pathManager.createParametrizedPath(
-            getFeatureName(),
-            SKILL_FILTER,
-            SKILLS,
-            HEADING
+        val basePathWithParams = pathManager.createParametrizedPath(
+            featureName = getFeatureName(),
+            TITTLE_TOP_APP_BAR
         )
-
+        val currentTabPrefix = pathManager.getCurrentPath()
+        val routePatternWithQuery = buildString {
+            append(basePathWithParams)
+            append("?$SKILL_FILTER={$SKILL_FILTER}")
+            append("&$ID_COLLECTION={$ID_COLLECTION}")
+        }
         navGraphBuilder.composable(
-            route = featurePath,
+            route = routePatternWithQuery,
             arguments = listOf(
-                navArgument(SKILL_FILTER) { type = NavType.StringType },
-                navArgument(SKILLS) { type = NavType.StringType },
-                navArgument(HEADING) { type = NavType.StringType }
+                navArgument(SKILL_FILTER) {
+                    type = NavType.StringType
+                    nullable = true
+                },
+                navArgument(TITTLE_TOP_APP_BAR) {
+                    type = NavType.StringType
+                },
+                navArgument(ID_COLLECTION) {
+                    type = NavType.StringType
+                    nullable = true
+                }
             )
         ) { backStackEntry ->
-            val heading = backStackEntry
-                .arguments
-                ?.getString(HEADING) ?: ""
-            val skills = backStackEntry.arguments
-                ?.getString(SKILLS)
-                ?.split(",") ?: listOf()
             val skillFilter = backStackEntry
                 .arguments
-                ?.getString(SKILL_FILTER) ?: ""
+                ?.getString(SKILL_FILTER) ?: "All"
+            val tittleTopAppBar = backStackEntry
+                .arguments
+                ?.getString(TITTLE_TOP_APP_BAR) ?: "All"
+            val idCollection = backStackEntry
+                .arguments
+                ?.getString(ID_COLLECTION)
+            val id = idCollection?.toIntOrNull()
             PublicQuestionsScreen(
                 onResult = { result ->
                     when (result) {
@@ -58,17 +83,19 @@ class PublicQuestionsFeatureImpl : FeatureApi {
                         )
 
                         is PublicQuestionsResult.NavigateToDetail -> {
-                            val detailPath = pathManager.createParametrizedPath(
-                                FeatureRoute.DetailsFeature.FEATURE_NAME,
-                                result.id
-                            )
-                            navController.navigate(detailPath)
+                            val detailRout =
+                                "$currentTabPrefix/" + FeatureRoute.DetailQuestionFeature
+                                    .FEATURE_NAME + "/" + result.id
+                            Timber.tag("Test")
+                                .d("PublicQuestionsFeatureImpl registerGraph: $detailRout")
+                            navController.navigate(detailRout)
                         }
                     }
                 },
-                skills = skills,
                 skillFilter = skillFilter,
-                heading = heading
+                tittleTopAppBar = tittleTopAppBar,
+                idCollection = id,
+                skills = listOf()
             )
         }
     }
@@ -92,7 +119,3 @@ class PublicQuestionsFeatureImpl : FeatureApi {
         }
     }
 }
-
-private const val SKILL_FILTER = "skillFilter"
-private const val SKILLS = "skills"
-private const val HEADING = "skills"

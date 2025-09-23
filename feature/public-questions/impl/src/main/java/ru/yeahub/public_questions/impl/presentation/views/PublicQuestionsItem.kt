@@ -40,13 +40,13 @@ fun PublicQuestionsItem(
 @Composable
 fun QuestionsItemPreview() {
     val mockQuestions = listOf(
-        PublicQuestionUiModel(id = 1, title = "Что такое Virtual DOM?"),
-        PublicQuestionUiModel(id = 2, title = "Что такое Redux?"),
-        PublicQuestionUiModel(id = 3, title = "Что такое Kotlin?"),
-        PublicQuestionUiModel(id = 4, title = "Что такое TypeScript?"),
-        PublicQuestionUiModel(id = 5, title = "Что такое функциональное программирование?"),
-        PublicQuestionUiModel(id = 6, title = "Что такое Monads в функциональном программировании?"),
-        PublicQuestionUiModel(id = 7, title = "Что такое Java?")
+        PublicQuestionUiModel(id = "1", title = "Что такое Virtual DOM?"),
+        PublicQuestionUiModel(id = "2", title = "Что такое Redux?"),
+        PublicQuestionUiModel(id = "3", title = "Что такое Kotlin?"),
+        PublicQuestionUiModel(id = "4", title = "Что такое TypeScript?"),
+        PublicQuestionUiModel(id = "5", title = "Что такое функциональное программирование?"),
+        PublicQuestionUiModel(id = "6", title = "Что такое Monads в функциональном программировании?"),
+        PublicQuestionUiModel(id = "7", title = "Что такое Java?")
     )
     LazyColumn {
         items(mockQuestions) { question ->
@@ -68,7 +68,7 @@ class MockQuestionsViewModel : ViewModel() {
     init {
         _state.value = List(TEST) { index ->
             PublicQuestionUiModel(
-                id = index.toLong(),
+                id = index.toString(),
                 title = "Mocked Question Title $index",
             )
         }

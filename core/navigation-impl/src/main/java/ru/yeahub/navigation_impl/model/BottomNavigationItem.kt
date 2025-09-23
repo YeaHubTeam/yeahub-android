@@ -33,7 +33,7 @@ sealed class BottomNavigationItem(
     @DrawableRes val icon: Int
 ) {
     data object Collections : BottomNavigationItem(
-        route = FeatureRoute.StubFeature.FEATURE_NAME,
+        route = FeatureRoute.CollectionsFeature.FEATURE_NAME,
         label = "Коллекции",
         icon = R.drawable.icon_tab_questions
     )
@@ -47,6 +47,6 @@ sealed class BottomNavigationItem(
     data object Questions : BottomNavigationItem(
         route = FeatureRoute.QuestionsFeature.FEATURE_NAME,
         label = "Вопросы",
-        icon =  R.drawable.icon_tab_collections
+        icon = R.drawable.icon_tab_collections
     )
 } 
