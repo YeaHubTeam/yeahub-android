@@ -13,6 +13,7 @@
     <string name="difficulty">Сложность:</string>
     <string name="read_more">Подробнее</string>
     <string name="go_to_questions">Перейти к вопросам</string>
+    <string name="questions">%1$d вопросов</string>
     <string name="question_title">Сервис подготовки к собеседованиям</string>
     <string name="question_description">Готовьтесь к собеседованиям с вопросами из крупных IT-компаний: Сбер, Т-Банк, Яндекс, Авито, Ozon, VK и др.</string>
     <string name="base_questions_title">База вопросов</string>

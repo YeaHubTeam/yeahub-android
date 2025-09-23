@@ -36,9 +36,15 @@
             <option value="$PROJECT_DIR$/feature/example-questions" />
             <option value="$PROJECT_DIR$/feature/example-questions/api" />
             <option value="$PROJECT_DIR$/feature/example-questions/impl" />
+            <option value="$PROJECT_DIR$/feature/public-collections" />
+            <option value="$PROJECT_DIR$/feature/public-collections/api" />
+            <option value="$PROJECT_DIR$/feature/public-collections/impl" />
             <option value="$PROJECT_DIR$/feature/public-questions" />
             <option value="$PROJECT_DIR$/feature/public-questions/api" />
             <option value="$PROJECT_DIR$/feature/public-questions/impl" />
+            <option value="$PROJECT_DIR$/feature/questions-or-collections" />
+            <option value="$PROJECT_DIR$/feature/questions-or-collections/api" />
+            <option value="$PROJECT_DIR$/feature/questions-or-collections/impl" />
           </set>
         </option>
       </GradleProjectSettings>

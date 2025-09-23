@@ -22,7 +22,6 @@ class QuestionsFeatureImpl : FeatureApi {
         modifier: Modifier
     ) {
         val currentPath = pathManager.getCurrentPath()
-
         val questionsRoute = if (currentPath.isEmpty()) {
             getFeatureName()
         } else {
@@ -30,17 +29,13 @@ class QuestionsFeatureImpl : FeatureApi {
         }
 
         navGraphBuilder.composable(route = questionsRoute) {
-            QuestionsScreen {
-                TODO("Next screen Navigation")
-                handleNavigation(pathManager, navController)
-            }
+            QuestionsScreen(
+                onNextClick = {
+                    val questions =
+                        "questions" + "/" + FeatureRoute.PublicQuestionsFeature.FEATURE_NAME + "/" + "All"
+                    navController.navigate(questions)
+                }
+            )
         }
-    }
-
-    private fun handleNavigation(
-        pathManager: NavigationPathManager,
-        navController: NavHostController,
-    ) {
-        TODO()
     }
 }
