@@ -82,10 +82,3 @@ fun ProvidePreviewCompositionLocals(content: @Composable () -> Unit) {
 class NumbersPreviewProvider : PreviewParameterProvider<Int> {
     override val values: Sequence<Int> = sequenceOf(22, 45, 6666, 123563)
 }
-
-@Composable
-fun ProvidePreviewCompositionLocals(content: @Composable () -> Unit) {
-    CompositionLocalProvider(
-        content = content,
-    )
-}

@@ -21,19 +21,30 @@ class QuestionsFeatureImpl : FeatureApi {
         pathManager: NavigationPathManager,
         modifier: Modifier
     ) {
-        val currentPath = pathManager.getCurrentPath()
-        val questionsRoute = if (currentPath.isEmpty()) {
-            getFeatureName()
-        } else {
-            pathManager.createChildPath(getFeatureName())
-        }
+//        val currentPath = pathManager.getCurrentPath()
+//        val questionsRoute = if (currentPath.isEmpty()) {
+//            getFeatureName()
+//        } else {
+//            pathManager.createChildPath(getFeatureName())
+//        }
+        val questionsRoute = getFeatureName()
 
         navGraphBuilder.composable(route = questionsRoute) {
             QuestionsScreen(
                 onNextClick = {
-                    val questions =
-                        "questions" + "/" + FeatureRoute.PublicQuestionsFeature.FEATURE_NAME + "/" + "All"
-                    navController.navigate(questions)
+                    //NO WORK - nav to collections/public_collections/{specId}/{specTitle}
+//                    pathManager.setCurrentPath(getFeatureName())
+//                    val questionsPath = pathManager.createChildPath(
+//                        featureName = FeatureRoute.SpecializationsFeature.FEATURE_NAME
+//                    )
+//                    Timber.tag("QuestionFeatureImpl").d("questionsPath = $questionsPath")
+                    val questionsPath =
+                        "questions" + "/" +
+                        FeatureRoute.PublicQuestionsFeature.FEATURE_NAME +
+                        "/" + "All"
+
+                    pathManager.setCurrentPath(questionsPath)
+                    navController.navigate(questionsPath)
                 }
             )
         }

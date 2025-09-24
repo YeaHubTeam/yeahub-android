@@ -1,10 +1,10 @@
 package ru.yeahub.selection_specializations.impl
 
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
-import org.koin.androidx.compose.koinViewModel
 import ru.yeahub.core_utils.common.TextOrResource
 import ru.yeahub.navigation_api.FeatureApi
 import ru.yeahub.navigation_api.FeatureRoute
@@ -13,11 +13,40 @@ import ru.yeahub.selection_specializations.impl.ui.SpecializationScreen
 import ru.yeahub.selection_specializations.impl.ui.SpecializationsScreenResult
 import timber.log.Timber
 
-class SpecializationsFeatureImpl : FeatureApi {
+class SpecializationsFeatureImpl() : FeatureApi {
     override fun getFeatureName(): String =
         FeatureRoute.SpecializationsFeature.FEATURE_NAME
 
     override fun isRootFeature(): Boolean = false
+
+    @Composable
+    fun DefaultSpecializationScreen(
+        navController: NavHostController,
+        pathManager: NavigationPathManager,
+    ) {
+        SpecializationScreen(
+            headerText = TextOrResource.Resource(R.string.selection_specializations_list_header),
+            onResult = { result ->
+                when (result) {
+                    SpecializationsScreenResult.NavigateBack -> {
+                        handleBackNavigation(
+                            pathManager = pathManager,
+                            navController = navController
+                        )
+                    }
+
+                    is SpecializationsScreenResult.SpecializationClick -> {
+                        handleSpecializationsNavigation(
+                            pathManager = pathManager,
+                            navController = navController,
+                            specId = result.specId,
+                            specTitle = result.specTitle
+                        )
+                    }
+                }
+            }
+        )
+    }
 
     override fun registerGraph(
         navGraphBuilder: NavGraphBuilder,
@@ -25,42 +54,16 @@ class SpecializationsFeatureImpl : FeatureApi {
         pathManager: NavigationPathManager,
         modifier: Modifier
     ) {
-        val currentPath = pathManager.getCurrentPath()
-        Timber.d("SpecializationsFeatureImpl registerGraph: currentPath: $currentPath")
+        val specializationPath = pathManager.createChildPath(
+            featureName = getFeatureName()
+        )
 
-        // Корневая фича регистрирует только свой корневой маршрут
-        val currentHomeRoute = if (currentPath.isEmpty()) {
-            getFeatureName()
-        } else {
-            pathManager.createChildPath(getFeatureName())
-        }
+        Timber.tag("SpecFeatureImpl").d("register specializationPath = $specializationPath")
 
-        Timber.d("SpecializationsFeatureImpl registerGraph: Registering route: $currentHomeRoute")
-
-        navGraphBuilder.composable(currentHomeRoute) { backStackEntry ->
-
-            SpecializationScreen(
-                headerText = TextOrResource.Resource(R.string.selection_specializations_list_header),
-                parentRoute = pathManager.getParentPath(),
-                onResult = { result ->
-                    when (result) {
-                        SpecializationsScreenResult.NavigateBack -> {
-                            handleBackNavigation(
-                                pathManager = pathManager,
-                                navController = navController
-                            )
-                        }
-
-                        is SpecializationsScreenResult.SpecializationClick -> {
-                            handleSpecializationsNavigation(
-                                pathManager = pathManager,
-                                navController = navController,
-                                specId = result.specId
-                            )
-                        }
-                    }
-                },
-                specializationViewModel = koinViewModel()
+        navGraphBuilder.composable(specializationPath) { backStackEntry ->
+            DefaultSpecializationScreen(
+                navController = navController,
+                pathManager = pathManager
             )
         }
     }
@@ -73,27 +76,57 @@ class SpecializationsFeatureImpl : FeatureApi {
     fun handleSpecializationsNavigation(
         pathManager: NavigationPathManager,
         navController: NavHostController,
-        specId: String
+        specId: Long,
+        specTitle: String
     ) {
-        // Сбрасываем текущий путь на корневую фичу
-        pathManager.setCurrentPath(getFeatureName())
+        val nextRoute =
+            buildNextRoute(
+                pathManager = pathManager,
+                specId = specId,
+                specTitle = specTitle
+            )
 
-        // parentPath (colections(не готово),questions)
-        // TODO() - video process (navigate)
-        val profilePath = pathManager.createParametrizedPath(
-            featureName = FeatureRoute.SpecializationsFeature.FEATURE_NAME,
-            specId
+        Timber.tag("SpecFeatureImpl").d(
+            "SpecializationsFeatureImpl nextRoute: $nextRoute"
         )
 
-        val concretePath = pathManager.createConcretePath(
-            profilePath,
-            specId
-        )
+        pathManager.setCurrentPath(nextRoute)
+        navController.navigate(nextRoute)
+    }
 
-        Timber.d("HomeFeatureImpl handleProfileNavigation: Navigating to: $concretePath")
+    private fun buildNextRoute(
+        pathManager: NavigationPathManager,
+        specId: Long,
+        specTitle: String
+    ): String {
+        val currentPath = pathManager.getCurrentPath()
 
-        pathManager.setCurrentPath(concretePath)
-        navController.navigate(concretePath)
+        return when {
+            currentPath.contains("questions") -> {
+                //universal dummy (from questions module)
+                "questions" + "/" +
+                FeatureRoute.PublicQuestionsFeature.FEATURE_NAME +
+                "/" + "All"
+            }
+
+            currentPath.contains("collections") -> {
+                val createdPath = pathManager.createParametrizedPath(
+                    featureName = FeatureRoute.PublicCollectionsFeature.FEATURE_NAME,
+                    "specId",
+                    "title"
+                )
+
+                val concretePath = pathManager.createConcretePath(
+                    createdPath,
+                    specId.toString(),
+                    specTitle
+                )
+
+                concretePath
+            }
+
+            else -> "home/"
+        }
     }
 
     /**
@@ -105,7 +138,9 @@ class SpecializationsFeatureImpl : FeatureApi {
     ) {
         val parentPath = pathManager.getParentPath()
 
-        Timber.d("SpecializationsFeatureImpl handleBackNavigation: Navigating to parent: $parentPath")
+        Timber
+            .tag("SpecFeatureImpl")
+            .d("SpecializationsFeatureImpl handleBackNavigation: Navigating to parent: $parentPath")
 
         pathManager.setCurrentPath(parentPath)
 

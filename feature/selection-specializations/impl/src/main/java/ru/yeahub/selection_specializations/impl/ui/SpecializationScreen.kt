@@ -9,23 +9,34 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.valentinilk.shimmer.shimmer
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
+import org.koin.androidx.compose.koinViewModel
 import ru.yeahub.core_ui.component.ErrorScreen
 import ru.yeahub.core_ui.component.PrimaryButton
 import ru.yeahub.core_ui.component.SpecializationButton
@@ -36,7 +47,6 @@ import ru.yeahub.core_ui.theme.LocalAppTypography
 import ru.yeahub.core_ui.theme.colors
 import ru.yeahub.core_utils.common.TextOrResource
 import ru.yeahub.core_utils.common.observe
-import ru.yeahub.navigation_api.FeatureRoute
 import ru.yeahub.selection_specializations.impl.R
 import ru.yeahub.selection_specializations.impl.domain.DomainSpecilializationListResponse
 import ru.yeahub.selection_specializations.impl.domain.GetSpecializationListUseCase
@@ -56,11 +66,36 @@ val FIGMA_VERTICAL_CARD_PADDING = 16.dp //need edge_to_edge = 16
 @Composable
 fun SpecializationScreen(
     headerText: TextOrResource = TextOrResource.Resource(R.string.selection_specializations_list_header),
-    parentRoute: String,
-    specializationViewModel: SpecializationViewModel,
     onResult: (SpecializationsScreenResult) -> Unit
 ) {
-    val screenState by specializationViewModel.uiStatus.collectAsStateWithLifecycle()
+    val specializationViewModel: SpecializationViewModel = koinViewModel()
+    val screenState by specializationViewModel.screenState.collectAsStateWithLifecycle()
+    val lazyListState: LazyListState = rememberLazyListState()
+
+    LaunchedEffect(lazyListState, screenState) {
+        snapshotFlow { lazyListState.layoutInfo }
+            .map { layoutInfo ->
+                val lastItem = layoutInfo.visibleItemsInfo.lastOrNull()
+                val totalItems = layoutInfo.totalItemsCount
+                val isAlmostAtEnd =
+                    lastItem != null && totalItems > 0 && lastItem.index >= totalItems - RESPONSE_THRESHOLD
+                isAlmostAtEnd
+            }.filter { shouldTriggerLoad -> shouldTriggerLoad }
+            .collect {
+                val canLoadMore = when (
+                    val currentScreenState = specializationViewModel.pagerState.value
+                ) {
+                    is SpecializationScreenState.Loaded -> {
+                        !currentScreenState.isEndReached && !currentScreenState.isLoadingNextPage
+                    }
+
+                    else -> false
+                }
+                if (canLoadMore) {
+                    specializationViewModel.onEvent(SpecializationScreenEvent.LoadNextPage)
+                }
+            }
+    }
 
     //command handler
     HandleCommand(
@@ -70,12 +105,9 @@ fun SpecializationScreen(
 
     ScreenUI(
         headerText = headerText,
+        listState = lazyListState,
         screenState = screenState,
-        onSpecialClick = { id ->
-            specializationViewModel.onEvent(
-                SpecializationScreenEvent.OnSpecialClick(id = id)
-            )
-        }
+        onSpecialEvent = specializationViewModel::onEvent
     )
 }
 
@@ -83,12 +115,11 @@ fun SpecializationScreen(
 fun BaseSpecializationsScreen(
     modifier: Modifier = Modifier,
     headerText: TextOrResource,
-    onSpecialClick: (id: Int) -> Unit,
+    onItemClick: (id: Long, title: String) -> Unit,
     isPagerLoading: Boolean,
-    list: List<VoSpecilialization>
+    list: List<VoSpecilialization>,
+    listState: LazyListState
 ) {
-    val lazyListState = rememberLazyListState()
-
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -107,7 +138,7 @@ fun BaseSpecializationsScreen(
 
         LazyColumn(
             modifier = modifier.padding(horizontal = FIGMA_HORIZONTAL_PADDING),
-            state = lazyListState,
+            state = listState,
             verticalArrangement = Arrangement.spacedBy(FIGMA_VERTICAL_CARD_PADDING)
         ) {
             items(
@@ -116,7 +147,12 @@ fun BaseSpecializationsScreen(
             ) { specialization ->
                 SpecializationButton(
                     title = TextOrResource.Text(specialization.title),
-                    onSpecialClick = onSpecialClick
+                    onButtonClick = {
+                        onItemClick(
+                            specialization.id.toLong(),
+                            specialization.title
+                        )
+                    }
                 )
             }
         }
@@ -139,14 +175,16 @@ fun BaseSpecializationsScreen(
 @Composable
 fun ScreenUI(
     headerText: TextOrResource,
+    listState: LazyListState,
     screenState: SpecializationScreenState,
-    onSpecialClick: (Int) -> Unit
+    onSpecialEvent: (SpecializationScreenEvent) -> Unit
 ) {
     Scaffold(
+        containerColor = colors.black10,
         topBar = {
             TopAppBarWithBottomBorder(
                 title = headerText,
-                onBackClick = { SpecializationsScreenResult.NavigateBack }
+                onBackClick = { onSpecialEvent(SpecializationScreenEvent.OnBackClick) }
             )
         }
     ) { paddingValues ->
@@ -155,12 +193,32 @@ fun ScreenUI(
         ) {
             when (screenState) {
                 is SpecializationScreenState.Loaded -> {
-                    BaseSpecializationsScreen(
-                        headerText = headerText,
-                        list = screenState.resultList,
-                        isPagerLoading = screenState.isLoadingNextPage,
-                        onSpecialClick = onSpecialClick
-                    )
+                    if (
+                        screenState.resultList.isEmpty() &&
+                        !screenState.isLoadingNextPage &&
+                        screenState.isEndReached
+                    ) {
+                        val padding = PaddingValues(
+                            vertical = FIGMA_VERTICAL_TITLE_PADDING,
+                            horizontal = FIGMA_HORIZONTAL_PADDING
+                        )
+                        SpecializationsLoadingScreen(padding = padding)
+                    } else {
+                        BaseSpecializationsScreen(
+                            headerText = headerText,
+                            onItemClick = { id, title ->
+                                onSpecialEvent(
+                                    SpecializationScreenEvent.OnSpecialClick(
+                                        id = id,
+                                        title = title
+                                    )
+                                )
+                            },
+                            isPagerLoading = screenState.isLoadingNextPage,
+                            listState = listState,
+                            list = screenState.resultList
+                        )
+                    }
                 }
 
                 //difficult to rewrite with res-string
@@ -202,7 +260,12 @@ fun HandleCommand(
                 onResult(SpecializationsScreenResult.NavigateBack)
             }
             is SpecializationSelectionScreenCommand.SpecializationSelectionClick -> {
-                onResult(SpecializationsScreenResult.SpecializationClick(command.onClickedSpecId))
+                onResult(
+                    SpecializationsScreenResult.SpecializationClick(
+                        command.onClickedSpecId,
+                        command.onClickedSpecTitle
+                    )
+                )
             }
         }
     }
@@ -256,60 +319,61 @@ fun SpecializationsScreenPreview(
     ScreenUI(
         headerText = TextOrResource.Resource(R.string.selection_specializations_list_header),
         screenState = params.screenState,
-        onSpecialClick = { id -> println("pressed id=$id") }
+        onSpecialEvent = { _ -> Timber.tag("Preview").d("pressed item") },
+        listState = rememberLazyListState()
     )
-}
-
-@Composable
-fun MockSpecializationViewModel(): SpecializationViewModel {
-    val mockUseCase = remember {
-        object : GetSpecializationListUseCase {
-            override suspend fun invoke(
-                request: SpecializationsRequest
-            ): DomainSpecilializationListResponse =
-                mockResponse.copy(
-                    page = request.page.toLong(),
-                    limit = request.limit.toLong()
-                )
-        }
-    }
-
-    return remember { SpecializationViewModel(mockUseCase) }
 }
 
 @Preview
 @Composable
 fun SpecializationDynamicPreview() {
-    val parentRoute = FeatureRoute.createFeatureRoute(
-        parentRoute = "main screen",
-        featureName = "collections"
-    )
-
-    fun mockNextRoute(id: String) = FeatureRoute.createFeatureRoute(
-        parentRoute = parentRoute,
-        featureName = "$parentRoute with specialization id=$id"
-    )
-
-    val mockOnResult: (SpecializationsScreenResult) -> Unit = { result ->
-        when (result) {
-            SpecializationsScreenResult.NavigateBack -> {
-                Timber.d("MockBaseSpecializationScreen - nav back to $parentRoute")
-            }
-
-            is SpecializationsScreenResult.SpecializationClick -> {
-                Timber.d("MockBaseSpecializationScreen - nav to ${mockNextRoute(result.specId)}")
-            }
-        }
+    val mockSpecializationUseCase = object : GetSpecializationListUseCase {
+        override suspend fun invoke(
+            request: SpecializationsRequest
+        ): DomainSpecilializationListResponse =
+            mockResponse.copy(
+                page = request.page.toLong(),
+                limit = request.limit.toLong()
+            )
     }
 
-    val headerText = TextOrResource.Text("Selection specializations after $parentRoute")
+    val mockSpecializationViewModel: SpecializationViewModel = viewModelCreator {
+        SpecializationViewModel(mockSpecializationUseCase)
+    }
+
+    LaunchedEffect(Unit) {
+        mockSpecializationViewModel.onEvent(SpecializationScreenEvent.LoadInitial)
+        delay(RESPONSE_DELAY)
+        mockSpecializationViewModel.onEvent(SpecializationScreenEvent.LoadNextPage)
+    }
+
+    val headerText = TextOrResource.Text("Specializations")
+
+    val mockState by mockSpecializationViewModel.screenState.collectAsState()
 
     ProvidePreviewCompositionLocals {
-        SpecializationScreen(
+        ScreenUI(
             headerText = headerText,
-            parentRoute = parentRoute,
-            specializationViewModel = MockSpecializationViewModel(),
-            onResult = mockOnResult
+            screenState = mockState,
+            onSpecialEvent = mockSpecializationViewModel::onEvent,
+            listState = rememberLazyListState()
         )
     }
 }
+
+typealias ViewModelCreator = () -> ViewModel?
+
+class ViewModelFactory(
+    private val viewModelCreator: ViewModelCreator = { null }
+) : ViewModelProvider.Factory {
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel> create(modelClass: Class<T>): T = viewModelCreator() as T
+}
+
+@Composable
+inline fun <reified VM : ViewModel> viewModelCreator(noinline creator: ViewModelCreator): VM =
+    viewModel(factory = remember { ViewModelFactory(creator) })
+
+private const val RESPONSE_DELAY = 2000L
+private const val RESPONSE_THRESHOLD = 8

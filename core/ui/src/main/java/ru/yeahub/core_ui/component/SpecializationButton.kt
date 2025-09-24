@@ -25,7 +25,7 @@ val FIGMA_CARD_ELEVATION = 4.dp
 @Composable
 fun SpecializationButton(
     modifier: Modifier = Modifier,
-    onSpecialClick: (id: Int) -> Unit,
+    onButtonClick: () -> Unit,
     textStyle: TextStyle = LocalAppTypography.current.body3Accent,
     title: TextOrResource
 ) {
@@ -39,7 +39,7 @@ fun SpecializationButton(
                 elevation = FIGMA_CARD_ELEVATION,
                 ambientColor = colors.mainShadow
             ),
-        onClick = { onSpecialClick },
+        onClick = onButtonClick,
         shape = RoundedCornerShape(FIGMA_CARD_CORNER_ROUND),
         colors = YeahubButtonDefaults.primaryButtonColors(
             contentColor = colors.black900,
@@ -66,8 +66,6 @@ fun SpecializationButtonPreview() {
 
     SpecializationButton(
         title = title,
-        onSpecialClick = {
-            println("Example SpecilializationScreenEvent.OnSpecialClick")
-        }
+        onButtonClick = { ("Example SpecilializationScreenEvent.OnSpecialClick") }
     )
 }

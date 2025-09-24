@@ -16,7 +16,7 @@ object SpecializationExampleDataClasses {
         updatedAt = "01.01.1970"
     )
 
-    val defaultSpecialResponceWithImage = GetSpecializationResponse(
+    val defaultSpecialResponseWithImage = GetSpecializationResponse(
         id = 1L,
         title = "default title num 1",
         description = "default description",
@@ -38,7 +38,7 @@ object SpecializationExampleDataClasses {
     val defaultSpecialListResponse = GetSpecializationsResponse(
         page = 1L,
         limit = 10L,
-        data = listOf(defaultSpecialResponse, defaultSpecialResponceWithImage),
+        data = listOf(defaultSpecialResponse, defaultSpecialResponseWithImage),
         total = 2L
     )
 

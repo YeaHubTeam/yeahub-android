@@ -8,6 +8,7 @@ import ru.yeahub.navigation_api.FeatureApi
 import ru.yeahub.navigation_api.FeatureRoute
 import ru.yeahub.navigation_api.NavigationPathManager
 import ru.yeahub.questions_or_collections.impl.screen.CollectionsScreen
+import timber.log.Timber
 
 class CollectionsFeatureImpl : FeatureApi {
 
@@ -21,22 +22,25 @@ class CollectionsFeatureImpl : FeatureApi {
         pathManager: NavigationPathManager,
         modifier: Modifier
     ) {
-        val currentPath = pathManager.getCurrentPath()
+//        val currentPath = pathManager.getCurrentPath()
 
-        val collectionsRoute = if (currentPath.isEmpty()) {
-            getFeatureName()
-        } else {
-            pathManager.createChildPath(getFeatureName())
-        }
+//        val collectionsRoute = if (currentPath.isEmpty()) {
+//            getFeatureName()
+//        } else {
+//            pathManager.createChildPath(getFeatureName())
+//        }
+        val collectionsRoute = getFeatureName()
 
         navGraphBuilder.composable(route = collectionsRoute) {
             CollectionsScreen(
                 onNextClick = {
-                    val questions =
-                        "collections" + "/" + FeatureRoute
-                            .PublicCollectionsFeature
-                            .FEATURE_NAME + "/" + "11" + "/" + "react"
-                    navController.navigate(questions)
+                    pathManager.setCurrentPath(getFeatureName())
+                    val collectionsPath = pathManager.createChildPath(
+                        featureName = FeatureRoute.SpecializationsFeature.FEATURE_NAME
+                    )
+                    Timber.tag("CollectionFeatureImpl").d("collectionsPath = $collectionsPath")
+                    //pathManager.setCurrentPath(collectionsPath)
+                    navController.navigate(collectionsPath)
                 }
             )
         }

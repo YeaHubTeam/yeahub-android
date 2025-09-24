@@ -9,7 +9,8 @@ sealed class SpecializationScreenEvent {
     data object Refresh : SpecializationScreenEvent()
 
     data class OnSpecialClick(
-        val id: Int
+        val id: Long,
+        val title: String
     ) : SpecializationScreenEvent()
 
     data object OnBackClick : SpecializationScreenEvent()

@@ -18,15 +18,17 @@ import ru.yeahub.selection_specializations.impl.domain.DomainSpecilialization
 import ru.yeahub.selection_specializations.impl.domain.DomainSpecilializationListResponse
 import ru.yeahub.selection_specializations.impl.domain.GetSpecializationListUseCase
 import ru.yeahub.selection_specializations.impl.domain.SpecializationsRequest
-import ru.yeahub.selection_specializations.impl.presentation.SpecializationSelectionDomainToVoMapper.toVoList
 import ru.yeahub.selection_specializations.impl.presentation.SpecializationSelectionScreenCommand.OnBackClick
 import ru.yeahub.selection_specializations.impl.presentation.SpecializationSelectionScreenCommand.SpecializationSelectionClick
+import ru.yeahub.selection_specializations.impl.presentation.SpecializationSelectionScreenMapper.getScreenState
+import timber.log.Timber
 
 private const val TIME_TO_CLEAN_UP_RESOURCES = 500L
 
 class SpecializationViewModel(
     private val getSpecializationListUseCase: GetSpecializationListUseCase,
 ) : BaseViewModel() {
+
     private val pagerLoader =
         object : YeaHubPagerLoader<DomainSpecilializationListResponse, SpecializationsRequest> {
             override suspend fun loadPage(
@@ -49,9 +51,10 @@ class SpecializationViewModel(
         limit = { domainResponse -> domainResponse.limit },
     )
 
-    private val screenState: StateFlow<SpecializationScreenState> = pager
+    private val _screenState: StateFlow<SpecializationScreenState> = pager
         .state
         .map { pagerState ->
+            Timber.tag("SpecViewModel").d("pagerState = $pagerState")
             when (pagerState) {
                 is YeaHubPagerState.Initial -> SpecializationScreenState.InitLoading
                 is YeaHubPagerState.Loading<DomainSpecilialization> -> {
@@ -59,20 +62,20 @@ class SpecializationViewModel(
                         SpecializationScreenState.InitLoading
                     } else {
                         SpecializationScreenState.Loaded(
-                            resultList = pagerState.items.toVoList(),
+                            resultList = getScreenState(pagerState.items),
                             isEndReached = false,
                             isLoadingNextPage = true,
                         )
                     }
                 }
                 is YeaHubPagerState.Loaded<DomainSpecilialization> -> SpecializationScreenState.Loaded(
-                    resultList = pagerState.items.toVoList(),
+                    resultList = getScreenState(pagerState.items),
                     isEndReached = pagerState.isEndReached,
                     isLoadingNextPage = false,
                 )
                 is YeaHubPagerState.Error<DomainSpecilialization> -> SpecializationScreenState.Error(
                     throwable = pagerState.throwable,
-                    currentList = pagerState.items.toVoList()
+                    currentList = getScreenState(pagerState.items)
                 )
             }
         }.distinctUntilChanged()
@@ -86,27 +89,31 @@ class SpecializationViewModel(
     val pagerState: StateFlow<YeaHubPagerState<DomainSpecilialization>>
         get() = _pagerState
 
-    val uiStatus: StateFlow<SpecializationScreenState>
-        get() = screenState
+    val screenState: StateFlow<SpecializationScreenState>
+        get() = _screenState
 
     private val _commands = MutableSharedFlow<SpecializationSelectionScreenCommand>()
     internal val commands: SharedFlow<SpecializationSelectionScreenCommand> = _commands.asSharedFlow()
 
     fun onEvent(event: SpecializationScreenEvent) {
         when (event) {
-            is SpecializationScreenEvent.LoadInitial -> initLoad()
-            is SpecializationScreenEvent.LoadNextPage -> loadNextPage()
+            is SpecializationScreenEvent.LoadInitial -> pagerLoad()
+            is SpecializationScreenEvent.LoadNextPage -> pagerLoad()
             is SpecializationScreenEvent.OnBackClick -> backClick()
-            is SpecializationScreenEvent.OnSpecialClick -> onSpecialClick(event.id)
+            is SpecializationScreenEvent.OnSpecialClick ->
+                onSpecialClick(id = event.id, title = event.title)
             is SpecializationScreenEvent.Refresh -> refresh()
         }
     }
 
-    private fun initLoad() =
-        viewModelScopeSafe.launch(Dispatchers.IO) { pager.load() }
+    //important order
+    init {
+        pagerLoad()
+    }
 
-    private fun loadNextPage() =
+    private fun pagerLoad() {
         viewModelScopeSafe.launch(Dispatchers.IO) { pager.load() }
+    }
 
     private fun backClick() =
         viewModelScopeSafe.launch(Dispatchers.IO) {
@@ -114,11 +121,13 @@ class SpecializationViewModel(
         }
 
     private fun onSpecialClick(
-        id: Int
+        id: Long,
+        title: String
     ) = viewModelScopeSafe.launch(Dispatchers.IO) {
         _commands.emit(
             SpecializationSelectionClick(
-                onClickedSpecId = id.toString()
+                onClickedSpecId = id,
+                onClickedSpecTitle = title
             )
         )
     }

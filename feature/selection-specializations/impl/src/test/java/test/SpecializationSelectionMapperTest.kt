@@ -8,7 +8,7 @@ import ru.yeahub.network_api.models.GetSpecializationsResponse
 import ru.yeahub.selection_specializations.impl.data.SpecializationSelectionDataToDomainMapper
 import ru.yeahub.selection_specializations.impl.domain.DomainSpecilialization
 import ru.yeahub.selection_specializations.impl.domain.DomainSpecilializationListResponse
-import ru.yeahub.selection_specializations.impl.presentation.SpecializationSelectionDomainToVoMapper.toVoList
+import ru.yeahub.selection_specializations.impl.presentation.SpecializationSelectionScreenMapper.getScreenState
 import ru.yeahub.selection_specializations.impl.presentation.VoSpecilialization
 import ru.yeahub.test.TestArgumentsProvider
 import test.SpecializationExampleDataClasses.defaultDomainSpecial
@@ -16,7 +16,7 @@ import test.SpecializationExampleDataClasses.defaultDomainSpecialListResponse
 import test.SpecializationExampleDataClasses.defaultDomainSpecialWithImage
 import test.SpecializationExampleDataClasses.defaultSpecialListResponse
 import test.SpecializationExampleDataClasses.defaultSpecialResponse
-import test.SpecializationExampleDataClasses.defaultSpecialResponceWithImage
+import test.SpecializationExampleDataClasses.defaultSpecialResponseWithImage
 import test.SpecializationExampleDataClasses.defaultVoSpecialization
 import test.SpecializationExampleDataClasses.defaultVoSpecializationWithImage
 
@@ -31,7 +31,7 @@ class SpecializationSelectionMapperTest(
                 expectedResult = defaultDomainSpecial
             ),
             SpecializationSelectionDataToDomainMapperTestCase1(
-                dataToTest = defaultSpecialResponceWithImage,
+                dataToTest = defaultSpecialResponseWithImage,
                 expectedResult = defaultDomainSpecialWithImage
             )
         )
@@ -78,7 +78,7 @@ class SpecializationSelectionMapperTest(
     fun specializationSelectionDomainToVoMapperTestCase(
         testCase: SpecializationSelectionDomainToVoMapperTestCase
     ){
-        val result = testCase.dataToTest.toVoList()
+        val result = getScreenState(testCase.dataToTest)
         assertEquals(testCase.expectedResult, result)
     }
 }
