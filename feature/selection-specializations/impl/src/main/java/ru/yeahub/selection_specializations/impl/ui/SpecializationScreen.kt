@@ -229,11 +229,11 @@ fun ScreenUI(
                     ErrorScreen(
                         error = screenState.throwable.message
                             ?: defaultErrorText.getString(context),
-                        titleText = TextOrResource.Text("Crash").getString(context),
-                        backText = TextOrResource.Text("Back").getString(context),
-                        unknownErrorText = TextOrResource.Text("Something went wrong...")
-                            .getString(context),
-                        onBack = { SpecializationsScreenResult.NavigateBack }
+                        errorText = TextOrResource.Text("Something went wrong..."),
+                        titleText = TextOrResource.Text("Crash"),
+                        backText = TextOrResource.Text("Back"),
+                        unknownErrorText = TextOrResource.Text("Loading data failed"),
+                        onBack = { onSpecialEvent(SpecializationScreenEvent.OnBackClick) }
                     )
                 }
 
@@ -341,15 +341,15 @@ fun SpecializationDynamicPreview() {
         SpecializationViewModel(mockSpecializationUseCase)
     }
 
+    val headerText = TextOrResource.Text("Specializations")
+
+    val mockState by mockSpecializationViewModel.screenState.collectAsState()
+
     LaunchedEffect(Unit) {
         mockSpecializationViewModel.onEvent(SpecializationScreenEvent.LoadInitial)
         delay(RESPONSE_DELAY)
         mockSpecializationViewModel.onEvent(SpecializationScreenEvent.LoadNextPage)
     }
-
-    val headerText = TextOrResource.Text("Specializations")
-
-    val mockState by mockSpecializationViewModel.screenState.collectAsState()
 
     ProvidePreviewCompositionLocals {
         ScreenUI(
