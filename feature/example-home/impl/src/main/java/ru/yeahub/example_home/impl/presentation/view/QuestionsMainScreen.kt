@@ -75,12 +75,11 @@ fun QuestionsMainScreenContent(
         is QuestionMainScreenState.Error -> {
             ErrorScreen(
                 error = state.message.getString(context),
-                titleText = TextOrResource.Resource(R.string.error_screen_title_text)
-                    .getString(context),
-                backText = TextOrResource.Resource(R.string.on_back_button_text)
-                    .getString(context),
-                unknownErrorText = "",
-                onBack = onBackClick
+                titleText = TextOrResource.Resource(R.string.error_screen_title_text),
+                backText = TextOrResource.Resource(R.string.on_back_button_text),
+                unknownErrorText = TextOrResource.Resource(R.string.unknown_error_screen_text),
+                onBack = onBackClick,
+                errorText = TextOrResource.Resource(R.string.error_screen_text),
             )
         }
 
@@ -200,5 +199,5 @@ val stateWithContent = QuestionMainScreenState.Content(
 )
 
 val stateWithError = QuestionMainScreenState.Error(
-    message = TextOrResource.Resource(R.string.unknown_error_screen_text)
+    message = TextOrResource.Resource(R.string.error_screen_text)
 )
