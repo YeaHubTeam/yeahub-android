@@ -15,21 +15,26 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import ru.yeahub.core_ui.example.staticPreview.StaticPreview
 import ru.yeahub.core_ui.theme.Theme
+import ru.yeahub.core_utils.common.TextOrResource
 
 @Composable
 fun ErrorScreen(
     error: String?,
-    titleText: String,
-    backText: String,
-    unknownErrorText: String,
-    onBack: () -> Unit
+    errorText: TextOrResource,
+    titleText: TextOrResource,
+    backText: TextOrResource,
+    unknownErrorText: TextOrResource,
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -38,7 +43,7 @@ fun ErrorScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Surface(
-            modifier = Modifier
+            modifier = modifier
                 .height(IntrinsicSize.Min)
                 .width(IntrinsicSize.Max),
             color = Theme.colors.white900,
@@ -50,13 +55,26 @@ fun ErrorScreen(
             ) {
                 Text(
                     modifier = Modifier.padding(bottom = 4.dp),
-                    text = titleText,
+                    text = when (titleText) {
+                        is TextOrResource.Text -> titleText.text
+                        is TextOrResource.Resource -> context.getString(titleText.resource)
+                    },
                     style = Theme.typography.body6,
                     color = Theme.colors.black900
                 )
                 Text(
                     modifier = Modifier.padding(bottom = 4.dp),
-                    text = error ?: unknownErrorText,
+                    text = if (error.isNullOrEmpty()) {
+                        when (unknownErrorText) {
+                            is TextOrResource.Text -> unknownErrorText.text
+                            is TextOrResource.Resource -> context.getString(unknownErrorText.resource)
+                        }
+                    } else {
+                        when (errorText) {
+                            is TextOrResource.Text -> errorText.text
+                            is TextOrResource.Resource -> context.getString(errorText.resource)
+                        }
+                    },
                     style = Theme.typography.body3Accent,
                     textAlign = TextAlign.Center,
                     color = Theme.colors.black700
@@ -66,7 +84,13 @@ fun ErrorScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                 ) {
-                    Text(text = backText, style = Theme.typography.body3Strong)
+                    Text(
+                        text = when (backText) {
+                            is TextOrResource.Text -> backText.text
+                            is TextOrResource.Resource -> context.getString(backText.resource)
+                        },
+                        style = Theme.typography.body3Strong
+                    )
                 }
             }
         }
@@ -110,8 +134,9 @@ fun StatesErrorScreenPreview(params: ErrorScreenParams) {
     ErrorScreen(
         error = params.errorMessage,
         onBack = params.onBack,
-        titleText = "УПС!",
-        backText = "Назад",
-        unknownErrorText = "Что‑то пошло не так",
+        titleText = TextOrResource.Text("УПС!"),
+        backText = TextOrResource.Text("Назад"),
+        unknownErrorText = TextOrResource.Text("Не удалось загрузить данные"),
+        errorText = TextOrResource.Text("Что‑то пошло не так"),
     )
 }

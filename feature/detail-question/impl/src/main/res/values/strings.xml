@@ -2,7 +2,8 @@
 <resources>
     <string name="back_button_text">Назад</string>
     <string name="error_screen_title_text">УПС!</string>
-    <string name="unknown_error_screen_text">Что‑то пошло не так</string>
     <string name="on_back_button_text">Назад</string>
     <string name="guru_description_text">Guru – это эксперты YeaHub, которые помогают развивать комьюнити.</string>
+    <string name="unknown_error_screen_text">Не удалось загрузить данные</string>
+    <string name="error_screen_text">Что‑то пошло не так</string>
 </resources>
