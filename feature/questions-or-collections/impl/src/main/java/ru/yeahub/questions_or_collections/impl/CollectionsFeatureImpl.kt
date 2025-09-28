@@ -22,14 +22,13 @@ class CollectionsFeatureImpl : FeatureApi {
         pathManager: NavigationPathManager,
         modifier: Modifier
     ) {
-//        val currentPath = pathManager.getCurrentPath()
+        val currentPath = pathManager.getCurrentPath()
 
-//        val collectionsRoute = if (currentPath.isEmpty()) {
-//            getFeatureName()
-//        } else {
-//            pathManager.createChildPath(getFeatureName())
-//        }
-        val collectionsRoute = getFeatureName()
+        val collectionsRoute = if (currentPath.isEmpty()) {
+            getFeatureName()
+        } else {
+            pathManager.createChildPath(getFeatureName())
+        }
 
         navGraphBuilder.composable(route = collectionsRoute) {
             CollectionsScreen(
@@ -39,7 +38,7 @@ class CollectionsFeatureImpl : FeatureApi {
                         featureName = FeatureRoute.SpecializationsFeature.FEATURE_NAME
                     )
                     Timber.tag("CollectionFeatureImpl").d("collectionsPath = $collectionsPath")
-                    //pathManager.setCurrentPath(collectionsPath)
+                    pathManager.setCurrentPath(collectionsPath)
                     navController.navigate(collectionsPath)
                 }
             )

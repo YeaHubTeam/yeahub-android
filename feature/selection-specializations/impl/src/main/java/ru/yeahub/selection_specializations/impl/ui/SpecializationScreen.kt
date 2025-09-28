@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -59,9 +60,10 @@ import ru.yeahub.selection_specializations.impl.presentation.VoSpecilialization
 import ru.yeahub.selection_specializations.impl.presentation.mockResponse
 import timber.log.Timber
 
-val FIGMA_HORIZONTAL_PADDING = 16.dp
+val FIGMA_HORIZONTAL_PADDING = 8.dp
 val FIGMA_VERTICAL_TITLE_PADDING = 22.dp
 val FIGMA_VERTICAL_CARD_PADDING = 16.dp //need edge_to_edge = 16
+val CUSTOM_SHIMMER_HEIGHT = 16.dp
 
 @Composable
 fun SpecializationScreen(
@@ -72,32 +74,11 @@ fun SpecializationScreen(
     val screenState by specializationViewModel.screenState.collectAsStateWithLifecycle()
     val lazyListState: LazyListState = rememberLazyListState()
 
-    LaunchedEffect(lazyListState, screenState) {
-        snapshotFlow { lazyListState.layoutInfo }
-            .map { layoutInfo ->
-                val lastItem = layoutInfo.visibleItemsInfo.lastOrNull()
-                val totalItems = layoutInfo.totalItemsCount
-                val isAlmostAtEnd =
-                    lastItem != null && totalItems > 0 && lastItem.index >= totalItems - RESPONSE_THRESHOLD
-                isAlmostAtEnd
-            }.filter { shouldTriggerLoad -> shouldTriggerLoad }
-            .collect {
-                val canLoadMore = when (
-                    val currentScreenState = specializationViewModel.pagerState.value
-                ) {
-                    is SpecializationScreenState.Loaded -> {
-                        !currentScreenState.isEndReached && !currentScreenState.isLoadingNextPage
-                    }
+    HandleScroll(
+        lazyListState = lazyListState,
+        specializationViewModel = specializationViewModel,
+    )
 
-                    else -> false
-                }
-                if (canLoadMore) {
-                    specializationViewModel.onEvent(SpecializationScreenEvent.LoadNextPage)
-                }
-            }
-    }
-
-    //command handler
     HandleCommand(
         commandFlow = specializationViewModel.commands,
         onResult = onResult,
@@ -109,6 +90,38 @@ fun SpecializationScreen(
         screenState = screenState,
         onSpecialEvent = specializationViewModel::onEvent
     )
+}
+
+@Composable
+fun HandleScroll(
+    lazyListState: LazyListState,
+    specializationViewModel: SpecializationViewModel
+) {
+    LaunchedEffect(lazyListState) {
+        snapshotFlow { lazyListState.layoutInfo }
+            .map { layoutInfo ->
+                val lastItem = layoutInfo.visibleItemsInfo.lastOrNull()
+                val totalItems = layoutInfo.totalItemsCount
+                val isAlmostAtEnd =
+                    lastItem != null && totalItems > 0 && lastItem.index >= totalItems - RESPONSE_THRESHOLD
+                isAlmostAtEnd
+            }.filter { shouldTriggerLoad -> shouldTriggerLoad }
+            .collect {
+                val canLoadMore = when (
+                    val currentScreenState = specializationViewModel.screenState.value
+                ) {
+                    is SpecializationScreenState.Loaded -> {
+                        !currentScreenState.isEndReached && !currentScreenState.isLoadingNextPage
+                    }
+
+                    else -> false
+                }
+
+                if (canLoadMore) {
+                    specializationViewModel.onEvent(SpecializationScreenEvent.LoadNextPage)
+                }
+            }
+    }
 }
 
 @Composable
@@ -162,6 +175,7 @@ fun BaseSpecializationsScreen(
             PrimaryButton(
                 modifier = modifier
                     .fillMaxWidth()
+                    .height(CUSTOM_SHIMMER_HEIGHT) //no work...
                     .shimmer()
                     .background(colors.purple900),
                 shape = RoundedCornerShape(0.dp),
@@ -330,11 +344,13 @@ fun SpecializationDynamicPreview() {
     val mockSpecializationUseCase = object : GetSpecializationListUseCase {
         override suspend fun invoke(
             request: SpecializationsRequest
-        ): DomainSpecilializationListResponse =
-            mockResponse.copy(
+        ): DomainSpecilializationListResponse {
+            delay(RESPONSE_DELAY)
+            return mockResponse.copy(
                 page = request.page.toLong(),
                 limit = request.limit.toLong()
             )
+        }
     }
 
     val mockSpecializationViewModel: SpecializationViewModel = viewModelCreator {
@@ -375,5 +391,5 @@ class ViewModelFactory(
 inline fun <reified VM : ViewModel> viewModelCreator(noinline creator: ViewModelCreator): VM =
     viewModel(factory = remember { ViewModelFactory(creator) })
 
-private const val RESPONSE_DELAY = 2000L
+private const val RESPONSE_DELAY = 2500L
 private const val RESPONSE_THRESHOLD = 8

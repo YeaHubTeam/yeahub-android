@@ -13,7 +13,7 @@ import ru.yeahub.selection_specializations.impl.ui.SpecializationScreen
 import ru.yeahub.selection_specializations.impl.ui.SpecializationsScreenResult
 import timber.log.Timber
 
-class SpecializationsFeatureImpl() : FeatureApi {
+class CollectionSpecializationsFeatureImpl() : FeatureApi {
     override fun getFeatureName(): String =
         FeatureRoute.SpecializationsFeature.FEATURE_NAME
 
@@ -54,11 +54,12 @@ class SpecializationsFeatureImpl() : FeatureApi {
         pathManager: NavigationPathManager,
         modifier: Modifier
     ) {
-        val specializationPath = pathManager.createChildPath(
-            featureName = getFeatureName()
+        val specializationPath = pathManager.createDirectPath(
+            rootFeatureName = FeatureRoute.CollectionsFeature.FEATURE_NAME,
+            childFeatureName = getFeatureName()
         )
 
-        Timber.tag("SpecFeatureImpl").d("register specializationPath = $specializationPath")
+        Timber.tag("C_SpecFeatureImpl").d("register specializationPath = $specializationPath")
 
         navGraphBuilder.composable(specializationPath) { backStackEntry ->
             DefaultSpecializationScreen(
@@ -79,54 +80,25 @@ class SpecializationsFeatureImpl() : FeatureApi {
         specId: Long,
         specTitle: String
     ) {
-        val nextRoute =
-            buildNextRoute(
-                pathManager = pathManager,
-                specId = specId,
-                specTitle = specTitle
+        val createdPath =
+            pathManager.createParametrizedPath(
+                featureName = FeatureRoute.PublicCollectionsFeature.FEATURE_NAME,
+                "specId",
+                "title"
             )
 
-        Timber.tag("SpecFeatureImpl").d(
-            "SpecializationsFeatureImpl nextRoute: $nextRoute"
+        val concretePath = pathManager.createConcretePath(
+            createdPath,
+            specId.toString(),
+            specTitle
         )
 
-        pathManager.setCurrentPath(nextRoute)
-        navController.navigate(nextRoute)
-    }
+        Timber.tag("SpecFeatureImpl").d(
+            "CollectionSpecializationsFeatureImpl nextRoute: $concretePath"
+        )
 
-    private fun buildNextRoute(
-        pathManager: NavigationPathManager,
-        specId: Long,
-        specTitle: String
-    ): String {
-        val currentPath = pathManager.getCurrentPath()
-
-        return when {
-            currentPath.contains("questions") -> {
-                //universal dummy (from questions module)
-                "questions" + "/" +
-                FeatureRoute.PublicQuestionsFeature.FEATURE_NAME +
-                "/" + "All"
-            }
-
-            currentPath.contains("collections") -> {
-                val createdPath = pathManager.createParametrizedPath(
-                    featureName = FeatureRoute.PublicCollectionsFeature.FEATURE_NAME,
-                    "specId",
-                    "title"
-                )
-
-                val concretePath = pathManager.createConcretePath(
-                    createdPath,
-                    specId.toString(),
-                    specTitle
-                )
-
-                concretePath
-            }
-
-            else -> "home/"
-        }
+        pathManager.setCurrentPath(concretePath)
+        navController.navigate(concretePath)
     }
 
     /**

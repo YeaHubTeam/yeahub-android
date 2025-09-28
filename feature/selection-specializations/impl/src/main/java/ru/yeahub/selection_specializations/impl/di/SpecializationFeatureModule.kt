@@ -4,7 +4,8 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import ru.yeahub.navigation_api.FeatureApi
-import ru.yeahub.selection_specializations.impl.SpecializationsFeatureImpl
+import ru.yeahub.selection_specializations.impl.CollectionSpecializationsFeatureImpl
+import ru.yeahub.selection_specializations.impl.QuestionSpecializationsFeatureImpl
 import ru.yeahub.selection_specializations.impl.data.SpecializationSelectionDataToDomainMapper
 import ru.yeahub.selection_specializations.impl.data.SpecializationsRepositoryImpl
 import ru.yeahub.selection_specializations.impl.domain.GetSpecializationListUseCase
@@ -38,6 +39,10 @@ val specializationFeatureModule = module {
     }
 
     single {
-        SpecializationsFeatureImpl()
+        QuestionSpecializationsFeatureImpl()
+    } bind FeatureApi::class
+
+    single {
+        CollectionSpecializationsFeatureImpl()
     } bind FeatureApi::class
 }

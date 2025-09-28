@@ -8,6 +8,7 @@ import ru.yeahub.navigation_api.FeatureApi
 import ru.yeahub.navigation_api.FeatureRoute
 import ru.yeahub.navigation_api.NavigationPathManager
 import ru.yeahub.questions_or_collections.impl.screen.QuestionsScreen
+import timber.log.Timber
 
 class QuestionsFeatureImpl : FeatureApi {
 
@@ -21,28 +22,27 @@ class QuestionsFeatureImpl : FeatureApi {
         pathManager: NavigationPathManager,
         modifier: Modifier
     ) {
-//        val currentPath = pathManager.getCurrentPath()
-//        val questionsRoute = if (currentPath.isEmpty()) {
-//            getFeatureName()
-//        } else {
-//            pathManager.createChildPath(getFeatureName())
-//        }
-        val questionsRoute = getFeatureName()
+        val currentPath = pathManager.getCurrentPath()
+
+        val questionsRoute = if (currentPath.isEmpty()) {
+            getFeatureName()
+        } else {
+            pathManager.createChildPath(getFeatureName())
+        }
 
         navGraphBuilder.composable(route = questionsRoute) {
             QuestionsScreen(
                 onNextClick = {
                     //NO WORK - nav to collections/public_collections/{specId}/{specTitle}
-//                    pathManager.setCurrentPath(getFeatureName())
-//                    val questionsPath = pathManager.createChildPath(
-//                        featureName = FeatureRoute.SpecializationsFeature.FEATURE_NAME
-//                    )
-//                    Timber.tag("QuestionFeatureImpl").d("questionsPath = $questionsPath")
-                    val questionsPath =
-                        "questions" + "/" +
-                        FeatureRoute.PublicQuestionsFeature.FEATURE_NAME +
-                        "/" + "All"
-
+                    pathManager.setCurrentPath(getFeatureName())
+                    val questionsPath = pathManager.createChildPath(
+                        featureName = FeatureRoute.SpecializationsFeature.FEATURE_NAME
+                    )
+//                    val questionsPath =
+//                        "questions" + "/" +
+//                        FeatureRoute.PublicQuestionsFeature.FEATURE_NAME +
+//                        "/" + "All"
+                    Timber.tag("QuestionFeatureImpl").d("questionsPath = $questionsPath")
                     pathManager.setCurrentPath(questionsPath)
                     navController.navigate(questionsPath)
                 }

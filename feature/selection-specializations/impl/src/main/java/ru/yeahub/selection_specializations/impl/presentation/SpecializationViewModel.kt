@@ -23,7 +23,7 @@ import ru.yeahub.selection_specializations.impl.presentation.SpecializationSelec
 import ru.yeahub.selection_specializations.impl.presentation.SpecializationSelectionScreenMapper.getScreenState
 import timber.log.Timber
 
-private const val TIME_TO_CLEAN_UP_RESOURCES = 500L
+private const val TIME_TO_CLEAN_UP_RESOURCES = 5000L
 
 class SpecializationViewModel(
     private val getSpecializationListUseCase: GetSpecializationListUseCase,
