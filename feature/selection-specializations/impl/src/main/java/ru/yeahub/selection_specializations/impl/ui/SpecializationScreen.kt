@@ -180,8 +180,9 @@ fun BaseSpecializationsScreen(
                     .background(colors.purple900),
                 shape = RoundedCornerShape(0.dp),
                 contentPadding = PaddingValues(0.dp),
-                onClick = {}
-            ) {}
+                onClick = {},
+                content = {},
+            )
         }
     }
 }
