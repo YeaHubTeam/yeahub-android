@@ -12,6 +12,7 @@ import ru.yeahub.network_impl.networkModule
 import ru.yeahub.public_collections.impl.di.CollectionsFeatureModule
 import ru.yeahub.public_questions.impl.data.di.questionsModule
 import ru.yeahub.questions_or_collections.impl.collectionsAndQuestionsFeatureModule
+import ru.yeahub.selection_specializations.impl.di.specializationFeatureModule
 import timber.log.Timber
 
 /**
@@ -51,7 +52,8 @@ class Application : Application() {
                 detailQuestionFeatureModule,
                 CollectionsFeatureModule,
                 detailQuestionFeatureModule,
-                collectionsAndQuestionsFeatureModule
+                collectionsAndQuestionsFeatureModule,
+                specializationFeatureModule
             )
         }
         // проверка, что модули загружены

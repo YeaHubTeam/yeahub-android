@@ -8,6 +8,7 @@ import ru.yeahub.navigation_api.FeatureApi
 import ru.yeahub.navigation_api.FeatureRoute
 import ru.yeahub.navigation_api.NavigationPathManager
 import ru.yeahub.questions_or_collections.impl.screen.CollectionsScreen
+import timber.log.Timber
 
 class CollectionsFeatureImpl : FeatureApi {
 
@@ -32,11 +33,13 @@ class CollectionsFeatureImpl : FeatureApi {
         navGraphBuilder.composable(route = collectionsRoute) {
             CollectionsScreen(
                 onNextClick = {
-                    val questions =
-                        "collections" + "/" + FeatureRoute
-                            .PublicCollectionsFeature
-                            .FEATURE_NAME + "/" + "11" + "/" + "react"
-                    navController.navigate(questions)
+                    pathManager.setCurrentPath(getFeatureName())
+                    val collectionsPath = pathManager.createChildPath(
+                        featureName = FeatureRoute.SpecializationsFeature.FEATURE_NAME
+                    )
+                    Timber.tag("CollectionFeatureImpl").d("collectionsPath = $collectionsPath")
+                    pathManager.setCurrentPath(collectionsPath)
+                    navController.navigate(collectionsPath)
                 }
             )
         }

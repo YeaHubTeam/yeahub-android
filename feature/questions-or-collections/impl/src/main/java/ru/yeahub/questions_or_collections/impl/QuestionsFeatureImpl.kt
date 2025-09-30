@@ -8,6 +8,7 @@ import ru.yeahub.navigation_api.FeatureApi
 import ru.yeahub.navigation_api.FeatureRoute
 import ru.yeahub.navigation_api.NavigationPathManager
 import ru.yeahub.questions_or_collections.impl.screen.QuestionsScreen
+import timber.log.Timber
 
 class QuestionsFeatureImpl : FeatureApi {
 
@@ -22,6 +23,7 @@ class QuestionsFeatureImpl : FeatureApi {
         modifier: Modifier
     ) {
         val currentPath = pathManager.getCurrentPath()
+
         val questionsRoute = if (currentPath.isEmpty()) {
             getFeatureName()
         } else {
@@ -31,9 +33,18 @@ class QuestionsFeatureImpl : FeatureApi {
         navGraphBuilder.composable(route = questionsRoute) {
             QuestionsScreen(
                 onNextClick = {
-                    val questions =
-                        "questions" + "/" + FeatureRoute.PublicQuestionsFeature.FEATURE_NAME + "/" + "All"
-                    navController.navigate(questions)
+                    //NO WORK - nav to collections/public_collections/{specId}/{specTitle}
+                    pathManager.setCurrentPath(getFeatureName())
+                    val questionsPath = pathManager.createChildPath(
+                        featureName = FeatureRoute.SpecializationsFeature.FEATURE_NAME
+                    )
+//                    val questionsPath =
+//                        "questions" + "/" +
+//                        FeatureRoute.PublicQuestionsFeature.FEATURE_NAME +
+//                        "/" + "All"
+                    Timber.tag("QuestionFeatureImpl").d("questionsPath = $questionsPath")
+                    pathManager.setCurrentPath(questionsPath)
+                    navController.navigate(questionsPath)
                 }
             )
         }

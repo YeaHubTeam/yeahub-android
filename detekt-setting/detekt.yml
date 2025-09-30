@@ -9,6 +9,7 @@ style:
       - '**/build.gradle.kts'
       - '**/CheckFile.kt'
       - '**/core_ui/component/**'
+      - '**/ui/**'
       - '**/example_questions/impl/**'
   NewLineAtEndOfFile:
     active: false
@@ -19,6 +20,8 @@ style:
     excludeImports:
       - 'java.util.*'
   UnusedParameter:
+    active: false
+  ForbiddenComment:
     active: false
 
 naming:

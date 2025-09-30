@@ -7,6 +7,8 @@ interface HomeScreenApi {
     fun HomeScreen(
         onProfileClick: (userId: String, userName: String) -> Unit,
         onQuestionClick: () -> Unit,
-        onDetailsClick: (itemId: String, title: String) -> Unit
+        onDetailsClick: (itemId: String, title: String) -> Unit,
+        onSpecializationsAfterCollectionsClick: () -> Unit,
+        onSpecializationsAfterBaseQuestionClick: () -> Unit,
     )
 } 
