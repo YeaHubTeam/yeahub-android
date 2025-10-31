@@ -140,20 +140,21 @@ fun BaseSpecializationsScreen(
     ) {
         val context = LocalContext.current
 
-        Text(
-            modifier = modifier.padding(
-                vertical = FIGMA_VERTICAL_TITLE_PADDING,
-                horizontal = FIGMA_HORIZONTAL_PADDING
-            ),
-            style = LocalAppTypography.current.body5Strong,
-            text = headerText.getString(context),
-        )
-
         LazyColumn(
             modifier = modifier.padding(horizontal = FIGMA_HORIZONTAL_PADDING),
             state = listState,
             verticalArrangement = Arrangement.spacedBy(FIGMA_VERTICAL_CARD_PADDING)
         ) {
+            item {
+                Text(
+                    modifier = modifier.padding(
+                        vertical = FIGMA_VERTICAL_TITLE_PADDING,
+                        horizontal = FIGMA_HORIZONTAL_PADDING
+                    ),
+                    style = LocalAppTypography.current.body5Strong,
+                    text = headerText.getString(context),
+                )
+            }
             items(
                 items = list,
                 key = { it.id }

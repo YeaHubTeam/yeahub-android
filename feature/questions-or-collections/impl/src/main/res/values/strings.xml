@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="speciality_text">Готовьтесь к собеседованию с подборками вопросов из крупных IT-компаний. Узнайте, какие вопросы задают в Сбере, Т-Банке, Яндексе, Авито, Ozon, VK и других компаниях\n</string>
-    <string name="choose_a_speciality">Выбрать специальность\n\n</string>
+    <string name="choose_a_speciality">Выбрать специальность</string>
     <string name="questions_pool">База Вопросов</string>
     <string name="collections">Коллекции</string>
 </resources>

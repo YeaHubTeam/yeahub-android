@@ -1,11 +1,10 @@
 package ru.yeahub.example_home.impl.presentation.view
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -85,30 +84,29 @@ fun QuestionsMainScreenContent(
 
         //Основной контент
         is QuestionMainScreenState.Content -> {
-            Column(
+            LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(top = 24.dp)
             ) {
                 //Заголовок
-                Text(
-                    text = stringResource(id = R.string.question_title),
-                    style = Theme.typography.head5,
-                    color = Theme.colors.black900,
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                //Описание
-                Text(
-                    text = stringResource(id = R.string.question_description),
-                    style = Theme.typography.body7,
-                    color = Theme.colors.black900,
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-
-                //Кнопки для 'База вопросов' & 'Коллекции'
-                state.items.forEach { item ->
+                item {
+                    Text(
+                        text = stringResource(id = R.string.question_title),
+                        style = Theme.typography.head5,
+                        color = Theme.colors.black900,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                }
+                item {
+                    Text(
+                        text = stringResource(id = R.string.question_description),
+                        style = Theme.typography.body7,
+                        color = Theme.colors.black900,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                }
+                items(items = state.items, key = { it.imageRes }) { item ->
                     QuestionCard(
                         title = item.title.getString(context),
                         description = item.description.getString(context),
