@@ -40,9 +40,11 @@ class QuestionSpecializationsFeatureImpl() : FeatureApi {
                         handleSpecializationsNavigation(
                             pathManager = pathManager,
                             navController = navController,
-                            //specId = result.specId,
-                            //specTitle = result.specTitle
+                            specId = result.specId.toString(),
+                            specTitle = result.specTitle
                         )
+                        Timber.tag("Test123")
+                            .d(" Title - ${result.specTitle} idSpec - ${result.specId}")
                     }
                 }
             }
@@ -78,13 +80,11 @@ class QuestionSpecializationsFeatureImpl() : FeatureApi {
     fun handleSpecializationsNavigation(
         pathManager: NavigationPathManager,
         navController: NavHostController,
-        //specId: Long,
-        //specTitle: String
+        specId: String,
+        specTitle: String
     ) {
-        val nextRoute =
-            "questions" + "/" +
-                    FeatureRoute.PublicQuestionsFeature.FEATURE_NAME +
-                    "/" + "All"
+        val nextRoute = "questions/public_questions?tittle=$specTitle" +
+                "&idSpecialization=$specId"
 
         Timber.tag("SpecFeatureImpl").d(
             "QuestionSpecializationsFeatureImpl nextRoute: $nextRoute"
