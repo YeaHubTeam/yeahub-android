@@ -6,7 +6,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
@@ -87,8 +86,7 @@ fun AppNavigation(
         modifier = modifier,
         bottomBar = {
             NavigationBar(
-                modifier = Modifier.clip(RoundedCornerShape(12.dp))
-                    .height(100.dp),
+                modifier = Modifier.clip(RoundedCornerShape(12.dp)),
                 containerColor = Theme.colors.purple700
             ) {
                 navItems.forEach { item ->
@@ -96,7 +94,7 @@ fun AppNavigation(
                         derivedStateOf { selectedRoute == item.route }
                     }
                     NavigationBarItem(
-                        modifier = Modifier.padding(8.dp),
+                        modifier = Modifier.padding(horizontal = 8.dp),
                         colors = NavigationBarItemDefaults.colors(
                             selectedIconColor = Theme.colors.purple700,
                             selectedTextColor = Theme.colors.purple700,
