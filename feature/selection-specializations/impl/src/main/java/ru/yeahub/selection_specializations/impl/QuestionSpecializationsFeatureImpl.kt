@@ -1,5 +1,6 @@
 package ru.yeahub.selection_specializations.impl
 
+import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
@@ -83,7 +84,8 @@ class QuestionSpecializationsFeatureImpl() : FeatureApi {
         specId: String,
         specTitle: String
     ) {
-        val nextRoute = "questions/public_questions?tittle=$specTitle" +
+        val encodedTitle = Uri.encode(specTitle)
+        val nextRoute = "questions/public_questions?tittle=$encodedTitle" +
                 "&idSpecialization=$specId"
 
         Timber.tag("SpecFeatureImpl").d(
