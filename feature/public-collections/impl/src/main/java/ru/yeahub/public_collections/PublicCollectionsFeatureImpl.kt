@@ -67,9 +67,8 @@ class PublicCollectionsFeatureImpl : FeatureApi {
         collectionId: String,
         title: String
     ) {
-        val questionsRoute =
-            "collections" + "/" + FeatureRoute.PublicQuestionsFeature.FEATURE_NAME +
-                    "/" + title + "?idCollection=" + collectionId
+        val questionsRoute = "collections/${FeatureRoute.PublicQuestionsFeature.FEATURE_NAME}" +
+                "?tittle=$title" + "&idCollection=$collectionId"
 
         Timber.d(
             "PublicCollectionsFeatureImpl" +

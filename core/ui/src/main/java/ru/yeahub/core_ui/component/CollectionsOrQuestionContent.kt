@@ -2,14 +2,16 @@ package ru.yeahub.core_ui.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -34,56 +36,52 @@ fun CollectionsOrQuestionContent(
     onClick: () -> Unit,
 ) {
     val context = LocalContext.current
-
-    LazyColumn(
+    val scrollState = rememberScrollState()
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(start = 16.dp, top = 24.dp, end = 16.dp, bottom = 24.dp)
+            .verticalScroll(scrollState)
     ) {
-        item {
+        Text(
+            text = state.title.getString(context),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp),
+            color = Theme.colors.black900,
+            style = Theme.typography.body5Strong
+        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    color = Theme.colors.white900,
+                    shape = RoundedCornerShape(8.dp)
+                )
+                .padding(all = 16.dp)
+        ) {
+            Image(
+                painterResource(state.image),
+                contentDescription = null,
+            )
+            Spacer(modifier = Modifier.width(16.dp))
             Text(
-                text = state.title.getString(context),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 16.dp),
-                color = Theme.colors.black900,
-                style = Theme.typography.body5Strong
+                text = state.description.getString(context),
+                style = Theme.typography.body3Accent
             )
         }
-        item {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(
-                        color = Theme.colors.white900,
-                        shape = RoundedCornerShape(8.dp)
-                    )
-                    .padding(all = 16.dp)
+
+        PrimaryButton(
+            onClick = onClick,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp)
             ) {
-                Image(
-                    painterResource(state.image),
-                    contentDescription = null,
-                )
-                Spacer(modifier = Modifier.width(16.dp))
-                Text(
-                    text = state.description.getString(context),
-                    style = Theme.typography.body3Accent
-                )
-            }
-        }
-        item {
-            PrimaryButton(
-                onClick = onClick,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 16.dp)
-            ) {
-                Text(
-                    text = state.buttonText.getString(context),
-                    color = Theme.colors.white900,
-                    style = Theme.typography.body3Strong,
-                )
-            }
+            Text(
+                text = state.buttonText.getString(context),
+                color = Theme.colors.white900,
+                style = Theme.typography.body3Strong
+            )
         }
     }
 }

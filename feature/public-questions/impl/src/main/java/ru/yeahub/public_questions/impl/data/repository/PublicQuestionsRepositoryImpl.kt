@@ -13,15 +13,15 @@ class PublicQuestionsRepositoryImpl(
     override suspend fun getPublicQuestionsQuestion(
         page: Int,
         limit: Int,
-        skills: List<String>?,
         skillFilter: String?,
-        idCollection: Int?
+        idCollection: Int?,
+        idSpecialization: Int?
     ): PublicQuestionsModel {
         val response = remoteDataSource.requestPublicQuestionsApi(
             page = page,
             limit = limit,
-            skills = skills,
             skillFilterMode = skillFilter,
+            idSpecialization = idSpecialization,
             idCollection = idCollection
         )
         return mapper.mapGetPublicQuestionsResponseToDomain(response)
