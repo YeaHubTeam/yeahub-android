@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="selection_specializations_list_header">IT Specilializations</string>
-    <string name="selection_specialization_loading_specializations">Loading specializations...</string>
-    <string name="selection_specializations_header_text">Specializations</string>
-    <string name="selection_specializations_top_bar_title">Selection specializations</string>
+    <string name="selection_specializations_top_bar_header">Выбор специальности</string>
+    <string name="selection_specialization_loading_specializations">Загрузка специальностей...</string>
+    <string name="selection_specializations_list_header_text">IT-специальность</string>
+    <string name="selection_specializations_error_message">Что-то пошло не так...</string>
+    <string name="selection_specializations_error_title">Ошибка</string>
+    <string name="selection_specializations_error_back_button">Назад</string>
+    <string name="selection_specializations_unknown_error_text">Ошибка загрузки данных</string>
 </resources>
