@@ -26,7 +26,7 @@ class QuestionSpecializationsFeatureImpl() : FeatureApi {
         pathManager: NavigationPathManager,
     ) {
         SpecializationScreen(
-            headerText = TextOrResource.Resource(R.string.selection_specializations_list_header),
+            headerText = TextOrResource.Resource(R.string.selection_specializations_top_bar_header),
             onResult = { result ->
                 when (result) {
                     SpecializationsScreenResult.NavigateBack -> {
