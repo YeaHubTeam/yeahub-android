@@ -75,12 +75,12 @@ fun PublicQuestionsScreen(
     onResult: (PublicQuestionsResult) -> Unit,
     tittleTopAppBar: String,
     idCollection: Int?,
-    skills: List<String>?,
-    skillFilter: String = "all",
+    idSpecialization: Int?,
+    skillFilter: String = "ANY",
     lazyListState: LazyListState = rememberLazyListState()
 ) {
     val viewModel: PublicQuestionsViewModel = koinViewModel(
-        parameters = { parametersOf(skills, skillFilter, idCollection) }
+        parameters = { parametersOf(skillFilter, idSpecialization, idCollection) }
     )
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
 
@@ -125,7 +125,7 @@ fun PublicQuestionsScreen(
             screenState = screenState,
             listState = lazyListState,
             onRetryLoadInitial = { viewModel.onEvent(PublicQuestionsScreenEvent.LoadInitial) },
-            nameQuestions = skillFilter,
+            nameQuestions = tittleTopAppBar,
             onMoreCLick = { id ->
                 viewModel.onEvent(
                     PublicQuestionsScreenEvent.OnMoreClick(

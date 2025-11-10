@@ -10,9 +10,9 @@ class GetPublicQuestionsUseCase(private val repository: PublicQuestionsRepositor
         return repository.getPublicQuestionsQuestion(
             page = requestPublicQuestionsData.page,
             limit = requestPublicQuestionsData.limit,
-            skills = requestPublicQuestionsData.skills,
             skillFilter = requestPublicQuestionsData.skillFilter,
             idCollection = requestPublicQuestionsData.idCollection,
+            idSpecialization = requestPublicQuestionsData.idSpecialization,
         )
     }
 }
