@@ -29,4 +29,5 @@ sealed interface PublicCollectionsScreenState {
         val currentList: List<Loaded.PublicCollectionVO>,
         val throwable: Throwable
     ) : PublicCollectionsScreenState
+    data class Empty(override val header: TextOrResource) : PublicCollectionsScreenState
 }

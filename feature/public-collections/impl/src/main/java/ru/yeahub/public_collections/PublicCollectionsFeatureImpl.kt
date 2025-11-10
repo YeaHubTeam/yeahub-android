@@ -1,5 +1,6 @@
 package ru.yeahub.public_collections
 
+import android.net.Uri
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -11,6 +12,8 @@ import ru.yeahub.navigation_api.NavigationPathManager
 import ru.yeahub.public_collections.impl.presentation.intents.PublicCollectionsScreenResult
 import ru.yeahub.public_collections.impl.ui.PublicCollectionsScreen
 import timber.log.Timber
+
+private const val TAG = "Viva"
 
 class PublicCollectionsFeatureImpl : FeatureApi {
     override fun getFeatureName(): String = FeatureRoute.PublicCollectionsFeature.FEATURE_NAME
@@ -39,6 +42,7 @@ class PublicCollectionsFeatureImpl : FeatureApi {
                 ?.getLong(SPECIALIZATION_ID) ?: 0
             val header = backStackEntry.arguments
                 ?.getString(HEADER) ?: ""
+            Timber.tag(TAG).d("Отрпавляем данные в фичу коллекций: $specializationId, $header")
             PublicCollectionsScreen(
                 onResult = { result ->
                     when (result) {
@@ -67,9 +71,9 @@ class PublicCollectionsFeatureImpl : FeatureApi {
         collectionId: String,
         title: String
     ) {
-        val questionsRoute =
-            "collections" + "/" + FeatureRoute.PublicQuestionsFeature.FEATURE_NAME +
-                    "/" + title + "?idCollection=" + collectionId
+        val encodedTitle = Uri.encode(collectionId)
+        val questionsRoute = "collections/${FeatureRoute.PublicQuestionsFeature.FEATURE_NAME}" +
+                "?tittle=$title" + "&idCollection=$encodedTitle"
 
         Timber.d(
             "PublicCollectionsFeatureImpl" +

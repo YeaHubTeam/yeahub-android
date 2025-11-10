@@ -34,14 +34,21 @@ class PublicCollectionsScreenMapper {
             }
 
             is YeaHubPagerState.Loaded -> {
-                PublicCollectionsScreenState.Loaded(
-                    collectionPublicCollectionVOList = mapCollectionResponseEntityListToResponseVOList(
-                        pagerState.items
-                    ),
-                    isEndReached = pagerState.isEndReached,
-                    isLoadingNextPage = false,
-                    header = TextOrResource.Text(header)
-                )
+                if (pagerState.items.isEmpty()) {
+                    // Состояние пустого экрана
+                    PublicCollectionsScreenState.Empty(
+                        header = TextOrResource.Text(header)
+                    )
+                } else {
+                    PublicCollectionsScreenState.Loaded(
+                        collectionPublicCollectionVOList = mapCollectionResponseEntityListToResponseVOList(
+                            pagerState.items
+                        ),
+                        isEndReached = pagerState.isEndReached,
+                        isLoadingNextPage = false,
+                        header = TextOrResource.Text(header)
+                    )
+                }
             }
 
             is YeaHubPagerState.Error -> {
