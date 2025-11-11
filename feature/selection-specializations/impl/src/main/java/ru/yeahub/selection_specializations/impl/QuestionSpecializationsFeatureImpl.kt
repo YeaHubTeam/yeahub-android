@@ -1,5 +1,6 @@
 package ru.yeahub.selection_specializations.impl
 
+import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
@@ -26,7 +27,7 @@ class QuestionSpecializationsFeatureImpl() : FeatureApi {
         pathManager: NavigationPathManager,
     ) {
         SpecializationScreen(
-            headerText = TextOrResource.Resource(R.string.selection_specializations_list_header),
+            headerText = TextOrResource.Resource(R.string.selection_specializations_top_bar_header),
             onResult = { result ->
                 when (result) {
                     SpecializationsScreenResult.NavigateBack -> {
@@ -40,9 +41,11 @@ class QuestionSpecializationsFeatureImpl() : FeatureApi {
                         handleSpecializationsNavigation(
                             pathManager = pathManager,
                             navController = navController,
-                            //specId = result.specId,
-                            //specTitle = result.specTitle
+                            specId = result.specId.toString(),
+                            specTitle = result.specTitle
                         )
+                        Timber.tag("Test123")
+                            .d(" Title - ${result.specTitle} idSpec - ${result.specId}")
                     }
                 }
             }
@@ -78,13 +81,12 @@ class QuestionSpecializationsFeatureImpl() : FeatureApi {
     fun handleSpecializationsNavigation(
         pathManager: NavigationPathManager,
         navController: NavHostController,
-        //specId: Long,
-        //specTitle: String
+        specId: String,
+        specTitle: String
     ) {
-        val nextRoute =
-            "questions" + "/" +
-                    FeatureRoute.PublicQuestionsFeature.FEATURE_NAME +
-                    "/" + "All"
+        val encodedTitle = Uri.encode(specTitle)
+        val nextRoute = "questions/public_questions?tittle=$encodedTitle" +
+                "&idSpecialization=$specId"
 
         Timber.tag("SpecFeatureImpl").d(
             "QuestionSpecializationsFeatureImpl nextRoute: $nextRoute"

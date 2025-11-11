@@ -35,7 +35,6 @@ class PublicCollectionsScreenMapper {
 
             is YeaHubPagerState.Loaded -> {
                 if (pagerState.items.isEmpty()) {
-                    // Состояние пустого экрана
                     PublicCollectionsScreenState.Empty(
                         header = TextOrResource.Text(header)
                     )

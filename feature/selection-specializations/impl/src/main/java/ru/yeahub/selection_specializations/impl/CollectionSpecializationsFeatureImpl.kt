@@ -1,5 +1,6 @@
 package ru.yeahub.selection_specializations.impl
 
+import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
@@ -25,7 +26,7 @@ class CollectionSpecializationsFeatureImpl() : FeatureApi {
         pathManager: NavigationPathManager,
     ) {
         SpecializationScreen(
-            headerText = TextOrResource.Resource(R.string.selection_specializations_list_header),
+            headerText = TextOrResource.Resource(R.string.selection_specializations_top_bar_header),
             onResult = { result ->
                 when (result) {
                     SpecializationsScreenResult.NavigateBack -> {
@@ -86,11 +87,11 @@ class CollectionSpecializationsFeatureImpl() : FeatureApi {
                 "specId",
                 "title"
             )
-
+        val encodedTitle = Uri.encode(specTitle)
         val concretePath = pathManager.createConcretePath(
             createdPath,
             specId.toString(),
-            specTitle
+            encodedTitle
         )
 
         Timber.tag("SpecFeatureImpl").d(

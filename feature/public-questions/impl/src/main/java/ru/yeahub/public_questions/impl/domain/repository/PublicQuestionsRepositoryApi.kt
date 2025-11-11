@@ -7,8 +7,8 @@ interface PublicQuestionsRepositoryApi {
     suspend fun getPublicQuestionsQuestion(
         page: Int,
         limit: Int,
-        skills: List<String>?,
         skillFilter: String?,
-        idCollection: Int?
+        idCollection: Int?,
+        idSpecialization: Int?
     ): PublicQuestionsModel
 }

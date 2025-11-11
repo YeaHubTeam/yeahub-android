@@ -7,8 +7,8 @@ interface PublicQuestionsRemoteDataSourceApi {
     suspend fun requestPublicQuestionsApi(
         page: Int,
         limit: Int,
-        skills: List<String>?,
         skillFilterMode: String?,
-        idCollection: Int?
+        idCollection: Int?,
+        idSpecialization: Int?
     ): GetPublicQuestionsResponse
 }
