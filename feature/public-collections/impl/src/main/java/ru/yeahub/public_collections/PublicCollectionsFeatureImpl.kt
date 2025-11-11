@@ -39,7 +39,6 @@ class PublicCollectionsFeatureImpl : FeatureApi {
                 ?.getLong(SPECIALIZATION_ID) ?: 0
             val header = backStackEntry.arguments
                 ?.getString(HEADER) ?: ""
-            Timber.tag(TAG).d("Отрпавляем данные в фичу коллекций: $specializationId, $header")
             PublicCollectionsScreen(
                 onResult = { result ->
                     when (result) {
