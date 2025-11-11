@@ -67,7 +67,7 @@ val CUSTOM_SHIMMER_HEIGHT = 16.dp
 
 @Composable
 fun SpecializationScreen(
-    headerText: TextOrResource = TextOrResource.Resource(R.string.selection_specializations_list_header),
+    headerText: TextOrResource = TextOrResource.Resource(R.string.selection_specializations_top_bar_header),
     onResult: (SpecializationsScreenResult) -> Unit
 ) {
     val specializationViewModel: SpecializationViewModel = koinViewModel()
@@ -220,7 +220,7 @@ fun ScreenUI(
                         SpecializationsLoadingScreen(padding = padding)
                     } else {
                         BaseSpecializationsScreen(
-                            headerText = headerText,
+                            headerText = TextOrResource.Resource(R.string.selection_specializations_list_header_text),
                             onItemClick = { id, title ->
                                 onSpecialEvent(
                                     SpecializationScreenEvent.OnSpecialClick(
@@ -244,10 +244,14 @@ fun ScreenUI(
                     ErrorScreen(
                         error = screenState.throwable.message
                             ?: defaultErrorText.getString(context),
-                        errorText = TextOrResource.Text("Something went wrong..."),
-                        titleText = TextOrResource.Text("Crash"),
-                        backText = TextOrResource.Text("Back"),
-                        unknownErrorText = TextOrResource.Text("Loading data failed"),
+                        errorText = TextOrResource
+                            .Resource(R.string.selection_specializations_error_message),
+                        titleText = TextOrResource
+                            .Resource(R.string.selection_specializations_error_title),
+                        backText = TextOrResource
+                            .Resource(R.string.selection_specializations_error_back_button),
+                        unknownErrorText = TextOrResource
+                            .Resource(R.string.selection_specializations_unknown_error_text),
                         onBack = { onSpecialEvent(SpecializationScreenEvent.OnBackClick) }
                     )
                 }
@@ -332,7 +336,7 @@ fun SpecializationsScreenPreview(
     @PreviewParameter(ListSpecializationScreenProvider::class) params: SpecializationScreenParams
 ) {
     ScreenUI(
-        headerText = TextOrResource.Resource(R.string.selection_specializations_list_header),
+        headerText = TextOrResource.Resource(R.string.selection_specializations_top_bar_header),
         screenState = params.screenState,
         onSpecialEvent = { _ -> Timber.tag("Preview").d("pressed item") },
         listState = rememberLazyListState()

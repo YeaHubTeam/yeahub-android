@@ -25,9 +25,9 @@ import ru.yeahub.public_questions.impl.presentation.screen.PublicQuestionsScreen
 class PublicQuestionsViewModel(
     private val getPublicQuestionsUseCase: GetPublicQuestionsUseCase,
     private val mapper: PublicQuestionDomainToPresentationMapper,
-    private val skills: List<String>?,
     private val skillFilter: String?,
-    private val idCollection: Int?
+    private val idCollection: Int?,
+    private val idSpecialization: Int?
 ) : BaseViewModel() {
     private val loader =
         object : YeaHubPagerLoader<PublicQuestionsModel, RequestPublicQuestionsData> {
@@ -48,9 +48,9 @@ class PublicQuestionsViewModel(
         requestData = RequestPublicQuestionsData(
             page = 1,
             limit = 10,
-            skills = skills,
             skillFilter = skillFilter,
-            idCollection = idCollection,
+            idSpecialization = idSpecialization,
+            idCollection = idCollection
         ),
         data = { it.data },
         total = { it.total },
@@ -113,6 +113,7 @@ class PublicQuestionsViewModel(
             is PublicQuestionsScreenEvent.OnBackClick -> onBackClick()
         }
     }
+
     init {
         loadInitial()
     }
@@ -148,4 +149,5 @@ class PublicQuestionsViewModel(
         }
     }
 }
+
 private const val TIME_TO_CLEAN_UP_RESOURCES = 500L
