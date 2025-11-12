@@ -5,13 +5,15 @@ import ru.yeahub.public_collections.impl.data.mapper.PublicCollectionDataToDomai
 import ru.yeahub.public_collections.impl.domain.entity.GetCollectionsResponseEntity
 import ru.yeahub.public_collections.impl.domain.repository.PublicCollectionRepository
 import ru.yeahub.public_collections.impl.presentation.viewmodel.PublicCollectionsRequest
+import timber.log.Timber
 
+private const val TAG = "Viva"
 class PublicCollectionRepositoryImpl(
     private val networkProvider: NetworkProvider,
     private val publicCollectionDataToDomainMapper: PublicCollectionDataToDomainMapper
 ) : PublicCollectionRepository {
-    override suspend fun getPublicCollection(request: PublicCollectionsRequest): GetCollectionsResponseEntity =
-        publicCollectionDataToDomainMapper.dataListToDomainList(
+    override suspend fun getPublicCollection(request: PublicCollectionsRequest): GetCollectionsResponseEntity {
+        val result = publicCollectionDataToDomainMapper.dataListToDomainList(
             networkProvider.apiService.getPublicCollections(
                 page = request.page,
                 limit = request.limit,
@@ -19,4 +21,7 @@ class PublicCollectionRepositoryImpl(
                 isFree = request.isFree
             )
         )
+        Timber.tag(TAG).d("Получаем данные в коллекции: $result")
+        return result
+    }
 }

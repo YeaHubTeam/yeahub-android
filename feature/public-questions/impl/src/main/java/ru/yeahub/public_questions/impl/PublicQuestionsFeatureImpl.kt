@@ -38,7 +38,7 @@ class PublicQuestionsFeatureImpl : FeatureApi {
         modifier: Modifier
     ) {
         val currentTabPrefix = pathManager.getCurrentPath()
-        val featureName = getFeatureName() // "public_questions"
+        val featureName = getFeatureName()
 
         val routePattern = "$currentTabPrefix/$featureName?" +
                 "$TITTLE_TOP_APP_BAR={$TITTLE_TOP_APP_BAR}" +

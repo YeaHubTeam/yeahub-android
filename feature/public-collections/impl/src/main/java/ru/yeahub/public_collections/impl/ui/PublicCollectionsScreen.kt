@@ -168,7 +168,7 @@ fun ScreenUI(
                         isLoadingNextPage = state.isLoadingNextPage,
                         paginationError = null,
                         onRetryPagination = { onEvent(PublicCollectionsScreenEvent.Refresh) },
-                        onClickItem = {  id, title ->
+                        onClickItem = { id, title ->
                             onEvent(
                                 PublicCollectionsScreenEvent.OnQuestionsListClick(
                                     id,
@@ -198,7 +198,7 @@ fun ScreenUI(
                         isLoadingNextPage = false,
                         paginationError = state.throwable,
                         onRetryPagination = { onEvent(PublicCollectionsScreenEvent.Refresh) },
-                        onClickItem = {  id, title ->
+                        onClickItem = { id, title ->
                             onEvent(
                                 PublicCollectionsScreenEvent.OnQuestionsListClick(
                                     id,
@@ -209,7 +209,26 @@ fun ScreenUI(
                     )
                 }
             }
+            is PublicCollectionsScreenState.Empty -> {
+                Empty()
+            }
         }
+    }
+}
+
+@Composable
+private fun Empty(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = stringResource(R.string.there_is_nothing),
+            style = MaterialTheme.typography.headlineSmall,
+            textAlign = TextAlign.Center
+        )
     }
 }
 
@@ -250,7 +269,12 @@ fun CollectionsListWithLoadMore(
                         descriptionText = collection.descriptionText,
                         imageUrl = collection.imageUrl,
                         questionsCount = collection.questionsCount,
-                        onCollectionClick = { onClickItem(collection.id, collection.collectionTitle) }
+                        onCollectionClick = {
+                            onClickItem(
+                                collection.id,
+                                collection.collectionTitle
+                            )
+                        }
                     )
                 }
             }
@@ -283,6 +307,7 @@ fun LoadMoreHandler(
             isLoading -> {
                 CircularProgressIndicator()
             }
+
             error != null -> {
                 val errorMessage =
                     getReadableErrorMessage(context = context, throwable = error)
@@ -301,6 +326,7 @@ fun LoadMoreHandler(
                     }
                 }
             }
+
             else -> {
                 Spacer(modifier = Modifier.height(0.dp))
             }
@@ -341,7 +367,10 @@ fun HandleCommand(
                     )
 
                     is PublicCollectionsScreenCommand.OnQuestionsListClick -> onResult(
-                        PublicCollectionsScreenResult.NavigateToQuestions(command.collectionId, command.title)
+                        PublicCollectionsScreenResult.NavigateToQuestions(
+                            command.collectionId,
+                            command.title
+                        )
                     )
                 }
             }
