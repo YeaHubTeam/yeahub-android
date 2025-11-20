@@ -15,11 +15,11 @@
     <string name="go_to_questions">Перейти к вопросам</string>
     <string name="questions">%1$d вопросов</string>
     <string name="question_title">Сервис подготовки к собеседованиям</string>
-    <string name="question_description">Готовьтесь к собеседованиям с вопросами из крупных IT-компаний: Сбер, Т-Банк, Яндекс, Авито, Ozon, VK и др.</string>
+    <string name="question_description">Готовьтесь к собеседованию с подборками вопросов из крупных IT-компаний. Узнайте, какие вопросы задают в Сбере, Т-Банке, Яндексе, Авито, Ozon, VK и других компаниях.</string>
     <string name="base_questions_title">База вопросов</string>
-    <string name="base_questions_description">Большая база по 50+ технологиям: JavaScript, React, Python, SQL и др.</string>
+    <string name="base_questions_description">Большая база вопросов по 50+ востребованным технологиям: JavaScript, React, Python, SQL и другие.</string>
     <string name="collections_title">Коллекции</string>
-    <string name="collections_description">Востребованные вопросы с реальных технических собеседований</string>
+    <string name="collections_description">Актуальные и востребованные вопросы с реальных технических собеседований.</string>
     <string name="error_screen_text">Что‑то пошло не так</string>
     <string name="error_screen_title_text">УПС!</string>
     <string name="on_back_button_text">Назад</string>
