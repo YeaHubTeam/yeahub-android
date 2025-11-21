@@ -87,32 +87,40 @@ private fun DetailedQuestionAnswerInternal(
 
         Column(modifier = modifier) {
             Box {
+                //предотвращение повторных созданий объектов во время рекомпозиции
+                val collapsedEnterTransition = remember {
+                    fadeIn(animationSpec = tween(400, easing = LinearEasing))
+                }
+                val collapsedExitTransition = remember {
+                    fadeOut(animationSpec = tween(400, easing = LinearEasing))
+                }
+
                 this@Column.AnimatedVisibility(
                     visible = !isExpanded,
-                    enter = fadeIn(
-                        animationSpec = tween(400, easing = LinearEasing),
-                    ),
-                    exit = fadeOut(
-                        animationSpec = tween(400, easing = LinearEasing)
-                    )
+                    enter = collapsedEnterTransition,
+                    exit = collapsedExitTransition
                 ) {
                     CollapsedContent(blocks, collapsedMaxChars)
                 }
 
-                this@Column.AnimatedVisibility(
-                    visible = isExpanded,
-                    enter = expandVertically(
+                //предотвращение повторных созданий объектов во время рекомпозиции
+                val expandedEnterTransition = remember {
+                    expandVertically(
                         expandFrom = Alignment.Top,
                         animationSpec = tween(200, easing = LinearEasing)
-                    ) + fadeIn(
-                        animationSpec = tween(200, easing = LinearEasing),
-                    ),
-                    exit = shrinkVertically(
+                    ) + fadeIn(animationSpec = tween(200, easing = LinearEasing))
+                }
+                val expandedExitTransition = remember {
+                    shrinkVertically(
                         shrinkTowards = Alignment.Top,
                         animationSpec = tween(400, easing = LinearEasing)
-                    ) + fadeOut(
-                        animationSpec = tween(400, easing = LinearEasing)
-                    )
+                    ) + fadeOut(animationSpec = tween(400, easing = LinearEasing))
+                }
+
+                this@Column.AnimatedVisibility(
+                    visible = isExpanded,
+                    enter = expandedEnterTransition,
+                    exit = expandedExitTransition
                 ) {
                     ExpandedContent(blocks)
                 }
