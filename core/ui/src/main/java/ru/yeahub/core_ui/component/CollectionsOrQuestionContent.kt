@@ -9,11 +9,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -70,17 +72,21 @@ fun CollectionsOrQuestionContent(
                 style = Theme.typography.body3Accent
             )
         }
-
+        Spacer(modifier = Modifier.weight(1f))
         PrimaryButton(
             onClick = onClick,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 16.dp)
+                .padding(vertical = 8.dp)
+                .align(Alignment.CenterHorizontally)
             ) {
             Text(
                 text = state.buttonText.getString(context),
                 color = Theme.colors.white900,
-                style = Theme.typography.body3Strong
+                style = Theme.typography.body3Strong,
+                modifier = Modifier
+                    .padding(vertical = 8.dp)
+                    .wrapContentHeight(Alignment.CenterVertically)
             )
         }
     }
