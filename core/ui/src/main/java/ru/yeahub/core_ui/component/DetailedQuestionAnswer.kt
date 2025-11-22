@@ -71,7 +71,6 @@ private fun DetailedQuestionAnswerInternal(
     Column(
         modifier = modifier
             .fillMaxWidth()
-
             .background(Theme.colors.white900, RoundedCornerShape(12.dp))
             .padding(start = 17.dp, end = 17.dp, top = 20.dp, bottom = 20.dp)
     ) {
