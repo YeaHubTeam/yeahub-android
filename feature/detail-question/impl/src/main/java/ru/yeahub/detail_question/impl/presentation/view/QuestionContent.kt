@@ -52,7 +52,7 @@ fun QuestionContent(
             Box(
                 modifier = Modifier
                     .background(Color.Transparent)
-                    .padding(10.dp, 16.dp)
+                    .padding(16.dp, 16.dp)
             ) {
                 DetailHeaderQuestion(
                     questionTitle = question.title,
@@ -66,7 +66,7 @@ fun QuestionContent(
             Box(
                 modifier = Modifier
                     .background(Color.Transparent)
-                    .padding(start = 10.dp, end = 10.dp, bottom = 20.dp)
+                    .padding(start = 16.dp, end = 16.dp, bottom = 20.dp)
                     .height(IntrinsicSize.Min)
             ) {
                 question.shortAnswer?.let {
@@ -81,7 +81,7 @@ fun QuestionContent(
                 blocks = blocks,
                 modifier = Modifier
                     .height(IntrinsicSize.Min)
-                    .padding(start = 10.dp, end = 10.dp, bottom = 20.dp)
+                    .padding(start = 16.dp, end = 16.dp, bottom = 20.dp)
             )
         }
         item {
