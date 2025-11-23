@@ -137,17 +137,6 @@ fun GuruCard(
                         tint = Color.Unspecified,
                     )
                 }
-                IconButton(
-                    onClick = onProfileClick,
-                    modifier = Modifier
-                        .size(24.dp)
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.profile),
-                        contentDescription = null,
-                        tint = Color.Unspecified,
-                    )
-                }
             }
         }
     }
