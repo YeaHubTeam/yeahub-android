@@ -1,5 +1,6 @@
 package ru.yeahub.detail_question.impl.presentation.view
 
+import android.content.res.Configuration
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -9,7 +10,9 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -27,6 +30,8 @@ import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -58,6 +63,7 @@ import ru.yeahub.detail_question.impl.presentation.state.NestedSpecializationVO
 import ru.yeahub.detail_question.impl.presentation.state.NestedUserReferenceVO
 import ru.yeahub.detail_question.impl.presentation.viewmodel.DetailQuestionViewModel
 import ru.yeahub.detail_question.impl.presentation.viewmodel.viewModelCreator
+import ru.yeahub.ui.R.dimen
 
 @Composable
 fun DetailQuestionScreen(
@@ -100,10 +106,22 @@ fun DetailQuestionScreenView(
     viewModel: DetailQuestionViewModel
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
     Scaffold(
         containerColor = Theme.colors.black25,
         topBar = {
-            Box(modifier = Modifier.fillMaxWidth()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .then(
+                        if (isLandscape) {
+                            Modifier.height(dimensionResource(id = dimen.app_bar_height_landscape))
+                        } else {
+                            Modifier
+                        }
+                    ),
+            ) {
                 TopAppBar(
                     modifier = Modifier,
                     title = { },
@@ -111,6 +129,11 @@ fun DetailQuestionScreenView(
                     colors = TopAppBarDefaults.topAppBarColors(
                         containerColor = Theme.colors.white900
                     ),
+                    windowInsets = if (isLandscape) {
+                        WindowInsets(0, 0, 0, 0)
+                    } else {
+                        TopAppBarDefaults.windowInsets
+                    },
                     actions = {
                         Row(
                             modifier = Modifier.fillMaxWidth(),

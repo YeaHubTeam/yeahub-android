@@ -1,10 +1,13 @@
 package ru.yeahub.public_collections.impl.ui
 
 import android.content.Context
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -37,8 +40,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -209,6 +214,7 @@ fun ScreenUI(
                     )
                 }
             }
+
             is PublicCollectionsScreenState.Empty -> {
                 Empty()
             }
@@ -387,42 +393,96 @@ fun TopAppBarWithBottomBorder(
 ) {
     val density = LocalDensity.current
     val borderThicknessPx = with(density) { borderThickness.toPx() }
-    CenterAlignedTopAppBar(
-        title = {
-            Text(
-                text = title,
-                style = Theme.typography.body3Accent,
-                color = colors.black900
-            )
-        },
-        navigationIcon = {
-            IconButton(onClick = { onBackClick() }) {
-                Icon(
-                    modifier = Modifier
-                        .width(20.dp)
-                        .height(20.dp),
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = null,
-                    tint = colors.purple700
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+
+    if (isLandscape) {
+        CenterAlignedTopAppBar(
+            title = {
+                Box(
+                    modifier = Modifier.fillMaxHeight(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = title,
+                        style = Theme.typography.body3Accent,
+                        color = colors.black900
+                    )
+                }
+            },
+            navigationIcon = {
+                Box(
+                    modifier = Modifier.fillMaxHeight(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    IconButton(onClick = { onBackClick() }) {
+                        Icon(
+                            modifier = Modifier
+                                .width(20.dp)
+                                .height(20.dp),
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = null,
+                            tint = colors.purple700
+                        )
+                    }
+                }
+            },
+            colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                containerColor = colors.white900
+            ),
+            windowInsets = WindowInsets(0, 0, 0, 0),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(dimensionResource(id = ru.yeahub.ui.R.dimen.app_bar_height_landscape))
+                .drawWithContent {
+                    drawContent()
+                    val y = size.height - borderThicknessPx / 2f
+                    drawLine(
+                        color = borderColor,
+                        start = Offset(0f, y),
+                        end = Offset(size.width, y),
+                        strokeWidth = borderThicknessPx
+                    )
+                }
+        )
+    } else {
+        CenterAlignedTopAppBar(
+            title = {
+                Text(
+                    text = title,
+                    style = Theme.typography.body3Accent,
+                    color = colors.black900
                 )
-            }
-        },
-        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-            containerColor = colors.white900
-        ),
-        modifier = Modifier
-            .fillMaxWidth()
-            .drawWithContent {
-                drawContent()
-                val y = size.height - borderThicknessPx / 2f
-                drawLine(
-                    color = borderColor,
-                    start = Offset(0f, y),
-                    end = Offset(size.width, y),
-                    strokeWidth = borderThicknessPx
-                )
-            }
-    )
+            },
+            navigationIcon = {
+                IconButton(onClick = { onBackClick() }) {
+                    Icon(
+                        modifier = Modifier
+                            .width(20.dp)
+                            .height(20.dp),
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = null,
+                        tint = colors.purple700
+                    )
+                }
+            },
+            colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                containerColor = colors.white900
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .drawWithContent {
+                    drawContent()
+                    val y = size.height - borderThicknessPx / 2f
+                    drawLine(
+                        color = borderColor,
+                        start = Offset(0f, y),
+                        end = Offset(size.width, y),
+                        strokeWidth = borderThicknessPx
+                    )
+                }
+        )
+    }
 }
 
 class ListPublicCollectionScreenProvider : PreviewParameterProvider<ScreenParams> {
