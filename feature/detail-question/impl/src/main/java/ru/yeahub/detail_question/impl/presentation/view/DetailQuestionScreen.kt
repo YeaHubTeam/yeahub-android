@@ -41,17 +41,24 @@ import ru.yeahub.detail_question.impl.presentation.viewmodel.viewModelCreator
 @Composable
 fun DetailQuestionScreen(
     onResult: (DetailQuestionResult) -> Unit,
-    questionId: Long
+    questionId: Long,
+    questionIds: List<Long> = emptyList(),
+    currentIndex: Int = 0
 ) {
     val viewModel: DetailQuestionViewModel = koinViewModel()
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(questionId) {
         viewModel.handleEvents(DetailQuestionEvent.LoadQuestion(questionId))
     }
 
     DetailQuestionScreenView(
         onBackClick = { viewModel.handleEvents(DetailQuestionEvent.OnBackClick) },
-        viewModel = viewModel
+        viewModel = viewModel,
+        questionIds = questionIds,
+        currentIndex = currentIndex,
+        onNavigateToQuestion = { newIndex ->
+            onResult(DetailQuestionResult.NavigateToQuestion(newIndex))
+        }
     )
 
     HandleCommands(viewModel.commands, onResult)
@@ -65,8 +72,11 @@ internal fun HandleCommands(
     LaunchedEffect(Unit) {
         commands.collect { command ->
             when (command) {
-                DetailQuestionCommand.NavigateBack -> onResult(DetailQuestionResult.BackClick)
+                is DetailQuestionCommand.NavigateBack -> onResult(DetailQuestionResult.BackClick)
                 is DetailQuestionCommand.OpenUrl -> onResult(DetailQuestionResult.UrlClick(command.url))
+                is DetailQuestionCommand.NavigateToQuestion -> onResult(
+                    DetailQuestionResult.NavigateToQuestion(command.newIndex)
+                )
             }
         }
     }
@@ -76,10 +86,16 @@ internal fun HandleCommands(
 @Composable
 fun DetailQuestionScreenView(
     onBackClick: () -> Unit,
-    viewModel: DetailQuestionViewModel
+    viewModel: DetailQuestionViewModel,
+    questionIds: List<Long> = emptyList(),
+    currentIndex: Int = 0,
+    onNavigateToQuestion: (Int) -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
- Scaffold(
+    val hasPrevious = currentIndex > 0
+    val hasNext = currentIndex < questionIds.size - 1
+
+    Scaffold(
         containerColor = Theme.colors.black25,
         topBar = {
             TopAppBarWithBottomBorder(
@@ -109,6 +125,16 @@ fun DetailQuestionScreenView(
                     )
                 }
             },
+            onPreviousQuestionClick = {
+                if (hasPrevious) {
+                    onNavigateToQuestion(currentIndex - 1)
+                }
+            },
+            onNextQuestionClick = {
+                if (hasNext) {
+                    onNavigateToQuestion(currentIndex + 1)
+                }
+            },
             padding = padding
         )
     }
@@ -120,6 +146,8 @@ fun DetailQuestionScreenState(
     onBackClick: () -> Unit,
     onTelegramClick: () -> Unit,
     onYoutubeClick: () -> Unit,
+    onPreviousQuestionClick: () -> Unit,
+    onNextQuestionClick: () -> Unit,
     padding: PaddingValues
 ) {
     when (uiState) {
@@ -128,6 +156,8 @@ fun DetailQuestionScreenState(
             uiState.data,
             onTelegramClick,
             onYoutubeClick,
+            onPreviousQuestionClick,
+            onNextQuestionClick,
             padding,
             TextOrResource.Resource(R.string.guru_description_text)
         )
@@ -256,7 +286,9 @@ fun StatesDetailQuestionPreview(params: DetailQuestionScreenStateParams) {
         padding = params.padding,
         onTelegramClick = {},
         onYoutubeClick = {},
-        onBackClick = {}
+        onBackClick = {},
+        onPreviousQuestionClick = {},
+        onNextQuestionClick = {}
     )
 }
 

@@ -76,12 +76,13 @@ class PublicQuestionsFeatureImpl : FeatureApi {
                         )
 
                         is PublicQuestionsResult.NavigateToDetail -> {
-                            val detailRout =
+                            val questionIdsParam = result.questionIds.joinToString(",")
+                            val detailRoute =
                                 "$currentTabPrefix/" + FeatureRoute.DetailQuestionFeature
-                                    .FEATURE_NAME + "/" + result.id
+                                    .FEATURE_NAME + "/" + questionIdsParam + "/" + result.currentIndex
                             Timber.tag("Test")
-                                .d("PublicQuestionsFeatureImpl registerGraph: $detailRout")
-                            navController.navigate(detailRout)
+                                .d("PublicQuestionsFeatureImpl registerGraph: $detailRoute")
+                            navController.navigate(detailRoute)
                         }
                     }
                 },
@@ -90,7 +91,7 @@ class PublicQuestionsFeatureImpl : FeatureApi {
                 idSpecialization = idSpecialization,
             )
             Timber.tag("Test12")
-                .d(" Title - $tittleTopAppBar idColection - $idCollection idSpec - $idSpecialization")
+                .d(" Title - $tittleTopAppBar idCollection - $idCollection idSpec - $idSpecialization")
         }
     }
 

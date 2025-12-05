@@ -18,8 +18,10 @@ import androidx.compose.ui.unit.dp
 import ru.yeahub.core_ui.component.DetailHeaderQuestion
 import ru.yeahub.core_ui.component.DetailedQuestionAnswer
 import ru.yeahub.core_ui.component.DetailedQuestionAnswerBlock
+import ru.yeahub.core_ui.component.FavoriteState
 import ru.yeahub.core_ui.component.GuruCard
 import ru.yeahub.core_ui.component.GuruData
+import ru.yeahub.core_ui.component.PopoverQuestion
 import ru.yeahub.core_ui.component.ShortQuestionAnswer
 import ru.yeahub.core_ui.example.staticPreview.StaticPreview
 import ru.yeahub.core_utils.common.TextOrResource
@@ -34,6 +36,8 @@ fun QuestionContent(
     question: DetailQuestionState.Success.PublicQuestionVO,
     onTelegramClick: () -> Unit,
     onYoutubeClick: () -> Unit,
+    onPreviousQuestionClick: () -> Unit,
+    onNextQuestionClick: () -> Unit,
     padding: PaddingValues,
     guruDescriptionText: TextOrResource
 ) {
@@ -61,6 +65,18 @@ fun QuestionContent(
                     onFilterClick = null,
                 )
             }
+        }
+        item {
+           PopoverQuestion(
+               onLearnClick = null,
+               onRepeatClick = null,
+               onFavoriteClick = null,
+               onPreviousClick = onPreviousQuestionClick,
+               onNextClick = onNextQuestionClick,
+               favoriteState = FavoriteState.DISABLED,
+               modifier = Modifier
+                   .padding(start = 16.dp, end = 16.dp, bottom = 20.dp)
+           )
         }
         item {
             Box(
@@ -374,6 +390,8 @@ fun StatesQuestionContentPreview(params: QuestionContentParams) {
         padding = params.padding,
         guruDescriptionText = TextOrResource.Text("Guru – это эксперты YeaHub, которые помогают развивать комьюнити."),
         onTelegramClick = {},
-        onYoutubeClick = {}
+        onYoutubeClick = {},
+        onPreviousQuestionClick = {},
+        onNextQuestionClick = {}
     )
 }

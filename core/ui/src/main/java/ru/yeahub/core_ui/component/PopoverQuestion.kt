@@ -104,38 +104,39 @@ fun PopoverQuestion(
                 verticalArrangement = Arrangement.spacedBy(rowSpacing),
             ) {
                 // Первый ряд: Изучить, Повторить, Избранное
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    IconWithText(
-                        iconResId = R.drawable.student,
-                        text = stringResource(R.string.learn),
-                        contentDescription = stringResource(R.string.learn),
-                        isClickable = onLearnClick != null,
-                        onItemClickListener = { onLearnClick?.invoke() },
-                        screenWidth = screenWidth
-                    )
-                    IconWithText(
-                        iconResId = R.drawable.clockcounterclockwise,
-                        text = stringResource(R.string.repeat),
-                        contentDescription = stringResource(R.string.repeat),
-                        isClickable = onRepeatClick != null,
-                        onItemClickListener = { onRepeatClick?.invoke() },
-                        screenWidth = screenWidth
-                    )
-                    IconWithText(
-                        iconResId = getFavoriteIconRes(favoriteState),
-                        text = stringResource(R.string.favorite),
-                        contentDescription = stringResource(R.string.favorite),
-                        isClickable = favoriteState.isClickable,
-                        iconColor = getFavoriteIconColor(favoriteState),
-                        textColor = getFavoriteTextColor(favoriteState),
-                        onItemClickListener = { onFavoriteClick?.invoke() },
-                        screenWidth = screenWidth
-                    )
+                if (false) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly,
+                    ) {
+                        IconWithText(
+                            iconResId = R.drawable.student,
+                            text = stringResource(R.string.learn),
+                            contentDescription = stringResource(R.string.learn),
+                            isClickable = onLearnClick != null,
+                            onItemClickListener = { onLearnClick?.invoke() },
+                            screenWidth = screenWidth
+                        )
+                        IconWithText(
+                            iconResId = R.drawable.clockcounterclockwise,
+                            text = stringResource(R.string.repeat),
+                            contentDescription = stringResource(R.string.repeat),
+                            isClickable = onRepeatClick != null,
+                            onItemClickListener = { onRepeatClick?.invoke() },
+                            screenWidth = screenWidth
+                        )
+                        IconWithText(
+                            iconResId = getFavoriteIconRes(favoriteState),
+                            text = stringResource(R.string.favorite),
+                            contentDescription = stringResource(R.string.favorite),
+                            isClickable = favoriteState.isClickable,
+                            iconColor = getFavoriteIconColor(favoriteState),
+                            textColor = getFavoriteTextColor(favoriteState),
+                            onItemClickListener = { onFavoriteClick?.invoke() },
+                            screenWidth = screenWidth
+                        )
+                    }
                 }
-
                 // Второй ряд: Назад, Вперед
                 Row(
                     modifier = Modifier.fillMaxWidth(),
