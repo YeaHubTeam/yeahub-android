@@ -55,10 +55,7 @@ class DetailQuestionFeatureImpl : FeatureApi {
             DetailQuestionScreen(
                 onResult = { result ->
                     when (result) {
-                        is DetailQuestionResult.BackClick -> handleBackNavigation(
-                            pathManager,
-                            navController
-                        )
+                        is DetailQuestionResult.BackClick -> handleBackNavigation(navController)
 
                         is DetailQuestionResult.UrlClick -> {
                             val intent = Intent(Intent.ACTION_VIEW, result.url.toUri())
@@ -82,21 +79,12 @@ class DetailQuestionFeatureImpl : FeatureApi {
 }
 
 private fun handleBackNavigation(
-    pathManager: NavigationPathManager,
     navController: NavHostController
 ) {
-    val parentPath = pathManager.getParentPath()
-    pathManager.setCurrentPath(parentPath)
-
-    if (parentPath.isEmpty()) {
-        navController.navigateUp()
-    } else {
-        navController.navigate(parentPath) {
-            popUpTo(parentPath) {
-                inclusive = true
-            }
-        }
-    }
+    // Используем navigateUp для возврата на предыдущий экран (список вопросов)
+    Timber.tag("DetailQuestion")
+        .d("handleBackNavigation: Using navigateUp to return to questions list")
+    navController.navigateUp()
 }
 
 private fun handleQuestionNavigation(
@@ -115,7 +103,19 @@ private fun handleQuestionNavigation(
     Timber.tag("DetailQuestionFeature")
         .d("Navigating to: $concretePath (parent: $parentPath)")
 
-    navController.navigate(concretePath)
+    // Получаем текущий маршрут из стека для popUpTo
+    val currentRoute = navController.currentBackStackEntry?.destination?.route
+
+    navController.navigate(concretePath) {
+        // Удаляем текущий экран детального вопроса из стека
+        if (currentRoute != null) {
+            popUpTo(currentRoute) {
+                inclusive = true
+            }
+        }
+        // Предотвращаем создание нескольких копий одного экрана
+        launchSingleTop = true
+    }
 }
 
 /**

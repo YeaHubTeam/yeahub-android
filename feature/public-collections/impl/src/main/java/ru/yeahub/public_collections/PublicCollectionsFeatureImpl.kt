@@ -48,7 +48,6 @@ class PublicCollectionsFeatureImpl : FeatureApi {
                         )
 
                         is PublicCollectionsScreenResult.NavigateToQuestions -> handleQuestionsNavigation(
-                            pathManager,
                             navController,
                             result.collectionId.toString(),
                             result.title
@@ -62,7 +61,6 @@ class PublicCollectionsFeatureImpl : FeatureApi {
     }
 
     private fun handleQuestionsNavigation(
-        pathManager: NavigationPathManager,
         navController: NavHostController,
         collectionId: String,
         title: String
