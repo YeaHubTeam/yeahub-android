@@ -20,9 +20,8 @@ import test.SpecializationExampleDataClasses.defaultSpecialResponseWithImage
 import test.SpecializationExampleDataClasses.defaultVoSpecialization
 import test.SpecializationExampleDataClasses.defaultVoSpecializationWithImage
 
-class SpecializationSelectionMapperTest(
-    private val toDomainMapper: SpecializationSelectionDataToDomainMapper
-) {
+class SpecializationSelectionMapperTest {
+    private val toDomainMapper = SpecializationSelectionDataToDomainMapper()
 
     class ArgumentsProvider1 : TestArgumentsProvider<SpecializationSelectionDataToDomainMapperTestCase1>(){
         override fun testCases(): List<SpecializationSelectionDataToDomainMapperTestCase1> = listOf(
