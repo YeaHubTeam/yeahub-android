@@ -1,7 +1,13 @@
 package ru.yeahub.core_ui.component
 
-import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -10,9 +16,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -46,7 +50,7 @@ sealed class DetailedQuestionAnswerBlock {
 @Composable
 fun DetailedQuestionAnswer(
     blocks: List<DetailedQuestionAnswerBlock>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     var isExpanded by remember { mutableStateOf(false) }
 
@@ -81,25 +85,54 @@ private fun DetailedQuestionAnswerInternal(
             style = Theme.typography.head4,
         )
 
-        Column(
-            modifier = Modifier
-                .verticalScroll(rememberScrollState())
-                .fillMaxWidth()
-                .animateContentSize()
-        ) {
-            if (isExpanded) {
-                ExpandedContent(blocks)
-            } else {
-                CollapsedContent(blocks, collapsedMaxChars)
-            }
+        Column(modifier = modifier) {
+            Box {
+                //предотвращение повторных созданий объектов во время рекомпозиции
+                val collapsedEnterTransition = remember {
+                    fadeIn(animationSpec = tween(400, easing = LinearEasing))
+                }
+                val collapsedExitTransition = remember {
+                    fadeOut(animationSpec = tween(400, easing = LinearEasing))
+                }
 
-            if (isContentExpandable(blocks, collapsedMaxChars, isExpanded)) {
-                ExpandCollapseButton(
-                    isExpanded = isExpanded,
-                    rotationAngle = rotationAngle,
-                    onToggleExpand = onToggleExpand
-                )
+                this@Column.AnimatedVisibility(
+                    visible = !isExpanded,
+                    enter = collapsedEnterTransition,
+                    exit = collapsedExitTransition
+                ) {
+                    CollapsedContent(blocks, collapsedMaxChars)
+                }
+
+                //предотвращение повторных созданий объектов во время рекомпозиции
+                val expandedEnterTransition = remember {
+                    expandVertically(
+                        expandFrom = Alignment.Top,
+                        animationSpec = tween(200, easing = LinearEasing)
+                    ) + fadeIn(animationSpec = tween(200, easing = LinearEasing))
+                }
+                val expandedExitTransition = remember {
+                    shrinkVertically(
+                        shrinkTowards = Alignment.Top,
+                        animationSpec = tween(400, easing = LinearEasing)
+                    ) + fadeOut(animationSpec = tween(400, easing = LinearEasing))
+                }
+
+                this@Column.AnimatedVisibility(
+                    visible = isExpanded,
+                    enter = expandedEnterTransition,
+                    exit = expandedExitTransition
+                ) {
+                    ExpandedContent(blocks)
+                }
             }
+        }
+
+        if (isContentExpandable(blocks, collapsedMaxChars, isExpanded)) {
+            ExpandCollapseButton(
+                isExpanded = isExpanded,
+                rotationAngle = rotationAngle,
+                onToggleExpand = onToggleExpand
+            )
         }
     }
 }
@@ -126,7 +159,7 @@ private fun ExpandedContent(blocks: List<DetailedQuestionAnswerBlock>) {
 @Composable
 private fun CollapsedContent(
     blocks: List<DetailedQuestionAnswerBlock>,
-    maxChars: Int
+    maxChars: Int,
 ) {
     var remainingChars = maxChars
     blocks.forEach { block ->
@@ -223,7 +256,7 @@ private fun showCollapsedCode(code: String, remainingChars: Int): Int {
 private fun isContentExpandable(
     blocks: List<DetailedQuestionAnswerBlock>,
     collapsedMaxChars: Int,
-    isExpanded: Boolean
+    isExpanded: Boolean,
 ): Boolean {
     val hasImage = blocks.any { it is DetailedQuestionAnswerBlock.ImageBlock }
     val textLength = blocks.sumOf { block ->
@@ -241,7 +274,7 @@ private fun isContentExpandable(
 private fun ExpandCollapseButton(
     isExpanded: Boolean,
     rotationAngle: Float,
-    onToggleExpand: () -> Unit
+    onToggleExpand: () -> Unit,
 ) {
     Box(
         modifier = Modifier.fillMaxWidth(),
