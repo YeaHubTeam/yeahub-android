@@ -85,7 +85,7 @@ private fun DetailedQuestionAnswerInternal(
             style = Theme.typography.head4,
         )
 
-        Column(modifier = modifier) {
+        Column(modifier = Modifier) {
             Box {
                 //предотвращение повторных созданий объектов во время рекомпозиции
                 val collapsedEnterTransition = remember {
