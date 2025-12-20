@@ -103,7 +103,7 @@ fun CollectionCardPreview() {
         collectionTitle = "Собеседование на Middle + Frontend Разработчика в Сбер",
         descriptionText = "Техническое собеседование для экспертов по основным вопросам React",
         imageUrl = "123",
-        questionsCount = 11,
+        questionsCount = 30,
         onCollectionClick = {
         }
     )
