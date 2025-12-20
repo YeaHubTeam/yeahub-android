@@ -17,7 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -87,7 +87,7 @@ fun CollectionCard(
                     contentDescription = null
                 )
                 Text(
-                    text = stringResource(R.string.questions, questionsCount),
+                    text = pluralStringResource(R.plurals.questions_count, questionsCount, questionsCount),
                     style = Theme.typography.body1,
                     color = Theme.colors.purple700
                 )
@@ -103,7 +103,7 @@ fun CollectionCardPreview() {
         collectionTitle = "Собеседование на Middle + Frontend Разработчика в Сбер",
         descriptionText = "Техническое собеседование для экспертов по основным вопросам React",
         imageUrl = "123",
-        questionsCount = 30,
+        questionsCount = 11,
         onCollectionClick = {
         }
     )
