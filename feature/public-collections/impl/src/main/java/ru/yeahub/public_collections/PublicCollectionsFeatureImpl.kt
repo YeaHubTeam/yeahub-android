@@ -21,7 +21,7 @@ class PublicCollectionsFeatureImpl : FeatureApi {
         navGraphBuilder: androidx.navigation.NavGraphBuilder,
         navController: NavHostController,
         pathManager: NavigationPathManager,
-        modifier: Modifier
+        modifier: Modifier,
     ) {
         val featurePath = pathManager.createParametrizedPath(
             getFeatureName(),
@@ -51,7 +51,8 @@ class PublicCollectionsFeatureImpl : FeatureApi {
                             pathManager,
                             navController,
                             result.collectionId.toString(),
-                            result.title
+                            result.title,
+                            specializationId
                         )
                     }
                 },
@@ -65,10 +66,11 @@ class PublicCollectionsFeatureImpl : FeatureApi {
         pathManager: NavigationPathManager,
         navController: NavHostController,
         collectionId: String,
-        title: String
+        title: String,
+        specializationId: Long,
     ) {
         val questionsRoute = "collections/${FeatureRoute.PublicQuestionsFeature.FEATURE_NAME}" +
-                "?tittle=$title" + "&idCollection=$collectionId"
+                "?tittle=$title" + "&idCollection=$collectionId" + "&idSpecialization=$specializationId"
 
         Timber.d(
             "PublicCollectionsFeatureImpl" +
@@ -79,7 +81,7 @@ class PublicCollectionsFeatureImpl : FeatureApi {
 
     private fun handleBackNavigation(
         pathManager: NavigationPathManager,
-        navController: NavHostController
+        navController: NavHostController,
     ) {
         val parentPath = pathManager.getParentPath()
 
