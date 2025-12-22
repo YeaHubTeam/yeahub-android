@@ -113,8 +113,7 @@ fun PublicQuestionsScreen(
     ) { paddingValues ->
         PublicQuestionsContent(
             padding = PaddingValues(
-                top = paddingValues.calculateTopPadding(),
-                bottom = 0.dp
+                top = paddingValues.calculateTopPadding()
             ),
             screenState = screenState,
             listState = lazyListState,

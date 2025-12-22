@@ -211,8 +211,7 @@ fun ScreenUI(
         Box(
             modifier = Modifier
                 .padding(
-                    top = paddingValues.calculateTopPadding(),
-                    bottom = 0.dp
+                    top = paddingValues.calculateTopPadding()
                 )
         ) {
             when (screenState) {

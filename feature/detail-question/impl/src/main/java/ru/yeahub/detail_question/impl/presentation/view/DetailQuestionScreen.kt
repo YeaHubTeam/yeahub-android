@@ -12,7 +12,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.flow.SharedFlow
 import org.koin.androidx.compose.koinViewModel
@@ -139,8 +138,7 @@ fun DetailQuestionScreenView(
                 }
             },
             padding = PaddingValues(
-                top = paddingValues.calculateTopPadding(),
-                bottom = 0.dp
+                top = paddingValues.calculateTopPadding()
             )
         )
     }
