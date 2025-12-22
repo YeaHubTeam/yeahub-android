@@ -209,7 +209,11 @@ fun ScreenUI(
         }
     ) { paddingValues ->
         Box(
-            modifier = Modifier.padding(paddingValues)
+            modifier = Modifier
+                .padding(
+                    top = paddingValues.calculateTopPadding(),
+                    bottom = 0.dp
+                )
         ) {
             when (screenState) {
                 is SpecializationScreenState.Loaded -> {
@@ -283,6 +287,7 @@ fun HandleCommand(
             is SpecializationSelectionScreenCommand.OnBackClick -> {
                 onResult(SpecializationsScreenResult.NavigateBack)
             }
+
             is SpecializationSelectionScreenCommand.SpecializationSelectionClick -> {
                 onResult(
                     SpecializationsScreenResult.SpecializationClick(

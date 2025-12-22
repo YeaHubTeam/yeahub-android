@@ -110,9 +110,12 @@ fun PublicQuestionsScreen(
                 onBackClick = { viewModel.onEvent(PublicQuestionsScreenEvent.OnBackClick) }
             )
         }
-    ) { padding ->
+    ) { paddingValues ->
         PublicQuestionsContent(
-            padding = padding,
+            padding = PaddingValues(
+                top = paddingValues.calculateTopPadding(),
+                bottom = 0.dp
+            ),
             screenState = screenState,
             listState = lazyListState,
             onRetryLoadInitial = { viewModel.onEvent(PublicQuestionsScreenEvent.LoadInitial) },
