@@ -246,10 +246,8 @@ private fun registerChildFeatures(
         val dependentRootFeatures = childFeature.getDependentRootFeatures(rootFeatures)
 
         // Если фича не указала зависимости, регистрируем для всех корневых фич
-        val targetRootFeatures = if (dependentRootFeatures.isEmpty()) {
+        val targetRootFeatures = dependentRootFeatures.ifEmpty {
             rootFeatures
-        } else {
-            dependentRootFeatures
         }
 
         targetRootFeatures.forEach { rootFeature ->
