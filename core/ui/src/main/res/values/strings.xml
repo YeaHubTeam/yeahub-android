@@ -13,7 +13,6 @@
     <string name="difficulty">Сложность:</string>
     <string name="read_more">Подробнее</string>
     <string name="go_to_questions">Перейти к вопросам</string>
-    <string name="questions">%1$d вопросов</string>
     <string name="question_title">Сервис подготовки к собеседованиям</string>
     <string name="question_description">Готовьтесь к собеседованию с подборками вопросов из крупных IT-компаний. Узнайте, какие вопросы задают в Сбере, Т-Банке, Яндексе, Авито, Ozon, VK и других компаниях.</string>
     <string name="base_questions_title">База вопросов</string>
@@ -24,4 +23,10 @@
     <string name="error_screen_title_text">УПС!</string>
     <string name="on_back_button_text">Назад</string>
     <string name="unknown_error_screen_text">Не удалось загрузить данные</string>
+    <plurals name="questions_count">
+        <item quantity="one">%1$d вопрос</item>
+        <item quantity="few">%1$d вопроса</item>
+        <item quantity="many">%1$d вопросов</item>
+        <item quantity="other">%1$d вопросов</item>
+    </plurals>
 </resources>
