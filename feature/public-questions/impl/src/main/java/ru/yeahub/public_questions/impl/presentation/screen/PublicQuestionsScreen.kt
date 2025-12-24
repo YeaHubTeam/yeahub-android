@@ -348,10 +348,6 @@ private fun PaginationFooter(
                 }
             }
 
-            isEndReached -> {
-                Text(stringResource(id = R.string.error))
-            }
-
             else -> {
                 Spacer(modifier = Modifier.height(0.dp))
             }
