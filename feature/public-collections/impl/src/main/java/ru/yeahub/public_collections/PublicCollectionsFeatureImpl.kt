@@ -1,5 +1,6 @@
 package ru.yeahub.public_collections
 
+import android.net.Uri
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -69,8 +70,9 @@ class PublicCollectionsFeatureImpl : FeatureApi {
         title: String,
         specializationId: Long,
     ) {
+        val encodedTitle = Uri.encode(title)
         val questionsRoute = "collections/${FeatureRoute.PublicQuestionsFeature.FEATURE_NAME}" +
-                "?tittle=$title" + "&idCollection=$collectionId" + "&idSpecialization=$specializationId"
+                "?tittle=$encodedTitle" + "&idCollection=$collectionId" + "&idSpecialization=$specializationId"
 
         Timber.d(
             "PublicCollectionsFeatureImpl" +

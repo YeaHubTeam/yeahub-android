@@ -5,8 +5,13 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -69,7 +74,7 @@ fun AppNavigation(
     val features: Set<FeatureApi> = getKoin().getAll<FeatureApi>().toSet()
     Timber.d("AppNavigation onCreate: Loaded features: ${features.map { it.javaClass.simpleName }}")
     val navItems = getBottomNavItems()
-    
+
     features.forEach { feature ->
         feature.initialize(pathManager)
     }
@@ -77,13 +82,13 @@ fun AppNavigation(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
     val selectedRoute = getSelectedRoute(currentRoute, navItems)
-    
+
     currentRoute?.let { route ->
         pathManager.setCurrentPath(route)
     }
 
     Scaffold(
-        modifier = modifier,
+        modifier = modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
         bottomBar = {
             NavigationBar(
                 modifier = Modifier.clip(RoundedCornerShape(12.dp)),
@@ -184,9 +189,9 @@ private fun handleBottomNavClick(
         // Навигируем на родительский маршрут другого таба
         Timber.d(
             "AppNavigation onClick: Navigating to different tab: " +
-                "${item.route} from: $currentRoute"
+                    "${item.route} from: $currentRoute"
         )
-        
+
         // Устанавливаем новый корневой путь
         pathManager.setCurrentPath(item.route)
         navController.navigate(item.route) {
@@ -208,21 +213,21 @@ private fun registerDynamicNavigation(
 ) {
     val rootFeatures = features.filter { it.isRootFeature() }
     val childFeatures = features.filter { !it.isRootFeature() }
-    
+
     // Регистрируем корневые фичи
     rootFeatures.forEach { feature ->
         Timber.d(
             "AppNavigation registerGraph: Registering root feature: " +
                     "${feature.javaClass.simpleName}"
         )
-        
+
         // Сбрасываем путь для корневой фичи
         pathManager.setCurrentPath("")
         pathManager.registerFeaturePath(feature.getFeatureName(), feature.getFeatureName())
-        
+
         feature.registerGraph(navGraphBuilder, navController, pathManager)
     }
-    
+
     // Регистрируем дочерние фичи для каждой корневой фичи
     registerChildFeatures(childFeatures, rootFeatures, pathManager, navController, navGraphBuilder)
 }
@@ -239,17 +244,15 @@ private fun registerChildFeatures(
 ) {
     childFeatures.forEach { childFeature ->
         val dependentRootFeatures = childFeature.getDependentRootFeatures(rootFeatures)
-        
+
         // Если фича не указала зависимости, регистрируем для всех корневых фич
-        val targetRootFeatures = if (dependentRootFeatures.isEmpty()) {
+        val targetRootFeatures = dependentRootFeatures.ifEmpty {
             rootFeatures
-        } else {
-            dependentRootFeatures
         }
-        
+
         targetRootFeatures.forEach { rootFeature ->
             pathManager.setCurrentPath(rootFeature.getFeatureName())
-            
+
             // Регистрируем дочернюю фичу
             childFeature.registerGraph(
                 navGraphBuilder = navGraphBuilder,
