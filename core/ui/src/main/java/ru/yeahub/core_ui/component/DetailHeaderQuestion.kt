@@ -43,7 +43,7 @@ fun DetailHeaderQuestion(
                 spotColor = Theme.colors.mainShadow
             )
             .background(Theme.colors.white900, shape = RoundedCornerShape(12.dp))
-            .padding(start = 10.dp, top = 10.dp, end = 10.dp, bottom = 20.dp)
+            .padding(start = 17.dp, top = 10.dp, end = 17.dp, bottom = 20.dp)
     ) {
         Column {
             imageUrl?.let {
