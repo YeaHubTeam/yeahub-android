@@ -91,7 +91,15 @@ fun AppNavigation(
         modifier = modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
         bottomBar = {
             NavigationBar(
-                modifier = Modifier.clip(RoundedCornerShape(12.dp)),
+                modifier = Modifier
+                    .clip(
+                        RoundedCornerShape(
+                            topStart = 12.dp,
+                            topEnd = 12.dp,
+                            bottomStart = 0.dp,
+                            bottomEnd = 0.dp
+                        )
+                    ),
                 containerColor = Theme.colors.purple700
             ) {
                 navItems.forEach { item ->

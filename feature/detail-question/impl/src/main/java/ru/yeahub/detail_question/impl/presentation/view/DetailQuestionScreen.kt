@@ -1,5 +1,6 @@
 package ru.yeahub.detail_question.impl.presentation.view
 
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
@@ -8,6 +9,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -37,6 +39,10 @@ import ru.yeahub.detail_question.impl.presentation.state.NestedSpecializationVO
 import ru.yeahub.detail_question.impl.presentation.state.NestedUserReferenceVO
 import ru.yeahub.detail_question.impl.presentation.viewmodel.DetailQuestionViewModel
 import ru.yeahub.detail_question.impl.presentation.viewmodel.viewModelCreator
+
+private const val MAX_TITLE_LENGTH = 36
+private const val MAX_TITLE_LENGTH_LANDSCAPE = 80
+const val ELLIPSIS_LENGTH = 3
 
 @Composable
 fun DetailQuestionScreen(
@@ -79,15 +85,37 @@ fun DetailQuestionScreenView(
     viewModel: DetailQuestionViewModel
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
- Scaffold(
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+    Scaffold(
         containerColor = Theme.colors.black25,
         topBar = {
+            val title = when (uiState) {
+                is DetailQuestionState.Success -> {
+                    val fullTitle = (uiState as DetailQuestionState.Success).data.title
+                    val maxLength = if (isLandscape) {
+                        MAX_TITLE_LENGTH_LANDSCAPE
+                    } else {
+                        MAX_TITLE_LENGTH
+                    }
+                    val truncatedTitle = if (fullTitle.length > maxLength) {
+                        fullTitle.substring(0, maxLength - ELLIPSIS_LENGTH) + "..."
+                    } else {
+                        fullTitle
+                    }
+                    TextOrResource.Text(truncatedTitle)
+                }
+
+                else -> {
+                    TextOrResource.Text("")
+                }
+            }
             TopAppBarWithBottomBorder(
-                title = TextOrResource.Text(""),
+                title = title,
                 onBackClick = onBackClick
             )
         }
-    ) { padding ->
+    ) { paddingValues ->
         DetailQuestionScreenState(
             uiState = uiState,
             onBackClick = onBackClick,
@@ -109,7 +137,9 @@ fun DetailQuestionScreenView(
                     )
                 }
             },
-            padding = padding
+            padding = PaddingValues(
+                top = paddingValues.calculateTopPadding()
+            )
         )
     }
 }

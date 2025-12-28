@@ -90,7 +90,7 @@ fun QuestionsMainScreenContent(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(top = 24.dp)
+                    .padding(top = 16.dp)
                     .verticalScroll(scrollState)
             ) {
                 //Заголовок
