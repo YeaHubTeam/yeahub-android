@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -67,7 +68,7 @@ val CUSTOM_SHIMMER_HEIGHT = 16.dp
 
 @Composable
 fun SpecializationScreen(
-    headerText: TextOrResource = TextOrResource.Resource(R.string.selection_specializations_list_header),
+    headerText: TextOrResource = TextOrResource.Resource(R.string.selection_specializations_top_bar_header),
     onResult: (SpecializationsScreenResult) -> Unit
 ) {
     val specializationViewModel: SpecializationViewModel = koinViewModel()
@@ -140,20 +141,21 @@ fun BaseSpecializationsScreen(
     ) {
         val context = LocalContext.current
 
-        Text(
-            modifier = modifier.padding(
-                vertical = FIGMA_VERTICAL_TITLE_PADDING,
-                horizontal = FIGMA_HORIZONTAL_PADDING
-            ),
-            style = LocalAppTypography.current.body5Strong,
-            text = headerText.getString(context),
-        )
-
         LazyColumn(
             modifier = modifier.padding(horizontal = FIGMA_HORIZONTAL_PADDING),
             state = listState,
             verticalArrangement = Arrangement.spacedBy(FIGMA_VERTICAL_CARD_PADDING)
         ) {
+            item {
+                Text(
+                    modifier = modifier.padding(
+                        vertical = FIGMA_VERTICAL_TITLE_PADDING,
+                        horizontal = FIGMA_HORIZONTAL_PADDING
+                    ),
+                    style = LocalAppTypography.current.body5Strong,
+                    text = headerText.getString(context),
+                )
+            }
             items(
                 items = list,
                 key = { it.id }
@@ -167,6 +169,9 @@ fun BaseSpecializationsScreen(
                         )
                     }
                 )
+            }
+            item {
+                Spacer(modifier = Modifier.height(4.dp))
             }
         }
 
@@ -204,7 +209,10 @@ fun ScreenUI(
         }
     ) { paddingValues ->
         Box(
-            modifier = Modifier.padding(paddingValues)
+            modifier = Modifier
+                .padding(
+                    top = paddingValues.calculateTopPadding()
+                )
         ) {
             when (screenState) {
                 is SpecializationScreenState.Loaded -> {
@@ -220,7 +228,7 @@ fun ScreenUI(
                         SpecializationsLoadingScreen(padding = padding)
                     } else {
                         BaseSpecializationsScreen(
-                            headerText = headerText,
+                            headerText = TextOrResource.Resource(R.string.selection_specializations_list_header_text),
                             onItemClick = { id, title ->
                                 onSpecialEvent(
                                     SpecializationScreenEvent.OnSpecialClick(
@@ -244,10 +252,14 @@ fun ScreenUI(
                     ErrorScreen(
                         error = screenState.throwable.message
                             ?: defaultErrorText.getString(context),
-                        errorText = TextOrResource.Text("Something went wrong..."),
-                        titleText = TextOrResource.Text("Crash"),
-                        backText = TextOrResource.Text("Back"),
-                        unknownErrorText = TextOrResource.Text("Loading data failed"),
+                        errorText = TextOrResource
+                            .Resource(R.string.selection_specializations_error_message),
+                        titleText = TextOrResource
+                            .Resource(R.string.selection_specializations_error_title),
+                        backText = TextOrResource
+                            .Resource(R.string.selection_specializations_error_back_button),
+                        unknownErrorText = TextOrResource
+                            .Resource(R.string.selection_specializations_unknown_error_text),
                         onBack = { onSpecialEvent(SpecializationScreenEvent.OnBackClick) }
                     )
                 }
@@ -274,6 +286,7 @@ fun HandleCommand(
             is SpecializationSelectionScreenCommand.OnBackClick -> {
                 onResult(SpecializationsScreenResult.NavigateBack)
             }
+
             is SpecializationSelectionScreenCommand.SpecializationSelectionClick -> {
                 onResult(
                     SpecializationsScreenResult.SpecializationClick(
@@ -332,7 +345,7 @@ fun SpecializationsScreenPreview(
     @PreviewParameter(ListSpecializationScreenProvider::class) params: SpecializationScreenParams
 ) {
     ScreenUI(
-        headerText = TextOrResource.Resource(R.string.selection_specializations_list_header),
+        headerText = TextOrResource.Resource(R.string.selection_specializations_top_bar_header),
         screenState = params.screenState,
         onSpecialEvent = { _ -> Timber.tag("Preview").d("pressed item") },
         listState = rememberLazyListState()

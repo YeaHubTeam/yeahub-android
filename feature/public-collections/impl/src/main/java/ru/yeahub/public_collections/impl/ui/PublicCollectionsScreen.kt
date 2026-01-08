@@ -9,23 +9,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -34,17 +26,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
@@ -61,6 +48,8 @@ import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 import ru.yeahub.core_ui.component.CollectionCard
 import ru.yeahub.core_ui.component.ErrorScreen
+import ru.yeahub.core_ui.component.TopAppBarWithBottomBorder
+import ru.yeahub.core_ui.component.toTextOrResource
 import ru.yeahub.core_ui.example.dynamicPreview.ProvidePreviewCompositionLocals
 import ru.yeahub.core_ui.example.staticPreview.StaticPreview
 import ru.yeahub.core_ui.theme.Theme
@@ -138,7 +127,7 @@ fun ScreenUI(
         containerColor = colors.black10,
         topBar = {
             TopAppBarWithBottomBorder(
-                title = state.header.getString(LocalContext.current),
+                title = state.header.getString(LocalContext.current).toTextOrResource(),
                 onBackClick = { onEvent(PublicCollectionsScreenEvent.OnBackClick) }
             )
         }
@@ -168,7 +157,7 @@ fun ScreenUI(
                         isLoadingNextPage = state.isLoadingNextPage,
                         paginationError = null,
                         onRetryPagination = { onEvent(PublicCollectionsScreenEvent.Refresh) },
-                        onClickItem = {  id, title ->
+                        onClickItem = { id, title ->
                             onEvent(
                                 PublicCollectionsScreenEvent.OnQuestionsListClick(
                                     id,
@@ -198,7 +187,7 @@ fun ScreenUI(
                         isLoadingNextPage = false,
                         paginationError = state.throwable,
                         onRetryPagination = { onEvent(PublicCollectionsScreenEvent.Refresh) },
-                        onClickItem = {  id, title ->
+                        onClickItem = { id, title ->
                             onEvent(
                                 PublicCollectionsScreenEvent.OnQuestionsListClick(
                                     id,
@@ -209,7 +198,27 @@ fun ScreenUI(
                     )
                 }
             }
+
+            is PublicCollectionsScreenState.Empty -> {
+                Empty()
+            }
         }
+    }
+}
+
+@Composable
+private fun Empty(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = stringResource(R.string.there_is_nothing),
+            style = MaterialTheme.typography.headlineSmall,
+            textAlign = TextAlign.Center
+        )
     }
 }
 
@@ -250,7 +259,12 @@ fun CollectionsListWithLoadMore(
                         descriptionText = collection.descriptionText,
                         imageUrl = collection.imageUrl,
                         questionsCount = collection.questionsCount,
-                        onCollectionClick = { onClickItem(collection.id, collection.collectionTitle) }
+                        onCollectionClick = {
+                            onClickItem(
+                                collection.id,
+                                collection.collectionTitle
+                            )
+                        }
                     )
                 }
             }
@@ -283,6 +297,7 @@ fun LoadMoreHandler(
             isLoading -> {
                 CircularProgressIndicator()
             }
+
             error != null -> {
                 val errorMessage =
                     getReadableErrorMessage(context = context, throwable = error)
@@ -301,6 +316,7 @@ fun LoadMoreHandler(
                     }
                 }
             }
+
             else -> {
                 Spacer(modifier = Modifier.height(0.dp))
             }
@@ -341,59 +357,14 @@ fun HandleCommand(
                     )
 
                     is PublicCollectionsScreenCommand.OnQuestionsListClick -> onResult(
-                        PublicCollectionsScreenResult.NavigateToQuestions(command.collectionId, command.title)
+                        PublicCollectionsScreenResult.NavigateToQuestions(
+                            command.collectionId,
+                            command.title
+                        )
                     )
                 }
             }
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun TopAppBarWithBottomBorder(
-    title: String,
-    borderColor: Color = colors.black50,
-    borderThickness: Dp = 1.dp,
-    onBackClick: () -> Unit
-) {
-    val density = LocalDensity.current
-    val borderThicknessPx = with(density) { borderThickness.toPx() }
-    CenterAlignedTopAppBar(
-        title = {
-            Text(
-                text = title,
-                style = Theme.typography.body3Accent,
-                color = colors.black900
-            )
-        },
-        navigationIcon = {
-            IconButton(onClick = { onBackClick() }) {
-                Icon(
-                    modifier = Modifier
-                        .width(20.dp)
-                        .height(20.dp),
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = null,
-                    tint = colors.purple700
-                )
-            }
-        },
-        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-            containerColor = colors.white900
-        ),
-        modifier = Modifier
-            .fillMaxWidth()
-            .drawWithContent {
-                drawContent()
-                val y = size.height - borderThicknessPx / 2f
-                drawLine(
-                    color = borderColor,
-                    start = Offset(0f, y),
-                    end = Offset(size.width, y),
-                    strokeWidth = borderThicknessPx
-                )
-            }
-    )
 }
 
 class ListPublicCollectionScreenProvider : PreviewParameterProvider<ScreenParams> {

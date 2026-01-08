@@ -8,16 +8,16 @@ class PublicQuestionsRemoteDataSource(private val apiService: NetworkProvider) :
     override suspend fun requestPublicQuestionsApi(
         page: Int,
         limit: Int,
-        skills: List<String>?,
         skillFilterMode: String?,
-        idCollection: Int?
+        idCollection: Int?,
+        idSpecialization: Int?
     ): GetPublicQuestionsResponse {
         return apiService.apiService.getQuestions(
             page = page,
             limit = limit,
-            skills = skills,
             skillFilterMode = skillFilterMode,
-            collection = idCollection
+            collection = idCollection,
+            specialization = idSpecialization
         )
     }
 }

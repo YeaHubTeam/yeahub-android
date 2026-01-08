@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_quiz_top_bar_header_text">Подготовка</string>
+    <string name="create_quiz_screen_main_title">Собеседование</string>
+    <string name="create_quiz_specialization_param_header_text">Выбор специализации</string>
+    <string name="create_quiz_question_count_param_header_text">Количество вопросов</string>
+    <string name="create_quiz_start_quiz_button_text">Начать</string>
+</resources>

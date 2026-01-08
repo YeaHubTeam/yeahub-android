@@ -56,7 +56,11 @@ fun HideQuestion(
     Surface(
         modifier = modifier
             .padding(10.dp)
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .clickable {
+                println("Click! isExtended before: $isExtended")
+                onClickMore()
+            },
         color = Theme.colors.white900,
         shape = RoundedCornerShape(8.dp),
         shadowElevation = 2.dp,
@@ -68,11 +72,7 @@ fun HideQuestion(
         ) {
             Row(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        println("Click! isExtended before: $isExtended")
-                        onClickMore()
-                    },
+                    .fillMaxWidth(),
             ) {
                 Image(
                     painter = painterResource(R.drawable.ellipse),

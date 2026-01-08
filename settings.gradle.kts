@@ -57,4 +57,6 @@ include(":feature:public-collections:api")
 include(":feature:questions-or-collections")
 include(":feature:questions-or-collections:api")
 include(":feature:questions-or-collections:impl")
-
+include(":feature:interview-trainer")
+include(":feature:interview-trainer:api")
+include(":feature:interview-trainer:impl")
