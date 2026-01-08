@@ -36,18 +36,21 @@
             <option value="$PROJECT_DIR$/feature/example-questions" />
             <option value="$PROJECT_DIR$/feature/example-questions/api" />
             <option value="$PROJECT_DIR$/feature/example-questions/impl" />
+            <option value="$PROJECT_DIR$/feature/interview-trainer" />
+            <option value="$PROJECT_DIR$/feature/interview-trainer/api" />
+            <option value="$PROJECT_DIR$/feature/interview-trainer/impl" />
             <option value="$PROJECT_DIR$/feature/public-collections" />
             <option value="$PROJECT_DIR$/feature/public-collections/api" />
             <option value="$PROJECT_DIR$/feature/public-collections/impl" />
             <option value="$PROJECT_DIR$/feature/public-questions" />
             <option value="$PROJECT_DIR$/feature/public-questions/api" />
             <option value="$PROJECT_DIR$/feature/public-questions/impl" />
-            <option value="$PROJECT_DIR$/feature/selection-specializations" />
-            <option value="$PROJECT_DIR$/feature/selection-specializations/api" />
-            <option value="$PROJECT_DIR$/feature/selection-specializations/impl" />
             <option value="$PROJECT_DIR$/feature/questions-or-collections" />
             <option value="$PROJECT_DIR$/feature/questions-or-collections/api" />
             <option value="$PROJECT_DIR$/feature/questions-or-collections/impl" />
+            <option value="$PROJECT_DIR$/feature/selection-specializations" />
+            <option value="$PROJECT_DIR$/feature/selection-specializations/api" />
+            <option value="$PROJECT_DIR$/feature/selection-specializations/impl" />
           </set>
         </option>
       </GradleProjectSettings>
