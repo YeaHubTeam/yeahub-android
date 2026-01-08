@@ -7,7 +7,7 @@ import ru.yeahub.navigation_api.FeatureApi
 import ru.yeahub.navigation_api.FeatureRoute
 import ru.yeahub.navigation_api.NavigationPathManager
 
-class InterviewTrainerFeatureImpl: FeatureApi {
+class InterviewTrainerFeatureImpl : FeatureApi {
     override fun getFeatureName(): String = FeatureRoute.InterviewTrainerFeature.FEATURE_NAME
 
     override fun registerGraph(

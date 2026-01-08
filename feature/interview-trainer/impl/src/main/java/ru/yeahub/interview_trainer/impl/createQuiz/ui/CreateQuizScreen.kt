@@ -105,9 +105,13 @@ private fun MockChooseSpecializationBlock(
         Spacer(modifier = Modifier.padding(vertical = 4.dp))
 
         val specs = arrayOf(
-            "Frontend", "Backend", "Data Science",
-            "Machine Learning", "Testing", "iOS Dev",
-            "Android Dev", "Game dev"
+            "Frontend",
+            "Backend",
+            "Data Science",
+            "Machine Learning",
+            "Testing", "iOS Dev",
+            "Android Dev",
+            "Game dev"
         )
         FlowRow(
             modifier = Modifier
@@ -235,4 +239,3 @@ private fun MockStartQuizButton(
         }
     }
 }
-
