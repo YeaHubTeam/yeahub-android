@@ -1,5 +1,7 @@
 package ru.yeahub.interview_trainer.impl.createQuiz.presentation
 
+import androidx.compose.runtime.Immutable
+
 sealed interface CreateQuizState {
     //Изначальный
     data object Loading : CreateQuizState
@@ -8,7 +10,13 @@ sealed interface CreateQuizState {
         val specializations: List<VoSpecialization>,
         val selectedSpecializationId: Long = 11,
         val questionsCount: Int = 1,
-    ) : CreateQuizState
+    ) : CreateQuizState {
+        @Immutable
+        data class VoSpecialization(
+            val id: Int,
+            val title: String
+        )
+    }
 
     data class Error(val throwable: Throwable) : CreateQuizState
 }
