@@ -44,11 +44,10 @@ private val FIGMA_HORIZONTAL_PADDING = 16.dp
 private val FIGMA_VERTICAL_BLOCKS_PADDING = 16.dp
 private val FIGMA_VERTICAL_FIRST_AND_LAST_ELEMENT_PADDING = 24.dp
 
-
 @Composable
 fun MockScreenUI(
     state: CreateQuizState,
-    headerText: TextOrResource = TextOrResource.Resource(R.string.create_quiz_top_bar_header_text)
+    headerText: TextOrResource = TextOrResource.Resource(R.string.create_quiz_top_bar_header_text),
 ) {
     Scaffold(
         containerColor = colors.black10,
@@ -63,7 +62,7 @@ fun MockScreenUI(
             modifier = Modifier.padding(paddingValues)
         ) {
             when (state) {
-                CreateQuizState.Loading -> {}
+                CreateQuizState.Loading -> CreateQuizLoading()
 
                 is CreateQuizState.Error -> {
                     ErrorScreen(
