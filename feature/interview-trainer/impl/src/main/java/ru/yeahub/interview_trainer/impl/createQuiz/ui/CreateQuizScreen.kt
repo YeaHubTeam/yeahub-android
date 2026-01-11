@@ -2,6 +2,7 @@ package ru.yeahub.interview_trainer.impl.createQuiz.ui
 
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
@@ -25,7 +26,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import ru.yeahub.core_ui.component.ErrorScreen
 import ru.yeahub.core_ui.component.PrimaryButton
 import ru.yeahub.core_ui.component.SkillButton
 import ru.yeahub.core_ui.component.TopAppBarWithBottomBorder
@@ -34,28 +38,49 @@ import ru.yeahub.core_ui.theme.LocalAppTypography
 import ru.yeahub.core_ui.theme.colors
 import ru.yeahub.core_utils.common.TextOrResource
 import ru.yeahub.interview_trainer.impl.R
+import ru.yeahub.interview_trainer.impl.createQuiz.presentation.CreateQuizState
 
 private val FIGMA_HORIZONTAL_PADDING = 16.dp
 private val FIGMA_VERTICAL_BLOCKS_PADDING = 16.dp
 private val FIGMA_VERTICAL_FIRST_AND_LAST_ELEMENT_PADDING = 24.dp
 
-@StaticPreview
+
 @Composable
-fun MockScreenUI() {
+fun MockScreenUI(
+    state: CreateQuizState,
+    headerText: TextOrResource = TextOrResource.Resource(R.string.create_quiz_top_bar_header_text)
+) {
     Scaffold(
         containerColor = colors.black10,
         topBar = {
             TopAppBarWithBottomBorder(
-                title = TextOrResource.Text("Подготовка"),
+                title = headerText,
                 onBackClick = { }
             )
         }
     ) { paddingValues ->
-        MockCreateQuizScreen(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-        )
+        Box(
+            modifier = Modifier.padding(paddingValues)
+        ) {
+            when (state) {
+                CreateQuizState.Loading -> {}
+
+                is CreateQuizState.Error -> {
+                    ErrorScreen(
+                        error = state.throwable.localizedMessage,
+                        errorText = TextOrResource.Resource(R.string.error_screen_text),
+                        titleText = TextOrResource.Resource(R.string.title_error_screen_text),
+                        backText = TextOrResource.Resource(R.string.back_error_screen_text),
+                        unknownErrorText = TextOrResource.Resource(R.string.unknown_error_screen_text),
+                        onBack = { }
+                    )
+                }
+
+                is CreateQuizState.Loaded -> {
+                    MockCreateQuizScreen()
+                }
+            }
+        }
     }
 }
 
@@ -73,8 +98,8 @@ private fun MockCreateQuizScreen(
         Text(
             modifier = Modifier
                 .padding(vertical = FIGMA_VERTICAL_FIRST_AND_LAST_ELEMENT_PADDING),
-            style = LocalAppTypography.current.head5,
             text = titleText.getString(context),
+            style = LocalAppTypography.current.head5,
         )
 
         MockChooseSpecializationBlock(context = context, selectedSpec = "Android Dev")
@@ -102,7 +127,7 @@ private fun MockChooseSpecializationBlock(
             text = titleText.getString(context),
         )
 
-        Spacer(modifier = Modifier.padding(vertical = 4.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         val specs = arrayOf(
             "Frontend",
@@ -152,7 +177,7 @@ private fun MockChooseQuestionsCountBlock(
             text = titleText.getString(context),
         )
 
-        Spacer(modifier = Modifier.padding(vertical = 8.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         MockQuestionCounter(count = 0)
     }
@@ -239,4 +264,66 @@ private fun MockStartQuizButton(
             )
         }
     }
+}
+
+data class ScreenParams(val state: CreateQuizState)
+
+class CreateQuizScreenParamsProvider : PreviewParameterProvider<ScreenParams> {
+    override val values: Sequence<ScreenParams> = sequenceOf(
+        ScreenParams(
+            CreateQuizState.Loaded(
+                specializations = listOf(
+                    CreateQuizState.Loaded.VoSpecialization(
+                        id = 11,
+                        title = "Frontend"
+                    ),
+                    CreateQuizState.Loaded.VoSpecialization(
+                        id = 1,
+                        title = "Backend"
+                    ),
+                    CreateQuizState.Loaded.VoSpecialization(
+                        id = 2,
+                        title = "Data Science"
+                    ),
+                    CreateQuizState.Loaded.VoSpecialization(
+                        id = 3,
+                        title = "Machine Learning"
+                    ),
+                    CreateQuizState.Loaded.VoSpecialization(
+                        id = 4,
+                        title = "Testing"
+                    ),
+                    CreateQuizState.Loaded.VoSpecialization(
+                        id = 5,
+                        title = "iOS Dev"
+                    ),
+                    CreateQuizState.Loaded.VoSpecialization(
+                        id = 21,
+                        title = "Android Dev"
+                    ),
+                    CreateQuizState.Loaded.VoSpecialization(
+                        id = 6,
+                        title = "Game Dev"
+                    )
+                )
+            )
+        ),
+        ScreenParams(
+            CreateQuizState.Loading
+        ),
+        ScreenParams(
+            CreateQuizState.Error(
+                Throwable("Не удалось загрузить данные")
+            )
+        )
+    )
+}
+
+@StaticPreview
+@Composable
+fun CreateQuizScreenPreview(
+    @PreviewParameter(CreateQuizScreenParamsProvider::class)
+    params: ScreenParams,
+) {
+    MockScreenUI(params.state)
 }
