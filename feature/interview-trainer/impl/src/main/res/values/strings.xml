@@ -6,11 +6,8 @@
     <string name="create_quiz_question_count_param_header_text">Количество вопросов</string>
     <string name="create_quiz_start_quiz_button_text">Начать</string>
 
-    <string name="error_text">Ошибка</string>
-    <string name="no_internet_text">Нет подключения к сети</string>
-    <string name="no_response_text">Время ожидания ответа истекло</string>
     <string name="title_error_screen_text">УПС!</string>
+    <string name="error_screen_text">Что‑то пошло не так</string>
     <string name="back_error_screen_text">Назад</string>
     <string name="unknown_error_screen_text">Не удалось загрузить данные</string>
-    <string name="error_screen_text">Что‑то пошло не так</string>
 </resources>
