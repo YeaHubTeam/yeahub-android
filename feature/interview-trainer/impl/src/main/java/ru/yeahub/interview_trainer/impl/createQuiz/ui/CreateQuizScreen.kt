@@ -265,55 +265,48 @@ private fun MockStartQuizButton(
     }
 }
 
-data class ScreenParams(val state: CreateQuizState)
-
-class CreateQuizScreenParamsProvider : PreviewParameterProvider<ScreenParams> {
-    override val values: Sequence<ScreenParams> = sequenceOf(
-        ScreenParams(
-            CreateQuizState.Loaded(
-                specializations = listOf(
-                    CreateQuizState.Loaded.VoSpecialization(
-                        id = 11,
-                        title = "Frontend"
-                    ),
-                    CreateQuizState.Loaded.VoSpecialization(
-                        id = 1,
-                        title = "Backend"
-                    ),
-                    CreateQuizState.Loaded.VoSpecialization(
-                        id = 2,
-                        title = "Data Science"
-                    ),
-                    CreateQuizState.Loaded.VoSpecialization(
-                        id = 3,
-                        title = "Machine Learning"
-                    ),
-                    CreateQuizState.Loaded.VoSpecialization(
-                        id = 4,
-                        title = "Testing"
-                    ),
-                    CreateQuizState.Loaded.VoSpecialization(
-                        id = 5,
-                        title = "iOS Dev"
-                    ),
-                    CreateQuizState.Loaded.VoSpecialization(
-                        id = 21,
-                        title = "Android Dev"
-                    ),
-                    CreateQuizState.Loaded.VoSpecialization(
-                        id = 6,
-                        title = "Game Dev"
-                    )
+class CreateQuizScreenStateParamProvider : PreviewParameterProvider<CreateQuizState> {
+    override val values: Sequence<CreateQuizState> = sequenceOf(
+        CreateQuizState.Loaded(
+            specializations = listOf(
+                CreateQuizState.Loaded.VoSpecialization(
+                    id = 11,
+                    title = "Frontend"
+                ),
+                CreateQuizState.Loaded.VoSpecialization(
+                    id = 1,
+                    title = "Backend"
+                ),
+                CreateQuizState.Loaded.VoSpecialization(
+                    id = 2,
+                    title = "Data Science"
+                ),
+                CreateQuizState.Loaded.VoSpecialization(
+                    id = 3,
+                    title = "Machine Learning"
+                ),
+                CreateQuizState.Loaded.VoSpecialization(
+                    id = 4,
+                    title = "Testing"
+                ),
+                CreateQuizState.Loaded.VoSpecialization(
+                    id = 5,
+                    title = "iOS Dev"
+                ),
+                CreateQuizState.Loaded.VoSpecialization(
+                    id = 21,
+                    title = "Android Dev"
+                ),
+                CreateQuizState.Loaded.VoSpecialization(
+                    id = 6,
+                    title = "Game Dev"
                 )
             )
         ),
-        ScreenParams(
-            CreateQuizState.Loading
-        ),
-        ScreenParams(
-            CreateQuizState.Error(
-                Throwable("Не удалось загрузить данные")
-            )
+        CreateQuizState.Loading,
+
+        CreateQuizState.Error(
+            Throwable("Не удалось загрузить данные")
         )
     )
 }
@@ -321,8 +314,8 @@ class CreateQuizScreenParamsProvider : PreviewParameterProvider<ScreenParams> {
 @StaticPreview
 @Composable
 fun CreateQuizScreenPreview(
-    @PreviewParameter(CreateQuizScreenParamsProvider::class)
-    params: ScreenParams,
+    @PreviewParameter(CreateQuizScreenStateParamProvider::class)
+    state: CreateQuizState,
 ) {
-    MockScreenUI(params.state)
+    MockScreenUI(state)
 }
