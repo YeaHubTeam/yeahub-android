@@ -13,8 +13,8 @@ sealed interface CreateQuizState {
     ) : CreateQuizState {
         @Immutable
         data class VoSpecialization(
-            val id: Int,
-            val title: String
+            val id: Long,
+            val title: String,
         )
     }
 
