@@ -45,7 +45,7 @@ private val FIGMA_VERTICAL_BLOCKS_PADDING = 16.dp
 private val FIGMA_VERTICAL_FIRST_AND_LAST_ELEMENT_PADDING = 24.dp
 
 @Composable
-fun MockScreenUI(
+fun ScreenUI(
     state: CreateQuizState,
     headerText: TextOrResource = TextOrResource.Resource(R.string.create_quiz_top_bar_header_text),
 ) {
@@ -75,16 +75,14 @@ fun MockScreenUI(
                     )
                 }
 
-                is CreateQuizState.Loaded -> {
-                    MockCreateQuizScreen()
-                }
+                is CreateQuizState.Loaded -> CreateQuizScreen()
             }
         }
     }
 }
 
 @Composable
-private fun MockCreateQuizScreen(
+private fun CreateQuizScreen(
     modifier: Modifier = Modifier,
     titleText: TextOrResource = TextOrResource.Resource(R.string.create_quiz_screen_main_title),
 ) {
@@ -101,20 +99,20 @@ private fun MockCreateQuizScreen(
             style = LocalAppTypography.current.head5,
         )
 
-        MockChooseSpecializationBlock(context = context, selectedSpec = "Android Dev")
+        ChooseSpecializationBlock(context = context, selectedSpec = "Android Dev")
 
         Spacer(modifier = Modifier.height(FIGMA_VERTICAL_BLOCKS_PADDING))
 
-        MockChooseQuestionsCountBlock(context = context)
+        ChooseQuestionsCountBlock(context = context)
 
         Spacer(modifier = Modifier.weight(1f))
 
-        MockStartQuizButton()
+        StartQuizButton()
     }
 }
 
 @Composable
-private fun MockChooseSpecializationBlock(
+private fun ChooseSpecializationBlock(
     modifier: Modifier = Modifier,
     titleText: TextOrResource = TextOrResource.Resource(R.string.create_quiz_specialization_param_header_text),
     context: Context,
@@ -165,7 +163,7 @@ private fun MockChooseSpecializationBlock(
 }
 
 @Composable
-private fun MockChooseQuestionsCountBlock(
+private fun ChooseQuestionsCountBlock(
     modifier: Modifier = Modifier,
     titleText: TextOrResource = TextOrResource.Resource(R.string.create_quiz_question_count_param_header_text),
     context: Context,
@@ -178,12 +176,12 @@ private fun MockChooseQuestionsCountBlock(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        MockQuestionCounter(count = 0)
+        QuestionCounter(count = 0)
     }
 }
 
 @Composable
-private fun MockQuestionCounter(
+private fun QuestionCounter(
     modifier: Modifier = Modifier,
     count: Int,
 ) {
@@ -231,7 +229,7 @@ private fun MockQuestionCounter(
 }
 
 @Composable
-private fun MockStartQuizButton(
+private fun StartQuizButton(
     modifier: Modifier = Modifier,
 ) {
     PrimaryButton(
@@ -317,5 +315,5 @@ fun CreateQuizScreenPreview(
     @PreviewParameter(CreateQuizScreenStateParamProvider::class)
     state: CreateQuizState,
 ) {
-    MockScreenUI(state)
+    ScreenUI(state)
 }
