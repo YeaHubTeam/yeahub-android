@@ -44,9 +44,13 @@ open class CreateQuizViewModel(
         when (event) {
             CreateQuizEvent.OnBackClick -> onBackClick()
 
-            is CreateQuizEvent.OnPlusQuestionClick -> incrementQuestionsCount()
+            is CreateQuizEvent.OnPlusQuestionClick -> incrementQuestionsCount(
+                questionsCount = event.questionsCount
+            )
 
-            is CreateQuizEvent.OnMinusQuestionClick -> decrementQuestionsCount()
+            is CreateQuizEvent.OnMinusQuestionClick -> decrementQuestionsCount(
+                questionsCount = event.questionsCount
+            )
 
             is CreateQuizEvent.OnSpecializationClick -> changeChosenSpecialization(
                 newSpecializationId = event.specializationId
@@ -65,11 +69,11 @@ open class CreateQuizViewModel(
         }
     }
 
-    private fun incrementQuestionsCount() {
+    private fun incrementQuestionsCount(questionsCount: Int) {
         viewModelScopeSafe.launch(Dispatchers.Default) {
             _screenState.update { currentState ->
                 if (currentState is CreateQuizState.Loaded) {
-                    val incrementedCount = currentState.questionsCount + 1
+                    val incrementedCount = questionsCount + 1
                     val newCount = incrementedCount.coerceAtMost(MAX_QUESTIONS_COUNT)
 
                     currentState.copy(questionsCount = newCount)
@@ -80,11 +84,11 @@ open class CreateQuizViewModel(
         }
     }
 
-    private fun decrementQuestionsCount() {
+    private fun decrementQuestionsCount(questionsCount: Int) {
         viewModelScopeSafe.launch(Dispatchers.Default) {
             _screenState.update { currentState ->
                 if (currentState is CreateQuizState.Loaded) {
-                    val incrementedCount = currentState.questionsCount - 1
+                    val incrementedCount = questionsCount - 1
                     val newCount = incrementedCount.coerceAtLeast(MIN_QUESTIONS_COUNT)
 
                     currentState.copy(questionsCount = newCount)
