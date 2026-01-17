@@ -38,6 +38,7 @@ import ru.yeahub.core_ui.theme.LocalAppTypography
 import ru.yeahub.core_ui.theme.colors
 import ru.yeahub.core_utils.common.TextOrResource
 import ru.yeahub.interview_trainer.impl.R
+import ru.yeahub.interview_trainer.impl.createQuiz.presentation.CreateQuizEvent
 import ru.yeahub.interview_trainer.impl.createQuiz.presentation.CreateQuizState
 
 private val FIGMA_HORIZONTAL_PADDING = 16.dp
@@ -45,8 +46,9 @@ private val FIGMA_VERTICAL_BLOCKS_PADDING = 16.dp
 private val FIGMA_VERTICAL_FIRST_AND_LAST_ELEMENT_PADDING = 24.dp
 
 @Composable
-fun ScreenUI(
+private fun ScreenUI(
     state: CreateQuizState,
+    onEvent: (CreateQuizEvent) -> Unit,
     headerText: TextOrResource = TextOrResource.Resource(R.string.create_quiz_top_bar_header_text),
 ) {
     Scaffold(
@@ -54,7 +56,7 @@ fun ScreenUI(
         topBar = {
             TopAppBarWithBottomBorder(
                 title = headerText,
-                onBackClick = { }
+                onBackClick = { onEvent(CreateQuizEvent.OnBackClick) }
             )
         }
     ) { paddingValues ->
@@ -71,18 +73,46 @@ fun ScreenUI(
                         titleText = TextOrResource.Resource(R.string.title_error_screen_text),
                         backText = TextOrResource.Resource(R.string.back_error_screen_text),
                         unknownErrorText = TextOrResource.Resource(R.string.unknown_error_screen_text),
-                        onBack = { }
+                        onBack = { onEvent(CreateQuizEvent.OnBackClick) }
                     )
                 }
 
-                is CreateQuizState.Loaded -> CreateQuizScreen()
+                is CreateQuizState.Loaded -> BaseCreateQuizScreen(
+                    specializations = state.specializations,
+                    selectedSpecializationId = state.selectedSpecializationId,
+                    questionsCount = state.questionsCount,
+                    onSpecializationClick = { id ->
+                        onEvent(CreateQuizEvent.OnSpecializationClick(specializationId = id))
+                    },
+                    onPlusQuestionCountClick = { count ->
+                        onEvent(CreateQuizEvent.OnPlusQuestionClick(questionsCount = count))
+                    },
+                    onMinusQuestionCountClick = { count ->
+                        onEvent(CreateQuizEvent.OnMinusQuestionClick(questionsCount = count))
+                    },
+                    onStartQuizClick = { specializationId: Long, questionsCount: Int ->
+                        onEvent(
+                            CreateQuizEvent.OnStartInterviewQuizClick(
+                                specializationId = specializationId,
+                                questionCount = questionsCount,
+                            )
+                        )
+                    }
+                )
             }
         }
     }
 }
 
 @Composable
-private fun CreateQuizScreen(
+private fun BaseCreateQuizScreen(
+    specializations: List<CreateQuizState.Loaded.VoSpecialization>,
+    selectedSpecializationId: Long,
+    questionsCount: Int,
+    onSpecializationClick: (id: Long) -> Unit,
+    onPlusQuestionCountClick: (count: Int) -> Unit,
+    onMinusQuestionCountClick: (count: Int) -> Unit,
+    onStartQuizClick: (specializationId: Long, questionsCount: Int) -> Unit,
     modifier: Modifier = Modifier,
     titleText: TextOrResource = TextOrResource.Resource(R.string.create_quiz_screen_main_title),
 ) {
@@ -99,24 +129,40 @@ private fun CreateQuizScreen(
             style = LocalAppTypography.current.head5,
         )
 
-        ChooseSpecializationBlock(context = context, selectedSpec = "Android Dev")
+        ChooseSpecializationBlock(
+            context = context,
+            specializations = specializations,
+            selectedSpecializationId = selectedSpecializationId,
+            onSpecializationClick = onSpecializationClick
+        )
 
         Spacer(modifier = Modifier.height(FIGMA_VERTICAL_BLOCKS_PADDING))
 
-        ChooseQuestionsCountBlock(context = context)
+        ChooseQuestionsCountBlock(
+            context = context,
+            questionsCount = questionsCount,
+            onPlusQuestionCountClick = onPlusQuestionCountClick,
+            onMinusQuestionCountClick = onMinusQuestionCountClick,
+        )
 
         Spacer(modifier = Modifier.weight(1f))
 
-        StartQuizButton()
+        StartQuizButton(
+            specializationId = selectedSpecializationId,
+            questionsCount = questionsCount,
+            onStartQuizClick = onStartQuizClick,
+        )
     }
 }
 
 @Composable
 private fun ChooseSpecializationBlock(
+    specializations: List<CreateQuizState.Loaded.VoSpecialization>,
+    selectedSpecializationId: Long,
+    context: Context,
+    onSpecializationClick: (Long) -> Unit,
     modifier: Modifier = Modifier,
     titleText: TextOrResource = TextOrResource.Resource(R.string.create_quiz_specialization_param_header_text),
-    context: Context,
-    selectedSpec: String? = null,
 ) {
     Column(modifier = modifier) {
         Text(
@@ -126,19 +172,8 @@ private fun ChooseSpecializationBlock(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        val specs = arrayOf(
-            "Frontend",
-            "Backend",
-            "Data Science",
-            "Machine Learning",
-            "Testing",
-            "iOS Dev",
-            "Android Dev",
-            "Game dev"
-        )
         FlowRow(
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(
                 space = 12.dp,
                 alignment = Alignment.Start
@@ -148,14 +183,14 @@ private fun ChooseSpecializationBlock(
                 alignment = Alignment.Top
             ),
         ) {
-            specs.forEach { spec ->
+            specializations.forEach { specialization ->
                 SkillButton(
                     contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
                     enabled = true,
-                    activeButton = selectedSpec == spec,
+                    activeButton = specialization.id == selectedSpecializationId,
                     fillButton = true,
-                    text = spec,
-                    onClick = { },
+                    text = specialization.title,
+                    onClick = { onSpecializationClick(specialization.id) },
                 )
             }
         }
@@ -164,9 +199,12 @@ private fun ChooseSpecializationBlock(
 
 @Composable
 private fun ChooseQuestionsCountBlock(
+    context: Context,
+    questionsCount: Int,
+    onPlusQuestionCountClick: (count: Int) -> Unit,
+    onMinusQuestionCountClick: (count: Int) -> Unit,
     modifier: Modifier = Modifier,
     titleText: TextOrResource = TextOrResource.Resource(R.string.create_quiz_question_count_param_header_text),
-    context: Context,
 ) {
     Column(modifier = modifier) {
         Text(
@@ -176,12 +214,18 @@ private fun ChooseQuestionsCountBlock(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        QuestionCounter(count = 0)
+        QuestionCounter(
+            count = questionsCount,
+            onPlusQuestionCountClick = onPlusQuestionCountClick,
+            onMinusQuestionCountClick = onMinusQuestionCountClick
+        )
     }
 }
 
 @Composable
 private fun QuestionCounter(
+    onPlusQuestionCountClick: (count: Int) -> Unit,
+    onMinusQuestionCountClick: (count: Int) -> Unit,
     modifier: Modifier = Modifier,
     count: Int,
 ) {
@@ -198,7 +242,7 @@ private fun QuestionCounter(
         ) {
             IconButton(
                 modifier = Modifier.size(24.dp),
-                onClick = { }
+                onClick = { onMinusQuestionCountClick(count) }
             ) {
                 Icon(
                     painter = painterResource(R.drawable.minus_icon),
@@ -216,7 +260,7 @@ private fun QuestionCounter(
 
             IconButton(
                 modifier = Modifier.size(24.dp),
-                onClick = { }
+                onClick = { onPlusQuestionCountClick(count) }
             ) {
                 Icon(
                     painter = painterResource(R.drawable.plus_icon),
@@ -230,6 +274,9 @@ private fun QuestionCounter(
 
 @Composable
 private fun StartQuizButton(
+    specializationId: Long,
+    questionsCount: Int,
+    onStartQuizClick: (specializationId: Long, questionsCount: Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     PrimaryButton(
@@ -237,7 +284,7 @@ private fun StartQuizButton(
             .padding(vertical = FIGMA_VERTICAL_FIRST_AND_LAST_ELEMENT_PADDING)
             .height(48.dp)
             .fillMaxWidth(),
-        onClick = { }
+        onClick = { onStartQuizClick(specializationId, questionsCount) }
     ) {
         Row(
             modifier = Modifier.fillMaxSize(),
@@ -263,46 +310,47 @@ private fun StartQuizButton(
     }
 }
 
+val specializations = listOf(
+    CreateQuizState.Loaded.VoSpecialization(
+        id = 11,
+        title = "Frontend"
+    ),
+    CreateQuizState.Loaded.VoSpecialization(
+        id = 1,
+        title = "Backend"
+    ),
+    CreateQuizState.Loaded.VoSpecialization(
+        id = 2,
+        title = "Data Science"
+    ),
+    CreateQuizState.Loaded.VoSpecialization(
+        id = 3,
+        title = "Machine Learning"
+    ),
+    CreateQuizState.Loaded.VoSpecialization(
+        id = 4,
+        title = "Testing"
+    ),
+    CreateQuizState.Loaded.VoSpecialization(
+        id = 5,
+        title = "iOS Dev"
+    ),
+    CreateQuizState.Loaded.VoSpecialization(
+        id = 21,
+        title = "Android Dev"
+    ),
+    CreateQuizState.Loaded.VoSpecialization(
+        id = 6,
+        title = "Game Dev"
+    )
+)
+
 class CreateQuizScreenStateParamProvider : PreviewParameterProvider<CreateQuizState> {
     override val values: Sequence<CreateQuizState> = sequenceOf(
         CreateQuizState.Loaded(
-            specializations = listOf(
-                CreateQuizState.Loaded.VoSpecialization(
-                    id = 11,
-                    title = "Frontend"
-                ),
-                CreateQuizState.Loaded.VoSpecialization(
-                    id = 1,
-                    title = "Backend"
-                ),
-                CreateQuizState.Loaded.VoSpecialization(
-                    id = 2,
-                    title = "Data Science"
-                ),
-                CreateQuizState.Loaded.VoSpecialization(
-                    id = 3,
-                    title = "Machine Learning"
-                ),
-                CreateQuizState.Loaded.VoSpecialization(
-                    id = 4,
-                    title = "Testing"
-                ),
-                CreateQuizState.Loaded.VoSpecialization(
-                    id = 5,
-                    title = "iOS Dev"
-                ),
-                CreateQuizState.Loaded.VoSpecialization(
-                    id = 21,
-                    title = "Android Dev"
-                ),
-                CreateQuizState.Loaded.VoSpecialization(
-                    id = 6,
-                    title = "Game Dev"
-                )
-            )
+            specializations = specializations
         ),
         CreateQuizState.Loading,
-
         CreateQuizState.Error(
             Throwable("Не удалось загрузить данные")
         )
@@ -315,5 +363,8 @@ fun CreateQuizScreenPreview(
     @PreviewParameter(CreateQuizScreenStateParamProvider::class)
     state: CreateQuizState,
 ) {
-    ScreenUI(state)
+    ScreenUI(
+        state = state,
+        onEvent = { },
+    )
 }
