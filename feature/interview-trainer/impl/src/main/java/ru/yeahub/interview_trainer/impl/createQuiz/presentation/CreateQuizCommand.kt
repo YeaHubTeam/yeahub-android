@@ -1,4 +1,4 @@
-package ru.yeahub.interview_trainer.impl.createQuiz.presentation.intent
+package ru.yeahub.interview_trainer.impl.createQuiz.presentation
 
 sealed interface CreateQuizCommand {
     data class NavigateToInterviewQuizScreen(
