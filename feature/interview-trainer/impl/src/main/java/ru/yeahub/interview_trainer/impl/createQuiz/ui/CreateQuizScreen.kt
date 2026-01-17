@@ -21,25 +21,39 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.delay
 import ru.yeahub.core_ui.component.ErrorScreen
 import ru.yeahub.core_ui.component.PrimaryButton
 import ru.yeahub.core_ui.component.SkillButton
 import ru.yeahub.core_ui.component.TopAppBarWithBottomBorder
+import ru.yeahub.core_ui.example.dynamicPreview.ProvidePreviewCompositionLocals
 import ru.yeahub.core_ui.example.staticPreview.StaticPreview
 import ru.yeahub.core_ui.theme.LocalAppTypography
 import ru.yeahub.core_ui.theme.colors
 import ru.yeahub.core_utils.common.TextOrResource
 import ru.yeahub.interview_trainer.impl.R
+import ru.yeahub.interview_trainer.impl.createQuiz.domain.DomainSpecialization
+import ru.yeahub.interview_trainer.impl.createQuiz.domain.DomainSpecializationListResponse
+import ru.yeahub.interview_trainer.impl.createQuiz.domain.GetSpecializationListUseCase
 import ru.yeahub.interview_trainer.impl.createQuiz.presentation.CreateQuizEvent
 import ru.yeahub.interview_trainer.impl.createQuiz.presentation.CreateQuizState
+import ru.yeahub.interview_trainer.impl.createQuiz.presentation.CreateQuizViewModel
 
 private val FIGMA_HORIZONTAL_PADDING = 16.dp
 private val FIGMA_VERTICAL_BLOCKS_PADDING = 16.dp
@@ -368,3 +382,63 @@ fun CreateQuizScreenPreview(
         onEvent = { },
     )
 }
+
+@Preview(showBackground = true)
+@Composable
+fun DynamicPreviewUI() {
+    val mockSpecsListUseCase = object : GetSpecializationListUseCase {
+        override suspend fun invoke(): DomainSpecializationListResponse {
+            delay(RESPONSE_DELAY)
+            return DomainSpecializationListResponse(
+                data = specializations.map {
+                    DomainSpecialization(
+                        it.id,
+                        it.title
+                    )
+                },
+                total = specializations.count().toLong()
+            )
+        }
+    }
+
+    val mockViewModel = viewModelCreator<CreateQuizViewModel> {
+        CreateQuizViewModel(mockSpecsListUseCase)
+    }
+
+    val state by mockViewModel.screenState.collectAsState()
+
+    LaunchedEffect(Unit) {
+        //Изначальное кол-во == 1
+        mockViewModel.onEvent(CreateQuizEvent.OnPlusQuestionClick(1))
+        // должно быть 2
+        mockViewModel.onEvent(CreateQuizEvent.OnPlusQuestionClick(2))
+        // должно быть 3
+        mockViewModel.onEvent(CreateQuizEvent.OnMinusQuestionClick(3))
+        // должно быть снова 2
+        mockViewModel.onEvent(CreateQuizEvent.OnSpecializationClick(21))
+        // С изначально выбранного Frontend Dev должно быть выбрано Android Dev
+    }
+
+    ProvidePreviewCompositionLocals {
+        ScreenUI(
+            state = state,
+            onEvent = mockViewModel::onEvent
+        )
+    }
+}
+
+typealias ViewModelCreator = () -> ViewModel?
+
+class ViewModelFactory(
+    private val viewModelCreator: ViewModelCreator = { null },
+) : ViewModelProvider.Factory {
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel> create(modelClass: Class<T>): T = viewModelCreator() as T
+}
+
+@Composable
+inline fun <reified VM : ViewModel> viewModelCreator(noinline creator: ViewModelCreator): VM =
+    viewModel(factory = remember { ViewModelFactory(creator) })
+
+private const val RESPONSE_DELAY = 2500L
