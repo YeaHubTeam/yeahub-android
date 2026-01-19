@@ -4,41 +4,40 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.yeahub.core_utils.BaseViewModel
-import ru.yeahub.interview_trainer.impl.createQuiz.domain.GetSpecializationListUseCase
 import ru.yeahub.interview_trainer.impl.createQuiz.ui.specializations
 
 open class CreateQuizViewModel(
-    private val getSpecializationListUseCase: GetSpecializationListUseCase,
+    private val screenMapper: CreateQuizScreenMapper,
 ) : BaseViewModel() {
 
-    //Потом поменять на Loading. Сделано Loaded для dynamic превью. Переменная из экрана CreateQuiz
-    private val _screenState = MutableStateFlow<CreateQuizState>(
-        CreateQuizState.Loaded(
-            specializations
+    private val userInputState = MutableStateFlow(
+        UserInput(
+            selectedSpecializationId = 11,
+            questionsCount = MIN_QUESTIONS_COUNT
         )
     )
-    val screenState: StateFlow<CreateQuizState> = _screenState
+
+    val screenState = userInputState
+        .map { userInput ->
+            screenMapper.getScreenState(
+                specializations = specializations,
+                selectedSpecializationId = userInput.selectedSpecializationId,
+                questionsCount = userInput.questionsCount,
+            )
+        }.stateIn(
+            scope = viewModelScopeSafe,
+            started = SharingStarted.WhileSubscribed(TIME_TO_CLEAN_UP_RESOURCES),
+            initialValue = CreateQuizState.Loading
+        )
 
     private val _commands = MutableSharedFlow<CreateQuizCommand>()
     val commands: SharedFlow<CreateQuizCommand> = _commands
-
-    init {
-        viewModelScopeSafe.launch(Dispatchers.IO) {
-            val specializations = getSpecializationListUseCase()
-                .data
-                .map {
-                    CreateQuizState.Loaded.VoSpecialization(
-                        id = it.id,
-                        title = it.title
-                    )
-                }
-            _screenState.update { CreateQuizState.Loaded(specializations) }
-        }
-    }
 
     fun onEvent(event: CreateQuizEvent) {
         when (event) {
@@ -70,49 +69,37 @@ open class CreateQuizViewModel(
     }
 
     private fun incrementQuestionsCount(questionsCount: Int) {
-        viewModelScopeSafe.launch(Dispatchers.Default) {
-            _screenState.update { currentState ->
-                if (currentState is CreateQuizState.Loaded) {
-                    val incrementedCount = questionsCount + 1
-                    val newCount = incrementedCount.coerceAtMost(MAX_QUESTIONS_COUNT)
+        viewModelScopeSafe.launch(Dispatchers.IO) {
+            userInputState.update { currentInputState ->
+                val incrementedCount = questionsCount + 1
+                val newCount = incrementedCount.coerceAtMost(MAX_QUESTIONS_COUNT)
 
-                    currentState.copy(questionsCount = newCount)
-                } else {
-                    currentState
-                }
+                currentInputState.copy(questionsCount = newCount)
             }
         }
     }
 
     private fun decrementQuestionsCount(questionsCount: Int) {
-        viewModelScopeSafe.launch(Dispatchers.Default) {
-            _screenState.update { currentState ->
-                if (currentState is CreateQuizState.Loaded) {
-                    val incrementedCount = questionsCount - 1
-                    val newCount = incrementedCount.coerceAtLeast(MIN_QUESTIONS_COUNT)
+        viewModelScopeSafe.launch(Dispatchers.IO) {
+            userInputState.update { currentInputState ->
+                val incrementedCount = questionsCount - 1
+                val newCount = incrementedCount.coerceAtLeast(MIN_QUESTIONS_COUNT)
 
-                    currentState.copy(questionsCount = newCount)
-                } else {
-                    currentState
-                }
+                currentInputState.copy(questionsCount = newCount)
             }
         }
     }
 
     private fun changeChosenSpecialization(newSpecializationId: Long) {
-        viewModelScopeSafe.launch(Dispatchers.Default) {
-            _screenState.update { currentState ->
-                if (currentState is CreateQuizState.Loaded) {
-                    currentState.copy(selectedSpecializationId = newSpecializationId)
-                } else {
-                    currentState
-                }
+        viewModelScopeSafe.launch(Dispatchers.IO) {
+            userInputState.update { currentInputState ->
+                currentInputState.copy(selectedSpecializationId = newSpecializationId)
             }
         }
     }
 
     private fun onStartInterviewClick(specializationId: Long, questionCount: Int) {
-        viewModelScopeSafe.launch(Dispatchers.Default) {
+        viewModelScopeSafe.launch(Dispatchers.IO) {
             _commands.emit(
                 CreateQuizCommand.NavigateToInterviewQuizScreen(
                     specializationId = specializationId,
@@ -122,8 +109,14 @@ open class CreateQuizViewModel(
         }
     }
 
+    private data class UserInput(
+        val selectedSpecializationId: Long,
+        val questionsCount: Int,
+    )
+
     companion object {
         private const val MIN_QUESTIONS_COUNT = 1
         private const val MAX_QUESTIONS_COUNT = 8
+        private const val TIME_TO_CLEAN_UP_RESOURCES = 5000L
     }
 }
