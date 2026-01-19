@@ -8,8 +8,8 @@ sealed interface CreateQuizState {
 
     data class Loaded(
         val specializations: List<VoSpecialization>,
-        val selectedSpecializationId: Long = 11,
-        val questionsCount: Int = 1,
+        val selectedSpecializationId: Long,
+        val questionsCount: Int,
     ) : CreateQuizState {
         @Immutable
         data class VoSpecialization(
