@@ -28,7 +28,7 @@ open class CreateQuizViewModel(
             screenMapper.getScreenState(
                 specializations = specializations,
                 selectedSpecializationId = userInput.selectedSpecializationId,
-                questionsCount = userInput.questionsCount,
+                questionsCount = userInput.questionsCount
             )
         }.stateIn(
             scope = viewModelScopeSafe,
@@ -69,7 +69,7 @@ open class CreateQuizViewModel(
     }
 
     private fun incrementQuestionsCount(questionsCount: Int) {
-        viewModelScopeSafe.launch(Dispatchers.IO) {
+        viewModelScopeSafe.launch {
             userInputState.update { currentInputState ->
                 val incrementedCount = questionsCount + 1
                 val newCount = incrementedCount.coerceAtMost(MAX_QUESTIONS_COUNT)
@@ -80,7 +80,7 @@ open class CreateQuizViewModel(
     }
 
     private fun decrementQuestionsCount(questionsCount: Int) {
-        viewModelScopeSafe.launch(Dispatchers.IO) {
+        viewModelScopeSafe.launch {
             userInputState.update { currentInputState ->
                 val incrementedCount = questionsCount - 1
                 val newCount = incrementedCount.coerceAtLeast(MIN_QUESTIONS_COUNT)
@@ -91,7 +91,7 @@ open class CreateQuizViewModel(
     }
 
     private fun changeChosenSpecialization(newSpecializationId: Long) {
-        viewModelScopeSafe.launch(Dispatchers.IO) {
+        viewModelScopeSafe.launch {
             userInputState.update { currentInputState ->
                 currentInputState.copy(selectedSpecializationId = newSpecializationId)
             }
