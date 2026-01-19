@@ -48,10 +48,8 @@ import ru.yeahub.core_ui.theme.LocalAppTypography
 import ru.yeahub.core_ui.theme.colors
 import ru.yeahub.core_utils.common.TextOrResource
 import ru.yeahub.interview_trainer.impl.R
-import ru.yeahub.interview_trainer.impl.createQuiz.domain.DomainSpecialization
-import ru.yeahub.interview_trainer.impl.createQuiz.domain.DomainSpecializationListResponse
-import ru.yeahub.interview_trainer.impl.createQuiz.domain.GetSpecializationListUseCase
 import ru.yeahub.interview_trainer.impl.createQuiz.presentation.CreateQuizEvent
+import ru.yeahub.interview_trainer.impl.createQuiz.presentation.CreateQuizScreenMapper
 import ru.yeahub.interview_trainer.impl.createQuiz.presentation.CreateQuizState
 import ru.yeahub.interview_trainer.impl.createQuiz.presentation.CreateQuizViewModel
 
@@ -362,7 +360,9 @@ val specializations = listOf(
 class CreateQuizScreenStateParamProvider : PreviewParameterProvider<CreateQuizState> {
     override val values: Sequence<CreateQuizState> = sequenceOf(
         CreateQuizState.Loaded(
-            specializations = specializations
+            specializations = specializations,
+            selectedSpecializationId = 11,
+            questionsCount = 1
         ),
         CreateQuizState.Loading,
         CreateQuizState.Error(
@@ -386,34 +386,23 @@ fun CreateQuizScreenPreview(
 @Preview(showBackground = true)
 @Composable
 fun DynamicPreviewUI() {
-    val mockSpecsListUseCase = object : GetSpecializationListUseCase {
-        override suspend fun invoke(): DomainSpecializationListResponse {
-            delay(RESPONSE_DELAY)
-            return DomainSpecializationListResponse(
-                data = specializations.map {
-                    DomainSpecialization(
-                        it.id,
-                        it.title
-                    )
-                },
-                total = specializations.count().toLong()
-            )
-        }
-    }
-
     val mockViewModel = viewModelCreator<CreateQuizViewModel> {
-        CreateQuizViewModel(mockSpecsListUseCase)
+        CreateQuizViewModel(CreateQuizScreenMapper)
     }
 
     val state by mockViewModel.screenState.collectAsState()
 
     LaunchedEffect(Unit) {
+        delay(RESPONSE_DELAY)
         //Изначальное кол-во == 1
         mockViewModel.onEvent(CreateQuizEvent.OnPlusQuestionClick(1))
+        delay(RESPONSE_DELAY)
         // должно быть 2
         mockViewModel.onEvent(CreateQuizEvent.OnPlusQuestionClick(2))
+        delay(RESPONSE_DELAY)
         // должно быть 3
         mockViewModel.onEvent(CreateQuizEvent.OnMinusQuestionClick(3))
+        delay(RESPONSE_DELAY)
         // должно быть снова 2
         mockViewModel.onEvent(CreateQuizEvent.OnSpecializationClick(21))
         // С изначально выбранного Frontend Dev должно быть выбрано Android Dev
@@ -441,4 +430,4 @@ class ViewModelFactory(
 inline fun <reified VM : ViewModel> viewModelCreator(noinline creator: ViewModelCreator): VM =
     viewModel(factory = remember { ViewModelFactory(creator) })
 
-private const val RESPONSE_DELAY = 2500L
+private const val RESPONSE_DELAY = 1500L
