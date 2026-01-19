@@ -61,7 +61,7 @@ private val FIGMA_VERTICAL_FIRST_AND_LAST_ELEMENT_PADDING = 24.dp
 private fun ScreenUI(
     state: CreateQuizState,
     onEvent: (CreateQuizEvent) -> Unit,
-    headerText: TextOrResource = TextOrResource.Resource(R.string.create_quiz_top_bar_header_text),
+    headerText: TextOrResource,
 ) {
     Scaffold(
         containerColor = colors.black10,
@@ -109,7 +109,8 @@ private fun ScreenUI(
                                 questionCount = questionsCount,
                             )
                         )
-                    }
+                    },
+                    titleText = TextOrResource.Resource(R.string.create_quiz_screen_main_title)
                 )
             }
         }
@@ -125,8 +126,8 @@ private fun BaseCreateQuizScreen(
     onPlusQuestionCountClick: (count: Int) -> Unit,
     onMinusQuestionCountClick: (count: Int) -> Unit,
     onStartQuizClick: (specializationId: Long, questionsCount: Int) -> Unit,
+    titleText: TextOrResource,
     modifier: Modifier = Modifier,
-    titleText: TextOrResource = TextOrResource.Resource(R.string.create_quiz_screen_main_title),
 ) {
     val context = LocalContext.current
 
@@ -145,7 +146,8 @@ private fun BaseCreateQuizScreen(
             context = context,
             specializations = specializations,
             selectedSpecializationId = selectedSpecializationId,
-            onSpecializationClick = onSpecializationClick
+            onSpecializationClick = onSpecializationClick,
+            titleText = TextOrResource.Resource(R.string.create_quiz_specialization_param_header_text)
         )
 
         Spacer(modifier = Modifier.height(FIGMA_VERTICAL_BLOCKS_PADDING))
@@ -155,6 +157,7 @@ private fun BaseCreateQuizScreen(
             questionsCount = questionsCount,
             onPlusQuestionCountClick = onPlusQuestionCountClick,
             onMinusQuestionCountClick = onMinusQuestionCountClick,
+            titleText = TextOrResource.Resource(R.string.create_quiz_question_count_param_header_text)
         )
 
         Spacer(modifier = Modifier.weight(1f))
@@ -173,8 +176,8 @@ private fun ChooseSpecializationBlock(
     selectedSpecializationId: Long,
     context: Context,
     onSpecializationClick: (Long) -> Unit,
+    titleText: TextOrResource,
     modifier: Modifier = Modifier,
-    titleText: TextOrResource = TextOrResource.Resource(R.string.create_quiz_specialization_param_header_text),
 ) {
     Column(modifier = modifier) {
         Text(
@@ -215,8 +218,8 @@ private fun ChooseQuestionsCountBlock(
     questionsCount: Int,
     onPlusQuestionCountClick: (count: Int) -> Unit,
     onMinusQuestionCountClick: (count: Int) -> Unit,
+    titleText: TextOrResource,
     modifier: Modifier = Modifier,
-    titleText: TextOrResource = TextOrResource.Resource(R.string.create_quiz_question_count_param_header_text),
 ) {
     Column(modifier = modifier) {
         Text(
@@ -380,6 +383,7 @@ fun CreateQuizScreenPreview(
     ScreenUI(
         state = state,
         onEvent = { },
+        headerText = TextOrResource.Resource(R.string.create_quiz_top_bar_header_text),
     )
 }
 
@@ -411,7 +415,8 @@ fun DynamicPreviewUI() {
     ProvidePreviewCompositionLocals {
         ScreenUI(
             state = state,
-            onEvent = mockViewModel::onEvent
+            onEvent = mockViewModel::onEvent,
+            headerText = TextOrResource.Resource(R.string.create_quiz_top_bar_header_text)
         )
     }
 }
