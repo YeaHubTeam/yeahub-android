@@ -42,12 +42,15 @@
             <option value="$PROJECT_DIR$/feature/public-questions" />
             <option value="$PROJECT_DIR$/feature/public-questions/api" />
             <option value="$PROJECT_DIR$/feature/public-questions/impl" />
-            <option value="$PROJECT_DIR$/feature/selection-specializations" />
-            <option value="$PROJECT_DIR$/feature/selection-specializations/api" />
-            <option value="$PROJECT_DIR$/feature/selection-specializations/impl" />
             <option value="$PROJECT_DIR$/feature/questions-or-collections" />
             <option value="$PROJECT_DIR$/feature/questions-or-collections/api" />
             <option value="$PROJECT_DIR$/feature/questions-or-collections/impl" />
+            <option value="$PROJECT_DIR$/feature/registration" />
+            <option value="$PROJECT_DIR$/feature/registration/api" />
+            <option value="$PROJECT_DIR$/feature/registration/impl" />
+            <option value="$PROJECT_DIR$/feature/selection-specializations" />
+            <option value="$PROJECT_DIR$/feature/selection-specializations/api" />
+            <option value="$PROJECT_DIR$/feature/selection-specializations/impl" />
           </set>
         </option>
       </GradleProjectSettings>
