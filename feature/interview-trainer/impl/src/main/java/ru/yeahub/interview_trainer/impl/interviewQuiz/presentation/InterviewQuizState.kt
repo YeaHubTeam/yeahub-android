@@ -10,8 +10,13 @@ sealed interface InterviewQuizState {
     @Immutable
     data class Loaded(
         val questions: List<VoQuestion>,
-        val questionsCount: Int
+        val questionsCount: Int,
+        val currentQuestion: Int,
+        val isAnswerVisible: Boolean,
+        val answers: Map<Long, QuizAnswer>
     ) : InterviewQuizState{
+
+        enum class QuizAnswer { KNOWN, UNKNOWN, NOTHING }
 
         @Immutable
         data class VoQuestion(
