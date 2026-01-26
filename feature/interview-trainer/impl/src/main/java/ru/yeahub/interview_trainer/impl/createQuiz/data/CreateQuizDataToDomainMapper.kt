@@ -16,8 +16,7 @@ class CreateQuizDataToDomainMapper {
             total = dataResponse.total
         )
 
-    //функция публичная для тестов
-    fun dataToDomain(data: GetSpecializationResponse): DomainSpecialization =
+    private fun dataToDomain(data: GetSpecializationResponse): DomainSpecialization =
         DomainSpecialization(
             id = data.id,
             title = data.title
