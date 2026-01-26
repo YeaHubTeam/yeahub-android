@@ -7,8 +7,3 @@ class GetSpecializationsListUseCase(
         request: SpecializationsRequest,
     ): DomainSpecializationListResponse = repository.getSpecializationsList(request = request)
 }
-
-data class SpecializationsRequest(
-    val page: Int,
-    val limit: Int,
-)
