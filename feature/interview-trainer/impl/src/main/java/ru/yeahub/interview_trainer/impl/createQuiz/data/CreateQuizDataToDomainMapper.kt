@@ -10,8 +10,6 @@ class CreateQuizDataToDomainMapper {
         dataResponse: GetSpecializationsResponse,
     ): DomainSpecializationListResponse =
         DomainSpecializationListResponse(
-            page = dataResponse.page ?: 1L,
-            limit = dataResponse.limit ?: 10L,
             data = dataResponse.data.map { dataItem -> dataToDomain(dataItem) },
             total = dataResponse.total
         )
