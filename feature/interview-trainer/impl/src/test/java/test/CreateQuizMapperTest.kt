@@ -70,8 +70,6 @@ class CreateQuizMapperTest {
         )
 
         val defaultDomainSpecialListResponse = DomainSpecializationListResponse(
-            page = 1L,
-            limit = 10L,
             data = listOf(defaultDomainSpecial, defaultDomainSpecialWithImage),
             total = 2L
         )
