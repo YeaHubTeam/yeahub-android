@@ -46,9 +46,11 @@ object FeatureRoute {
     object DetailsFeature {
         const val FEATURE_NAME = "details"
     }
+
     object PublicQuestionsFeature {
         const val FEATURE_NAME = "public_questions"
     }
+
     object DetailQuestionFeature {
         const val FEATURE_NAME = "detail_question"
     }
@@ -56,13 +58,16 @@ object FeatureRoute {
     object SpecializationsFeature {
         const val FEATURE_NAME = "specializations"
     }
+
     object CollectionsFeature {
         const val FEATURE_NAME = "collections"
     }
+
     object PublicCollectionsFeature {
         const val FEATURE_NAME = "public_collections"
     }
-    object ProfileEditFeature{
+
+    object ProfileEditFeature {
         const val FEATURE_NAME = "profile_edit"
     }
 }

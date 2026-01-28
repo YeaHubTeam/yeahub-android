@@ -10,7 +10,6 @@ import ru.yeahub.navigation_api.NavigationPathManager
 class ProfileEditFeatureImpl : FeatureApi {
     override fun getFeatureName(): String = FeatureRoute.ProfileEditFeature.FEATURE_NAME
 
-
     override fun registerGraph(
         navGraphBuilder: NavGraphBuilder,
         navController: NavHostController,
