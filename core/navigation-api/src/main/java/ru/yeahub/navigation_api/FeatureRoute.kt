@@ -62,4 +62,7 @@ object FeatureRoute {
     object PublicCollectionsFeature {
         const val FEATURE_NAME = "public_collections"
     }
+    object ProfileEditFeature{
+        const val FEATURE_NAME = "profile_edit"
+    }
 }
