@@ -10,4 +10,12 @@
     <string name="error_screen_text">Что‑то пошло не так</string>
     <string name="back_error_screen_text">Назад</string>
     <string name="unknown_error_screen_text">Не удалось загрузить данные</string>
+    <string name="quiz_check_result">Проверить результаты</string>
+    <string name="quiz_collapse_answer">Свернуть ответ</string>
+    <string name="quiz_show_answer">Показать ответ</string>
+    <string name="quiz_answer_unknown">Не знаю</string>
+    <string name="quiz_answer_known">Знаю</string>
+    <string name="quiz_btn_complete">Завершить</string>
+    <string name="quiz_btn_back">Назад</string>
+    <string name="quiz_btn_next">Далее</string>
 </resources>
