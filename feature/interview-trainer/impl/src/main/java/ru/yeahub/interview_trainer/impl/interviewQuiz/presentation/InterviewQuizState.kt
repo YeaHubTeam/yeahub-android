@@ -11,12 +11,29 @@ sealed interface InterviewQuizState {
     data class Loaded(
         val questions: List<VoQuestion>,
         val questionsCount: Int,
-        val currentQuestion: Int,
-        val isAnswerVisible: Boolean,
-        val answers: Map<Long, QuizAnswer>
+        val currentQuestionIndex: Int,
+        val isAnswerVisible: Boolean = false,
+        val answers: Map<Long, QuizAnswer> = emptyMap(),
     ) : InterviewQuizState{
 
-        enum class QuizAnswer { KNOWN, UNKNOWN, NOTHING }
+        val canGoNext: Boolean
+            get() {
+                return if (answers.containsKey(questions[currentQuestionIndex].id)
+                    && currentQuestionIndex != questions.lastIndex) {
+                    true
+                } else {
+                    false
+                }
+            }
+
+        val canGoPrevious: Boolean
+            get() = currentQuestionIndex > 0
+
+        val currentAnswer: QuizAnswer
+            get() = answers[questions[currentQuestionIndex].id]
+                ?: QuizAnswer.NONE
+
+        enum class QuizAnswer { KNOWN, UNKNOWN, NONE }
 
         @Immutable
         data class VoQuestion(
