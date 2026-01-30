@@ -29,7 +29,7 @@ class CreateQuizMapperTest {
     fun specializationSelectionDataToDomainMapperTestCase(
         testCase: SpecializationSelectionDataToDomainMapperTestCase,
     ) {
-        val result = toDomainMapper.dataListToDomainList(testCase.dataToTest)
+        val result = toDomainMapper.mapDataListToDomainList(testCase.dataToTest)
         Assertions.assertEquals(testCase.expectedResult, result)
     }
 

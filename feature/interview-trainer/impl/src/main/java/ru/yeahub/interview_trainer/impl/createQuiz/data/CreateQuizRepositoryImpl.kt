@@ -11,7 +11,7 @@ class CreateQuizRepositoryImpl(
 ) : CreateQuizRepositoryApi {
     override suspend fun getSpecializationsList(
         request: SpecializationsRequest,
-    ): DomainSpecializationListResponse = mapper.dataListToDomainList(
+    ): DomainSpecializationListResponse = mapper.mapDataListToDomainList(
         dataResponse = apiService.apiService.getSpecializations(
             page = request.page,
             limit = request.limit

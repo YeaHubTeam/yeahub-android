@@ -6,7 +6,7 @@ import ru.yeahub.network_api.models.GetSpecializationResponse
 import ru.yeahub.network_api.models.GetSpecializationsResponse
 
 class CreateQuizDataToDomainMapper {
-    fun dataListToDomainList(
+    fun mapDataListToDomainList(
         dataResponse: GetSpecializationsResponse,
     ): DomainSpecializationListResponse =
         DomainSpecializationListResponse(
