@@ -83,6 +83,7 @@ fun DropDownMenu(
             .width(328.dp)
             .height(58.dp),
         expanded = expanded,
+        //noinspection AssignedValueIsNeverRead
         onExpandedChange = { if (isEnabled) expanded = it },
     ) {
         OutlinedTextField(
