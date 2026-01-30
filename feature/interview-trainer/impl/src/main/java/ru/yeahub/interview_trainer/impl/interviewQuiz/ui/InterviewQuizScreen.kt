@@ -27,6 +27,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,10 +40,16 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import ru.yeahub.core_ui.component.ErrorScreen
+import ru.yeahub.core_ui.component.PrimaryButton
 import ru.yeahub.core_ui.component.SecondaryButton
 import ru.yeahub.core_ui.component.TopAppBarWithBottomBorder
 import ru.yeahub.core_ui.component.YeahubButtonDefaults
@@ -45,7 +57,10 @@ import ru.yeahub.core_ui.example.staticPreview.StaticPreview
 import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.core_utils.common.TextOrResource
 import ru.yeahub.interview_trainer.impl.R
+import ru.yeahub.interview_trainer.impl.interviewQuiz.presentation.InterviewQuizEvent
+import ru.yeahub.interview_trainer.impl.interviewQuiz.presentation.InterviewQuizScreenMapper
 import ru.yeahub.interview_trainer.impl.interviewQuiz.presentation.InterviewQuizState
+import ru.yeahub.interview_trainer.impl.interviewQuiz.presentation.InterviewQuizViewModel
 
 private val FIGMA_MEDIUM_PADDING = 16.dp
 private val FIGMA_LOW_PADDING = 8.dp
@@ -54,10 +69,35 @@ private val FIGMA_VERTICAL_FIRST_AND_LAST_ELEMENT_PADDING = 24.dp
 private val FIGMA_CARD_ELEVATION = 4.dp
 private val FIGMA_RADIUS = 12.dp
 
+private data class QuestionCardState(
+    val questionText: String,
+    val shortAnswer: String,
+    val currentAnswer: InterviewQuizState.Loaded.QuizAnswer,
+    val isAnswerVisible: Boolean,
+    val canGoPrevious: Boolean,
+    val canGoNext: Boolean,
+    val isLastQuestion: Boolean
+)
+
+private fun InterviewQuizState.Loaded.toQuestionCardState(): QuestionCardState {
+    val question = questions[currentQuestionIndex]
+
+    return QuestionCardState(
+        questionText = question.title,
+        shortAnswer = question.shortAnswer,
+        currentAnswer = currentAnswer,
+        isAnswerVisible = isAnswerVisible,
+        canGoPrevious = canGoPrevious,
+        canGoNext = canGoNext,
+        isLastQuestion = currentQuestionIndex == questions.lastIndex
+    )
+}
+
 @Composable
 private fun ScreenUI(
     headerText: TextOrResource,
-    state: InterviewQuizState
+    state: InterviewQuizState,
+    onEvent: (InterviewQuizEvent) -> Unit
 ) {
 
     Scaffold(
@@ -71,35 +111,38 @@ private fun ScreenUI(
     ) { paddingValues ->
         Box(Modifier.padding(paddingValues)) {
             when (state) {
-                is InterviewQuizState.Loaded -> {
-                    val currentQuestion = state.questions[state.currentQuestion]
-                    val currentQuestionNumber = state.questions.indexOf(currentQuestion) + 1
+                is InterviewQuizState.Loaded -> BaseQuizScreen(
+                    state = state,
+                    onPreviousClick = {
+                        onEvent(InterviewQuizEvent.OnPreviousQuestionClick)
+                    },
+                    onNextClick = {
+                        onEvent(InterviewQuizEvent.OnNextQuestionClick)
+                    },
+                    onUnknownClick = {
+                        onEvent(InterviewQuizEvent.OnUnknownAnswerClick)
+                    },
+                    onKnownClick = {
+                        onEvent(InterviewQuizEvent.OnKnownAnswerClick)
+                    },
+                    onShowHideAnswerClick = {
+                        onEvent(InterviewQuizEvent.OnShowHideAnswerClick)
+                    },
+                    onResultClick = {
+                        onEvent(InterviewQuizEvent.OnShowResultClick)
+                    },
+                )
 
-                    BaseQuizScreen(
-                        currentQuestionNumber = currentQuestionNumber,
-                        questionsCount = state.questions.count(),
-                        questionText = currentQuestion.title,
-                        shortAnswer = currentQuestion.shortAnswer,
-                        isAnswerVisible = state.isAnswerVisible,
-                        isBackClickable = false,
-                        onBackClick = {},
-                        isNextClickable = false,
-                        onNextClick = {},
-                        isFavorite = false,
-                        onFavoriteClick = {}
-                    )
-                }
-                is InterviewQuizState.Error -> {
-                    ErrorScreen(
-                        error = state.throwable.localizedMessage,
-                        errorText = TextOrResource.Resource(R.string.error_screen_text),
-                        titleText = TextOrResource.Resource(R.string.title_error_screen_text),
-                        backText = TextOrResource.Resource(R.string.back_error_screen_text),
-                        unknownErrorText = TextOrResource.Resource(R.string.unknown_error_screen_text),
-                        onBack = { TODO() }
-                    )
-                }
-                InterviewQuizState.Loading -> {}
+                is InterviewQuizState.Error -> ErrorScreen(
+                    error = state.throwable.localizedMessage,
+                    errorText = TextOrResource.Resource(R.string.error_screen_text),
+                    titleText = TextOrResource.Resource(R.string.title_error_screen_text),
+                    backText = TextOrResource.Resource(R.string.back_error_screen_text),
+                    unknownErrorText = TextOrResource.Resource(R.string.unknown_error_screen_text),
+                    onBack = { TODO() }
+                )
+
+                InterviewQuizState.Loading -> InterviewQuizLoading()
             }
         }
     }
@@ -107,18 +150,16 @@ private fun ScreenUI(
 
 @Composable
 private fun BaseQuizScreen(
-    currentQuestionNumber: Int,
-    questionsCount: Int,
-    questionText: String,
-    shortAnswer: String,
-    isAnswerVisible: Boolean,
-    isBackClickable: Boolean,
-    onBackClick: () -> Unit,
-    isNextClickable: Boolean,
+    state: InterviewQuizState.Loaded,
+    onPreviousClick: () -> Unit,
     onNextClick: () -> Unit,
-    isFavorite: Boolean,
-    onFavoriteClick: () -> Unit
+    onUnknownClick: () -> Unit,
+    onKnownClick: () -> Unit,
+    onShowHideAnswerClick: () -> Unit,
+    onResultClick: () -> Unit
 ) {
+
+    val cardState = state.toQuestionCardState()
 
     Column(
         modifier = Modifier.padding(
@@ -127,18 +168,19 @@ private fun BaseQuizScreen(
             top = FIGMA_VERTICAL_FIRST_AND_LAST_ELEMENT_PADDING
         )
     ) {
-        QuizProgress(currentQuestionNumber, questionsCount)
+        QuizProgress(
+            current = state.currentQuestionIndex + 1,
+            total = state.questionsCount,
+        )
         Spacer(Modifier.height(FIGMA_VERTICAL_FIRST_AND_LAST_ELEMENT_PADDING))
         QuestionCard(
-            questionText = questionText,
-            shortAnswer = shortAnswer,
-            isAnswerVisible = isAnswerVisible,
-            isBackClickable = isBackClickable,
-            onBackClick = onBackClick,
-            isNextClickable = isNextClickable,
+            state = cardState,
+            onPreviousClick = onPreviousClick,
             onNextClick = onNextClick,
-            isFavorite = isFavorite,
-            onFavoriteClick = onFavoriteClick
+            onUnknownClick = onUnknownClick,
+            onKnownClick = onKnownClick,
+            onShowAnswerClick = onShowHideAnswerClick,
+            onResultClick = onResultClick,
         )
     }
 }
@@ -179,16 +221,17 @@ private fun QuizProgress(
 
 @Composable
 private fun QuestionCard(
-    questionText: String,
-    shortAnswer: String,
-    isAnswerVisible: Boolean,
-    isBackClickable: Boolean,
-    onBackClick: () -> Unit,
-    isNextClickable: Boolean,
+    state: QuestionCardState,
+    onPreviousClick: () -> Unit,
     onNextClick: () -> Unit,
-    isFavorite: Boolean,
-    onFavoriteClick: () -> Unit
+    onUnknownClick: () -> Unit,
+    onKnownClick: () -> Unit,
+    onShowAnswerClick: () -> Unit,
+    onResultClick: () -> Unit
 ) {
+
+    /* TODO: нет фичи профиля */
+    var isFavorite by rememberSaveable { mutableStateOf(false) }
 
     val favoriteIcon: Painter =
         painterResource(
@@ -197,18 +240,20 @@ private fun QuestionCard(
         )
 
     DefaultCard {
-        Column(Modifier.fillMaxWidth().padding(FIGMA_MEDIUM_PADDING)) {
+        Column(Modifier
+            .fillMaxWidth()
+            .padding(FIGMA_MEDIUM_PADDING)) {
             Row(Modifier.fillMaxWidth()) {
                 NavigationButton(
-                    text = TextOrResource.Text("Назад"),
-                    enabled = isBackClickable,
-                    onClick = onBackClick,
+                    text = TextOrResource.Resource(R.string.quiz_btn_prev),
+                    enabled = state.canGoPrevious,
+                    onClick = onPreviousClick,
                     leadingIcon = painterResource(R.drawable.arrow_left_alt)
                 )
                 Spacer(Modifier.weight(1f))
                 NavigationButton(
-                    text = TextOrResource.Text("Далее"),
-                    enabled = isNextClickable,
+                    text = TextOrResource.Resource(R.string.quiz_btn_next),
+                    enabled = state.canGoNext,
                     onClick = onNextClick,
                     trailingIcon = painterResource(R.drawable.arrow_right_alt)
                 )
@@ -227,14 +272,14 @@ private fun QuestionCard(
                     tint = Theme.colors.purple800
                 )
                 Text(
-                    text = questionText,
+                    text = state.questionText,
                     modifier = Modifier
                         .padding(start = FIGMA_LOW_PADDING, end = 12.dp)
                         .weight(1f),
                     style = Theme.typography.body3Strong
                 )
                 FilledIconButton(
-                    onClick = onFavoriteClick,
+                    onClick = { isFavorite = !isFavorite },
                     modifier = Modifier.size(48.dp),
                     shape = RoundedCornerShape(FIGMA_RADIUS),
                     colors = IconButtonDefaults.filledIconButtonColors(
@@ -254,20 +299,21 @@ private fun QuestionCard(
                 }
             }
             Text(
-                text = if (isAnswerVisible) {
-                    "Свернуть ответ"
+                text = if (state.isAnswerVisible) {
+                    stringResource(R.string.quiz_collapse_answer)
                 } else {
-                    "Посмотреть ответ"
+                    stringResource(R.string.quiz_show_answer)
                 },
                 modifier = Modifier
-                    .padding(top = FIGMA_MEDIUM_PADDING, start = 12.dp, bottom = 12.dp)
-                    .clickable(onClick = { TODO() } ),
+                    .padding(top = FIGMA_MEDIUM_PADDING, start = 12.dp)
+                    .clickable(onClick = onShowAnswerClick),
                 style = Theme.typography.body2,
                 color = Theme.colors.purple700
             )
-            if (isAnswerVisible) {
+            if (state.isAnswerVisible) {
                 Text(
-                    text = shortAnswer,
+                    text = state.shortAnswer,
+                    modifier = Modifier.padding(top = 12.dp),
                     style = Theme.typography.body3
                 )
             }
@@ -276,38 +322,59 @@ private fun QuestionCard(
             Row(Modifier.padding(bottom = FIGMA_MEDIUM_PADDING)) {
                 QuizAnswerButton(
                     painter = painterResource(R.drawable.thumbs_down_icon),
-                    text = TextOrResource.Text("Не знаю"),
-                    onClick = { TODO() },
-                    isSelected = false
+                    text = TextOrResource.Resource(R.string.quiz_answer_unknown),
+                    onClick = onUnknownClick,
+                    isSelected = state.currentAnswer == InterviewQuizState.Loaded.QuizAnswer.UNKNOWN
                 )
                 Spacer(Modifier.weight(1f))
                 QuizAnswerButton(
                     painter = painterResource(R.drawable.thumbs_up_icon),
-                    text = TextOrResource.Text("Знаю"),
-                    onClick = { TODO() },
-                    isSelected = false
+                    text = TextOrResource.Resource(R.string.quiz_answer_known),
+                    onClick = onKnownClick,
+                    isSelected = state.currentAnswer == InterviewQuizState.Loaded.QuizAnswer.KNOWN
                 )
             }
             HorizontalDivider(
                 modifier = Modifier.padding(bottom = FIGMA_MEDIUM_PADDING),
                 color = Theme.colors.black100
             )
-            SecondaryButton(
-                onClick = {},
-                modifier = Modifier.width(170.dp).height(48.dp).align(Alignment.End),
-                colors = YeahubButtonDefaults.secondaryButtonColors(
-                    containerColor = Theme.colors.red100,
-                    contentColor = Theme.colors.red700
-                )
-            ) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
+            if (state.isLastQuestion) {
+                PrimaryButton(
+                    onClick = onResultClick,
+                    modifier = Modifier.height(48.dp),
+
                 ) {
-                    Text(
-                        text = "Завершить",
-                        style = Theme.typography.body3Strong
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = stringResource(R.string.quiz_check_result),
+                            style = Theme.typography.body3Strong
+                        )
+                    }
+                }
+            } else {
+                SecondaryButton(
+                    onClick = {},
+                    modifier = Modifier
+                        .width(170.dp)
+                        .height(48.dp)
+                        .align(Alignment.End),
+                    colors = YeahubButtonDefaults.secondaryButtonColors(
+                        containerColor = Theme.colors.red100,
+                        contentColor = Theme.colors.red700
                     )
+                ) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = stringResource(R.string.quiz_btn_complete),
+                            style = Theme.typography.body3Strong
+                        )
+                    }
                 }
             }
         }
@@ -376,16 +443,11 @@ private fun NavigationButton(
 }
 
 @Composable
-private fun NavQuizIcon(painter: Painter) {
-
-}
-
-@Composable
 private fun QuizAnswerButton(
     painter: Painter,
     text: TextOrResource,
     onClick: () -> Unit,
-    isSelected: Boolean = false
+    isSelected: Boolean
 ) {
 
     val context = LocalContext.current
@@ -398,7 +460,9 @@ private fun QuizAnswerButton(
 
     Button(
         onClick = onClick,
-        modifier = Modifier.width(120.dp).height(48.dp),
+        modifier = Modifier
+            .width(120.dp)
+            .height(48.dp),
         shape = RoundedCornerShape(FIGMA_RADIUS),
         colors = ButtonDefaults.buttonColors(
             containerColor = Theme.colors.black10,
@@ -426,32 +490,32 @@ private fun QuizAnswerButton(
 
 private val questions = listOf(
     InterviewQuizState.Loaded.VoQuestion(
-        id = 12,
+        id = 0,
         title = "Что такое Virtual DOM, и как он работает?",
         shortAnswer = "Виртуальный DOM (VDOM) — это легковесное представление реального DOM в памяти, которое используется в JavaScript-библиотеках, таких как React и Vue, для повышения производительности веб-приложений."
     ),
     InterviewQuizState.Loaded.VoQuestion(
-        id = 14,
+        id = 1,
         title = "Что такое Virtual DOM, и как он работает?",
         shortAnswer = "Виртуальный DOM (VDOM) — это легковесное представление реального DOM в памяти, которое используется в JavaScript-библиотеках, таких как React и Vue, для повышения производительности веб-приложений."
     ),
     InterviewQuizState.Loaded.VoQuestion(
-        id = 9,
+        id = 2,
         title = "Что такое Virtual DOM, и как он работает?",
         shortAnswer = "Виртуальный DOM (VDOM) — это легковесное представление реального DOM в памяти, которое используется в JavaScript-библиотеках, таких как React и Vue, для повышения производительности веб-приложений."
     ),
     InterviewQuizState.Loaded.VoQuestion(
-        id = 5,
+        id = 3,
         title = "Что такое Virtual DOM, и как он работает?",
         shortAnswer = "Виртуальный DOM (VDOM) — это легковесное представление реального DOM в памяти, которое используется в JavaScript-библиотеках, таких как React и Vue, для повышения производительности веб-приложений."
     )
 )
 
 private val answers = mapOf(
-    12.toLong() to InterviewQuizState.Loaded.QuizAnswer.KNOWN,
-    14.toLong() to InterviewQuizState.Loaded.QuizAnswer.UNKNOWN,
-    9.toLong() to InterviewQuizState.Loaded.QuizAnswer.NOTHING,
-    5.toLong() to InterviewQuizState.Loaded.QuizAnswer.NOTHING,
+    0.toLong() to InterviewQuizState.Loaded.QuizAnswer.KNOWN,
+    1.toLong() to InterviewQuizState.Loaded.QuizAnswer.UNKNOWN,
+    2.toLong() to InterviewQuizState.Loaded.QuizAnswer.NONE,
+    3.toLong() to InterviewQuizState.Loaded.QuizAnswer.UNKNOWN,
 )
 
 class QuizScreenStateParamProvider : PreviewParameterProvider<InterviewQuizState> {
@@ -459,7 +523,21 @@ class QuizScreenStateParamProvider : PreviewParameterProvider<InterviewQuizState
         InterviewQuizState.Loaded(
             questions = questions,
             questionsCount = questions.count(),
-            currentQuestion = 2,
+            currentQuestionIndex = 1,
+            isAnswerVisible = false,
+            answers = answers
+        ),
+        InterviewQuizState.Loaded(
+            questions = questions,
+            questionsCount = questions.count(),
+            currentQuestionIndex = 0,
+            isAnswerVisible = true,
+            answers = answers
+        ),
+        InterviewQuizState.Loaded(
+            questions = questions,
+            questionsCount = questions.count(),
+            currentQuestionIndex = 3,
             isAnswerVisible = true,
             answers = answers
         ),
@@ -477,17 +555,39 @@ fun InterviewQuizScreen(
     state: InterviewQuizState
 ) {
     ScreenUI(
-        TextOrResource.Resource(R.string.create_quiz_top_bar_header_text),
-        state
+        headerText = TextOrResource.Resource(R.string.create_quiz_top_bar_header_text),
+        state = state,
+        onEvent = {}
     )
 }
 
-/*
 @Preview(showBackground = true)
 @Composable
 fun DynamicPreviewUI() {
+
+    val mockViewModel = viewModelCreator<InterviewQuizViewModel> {
+        InterviewQuizViewModel(InterviewQuizScreenMapper)
+    }
+
+    val state by mockViewModel.screenState.collectAsState()
+
     ScreenUI(
-        TextOrResource.Resource(R.string.create_quiz_top_bar_header_text)
+        headerText = TextOrResource.Resource(R.string.create_quiz_top_bar_header_text),
+        state = state,
+        onEvent = mockViewModel::onEvent
     )
 }
-*/
+
+typealias ViewModelCreator = () -> ViewModel?
+
+class ViewModelFactory(
+    private val viewModelCreator: ViewModelCreator = { null },
+) : ViewModelProvider.Factory {
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel> create(modelClass: Class<T>): T = viewModelCreator() as T
+}
+
+@Composable
+inline fun <reified VM : ViewModel> viewModelCreator(noinline creator: ViewModelCreator): VM =
+    viewModel(factory = remember { ViewModelFactory(creator) })
