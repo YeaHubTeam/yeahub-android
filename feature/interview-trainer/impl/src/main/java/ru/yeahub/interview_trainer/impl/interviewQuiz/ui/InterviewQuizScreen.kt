@@ -13,7 +13,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -162,11 +164,13 @@ private fun BaseQuizScreen(
     val cardState = state.toQuestionCardState()
 
     Column(
-        modifier = Modifier.padding(
-            start = FIGMA_MEDIUM_PADDING,
-            end = FIGMA_MEDIUM_PADDING,
-            top = FIGMA_VERTICAL_FIRST_AND_LAST_ELEMENT_PADDING
-        )
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(
+                horizontal = FIGMA_MEDIUM_PADDING,
+                vertical = FIGMA_VERTICAL_FIRST_AND_LAST_ELEMENT_PADDING
+            )
     ) {
         QuizProgress(
             current = state.currentQuestionIndex + 1,
@@ -342,7 +346,10 @@ private fun QuestionCard(
                 PrimaryButton(
                     onClick = onResultClick,
                     modifier = Modifier.height(48.dp),
-
+                    enabled = state.currentAnswer != InterviewQuizState.Loaded.QuizAnswer.NONE,
+                    colors = YeahubButtonDefaults.primaryButtonColors(
+                        disabledContentColor = Theme.colors.black100
+                    )
                 ) {
                     Box(
                         modifier = Modifier.fillMaxSize(),
@@ -350,7 +357,8 @@ private fun QuestionCard(
                     ) {
                         Text(
                             text = stringResource(R.string.quiz_check_result),
-                            style = Theme.typography.body3Strong
+                            style = Theme.typography.body3Strong,
+                            color = Theme.colors.white900
                         )
                     }
                 }
@@ -512,10 +520,9 @@ private val questions = listOf(
 )
 
 private val answers = mapOf(
-    0.toLong() to InterviewQuizState.Loaded.QuizAnswer.KNOWN,
     1.toLong() to InterviewQuizState.Loaded.QuizAnswer.UNKNOWN,
-    2.toLong() to InterviewQuizState.Loaded.QuizAnswer.NONE,
-    3.toLong() to InterviewQuizState.Loaded.QuizAnswer.UNKNOWN,
+    2.toLong() to InterviewQuizState.Loaded.QuizAnswer.KNOWN,
+    3.toLong() to InterviewQuizState.Loaded.QuizAnswer.KNOWN
 )
 
 class QuizScreenStateParamProvider : PreviewParameterProvider<InterviewQuizState> {
@@ -538,7 +545,7 @@ class QuizScreenStateParamProvider : PreviewParameterProvider<InterviewQuizState
             questions = questions,
             questionsCount = questions.count(),
             currentQuestionIndex = 3,
-            isAnswerVisible = true,
+            isAnswerVisible = false,
             answers = answers
         ),
         InterviewQuizState.Loading,
