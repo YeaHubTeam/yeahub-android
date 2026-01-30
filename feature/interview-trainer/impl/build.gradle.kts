@@ -40,6 +40,7 @@ dependencies {
     implementation(project(":core:navigation-api"))
     implementation(project(":core:network-api"))
     implementation(project(":feature:interview-trainer:api"))
+    implementation(project(":core:test"))
     implementation(project(":core:utils"))
     implementation(project(":core:ui"))
 
