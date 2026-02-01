@@ -52,7 +52,7 @@ fun PrimaryButton(
         interactionSource = interactionSource,
         shape = shape,
         contentPadding = contentPadding,
-        content = content
+        content = content,
     )
 }
 
@@ -91,7 +91,7 @@ fun OutlineButton(
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     shape: Shape = RoundedCornerShape(12.dp),
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
-    content: @Composable RowScope.() -> Unit
+    content: @Composable RowScope.() -> Unit,
 ) {
     DefaultButton(
         onClick = onClick,
@@ -102,7 +102,7 @@ fun OutlineButton(
         interactionSource = interactionSource,
         shape = shape,
         contentPadding = contentPadding,
-        content = content
+        content = content,
     )
 }
 
@@ -116,7 +116,7 @@ private fun DefaultButton(
     border: BorderStroke? = null,
     shape: Shape = ButtonDefaults.shape,
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
-    content: @Composable RowScope.() -> Unit
+    content: @Composable RowScope.() -> Unit,
 ) {
     val contentColor: Color by colors.contentColor(enabled)
     val containerColor: Color by colors.containerColor(enabled)
@@ -129,16 +129,16 @@ private fun DefaultButton(
         color = containerColor,
         contentColor = contentColor,
         border = border,
-        interactionSource = interactionSource
+        interactionSource = interactionSource,
     ) {
         CompositionLocalProvider(
-            value = LocalContentColor provides contentColor
+            value = LocalContentColor provides contentColor,
         ) {
             Row(
                 modifier = Modifier
                     .padding(contentPadding),
                 horizontalArrangement = Arrangement.Center,
-                content = content
+                content = content,
             )
         }
     }
@@ -150,13 +150,13 @@ object YeahubButtonDefaults {
         contentColor: Color = Theme.colors.white900,
         containerColor: Color = Theme.colors.purple700,
         disabledContentColor: Color = Theme.colors.white900,
-        disabledContainerColor: Color = Theme.colors.black100
+        disabledContainerColor: Color = Theme.colors.black100,
     ): YeahubButtonColors {
         return YeahubButtonColors(
             contentColor = contentColor,
             containerColor = containerColor,
             disabledContentColor = disabledContentColor,
-            disabledContainerColor = disabledContainerColor
+            disabledContainerColor = disabledContainerColor,
         )
     }
 
@@ -165,13 +165,13 @@ object YeahubButtonDefaults {
         contentColor: Color = Theme.colors.white900,
         containerColor: Color = Theme.colors.red600,
         disabledContentColor: Color = Theme.colors.white900,
-        disabledContainerColor: Color = Theme.colors.red200
+        disabledContainerColor: Color = Theme.colors.red200,
     ): YeahubButtonColors {
         return YeahubButtonColors(
             contentColor = contentColor,
             containerColor = containerColor,
             disabledContentColor = disabledContentColor,
-            disabledContainerColor = disabledContainerColor
+            disabledContainerColor = disabledContainerColor,
         )
     }
 
@@ -180,13 +180,13 @@ object YeahubButtonDefaults {
         contentColor: Color = Theme.colors.purple700,
         containerColor: Color = Theme.colors.purple100,
         disabledContentColor: Color = Theme.colors.black200,
-        disabledContainerColor: Color = Theme.colors.black50
+        disabledContainerColor: Color = Theme.colors.black50,
     ): YeahubButtonColors {
         return YeahubButtonColors(
             contentColor = contentColor,
             containerColor = containerColor,
             disabledContentColor = disabledContentColor,
-            disabledContainerColor = disabledContainerColor
+            disabledContainerColor = disabledContainerColor,
         )
     }
 
@@ -195,13 +195,13 @@ object YeahubButtonDefaults {
         contentColor: Color = Theme.colors.white900,
         containerColor: Color = Theme.colors.red600,
         disabledContentColor: Color = Theme.colors.white900,
-        disabledContainerColor: Color = Theme.colors.red200
+        disabledContainerColor: Color = Theme.colors.red200,
     ): YeahubButtonColors {
         return YeahubButtonColors(
             contentColor = contentColor,
             containerColor = containerColor,
             disabledContentColor = disabledContentColor,
-            disabledContainerColor = disabledContainerColor
+            disabledContainerColor = disabledContainerColor,
         )
     }
 
@@ -216,18 +216,44 @@ object YeahubButtonDefaults {
             contentColor = contentColor,
             containerColor = containerColor,
             disabledContentColor = disabledContentColor,
-            disabledContainerColor = disabledContainerColor
+            disabledContainerColor = disabledContainerColor,
         )
     }
 
     @Composable
     fun outlineBorderDefaults(
         width: Dp = 1.dp,
-        borderColor: Color = Theme.colors.red200
+        borderColor: Color = Theme.colors.red200,
     ): BorderStroke {
         return BorderStroke(
             width = width,
-            color = borderColor
+            color = borderColor,
+        )
+    }
+
+    @Composable
+    fun secondaryOutlinedButtonColors(
+        contentColor: Color = Theme.colors.purple700,
+        containerColor: Color = Color.Transparent,
+        disabledContentColor: Color = Theme.colors.purple200,
+        disabledContainerColor: Color = Color.Transparent,
+    ): YeahubButtonColors {
+        return YeahubButtonColors(
+            contentColor = contentColor,
+            containerColor = containerColor,
+            disabledContentColor = disabledContentColor,
+            disabledContainerColor = disabledContainerColor,
+        )
+    }
+
+    @Composable
+    fun secondaryOutlineBorderDefaults(
+        width: Dp = 1.dp,
+        borderColor: Color = Theme.colors.purple700,
+    ): BorderStroke {
+        return BorderStroke(
+            width = width,
+            color = borderColor,
         )
     }
 }
@@ -260,7 +286,7 @@ interface ButtonColors {
 }
 
 @Preview(
-    showBackground = true
+    showBackground = true,
 )
 @Composable
 fun ButtonPreviews() {
@@ -268,21 +294,21 @@ fun ButtonPreviews() {
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         // Primary Button
         Text("Primary Buttons", style = MaterialTheme.typography.titleMedium)
         PrimaryButton(
             onClick = {},
             modifier = Modifier.fillMaxWidth(),
-            enabled = true
+            enabled = true,
         ) {
             Text("Enabled Primary Button")
         }
         PrimaryButton(
             onClick = {},
             modifier = Modifier.fillMaxWidth(),
-            enabled = false
+            enabled = false,
         ) {
             Text("Disabled Primary Button")
         }
@@ -292,14 +318,14 @@ fun ButtonPreviews() {
         SecondaryButton(
             onClick = {},
             modifier = Modifier.fillMaxWidth(),
-            enabled = true
+            enabled = true,
         ) {
             Text("Enabled Secondary Button")
         }
         SecondaryButton(
             onClick = {},
             modifier = Modifier.fillMaxWidth(),
-            enabled = false
+            enabled = false,
         ) {
             Text("Disabled Secondary Button")
         }
@@ -309,16 +335,25 @@ fun ButtonPreviews() {
         OutlineButton(
             onClick = {},
             modifier = Modifier.fillMaxWidth(),
-            enabled = true
+            enabled = true,
         ) {
             Text("Enabled Outline Button")
         }
         OutlineButton(
             onClick = {},
             modifier = Modifier.fillMaxWidth(),
-            enabled = false
+            enabled = false,
         ) {
             Text("Disabled Outline Button")
+        }
+        OutlineButton(
+            onClick = {},
+            colors = YeahubButtonDefaults.secondaryOutlinedButtonColors(),
+            border = YeahubButtonDefaults.secondaryOutlineBorderDefaults(),
+            modifier = Modifier.fillMaxWidth(),
+            enabled = true,
+        ) {
+            Text("Enabled Outline Button with secondary colors")
         }
     }
 }
