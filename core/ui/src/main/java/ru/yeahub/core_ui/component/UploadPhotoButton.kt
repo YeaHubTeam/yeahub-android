@@ -28,7 +28,6 @@ import androidx.compose.ui.unit.dp
 import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.ui.R
 
-
 @Composable
 fun UploadPhotoButton(
     modifier: Modifier = Modifier,
@@ -78,10 +77,9 @@ fun UploadPhotoButton(
     }
 }
 
-
 @Preview(showBackground = true)
 @Composable
-fun UUploadPhotoButtonPreview() {
+fun UploadPhotoButtonPreview() {
     Column(Modifier.padding(16.dp)) {
         UploadPhotoButton(onClick = {})
     }
@@ -98,12 +96,10 @@ fun Modifier.dashedRoundedBorder(
     val radiusPx = cornerRadius.toPx()
     val dashPx = dashLength.toPx()
     val gapPx = gapLength.toPx()
-
     val stroke = Stroke(
         width = strokePx,
         pathEffect = PathEffect.dashPathEffect(floatArrayOf(dashPx, gapPx), 0f),
     )
-
     onDrawBehind {
         drawRoundRect(
             color = color,
