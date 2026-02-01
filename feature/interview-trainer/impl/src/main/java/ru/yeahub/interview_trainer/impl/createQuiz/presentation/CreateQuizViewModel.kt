@@ -10,9 +10,11 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.yeahub.core_utils.BaseViewModel
-import ru.yeahub.interview_trainer.impl.createQuiz.ui.specializations
+import ru.yeahub.interview_trainer.impl.createQuiz.domain.GetSpecializationsUseCase
+import ru.yeahub.interview_trainer.impl.createQuiz.domain.SpecializationsRequest
 
 open class CreateQuizViewModel(
+    private val getSpecializationsListUseCase: GetSpecializationsUseCase,
     private val screenMapper: CreateQuizScreenMapper,
 ) : BaseViewModel() {
 
@@ -25,8 +27,10 @@ open class CreateQuizViewModel(
 
     val screenState = userInputState
         .map { userInput ->
+            val request = SpecializationsRequest(page = 1, limit = 99)
+
             screenMapper.getScreenState(
-                specializations = specializations,
+                specializations = getSpecializationsListUseCase(request).data,
                 selectedSpecializationId = userInput.selectedSpecializationId,
                 questionsCount = userInput.questionsCount
             )
