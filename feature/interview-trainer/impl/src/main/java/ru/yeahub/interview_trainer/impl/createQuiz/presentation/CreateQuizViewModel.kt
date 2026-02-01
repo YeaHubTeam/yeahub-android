@@ -73,32 +73,26 @@ open class CreateQuizViewModel(
     }
 
     private fun incrementQuestionsCount(questionsCount: Int) {
-        viewModelScopeSafe.launch {
-            userInputState.update { currentInputState ->
-                val incrementedCount = questionsCount + 1
-                val newCount = incrementedCount.coerceAtMost(MAX_QUESTIONS_COUNT)
+        userInputState.update { currentInputState ->
+            val incrementedCount = questionsCount + 1
+            val newCount = incrementedCount.coerceAtMost(MAX_QUESTIONS_COUNT)
 
-                currentInputState.copy(questionsCount = newCount)
-            }
+            currentInputState.copy(questionsCount = newCount)
         }
     }
 
     private fun decrementQuestionsCount(questionsCount: Int) {
-        viewModelScopeSafe.launch {
-            userInputState.update { currentInputState ->
-                val incrementedCount = questionsCount - 1
-                val newCount = incrementedCount.coerceAtLeast(MIN_QUESTIONS_COUNT)
+        userInputState.update { currentInputState ->
+            val incrementedCount = questionsCount - 1
+            val newCount = incrementedCount.coerceAtLeast(MIN_QUESTIONS_COUNT)
 
-                currentInputState.copy(questionsCount = newCount)
-            }
+            currentInputState.copy(questionsCount = newCount)
         }
     }
 
     private fun changeChosenSpecialization(newSpecializationId: Long) {
-        viewModelScopeSafe.launch {
-            userInputState.update { currentInputState ->
-                currentInputState.copy(selectedSpecializationId = newSpecializationId)
-            }
+        userInputState.update { currentInputState ->
+            currentInputState.copy(selectedSpecializationId = newSpecializationId)
         }
     }
 
