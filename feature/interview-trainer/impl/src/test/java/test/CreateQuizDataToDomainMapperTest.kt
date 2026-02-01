@@ -10,7 +10,7 @@ import ru.yeahub.network_api.models.GetSpecializationResponse
 import ru.yeahub.network_api.models.GetSpecializationsResponse
 import ru.yeahub.test.TestArgumentsProvider
 
-class CreateQuizMapperTest {
+class CreateQuizDataToDomainMapperTest {
     private val toDomainMapper = CreateQuizDataToDomainMapper()
 
     //CreateQuizDataToDomainMapper параметризированный тест
