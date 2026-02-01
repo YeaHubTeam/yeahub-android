@@ -126,7 +126,7 @@ private fun ScreenUI(
 }
 
 @Composable
-private fun HandleCommand(
+fun HandleCommand(
     commandFlow: Flow<CreateQuizCommand>,
     onResult: (CreateQuizResult) -> Unit,
 ) {
@@ -416,7 +416,6 @@ fun CreateQuizScreenPreview(
 @Preview(showBackground = true)
 @Composable
 fun DynamicPreviewUI() {
-
     val mockDomainList = specializations.map { voSpec ->
         DomainSpecialization(id = voSpec.id, title = voSpec.title)
     }
