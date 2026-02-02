@@ -10,25 +10,6 @@ import ru.yeahub.test.TestArgumentsProvider
 
 class CreateQuizScreenMapperTest {
 
-    // CreateQuizScreenMapper параметризированный тест
-    class ArgumentsProvider :
-        TestArgumentsProvider<CreateQuizScreenMapperTestCase>() {
-        override fun testCases(): List<CreateQuizScreenMapperTestCase> = listOf(
-            CreateQuizScreenMapperTestCase(
-                specializations = ScreenMapperExampleDataClasses.defaultDomainSpecialList,
-                selectedSpecializationId = 0L,
-                questionsCount = 10,
-                expectedResult = ScreenMapperExampleDataClasses.defaultLoadedState
-            ),
-            CreateQuizScreenMapperTestCase(
-                specializations = ScreenMapperExampleDataClasses.defaultDomainSpecialList,
-                selectedSpecializationId = 1L,
-                questionsCount = 5,
-                expectedResult = ScreenMapperExampleDataClasses.loadedStateWithDifferentSelection
-            )
-        )
-    }
-
     @ParameterizedTest
     @ArgumentsSource(ArgumentsProvider::class)
     fun getScreenStateTest(
@@ -87,4 +68,22 @@ class CreateQuizScreenMapperTest {
         val questionsCount: Int,
         val expectedResult: CreateQuizState.Loaded,
     )
+
+    class ArgumentsProvider :
+        TestArgumentsProvider<CreateQuizScreenMapperTestCase>() {
+        override fun testCases(): List<CreateQuizScreenMapperTestCase> = listOf(
+            CreateQuizScreenMapperTestCase(
+                specializations = ScreenMapperExampleDataClasses.defaultDomainSpecialList,
+                selectedSpecializationId = 0L,
+                questionsCount = 10,
+                expectedResult = ScreenMapperExampleDataClasses.defaultLoadedState
+            ),
+            CreateQuizScreenMapperTestCase(
+                specializations = ScreenMapperExampleDataClasses.defaultDomainSpecialList,
+                selectedSpecializationId = 1L,
+                questionsCount = 5,
+                expectedResult = ScreenMapperExampleDataClasses.loadedStateWithDifferentSelection
+            )
+        )
+    }
 }
