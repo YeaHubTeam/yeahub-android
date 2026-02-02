@@ -10,9 +10,11 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.yeahub.core_utils.BaseViewModel
-import ru.yeahub.interview_trainer.impl.createQuiz.ui.specializations
+import ru.yeahub.interview_trainer.impl.createQuiz.domain.GetSpecializationsUseCase
+import ru.yeahub.interview_trainer.impl.createQuiz.domain.SpecializationsRequest
 
 open class CreateQuizViewModel(
+    private val getSpecializationsListUseCase: GetSpecializationsUseCase,
     private val screenMapper: CreateQuizScreenMapper,
 ) : BaseViewModel() {
 
@@ -25,8 +27,10 @@ open class CreateQuizViewModel(
 
     val screenState = userInputState
         .map { userInput ->
+            val request = SpecializationsRequest(page = 1, limit = 99)
+
             screenMapper.getScreenState(
-                specializations = specializations,
+                specializations = getSpecializationsListUseCase(request).data,
                 selectedSpecializationId = userInput.selectedSpecializationId,
                 questionsCount = userInput.questionsCount
             )
@@ -69,32 +73,26 @@ open class CreateQuizViewModel(
     }
 
     private fun incrementQuestionsCount(questionsCount: Int) {
-        viewModelScopeSafe.launch {
-            userInputState.update { currentInputState ->
-                val incrementedCount = questionsCount + 1
-                val newCount = incrementedCount.coerceAtMost(MAX_QUESTIONS_COUNT)
+        userInputState.update { currentInputState ->
+            val incrementedCount = questionsCount + 1
+            val newCount = incrementedCount.coerceAtMost(MAX_QUESTIONS_COUNT)
 
-                currentInputState.copy(questionsCount = newCount)
-            }
+            currentInputState.copy(questionsCount = newCount)
         }
     }
 
     private fun decrementQuestionsCount(questionsCount: Int) {
-        viewModelScopeSafe.launch {
-            userInputState.update { currentInputState ->
-                val incrementedCount = questionsCount - 1
-                val newCount = incrementedCount.coerceAtLeast(MIN_QUESTIONS_COUNT)
+        userInputState.update { currentInputState ->
+            val incrementedCount = questionsCount - 1
+            val newCount = incrementedCount.coerceAtLeast(MIN_QUESTIONS_COUNT)
 
-                currentInputState.copy(questionsCount = newCount)
-            }
+            currentInputState.copy(questionsCount = newCount)
         }
     }
 
     private fun changeChosenSpecialization(newSpecializationId: Long) {
-        viewModelScopeSafe.launch {
-            userInputState.update { currentInputState ->
-                currentInputState.copy(selectedSpecializationId = newSpecializationId)
-            }
+        userInputState.update { currentInputState ->
+            currentInputState.copy(selectedSpecializationId = newSpecializationId)
         }
     }
 

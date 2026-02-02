@@ -38,6 +38,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import ru.yeahub.core_ui.component.ErrorScreen
 import ru.yeahub.core_ui.component.PrimaryButton
 import ru.yeahub.core_ui.component.SkillButton
@@ -47,8 +48,15 @@ import ru.yeahub.core_ui.example.staticPreview.StaticPreview
 import ru.yeahub.core_ui.theme.LocalAppTypography
 import ru.yeahub.core_ui.theme.colors
 import ru.yeahub.core_utils.common.TextOrResource
+import ru.yeahub.core_utils.common.observe
 import ru.yeahub.interview_trainer.impl.R
+import ru.yeahub.interview_trainer.impl.createQuiz.domain.DomainSpecialization
+import ru.yeahub.interview_trainer.impl.createQuiz.domain.DomainSpecializationListResponse
+import ru.yeahub.interview_trainer.impl.createQuiz.domain.GetSpecializationsUseCase
+import ru.yeahub.interview_trainer.impl.createQuiz.domain.SpecializationsRequest
+import ru.yeahub.interview_trainer.impl.createQuiz.presentation.CreateQuizCommand
 import ru.yeahub.interview_trainer.impl.createQuiz.presentation.CreateQuizEvent
+import ru.yeahub.interview_trainer.impl.createQuiz.presentation.CreateQuizResult
 import ru.yeahub.interview_trainer.impl.createQuiz.presentation.CreateQuizScreenMapper
 import ru.yeahub.interview_trainer.impl.createQuiz.presentation.CreateQuizState
 import ru.yeahub.interview_trainer.impl.createQuiz.presentation.CreateQuizViewModel
@@ -113,6 +121,24 @@ private fun ScreenUI(
                     titleText = TextOrResource.Resource(R.string.create_quiz_screen_main_title)
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun HandleCommand(
+    commandFlow: Flow<CreateQuizCommand>,
+    onResult: (CreateQuizResult) -> Unit,
+) {
+    commandFlow.observe { command ->
+        when (command) {
+            is CreateQuizCommand.NavigateBack -> onResult(CreateQuizResult.NavigateBack)
+            is CreateQuizCommand.NavigateToInterviewQuizScreen -> onResult(
+                CreateQuizResult.NavigateToInterviewQuizScreen(
+                    specializationId = command.specializationId,
+                    questionCount = command.questionCount
+                )
+            )
         }
     }
 }
@@ -390,11 +416,27 @@ fun CreateQuizScreenPreview(
 @Preview(showBackground = true)
 @Composable
 fun DynamicPreviewUI() {
-    val mockViewModel = viewModelCreator<CreateQuizViewModel> {
-        CreateQuizViewModel(CreateQuizScreenMapper)
+    val mockDomainList = specializations.map { voSpec ->
+        DomainSpecialization(id = voSpec.id, title = voSpec.title)
     }
 
-    val state by mockViewModel.screenState.collectAsState()
+    val mockUseCase = object : GetSpecializationsUseCase {
+        override suspend fun invoke(
+            request: SpecializationsRequest,
+        ): DomainSpecializationListResponse {
+            delay(RESPONSE_DELAY)
+            return DomainSpecializationListResponse(
+                total = mockDomainList.size.toLong(),
+                data = mockDomainList
+            )
+        }
+    }
+
+    val mockViewModel = viewModelCreator<CreateQuizViewModel> {
+        CreateQuizViewModel(mockUseCase, CreateQuizScreenMapper)
+    }
+
+    val mockState by mockViewModel.screenState.collectAsState()
 
     LaunchedEffect(Unit) {
         delay(RESPONSE_DELAY)
@@ -408,13 +450,13 @@ fun DynamicPreviewUI() {
         mockViewModel.onEvent(CreateQuizEvent.OnMinusQuestionClick(3))
         delay(RESPONSE_DELAY)
         // должно быть снова 2
-        mockViewModel.onEvent(CreateQuizEvent.OnSpecializationClick(21))
+        mockViewModel.onEvent(CreateQuizEvent.OnSpecializationClick(27))
         // С изначально выбранного Frontend Dev должно быть выбрано Android Dev
     }
 
     ProvidePreviewCompositionLocals {
         ScreenUI(
-            state = state,
+            state = mockState,
             onEvent = mockViewModel::onEvent,
             headerText = TextOrResource.Resource(R.string.create_quiz_top_bar_header_text)
         )
