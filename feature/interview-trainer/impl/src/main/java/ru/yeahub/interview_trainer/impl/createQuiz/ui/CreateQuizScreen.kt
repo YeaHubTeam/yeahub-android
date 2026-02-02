@@ -132,7 +132,7 @@ fun HandleCommand(
 ) {
     commandFlow.observe { command ->
         when (command) {
-            CreateQuizCommand.NavigateBack -> onResult(CreateQuizResult.NavigateBack)
+            is CreateQuizCommand.NavigateBack -> onResult(CreateQuizResult.NavigateBack)
             is CreateQuizCommand.NavigateToInterviewQuizScreen -> onResult(
                 CreateQuizResult.NavigateToInterviewQuizScreen(
                     specializationId = command.specializationId,
