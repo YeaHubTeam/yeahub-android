@@ -4,6 +4,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import ru.yeahub.core_ui.example.dynamicPreview.SmallScreenSizePreview
+import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.core_ui.theme.colors
 
 @Composable
@@ -13,10 +14,16 @@ fun UnsavedChangesDialog(
 ) {
     AlertDialog(
         onDismissRequest = onStay,
-        title = { Text("Подтвердить действие") },
+        title = {
+            Text(
+                text = "Подтвердить действие",
+                style = Theme.typography.head4,
+            )
+        },
         text = {
             Text(
                 "У вас есть несохраненные данные.\nВы хотите продолжить?",
+                style = Theme.typography.body3,
             )
         },
         dismissButton = {
@@ -31,7 +38,7 @@ fun UnsavedChangesDialog(
                 border = YeahubButtonDefaults.secondaryOutlineBorderDefaults(),
             ) {
                 Text(
-                    "нет",
+                    "Нет",
                 )
             }
         },
