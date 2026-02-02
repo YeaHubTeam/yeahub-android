@@ -1,13 +1,20 @@
 package ru.yeahub.interview_trainer.impl.createQuiz.presentation
 
+import ru.yeahub.interview_trainer.impl.createQuiz.domain.DomainSpecialization
+
 object CreateQuizScreenMapper {
 
     fun getScreenState(
-        specializations: List<CreateQuizState.Loaded.VoSpecialization>,
+        specializations: List<DomainSpecialization>,
         selectedSpecializationId: Long,
         questionsCount: Int,
     ): CreateQuizState = CreateQuizState.Loaded(
-        specializations = specializations,
+        specializations = specializations.map { domainSpec ->
+            CreateQuizState.Loaded.VoSpecialization(
+                id = domainSpec.id,
+                title = domainSpec.title
+            )
+        },
         selectedSpecializationId = selectedSpecializationId,
         questionsCount = questionsCount
     )

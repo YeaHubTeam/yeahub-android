@@ -10,19 +10,8 @@ import ru.yeahub.network_api.models.GetSpecializationResponse
 import ru.yeahub.network_api.models.GetSpecializationsResponse
 import ru.yeahub.test.TestArgumentsProvider
 
-class CreateQuizMapperTest {
+class CreateQuizDataToDomainMapperTest {
     private val toDomainMapper = CreateQuizDataToDomainMapper()
-
-    //CreateQuizDataToDomainMapper параметризированный тест
-    class ArgumentsProvider :
-        TestArgumentsProvider<SpecializationSelectionDataToDomainMapperTestCase>() {
-        override fun testCases(): List<SpecializationSelectionDataToDomainMapperTestCase> = listOf(
-            SpecializationSelectionDataToDomainMapperTestCase(
-                dataToTest = SpecializationExampleDataClasses.defaultSpecialListResponse,
-                expectedResult = SpecializationExampleDataClasses.defaultDomainSpecialListResponse
-            )
-        )
-    }
 
     @ParameterizedTest
     @ArgumentsSource(ArgumentsProvider::class)
@@ -79,4 +68,14 @@ class CreateQuizMapperTest {
         val dataToTest: GetSpecializationsResponse,
         val expectedResult: DomainSpecializationListResponse,
     )
+
+    class ArgumentsProvider :
+        TestArgumentsProvider<SpecializationSelectionDataToDomainMapperTestCase>() {
+        override fun testCases(): List<SpecializationSelectionDataToDomainMapperTestCase> = listOf(
+            SpecializationSelectionDataToDomainMapperTestCase(
+                dataToTest = SpecializationExampleDataClasses.defaultSpecialListResponse,
+                expectedResult = SpecializationExampleDataClasses.defaultDomainSpecialListResponse
+            )
+        )
+    }
 }
