@@ -31,8 +31,9 @@ class InterviewTrainerFeatureImpl(private val trainerApi: InterviewTrainerApi) :
 
         navGraphBuilder.composable(createQuizRoute) {
             trainerApi.CreateQuizScreen(
-                onBackClick = { handleBackNavigation(pathManager, navController) },
-
+                onBackClick = {
+                    handleBackNavigation(pathManager, navController)
+                },
                 onStartTrainingClick = { specializationId, questionsCount ->
                     handleQuizNavigation(
                         pathManager,
@@ -82,12 +83,14 @@ class InterviewTrainerFeatureImpl(private val trainerApi: InterviewTrainerApi) :
         // Используем текущий путь как базу для экрана тренировки
         val quizPath = pathManager.createParametrizedPath(
             featureName = "quiz",
-            "specializationId", "questionCount"
+            "specializationId",
+            "questionCount"
         )
 
         val concretePath = pathManager.createConcretePath(
             parametrizedPath = quizPath,
-            specializationId, questionsCount
+            specializationId,
+            questionsCount
         )
         Timber.d("InterviewTrainerFeatureImpl handleQuizNavigation: Navigating to: $concretePath")
 
