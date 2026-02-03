@@ -37,7 +37,8 @@ import ru.yeahub.ui.R
 fun QuestionsMainScreen(
     onBackClick: () -> Unit,
     onNavigateToBaseQuestions: () -> Unit,
-    onNavigateToCollections: () -> Unit
+    onNavigateToCollections: () -> Unit,
+    onNavigateToInterviewTrainer: () -> Unit,
 ) {
     val viewModel: QuestionMainViewModel = koinViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -46,6 +47,7 @@ fun QuestionsMainScreen(
         when (command) {
             is QuestionMainScreenCommand.NavigateToBaseQuestions -> onNavigateToBaseQuestions()
             is QuestionMainScreenCommand.NavigateToCollections -> onNavigateToCollections()
+            is QuestionMainScreenCommand.NavigateToInterviewTrainer -> onNavigateToInterviewTrainer()
         }
     }
 
