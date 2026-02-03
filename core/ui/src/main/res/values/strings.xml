@@ -24,4 +24,7 @@
     <string name="error_screen_title_text">УПС!</string>
     <string name="on_back_button_text">Назад</string>
     <string name="unknown_error_screen_text">Не удалось загрузить данные</string>
+
+    <string name="interview_trainer_title">Интервью тренажер</string>
+    <string name="interview_trainer_description">Улучшите свои знания перед собеседованием</string>
 </resources>
