@@ -10,12 +10,16 @@ import androidx.compose.runtime.Composable
  */
 interface InterviewTrainerApi {
     /**
-     * Экран тренажера собеседований.
+     * Главный/первый экран тренажера собеседований (CreateQuizScreen).
+     * Является entry-point'ом в фичу
+     * С него начинается вся внутренняя навигация
      *
      * @param onBackClick Действие при нажатии кнопки "Назад"
+     * @param onStartTrainingClick Действие при нажатии на старт тренировки в тренажере
      */
     @Composable
-    fun InterviewTrainerScreen(
+    fun CreateQuizScreen(
         onBackClick: () -> Unit,
+        onStartTrainingClick: (specializationId: String, questionsCount: String) -> Unit,
     )
 }
