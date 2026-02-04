@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.valentinilk.shimmer.shimmer
+import ru.yeahub.core_ui.example.staticPreview.StaticPreview
 import ru.yeahub.core_ui.theme.Theme
 
 @Composable
@@ -42,4 +43,11 @@ private fun PlaceHolderBlock(modifier: Modifier = Modifier) {
     ) {
         Box(Modifier.fillMaxSize().background(Color.LightGray))
     }
+}
+
+@StaticPreview
+@Composable
+private fun QuizLoadingStaticPreview() {
+
+    InterviewQuizLoading()
 }
