@@ -71,37 +71,12 @@ private val FIGMA_VERTICAL_FIRST_AND_LAST_ELEMENT_PADDING = 24.dp
 private val FIGMA_CARD_ELEVATION = 4.dp
 private val FIGMA_RADIUS = 12.dp
 
-private data class QuestionCardState(
-    val questionText: String,
-    val shortAnswer: String,
-    val currentAnswer: InterviewQuizState.Loaded.QuizAnswer,
-    val isAnswerVisible: Boolean,
-    val canGoPrevious: Boolean,
-    val canGoNext: Boolean,
-    val isLastQuestion: Boolean
-)
-
-private fun InterviewQuizState.Loaded.toQuestionCardState(): QuestionCardState {
-    val question = questions[currentQuestionIndex]
-
-    return QuestionCardState(
-        questionText = question.title,
-        shortAnswer = question.shortAnswer,
-        currentAnswer = currentAnswer,
-        isAnswerVisible = isAnswerVisible,
-        canGoPrevious = canGoPrevious,
-        canGoNext = canGoNext,
-        isLastQuestion = currentQuestionIndex == questions.lastIndex
-    )
-}
-
 @Composable
 private fun ScreenUI(
     headerText: TextOrResource,
     state: InterviewQuizState,
     onEvent: (InterviewQuizEvent) -> Unit
 ) {
-
     Scaffold(
         containerColor = Theme.colors.black10,
         topBar = {
@@ -115,24 +90,12 @@ private fun ScreenUI(
             when (state) {
                 is InterviewQuizState.Loaded -> BaseQuizScreen(
                     state = state,
-                    onPreviousClick = {
-                        onEvent(InterviewQuizEvent.OnPreviousQuestionClick)
-                    },
-                    onNextClick = {
-                        onEvent(InterviewQuizEvent.OnNextQuestionClick)
-                    },
-                    onUnknownClick = {
-                        onEvent(InterviewQuizEvent.OnUnknownAnswerClick)
-                    },
-                    onKnownClick = {
-                        onEvent(InterviewQuizEvent.OnKnownAnswerClick)
-                    },
-                    onShowHideAnswerClick = {
-                        onEvent(InterviewQuizEvent.OnShowHideAnswerClick)
-                    },
-                    onResultClick = {
-                        onEvent(InterviewQuizEvent.OnShowResultClick)
-                    },
+                    onPreviousClick = { /* TODO */ },
+                    onNextClick = { /* TODO */ },
+                    onUnknownClick = { /* TODO */ },
+                    onKnownClick = { /* TODO */ },
+                    onShowAnswerClick = { /* TODO */ },
+                    onResultClick = { /* TODO */ }
                 )
 
                 is InterviewQuizState.Error -> ErrorScreen(
@@ -157,12 +120,9 @@ private fun BaseQuizScreen(
     onNextClick: () -> Unit,
     onUnknownClick: () -> Unit,
     onKnownClick: () -> Unit,
-    onShowHideAnswerClick: () -> Unit,
-    onResultClick: () -> Unit
+    onShowAnswerClick: () -> Unit,
+    onResultClick: () -> Unit,
 ) {
-
-    val cardState = state.toQuestionCardState()
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -173,17 +133,17 @@ private fun BaseQuizScreen(
             )
     ) {
         QuizProgress(
-            current = state.currentQuestionIndex + 1,
+            current = state.questionIndex + 1,
             total = state.questionsCount,
         )
         Spacer(Modifier.height(FIGMA_VERTICAL_FIRST_AND_LAST_ELEMENT_PADDING))
         QuestionCard(
-            state = cardState,
+            state = state,
             onPreviousClick = onPreviousClick,
             onNextClick = onNextClick,
             onUnknownClick = onUnknownClick,
             onKnownClick = onKnownClick,
-            onShowAnswerClick = onShowHideAnswerClick,
+            onShowAnswerClick = onShowAnswerClick,
             onResultClick = onResultClick,
         )
     }
@@ -195,7 +155,6 @@ private fun QuizProgress(
     total: Int,
     modifier: Modifier = Modifier
 ) {
-
     val progress = (current.toFloat() / total)
 
     DefaultCard(modifier) {
@@ -225,7 +184,7 @@ private fun QuizProgress(
 
 @Composable
 private fun QuestionCard(
-    state: QuestionCardState,
+    state: InterviewQuizState.Loaded,
     onPreviousClick: () -> Unit,
     onNextClick: () -> Unit,
     onUnknownClick: () -> Unit,
@@ -233,24 +192,26 @@ private fun QuestionCard(
     onShowAnswerClick: () -> Unit,
     onResultClick: () -> Unit
 ) {
-
-    /* TODO: нет фичи профиля */
+    // TODO: нет фичи профиля
     var isFavorite by rememberSaveable { mutableStateOf(false) }
 
     val favoriteIcon: Painter =
         painterResource(
-            if (isFavorite) R.drawable.favorite_filled_icon
-            else R.drawable.favorite_outlined_icon
+            if (isFavorite) {
+                R.drawable.favorite_filled_icon
+            } else {
+                R.drawable.favorite_outlined_icon
+            }
         )
 
     DefaultCard {
-        Column(Modifier
-            .fillMaxWidth()
-            .padding(FIGMA_MEDIUM_PADDING)) {
+        Column(
+            modifier = Modifier.fillMaxWidth().padding(FIGMA_MEDIUM_PADDING)
+        ) {
             Row(Modifier.fillMaxWidth()) {
                 NavigationButton(
                     text = TextOrResource.Resource(R.string.quiz_btn_prev),
-                    enabled = state.canGoPrevious,
+                    enabled = state.canGoPrev,
                     onClick = onPreviousClick,
                     leadingIcon = painterResource(R.drawable.arrow_left_alt)
                 )
@@ -267,7 +228,6 @@ private fun QuestionCard(
                     .fillMaxWidth()
                     .padding(top = FIGMA_MEDIUM_PADDING),
                 verticalAlignment = Alignment.Top
-
             ) {
                 Icon(
                     painter = painterResource(R.drawable.ellipse_icon),
@@ -276,7 +236,7 @@ private fun QuestionCard(
                     tint = Theme.colors.purple800
                 )
                 Text(
-                    text = state.questionText,
+                    text = state.question.title,
                     modifier = Modifier
                         .padding(start = FIGMA_LOW_PADDING, end = 12.dp)
                         .weight(1f),
@@ -316,7 +276,7 @@ private fun QuestionCard(
             )
             if (state.isAnswerVisible) {
                 Text(
-                    text = state.shortAnswer,
+                    text = state.question.shortAnswer,
                     modifier = Modifier.padding(top = 12.dp),
                     style = Theme.typography.body3
                 )
@@ -328,14 +288,14 @@ private fun QuestionCard(
                     painter = painterResource(R.drawable.thumbs_down_icon),
                     text = TextOrResource.Resource(R.string.quiz_answer_unknown),
                     onClick = onUnknownClick,
-                    isSelected = state.currentAnswer == InterviewQuizState.Loaded.QuizAnswer.UNKNOWN
+                    isSelected = state.selectedAnswer == InterviewQuizState.Loaded.QuizAnswer.UNKNOWN
                 )
                 Spacer(Modifier.weight(1f))
                 QuizAnswerButton(
                     painter = painterResource(R.drawable.thumbs_up_icon),
                     text = TextOrResource.Resource(R.string.quiz_answer_known),
                     onClick = onKnownClick,
-                    isSelected = state.currentAnswer == InterviewQuizState.Loaded.QuizAnswer.KNOWN
+                    isSelected = state.selectedAnswer == InterviewQuizState.Loaded.QuizAnswer.KNOWN
                 )
             }
             HorizontalDivider(
@@ -346,7 +306,7 @@ private fun QuestionCard(
                 PrimaryButton(
                     onClick = onResultClick,
                     modifier = Modifier.height(48.dp),
-                    enabled = state.currentAnswer != InterviewQuizState.Loaded.QuizAnswer.NONE,
+                    enabled = state.selectedAnswer != InterviewQuizState.Loaded.QuizAnswer.NONE,
                     colors = YeahubButtonDefaults.primaryButtonColors(
                         disabledContentColor = Theme.colors.black100
                     )
@@ -413,7 +373,6 @@ private fun NavigationButton(
     trailingIcon: Painter? = null,
     contentPadding: PaddingValues = PaddingValues()
 ) {
-
     val context = LocalContext.current
     val color = if (enabled) Theme.colors.purple700 else Theme.colors.purple300
 
@@ -457,7 +416,6 @@ private fun QuizAnswerButton(
     onClick: () -> Unit,
     isSelected: Boolean
 ) {
-
     val context = LocalContext.current
 
     val contentColor = if (isSelected) {
@@ -496,29 +454,21 @@ private fun QuizAnswerButton(
     }
 }
 
-private val questions = listOf(
-    InterviewQuizState.Loaded.VoQuestion(
-        id = 0,
-        title = "Что такое Virtual DOM, и как он работает?",
-        shortAnswer = "Виртуальный DOM (VDOM) — это легковесное представление реального DOM в памяти, которое используется в JavaScript-библиотеках, таких как React и Vue, для повышения производительности веб-приложений."
-    ),
-    InterviewQuizState.Loaded.VoQuestion(
-        id = 1,
-        title = "Что такое Virtual DOM, и как он работает?",
-        shortAnswer = "Виртуальный DOM (VDOM) — это легковесное представление реального DOM в памяти, которое используется в JavaScript-библиотеках, таких как React и Vue, для повышения производительности веб-приложений."
-    ),
-    InterviewQuizState.Loaded.VoQuestion(
-        id = 2,
-        title = "Что такое Virtual DOM, и как он работает?",
-        shortAnswer = "Виртуальный DOM (VDOM) — это легковесное представление реального DOM в памяти, которое используется в JavaScript-библиотеках, таких как React и Vue, для повышения производительности веб-приложений."
-    ),
-    InterviewQuizState.Loaded.VoQuestion(
-        id = 3,
-        title = "Что такое Virtual DOM, и как он работает?",
-        shortAnswer = "Виртуальный DOM (VDOM) — это легковесное представление реального DOM в памяти, которое используется в JavaScript-библиотеках, таких как React и Vue, для повышения производительности веб-приложений."
-    )
+private val shortAnswerForPreview = "Виртуальный DOM (VDOM) — это легковесное " +
+        "представление реального DOM в памяти, которое используется в " +
+        "JavaScript-библиотеках, таких как React и Vue, " +
+        "для повышения производительности веб-приложений."
+private val questionForPreview = InterviewQuizState.Loaded.VoQuestion(
+    id = 0,
+    title = "Что такое Virtual DOM, и как он работает?",
+    shortAnswer = shortAnswerForPreview
 )
-
+private val questions = listOf(
+    questionForPreview,
+    questionForPreview.copy(id = 1),
+    questionForPreview.copy(id = 2),
+    questionForPreview.copy(id = 3)
+)
 private val answers = mapOf(
     1.toLong() to InterviewQuizState.Loaded.QuizAnswer.UNKNOWN,
     2.toLong() to InterviewQuizState.Loaded.QuizAnswer.KNOWN,
@@ -529,24 +479,39 @@ class QuizScreenStateParamProvider : PreviewParameterProvider<InterviewQuizState
     override val values: Sequence<InterviewQuizState> = sequenceOf(
         InterviewQuizState.Loaded(
             questions = questions,
-            questionsCount = questions.count(),
-            currentQuestionIndex = 1,
+            questionsCount = questions.size,
+            questionIndex = 0,
+            question = questions[0],
             isAnswerVisible = false,
-            answers = answers
+            answers = answers,
+            canGoPrev = false,
+            canGoNext = false,
+            selectedAnswer = InterviewQuizState.Loaded.QuizAnswer.NONE,
+            isLastQuestion = false
         ),
         InterviewQuizState.Loaded(
             questions = questions,
-            questionsCount = questions.count(),
-            currentQuestionIndex = 0,
+            questionsCount = questions.size,
+            questionIndex = 2,
+            question = questions[2],
             isAnswerVisible = true,
-            answers = answers
+            answers = answers,
+            canGoPrev = true,
+            canGoNext = true,
+            selectedAnswer = InterviewQuizState.Loaded.QuizAnswer.KNOWN,
+            isLastQuestion = false
         ),
         InterviewQuizState.Loaded(
             questions = questions,
-            questionsCount = questions.count(),
-            currentQuestionIndex = 3,
+            questionsCount = questions.size,
+            questionIndex = 3,
+            question = questions[3],
             isAnswerVisible = false,
-            answers = answers
+            answers = answers,
+            canGoPrev = true,
+            canGoNext = false,
+            selectedAnswer = InterviewQuizState.Loaded.QuizAnswer.UNKNOWN,
+            isLastQuestion = true
         ),
         InterviewQuizState.Loading,
         InterviewQuizState.Error(
@@ -571,9 +536,8 @@ fun InterviewQuizScreen(
 @Preview(showBackground = true)
 @Composable
 fun DynamicPreviewUI() {
-
-    val mockViewModel = viewModelCreator<InterviewQuizViewModel> {
-        InterviewQuizViewModel(InterviewQuizScreenMapper)
+    val mockViewModel = previewViewModel<InterviewQuizViewModel> {
+        InterviewQuizViewModel(InterviewQuizScreenMapper())
     }
 
     val state by mockViewModel.screenState.collectAsState()
@@ -585,16 +549,17 @@ fun DynamicPreviewUI() {
     )
 }
 
-typealias ViewModelCreator = () -> ViewModel?
+typealias PreviewViewModelCreator<VM> = () -> VM
 
-class ViewModelFactory(
-    private val viewModelCreator: ViewModelCreator = { null },
+private class PreviewViewModelFactory<VM : ViewModel>(
+    private val creator: PreviewViewModelCreator<VM>
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel> create(modelClass: Class<T>): T = viewModelCreator() as T
+    override fun <T : ViewModel> create(modelClass: Class<T>): T = creator() as T
 }
 
 @Composable
-inline fun <reified VM : ViewModel> viewModelCreator(noinline creator: ViewModelCreator): VM =
-    viewModel(factory = remember { ViewModelFactory(creator) })
+private inline fun <reified VM : ViewModel> previewViewModel(
+    noinline creator: PreviewViewModelCreator<VM>
+): VM = viewModel(factory = remember { PreviewViewModelFactory(creator) })

@@ -19,21 +19,16 @@ import ru.yeahub.core_ui.theme.Theme
 
 @Composable
 fun InterviewQuizLoading() {
-
     Column(Modifier.padding(horizontal = 16.dp).fillMaxSize()) {
         PlaceHolderBlock(
             Modifier.padding(vertical = 24.dp).fillMaxWidth().height(65.dp)
         )
-
         PlaceHolderBlock(Modifier.fillMaxWidth().height(320.dp))
-
-
     }
 }
 
 @Composable
 private fun PlaceHolderBlock(modifier: Modifier = Modifier) {
-
     Card(
         modifier = modifier.shimmer(),
         colors = CardDefaults.cardColors(containerColor = Theme.colors.white900),
