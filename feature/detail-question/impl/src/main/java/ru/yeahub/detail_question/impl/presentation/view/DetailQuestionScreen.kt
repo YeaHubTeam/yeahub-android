@@ -42,7 +42,7 @@ import ru.yeahub.detail_question.impl.presentation.viewmodel.viewModelCreator
 fun DetailQuestionScreen(
     onResult: (DetailQuestionResult) -> Unit,
     questionId: Long,
-    questionIds: List<Long> = emptyList(),
+    questionIds: List<Long>,
     currentIndex: Int = 0
 ) {
     val viewModel: DetailQuestionViewModel = koinViewModel()
@@ -87,7 +87,7 @@ internal fun HandleCommands(
 fun DetailQuestionScreenView(
     onBackClick: () -> Unit,
     viewModel: DetailQuestionViewModel,
-    questionIds: List<Long> = emptyList(),
+    questionIds: List<Long>,
     currentIndex: Int = 0,
     onNavigateToQuestion: (Int) -> Unit = {}
 ) {
@@ -398,5 +398,6 @@ fun DetailQuestionScreenDynamicPreview() {
     DetailQuestionScreenView(
         onBackClick = {},
         viewModel = mockViewModel,
+        questionIds = emptyList()
     )
 }
