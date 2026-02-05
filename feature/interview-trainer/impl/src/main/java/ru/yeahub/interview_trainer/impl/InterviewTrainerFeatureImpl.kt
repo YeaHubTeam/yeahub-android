@@ -3,14 +3,19 @@ package ru.yeahub.interview_trainer.impl
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.composable
-import ru.yeahub.interview_trainer.api.InterviewTrainerApi
+import androidx.navigation.navArgument
+import ru.yeahub.interview_trainer.impl.createQuiz.presentation.CreateQuizResult
+import ru.yeahub.interview_trainer.impl.createQuiz.ui.CreateQuizScreen
 import ru.yeahub.navigation_api.FeatureApi
 import ru.yeahub.navigation_api.FeatureRoute
 import ru.yeahub.navigation_api.NavigationPathManager
 import timber.log.Timber
 
-class InterviewTrainerFeatureImpl(private val trainerApi: InterviewTrainerApi) : FeatureApi {
+private const val TITLE_TOP_APP_BAR = "title"
+
+class InterviewTrainerFeatureImpl() : FeatureApi {
     override fun getFeatureName(): String = FeatureRoute.InterviewTrainerFeature.FEATURE_NAME
 
     override fun registerGraph(
@@ -19,29 +24,41 @@ class InterviewTrainerFeatureImpl(private val trainerApi: InterviewTrainerApi) :
         pathManager: NavigationPathManager,
         modifier: Modifier,
     ) {
-        val currentPath = pathManager.getCurrentPath()
-        Timber.d("InterviewTrainerFeatureImpl registerGraph: currentPath: $currentPath")
+        val basePathWithParams = pathManager.createParametrizedPath(
+            featureName = getFeatureName() + "/" +
+                    FeatureRoute.InterviewTrainerFeature.CREATE_QUIZ_SCREEN_NAME,
+            TITLE_TOP_APP_BAR
+        )
+        Timber.d("InterviewTrainerFeatureImpl registerGraph: currentPath: $basePathWithParams")
 
-        val createQuizRoute = if (currentPath.isEmpty()) {
-            getFeatureName()
-        } else {
-            pathManager.createChildPath(getFeatureName())
-        }
-        Timber.d("InterviewTrainerFeatureImpl registerGraph: Registering route: $createQuizRoute")
-
-        navGraphBuilder.composable(createQuizRoute) {
-            trainerApi.CreateQuizScreen(
-                onBackClick = {
-                    handleBackNavigation(pathManager, navController)
-                },
-                onStartTrainingClick = { specializationId, questionsCount ->
-                    handleQuizNavigation(
-                        pathManager,
-                        navController,
-                        specializationId,
-                        questionsCount
-                    )
+        navGraphBuilder.composable(
+            route = basePathWithParams,
+            arguments = listOf(
+                navArgument(TITLE_TOP_APP_BAR) {
+                    type = NavType.StringType
                 }
+            )
+        ) { backStackEntry ->
+            val titleTopAppBar = backStackEntry.arguments?.getString(TITLE_TOP_APP_BAR) ?: ""
+
+            CreateQuizScreen(
+                onResult = { result ->
+                    when (result) {
+                        is CreateQuizResult.NavigateBack -> handleBackNavigation(
+                            pathManager,
+                            navController
+                        )
+
+                        is CreateQuizResult.NavigateToInterviewQuizScreen -> handleQuizNavigation(
+                            pathManager = pathManager,
+                            navController = navController,
+                            titleTopAppBar = titleTopAppBar,
+                            specializationId = result.specializationId.toString(),
+                            questionsCount = result.questionCount.toString()
+                        )
+                    }
+                },
+                titleTopAppBar = titleTopAppBar
             )
         }
     }
@@ -75,26 +92,16 @@ class InterviewTrainerFeatureImpl(private val trainerApi: InterviewTrainerApi) :
     private fun handleQuizNavigation(
         pathManager: NavigationPathManager,
         navController: NavHostController,
+        titleTopAppBar: String,
         specializationId: String,
         questionsCount: String,
     ) {
-        pathManager.setCurrentPath(getFeatureName())
+        val interviewQuizRoute = getFeatureName() + "/" +
+                FeatureRoute.InterviewTrainerFeature.INTERVIEW_QUIZ_SCREEN_NAME + "/" +
+                titleTopAppBar + specializationId + questionsCount
 
-        // Используем текущий путь как базу для экрана тренировки
-        val quizPath = pathManager.createParametrizedPath(
-            featureName = "quiz",
-            "specializationId",
-            "questionCount"
-        )
+        Timber.d("InterviewTrainerFeatureImpl registerGraph: $interviewQuizRoute")
 
-        val concretePath = pathManager.createConcretePath(
-            parametrizedPath = quizPath,
-            specializationId,
-            questionsCount
-        )
-        Timber.d("InterviewTrainerFeatureImpl handleQuizNavigation: Navigating to: $concretePath")
-
-        pathManager.setCurrentPath(concretePath)
-        navController.navigate(concretePath)
+        navController.navigate(interviewQuizRoute)
     }
 }
