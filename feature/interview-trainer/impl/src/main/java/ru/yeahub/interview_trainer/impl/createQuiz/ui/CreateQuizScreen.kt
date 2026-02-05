@@ -36,9 +36,11 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import org.koin.androidx.compose.koinViewModel
 import ru.yeahub.core_ui.component.ErrorScreen
 import ru.yeahub.core_ui.component.PrimaryButton
 import ru.yeahub.core_ui.component.SkillButton
@@ -66,16 +68,38 @@ private val FIGMA_VERTICAL_BLOCKS_PADDING = 16.dp
 private val FIGMA_VERTICAL_FIRST_AND_LAST_ELEMENT_PADDING = 24.dp
 
 @Composable
+fun CreateQuizScreen(
+    onResult: (CreateQuizResult) -> Unit,
+    titleTopAppBar: String,
+) {
+    val viewModel: CreateQuizViewModel = koinViewModel()
+
+    val screenState by viewModel.screenState.collectAsStateWithLifecycle()
+
+    HandleCommand(
+        commandFlow = viewModel.commands,
+        onResult = { result -> onResult(result) }
+    )
+
+    ScreenUI(
+        state = screenState,
+        onEvent = viewModel::onEvent,
+        titleTopAppBar = TextOrResource.Text(titleTopAppBar)
+    )
+}
+
+
+@Composable
 private fun ScreenUI(
     state: CreateQuizState,
     onEvent: (CreateQuizEvent) -> Unit,
-    headerText: TextOrResource,
+    titleTopAppBar: TextOrResource,
 ) {
     Scaffold(
         containerColor = colors.black10,
         topBar = {
             TopAppBarWithBottomBorder(
-                title = headerText,
+                title = titleTopAppBar,
                 onBackClick = { onEvent(CreateQuizEvent.OnBackClick) }
             )
         }
@@ -409,7 +433,7 @@ fun CreateQuizScreenPreview(
     ScreenUI(
         state = state,
         onEvent = { },
-        headerText = TextOrResource.Resource(R.string.create_quiz_top_bar_header_text),
+        titleTopAppBar = TextOrResource.Resource(R.string.create_quiz_top_bar_header_text),
     )
 }
 
@@ -433,7 +457,7 @@ fun DynamicPreviewUI() {
     }
 
     val mockViewModel = viewModelCreator<CreateQuizViewModel> {
-        CreateQuizViewModel(mockUseCase, CreateQuizScreenMapper)
+        CreateQuizViewModel(mockUseCase, CreateQuizScreenMapper())
     }
 
     val mockState by mockViewModel.screenState.collectAsState()
@@ -458,7 +482,7 @@ fun DynamicPreviewUI() {
         ScreenUI(
             state = mockState,
             onEvent = mockViewModel::onEvent,
-            headerText = TextOrResource.Resource(R.string.create_quiz_top_bar_header_text)
+            titleTopAppBar = TextOrResource.Resource(R.string.create_quiz_top_bar_header_text)
         )
     }
 }
