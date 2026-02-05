@@ -24,15 +24,19 @@ class InterviewTrainerFeatureImpl() : FeatureApi {
         pathManager: NavigationPathManager,
         modifier: Modifier,
     ) {
-        val basePathWithParams = pathManager.createParametrizedPath(
-            featureName = getFeatureName() + "/" +
-                    FeatureRoute.InterviewTrainerFeature.CREATE_QUIZ_SCREEN_NAME,
-            TITLE_TOP_APP_BAR
-        )
-        Timber.d("InterviewTrainerFeatureImpl registerGraph: currentPath: $basePathWithParams")
+        //Регистрируем базовый путь фичи (interview_trainer)
+        pathManager.registerFeaturePath(featureName = getFeatureName(), basePath = getFeatureName())
+
+        val featurePath = pathManager.getFeaturePath(getFeatureName()) ?: getFeatureName()
+
+        //Создаем путь экрана создания тренировки (interview_trainer/create_quiz/{title}
+        val createQuizRoute =
+            "$featurePath/${FeatureRoute.InterviewTrainerFeature.CREATE_QUIZ_SCREEN_NAME}/{$TITLE_TOP_APP_BAR}"
+
+        Timber.d("InterviewTrainerFeatureImpl registerGraph: currentPath: $createQuizRoute")
 
         navGraphBuilder.composable(
-            route = basePathWithParams,
+            route = createQuizRoute,
             arguments = listOf(
                 navArgument(TITLE_TOP_APP_BAR) {
                     type = NavType.StringType
@@ -70,7 +74,7 @@ class InterviewTrainerFeatureImpl() : FeatureApi {
         pathManager: NavigationPathManager,
         navController: NavHostController,
     ) {
-        val parentPath = pathManager.getCurrentPath()
+        val parentPath = pathManager.getParentPath()
         Timber.d("InterviewTrainerFeatureImpl handleBackNavigation: Navigating to parent: $parentPath")
 
         pathManager.setCurrentPath(parentPath)
@@ -98,7 +102,7 @@ class InterviewTrainerFeatureImpl() : FeatureApi {
     ) {
         val interviewQuizRoute = getFeatureName() + "/" +
                 FeatureRoute.InterviewTrainerFeature.INTERVIEW_QUIZ_SCREEN_NAME + "/" +
-                titleTopAppBar + specializationId + questionsCount
+                "$titleTopAppBar/$specializationId/$questionsCount"
 
         Timber.d("InterviewTrainerFeatureImpl registerGraph: $interviewQuizRoute")
 
