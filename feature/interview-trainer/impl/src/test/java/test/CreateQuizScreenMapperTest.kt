@@ -15,7 +15,7 @@ class CreateQuizScreenMapperTest {
     fun getScreenStateTest(
         testCase: CreateQuizScreenMapperTestCase,
     ) {
-        val result = CreateQuizScreenMapper.getScreenState(
+        val result = CreateQuizScreenMapper().getScreenState(
             specializations = testCase.specializations,
             selectedSpecializationId = testCase.selectedSpecializationId,
             questionsCount = testCase.questionsCount
