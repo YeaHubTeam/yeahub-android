@@ -16,7 +16,10 @@ sealed class PublicQuestionsScreenEvent {
 
     /** Клик по карточке вопроса(подробнее) */
 
-    data class OnMoreClick(val id: String) : PublicQuestionsScreenEvent()
+    data class OnMoreClick(
+        val questionIds: List<String>,
+        val currentIndex: Int
+    ) : PublicQuestionsScreenEvent()
 
     /** Клик назад */
 

@@ -26,9 +26,11 @@ class DetailQuestionViewModel(
     internal fun handleEvents(event: DetailQuestionEvent) {
         when (event) {
             is DetailQuestionEvent.LoadQuestion -> getQuestionById(event.id)
-            DetailQuestionEvent.OnBackClick -> handleBackClick()
+            is DetailQuestionEvent.OnBackClick -> handleBackClick()
             is DetailQuestionEvent.OnTelegramClick -> handleTelegramClick(event.url)
             is DetailQuestionEvent.OnYoutubeClick -> handleYoutubeClick(event.url)
+            is DetailQuestionEvent.OnPreviousQuestionClick -> handlePreviousQuestionClick(event.currentQuestionId)
+            is DetailQuestionEvent.OnNextQuestionClick -> handleNextQuestionClick(event.currentQuestionId)
         }
     }
 
@@ -60,6 +62,20 @@ class DetailQuestionViewModel(
     private fun handleYoutubeClick(url: String) {
         viewModelScopeSafe.launch {
             _commands.emit(DetailQuestionCommand.OpenUrl(url))
+        }
+    }
+
+    private fun handlePreviousQuestionClick(currentQuestionId: Long) {
+        viewModelScopeSafe.launch {
+            val previousQuestionId = if (currentQuestionId > 1) currentQuestionId - 1 else currentQuestionId
+            _commands.emit(DetailQuestionCommand.NavigateToQuestion(previousQuestionId.toInt()))
+        }
+    }
+
+    private fun handleNextQuestionClick(currentQuestionId: Long) {
+        viewModelScopeSafe.launch {
+            val nextQuestionId = currentQuestionId + 1
+            _commands.emit(DetailQuestionCommand.NavigateToQuestion(nextQuestionId.toInt()))
         }
     }
 }

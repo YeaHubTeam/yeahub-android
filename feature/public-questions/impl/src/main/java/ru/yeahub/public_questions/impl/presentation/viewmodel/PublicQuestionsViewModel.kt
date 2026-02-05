@@ -109,7 +109,10 @@ class PublicQuestionsViewModel(
             is PublicQuestionsScreenEvent.LoadInitial -> loadInitial()
             is PublicQuestionsScreenEvent.LoadNextPage -> loadNextPage()
             is PublicQuestionsScreenEvent.Refresh -> refresh()
-            is PublicQuestionsScreenEvent.OnMoreClick -> onMoreClick(event.id)
+            is PublicQuestionsScreenEvent.OnMoreClick -> onMoreClick(
+                event.questionIds,
+                event.currentIndex
+            )
             is PublicQuestionsScreenEvent.OnBackClick -> onBackClick()
         }
     }
@@ -137,9 +140,9 @@ class PublicQuestionsViewModel(
         }
     }
 
-    private fun onMoreClick(id: String) {
+    private fun onMoreClick(questionIds: List<String>, currentIndex: Int) {
         viewModelScopeSafe.launch(Dispatchers.IO) {
-            _commandState.emit(PublicQuestionsScreenCommand.OnMoreClick(id))
+            _commandState.emit(PublicQuestionsScreenCommand.OnMoreClick(questionIds, currentIndex))
         }
     }
 

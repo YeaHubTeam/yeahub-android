@@ -5,4 +5,6 @@ internal sealed class DetailQuestionEvent {
     data object OnBackClick : DetailQuestionEvent()
     data class OnTelegramClick(val url: String) : DetailQuestionEvent()
     data class OnYoutubeClick(val url: String) : DetailQuestionEvent()
+    data class OnPreviousQuestionClick(val currentQuestionId: Long) : DetailQuestionEvent()
+    data class OnNextQuestionClick(val currentQuestionId: Long) : DetailQuestionEvent()
 }

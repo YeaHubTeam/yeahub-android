@@ -119,10 +119,11 @@ fun PublicQuestionsScreen(
             listState = lazyListState,
             onRetryLoadInitial = { viewModel.onEvent(PublicQuestionsScreenEvent.LoadInitial) },
             nameQuestions = tittleTopAppBar,
-            onMoreCLick = { id ->
+            onMoreCLick = { questionIds, currentIndex ->
                 viewModel.onEvent(
                     PublicQuestionsScreenEvent.OnMoreClick(
-                        id = id
+                        questionIds = questionIds,
+                        currentIndex = currentIndex
                     )
                 )
             }
@@ -142,7 +143,12 @@ fun HandlePublicQuestionsCommand(
             .collect { command ->
                 when (command) {
                     is PublicQuestionsScreenCommand.OnMoreClick -> {
-                        onResult(PublicQuestionsResult.NavigateToDetail(command.id))
+                        onResult(
+                            PublicQuestionsResult.NavigateToDetail(
+                                questionIds = command.questionIds,
+                                currentIndex = command.currentIndex
+                            )
+                        )
                     }
 
                     PublicQuestionsScreenCommand.OnBackClick -> {
@@ -158,7 +164,7 @@ private fun PublicQuestionsContent(
     modifier: Modifier = Modifier,
     padding: PaddingValues,
     nameQuestions: String,
-    onMoreCLick: (id: String) -> Unit,
+    onMoreCLick: (questionIds: List<String>, currentIndex: Int) -> Unit,
     screenState: PublicQuestionsScreenState,
     listState: LazyListState,
     onRetryLoadInitial: () -> Unit,
@@ -181,6 +187,7 @@ private fun PublicQuestionsContent(
                         onRetry = onRetryLoadInitial
                     )
                 } else {
+                    val questionIds = screenState.questions.map { it.id }
                     QuestionsListWithFooter(
                         padding = padding,
                         listState = listState,
@@ -190,7 +197,7 @@ private fun PublicQuestionsContent(
                         paginationError = screenState.throwable,
                         onRetryPagination = { onRetryLoadInitial() },
                         nameQuestion = nameQuestions,
-                        onMoreCLick = { id -> onMoreCLick(id) }
+                        onMoreCLick = { currentIndex -> onMoreCLick(questionIds, currentIndex) }
                     )
                 }
             }
@@ -201,6 +208,7 @@ private fun PublicQuestionsContent(
                 ) {
                     EmptyState()
                 } else {
+                    val questionIds = screenState.questions.map { it.id }
                     QuestionsListWithFooter(
                         padding = padding,
                         listState = listState,
@@ -210,7 +218,7 @@ private fun PublicQuestionsContent(
                         paginationError = null,
                         onRetryPagination = { onRetryLoadInitial() },
                         nameQuestion = nameQuestions,
-                        onMoreCLick = { id -> onMoreCLick(id) },
+                        onMoreCLick = { currentIndex -> onMoreCLick(questionIds, currentIndex) },
                     )
                 }
             }
@@ -270,7 +278,7 @@ private fun QuestionsListWithFooter(
     isEndReached: Boolean,
     isLoadingNextPage: Boolean,
     paginationError: Throwable?,
-    onMoreCLick: (id: String) -> Unit,
+    onMoreCLick: (currentIndex: Int) -> Unit,
     onRetryPagination: () -> Unit,
 ) {
     LazyColumn(
@@ -293,9 +301,10 @@ private fun QuestionsListWithFooter(
                 items = questions,
                 key = { question -> question.id }
             ) { question ->
+                val currentIndex = questions.indexOf(question)
                 PublicQuestionsItem(
                     questions = question,
-                    onClickMore = { id -> onMoreCLick(id) }
+                    onClickMore = { onMoreCLick(currentIndex) }
                 )
             }
         }
