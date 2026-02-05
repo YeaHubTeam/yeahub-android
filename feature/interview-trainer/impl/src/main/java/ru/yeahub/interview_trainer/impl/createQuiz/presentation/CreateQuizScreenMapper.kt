@@ -2,7 +2,7 @@ package ru.yeahub.interview_trainer.impl.createQuiz.presentation
 
 import ru.yeahub.interview_trainer.impl.createQuiz.domain.DomainSpecialization
 
-object CreateQuizScreenMapper {
+class CreateQuizScreenMapper() {
 
     fun getScreenState(
         specializations: List<DomainSpecialization>,
