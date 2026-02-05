@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 
-class RegistrationViewModel: ViewModel() {
+class RegistrationViewModel : ViewModel() {
 
     private val _state = MutableStateFlow(
         RegistrationUiState(
@@ -25,7 +25,7 @@ class RegistrationViewModel: ViewModel() {
     val state: StateFlow<RegistrationUiState> = _state
 
     fun onAction(action: RegistrationAction) {
-        when(action) {
+        when (action) {
             is RegistrationAction.ConfirmPasswordChanged -> {
                 _state.update { it.copy(confirmPassword = action.value).revalidate() }
             }
@@ -54,9 +54,7 @@ class RegistrationViewModel: ViewModel() {
                 _state.update { it.copy(isPdAccepted = action.value).revalidate() }
             }
 
-            RegistrationAction.SubmitClicked -> {
-
-            }
+            RegistrationAction.SubmitClicked -> {}
 
             RegistrationAction.ToggleConfirmPasswordVisible -> {
                 _state.update { it.copy(isConfirmPasswordVisible = !it.isConfirmPasswordVisible) }

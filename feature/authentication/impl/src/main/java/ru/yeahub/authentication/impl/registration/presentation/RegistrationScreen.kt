@@ -297,20 +297,20 @@ private fun ConsentRow(
 
 @Preview(showBackground = true, widthDp = 360)
 @Composable
-private fun RegistrationScreenPreview() {
+fun RegistrationScreenPreview() {
     MaterialTheme {
         RegistrationScreen(
             state = RegistrationUiState(
-                nickname = "",
-                email = "",
-                password = "",
-                confirmPassword = "",
-                isPasswordVisible = false,
-                isConfirmPasswordVisible = false,
+                nickname = "admin",
+                email = "admin@mail.ru",
+                password = "1234",
+                confirmPassword = "1234",
+                isPasswordVisible = true,
+                isConfirmPasswordVisible = true,
                 isPdAccepted = true,
                 isOfferAccepted = true,
                 isMailingAccepted = false,
-                isSubmitEnabled = false
+                isSubmitEnabled = true
             ),
             onAction = {},
             onOpenPdPolicy = {},
