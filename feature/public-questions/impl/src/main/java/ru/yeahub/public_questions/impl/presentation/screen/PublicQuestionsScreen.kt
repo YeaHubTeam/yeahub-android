@@ -110,9 +110,11 @@ fun PublicQuestionsScreen(
                 onBackClick = { viewModel.onEvent(PublicQuestionsScreenEvent.OnBackClick) }
             )
         }
-    ) { padding ->
+    ) { paddingValues ->
         PublicQuestionsContent(
-            padding = padding,
+            padding = PaddingValues(
+                top = paddingValues.calculateTopPadding()
+            ),
             screenState = screenState,
             listState = lazyListState,
             onRetryLoadInitial = { viewModel.onEvent(PublicQuestionsScreenEvent.LoadInitial) },
@@ -355,10 +357,6 @@ private fun PaginationFooter(
                         Text(stringResource(id = R.string.try_again))
                     }
                 }
-            }
-
-            isEndReached -> {
-                Text(stringResource(id = R.string.error))
             }
 
             else -> {

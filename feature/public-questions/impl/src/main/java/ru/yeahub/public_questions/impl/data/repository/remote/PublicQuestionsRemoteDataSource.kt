@@ -16,6 +16,7 @@ class PublicQuestionsRemoteDataSource(private val apiService: NetworkProvider) :
             page = page,
             limit = limit,
             skillFilterMode = skillFilterMode,
+            collection = idCollection,
             specialization = idSpecialization
         )
     }

@@ -1,13 +1,11 @@
 package ru.yeahub.core_ui.component
 
-import android.content.res.Configuration
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -22,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.dimensionResource
@@ -40,29 +37,17 @@ fun TopAppBarWithBottomBorder(
     borderThickness: Dp = 1.dp,
     onBackClick: () -> Unit
 ) {
-    val configuration = LocalConfiguration.current
-    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-
-    if (isLandscape) {
-        LandscapeTopAppBar(
-            title = title,
-            borderColor = borderColor,
-            borderThickness = borderThickness,
-            onBackClick = onBackClick
-        )
-    } else {
-        PortraitTopAppBar(
-            title = title,
-            borderColor = borderColor,
-            borderThickness = borderThickness,
-            onBackClick = onBackClick
-        )
-    }
+    TopAppBar(
+        title = title,
+        borderColor = borderColor,
+        borderThickness = borderThickness,
+        onBackClick = onBackClick
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun LandscapeTopAppBar(
+private fun TopAppBar(
     title: TextOrResource,
     borderColor: Color,
     borderThickness: Dp,
@@ -107,47 +92,6 @@ private fun LandscapeTopAppBar(
         modifier = Modifier
             .fillMaxWidth()
             .height(dimensionResource(id = R.dimen.app_bar_height_landscape))
-            .drawBorder(borderColor, borderThicknessPx)
-    )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun PortraitTopAppBar(
-    title: TextOrResource,
-    borderColor: Color,
-    borderThickness: Dp,
-    onBackClick: () -> Unit
-) {
-    val density = LocalDensity.current
-    val context = LocalContext.current
-    val borderThicknessPx = with(density) { borderThickness.toPx() }
-
-    CenterAlignedTopAppBar(
-        title = {
-            Text(
-                text = title.getString(context),
-                style = Theme.typography.body3Accent,
-                color = Theme.colors.black900
-            )
-        },
-        navigationIcon = {
-            IconButton(onClick = { onBackClick() }) {
-                Icon(
-                    modifier = Modifier
-                        .width(20.dp)
-                        .height(20.dp),
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = null,
-                    tint = Theme.colors.purple700
-                )
-            }
-        },
-        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-            containerColor = Theme.colors.white900
-        ),
-        modifier = Modifier
-            .fillMaxWidth()
             .drawBorder(borderColor, borderThicknessPx)
     )
 }

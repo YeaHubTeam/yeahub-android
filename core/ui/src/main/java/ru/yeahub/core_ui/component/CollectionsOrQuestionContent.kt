@@ -42,7 +42,7 @@ fun CollectionsOrQuestionContent(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(start = 16.dp, top = 24.dp, end = 16.dp, bottom = 24.dp)
+            .padding(start = 16.dp, end = 16.dp, bottom = 24.dp)
             .verticalScroll(scrollState)
     ) {
         Text(
@@ -79,7 +79,7 @@ fun CollectionsOrQuestionContent(
                 .fillMaxWidth()
                 .padding(vertical = 8.dp)
                 .align(Alignment.CenterHorizontally)
-            ) {
+        ) {
             Text(
                 text = state.buttonText.getString(context),
                 color = Theme.colors.white900,
