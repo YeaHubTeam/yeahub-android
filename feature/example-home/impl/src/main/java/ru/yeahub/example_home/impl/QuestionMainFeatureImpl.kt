@@ -111,14 +111,14 @@ class QuestionMainFeatureImpl : FeatureApi {
         pathManager: NavigationPathManager,
         navController: NavHostController,
     ) {
-        val titleTopAppBar = "Interview Trainer"
+        val titleTopAppBar = "Test TitleTopAppBar"
 
         // Сбрасываем текущий путь на корневую фичу
         pathManager.setCurrentPath(FeatureRoute.InterviewTrainerFeature.FEATURE_NAME)
 
-        val createQuizPath = pathManager.getCurrentPath() + "/" +
-                FeatureRoute.InterviewTrainerFeature.CREATE_QUIZ_SCREEN_NAME + "/" +
-                titleTopAppBar
+        val createQuizPath = pathManager.createChildPath(
+            featureName = FeatureRoute.InterviewTrainerFeature.CREATE_QUIZ_SCREEN_NAME
+        ) + "/" + titleTopAppBar
 
         Timber.d("HomeFeatureImpl handleInterviewTrainerNavigation: Navigating to: $createQuizPath")
 
