@@ -170,6 +170,8 @@ fun DefaultButton(
             purple
         } else if (newContentColor == black && fillButton && activeButton) {
             black
+        } else if (newContainerColor == Theme.colors.white900) {
+            black
         } else {
             newContentColor
         }
@@ -200,9 +202,11 @@ fun DefaultButton(
                             imageLeft == R.drawable.ellipse -> {
                                 painterResource(id = R.drawable.ellipse)
                             }
+
                             enabled -> {
                                 painterResource(id = R.drawable.icon_true_button)
                             }
+
                             else -> {
                                 painterResource(id = R.drawable.icon_false_button)
                             }
