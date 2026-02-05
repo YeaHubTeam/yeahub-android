@@ -100,7 +100,6 @@ fun DetailQuestionScreenView(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val hasPrevious = currentIndex > 0
     val hasNext = currentIndex < questionIds.size - 1
-
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
     Scaffold(
@@ -163,7 +162,6 @@ fun DetailQuestionScreenView(
                     onNavigateToQuestion(currentIndex + 1)
                 }
             },
-         
             padding = PaddingValues(
                 top = paddingValues.calculateTopPadding()
             )
