@@ -16,7 +16,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Icon
@@ -39,6 +38,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import ru.yeahub.core_ui.component.PrimaryButton
+import ru.yeahub.core_ui.theme.Theme
 
 @Composable
 fun RegistrationScreen(
@@ -128,10 +129,10 @@ fun RegistrationScreen(
 
             Spacer(Modifier.height(8.dp))
 
-            Button(
+            PrimaryButton(
                 onClick = { onAction(RegistrationAction.SubmitClicked) },
                 enabled = state.isSubmitEnabled,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             ) {
                 Text("Зарегистрироваться")
             }
@@ -273,9 +274,9 @@ private fun ConsentRow(
             checked = checked,
             onCheckedChange = onCheckedChange,
             colors = CheckboxDefaults.colors(
-                checkedColor = accentColor,
-                checkmarkColor = MaterialTheme.colorScheme.onPrimary,
-                uncheckedColor = MaterialTheme.colorScheme.outline
+                checkedColor = Theme.colors.purple700,
+                uncheckedColor = Theme.colors.purple200,
+                checkmarkColor = Theme.colors.white900
             )
         )
         Spacer(Modifier.width(8.dp))
