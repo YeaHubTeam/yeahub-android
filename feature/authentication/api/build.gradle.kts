@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "ru.yeahub.impl"
+    namespace = "ru.yeahub.authentication.api"
     compileSdk = 35
 
     defaultConfig {
