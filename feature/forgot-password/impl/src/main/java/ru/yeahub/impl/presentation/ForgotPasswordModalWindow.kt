@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package ru.yeahub.impl
+package ru.yeahub.impl.presentation
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -35,6 +35,7 @@ import androidx.compose.ui.window.Dialog
 import kotlinx.coroutines.delay
 import ru.yeahub.core_ui.example.staticPreview.StaticPreview
 import ru.yeahub.core_ui.theme.Theme
+import ru.yeahub.impl.R
 
 
 @Composable
@@ -92,7 +93,7 @@ private fun InstructionsSentDialogContent(
                     .size(32.dp)
             ) {
                 Image(
-                    painter = painterResource(id = ru.yeahub.impl.R.drawable.close),
+                    painter = painterResource(id = R.drawable.close),
                     contentDescription = "Close",
                     modifier = Modifier.size(24.dp)
                 )
@@ -110,7 +111,7 @@ private fun InstructionsSentDialogContent(
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
-                        painter = painterResource(id = ru.yeahub.impl.R.drawable.letter),
+                        painter = painterResource(id = R.drawable.letter),
                         contentDescription = "Letter",
                         modifier = Modifier.size(112.dp)
                     )
