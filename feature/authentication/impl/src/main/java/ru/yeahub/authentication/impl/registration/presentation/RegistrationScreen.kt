@@ -29,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -38,6 +39,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import ru.yeahub.authentication.impl.R
 import ru.yeahub.core_ui.component.PrimaryButton
 import ru.yeahub.core_ui.theme.Theme
 
@@ -60,30 +62,30 @@ fun RegistrationScreen(
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
             Text(
-                text = "Регистрация",
+                text = stringResource(R.string.registration_title),
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.SemiBold
             )
 
             FormTextField(
-                title = "Никнейм",
-                placeholder = "Введите никнейм",
+                title = stringResource(R.string.nickname_title),
+                placeholder = stringResource(R.string.nickname_placeholder),
                 value = state.nickname,
                 onValueChange = { onAction(RegistrationAction.NicknameChanged(it)) },
                 keyboardType = KeyboardType.Ascii
             )
 
             FormTextField(
-                title = "Электронная почта",
-                placeholder = "Введите электронную почту",
+                title = stringResource(R.string.email_title),
+                placeholder = stringResource(R.string.email_placeholder),
                 value = state.email,
                 onValueChange = { onAction(RegistrationAction.EmailChanged(it)) },
                 keyboardType = KeyboardType.Email
             )
 
             FormPasswordField(
-                title = "Пароль",
-                placeholder = "Введите пароль",
+                title = stringResource(R.string.password_title),
+                placeholder = stringResource(R.string.password_placeholder),
                 value = state.password,
                 isVisible = state.isPasswordVisible,
                 onValueChange = { onAction(RegistrationAction.PasswordChanged(it)) },
@@ -91,8 +93,8 @@ fun RegistrationScreen(
             )
 
             FormPasswordField(
-                title = "Подтвердить пароль",
-                placeholder = "Введите пароль",
+                title = stringResource(R.string.confirm_password_title),
+                placeholder = stringResource(R.string.password_placeholder),
                 value = state.confirmPassword,
                 isVisible = state.isConfirmPasswordVisible,
                 onValueChange = { onAction(RegistrationAction.ConfirmPasswordChanged(it)) },
@@ -105,8 +107,7 @@ fun RegistrationScreen(
                 text = pdConsentText(linkColor),
                 onLinkClicked = { tag ->
                     if (tag == "pd") onOpenPdPolicy()
-                },
-                accentColor = linkColor
+                }
             )
 
             ConsentRow(
@@ -115,15 +116,13 @@ fun RegistrationScreen(
                 text = offerConsentText(linkColor),
                 onLinkClicked = { tag ->
                     if (tag == "offer") onOpenOffer()
-                },
-                accentColor = linkColor
+                }
             )
 
             ConsentRow(
                 checked = state.isMailingAccepted,
                 onCheckedChange = { onAction(RegistrationAction.MailingAcceptedChanged(it)) },
-                text = AnnotatedString("Даю согласие на получение рекламных и информационных рассылок"),
-                accentColor = linkColor,
+                text = AnnotatedString(stringResource(R.string.marketing_opt_in_text)),
                 onLinkClicked = { }
             )
 
@@ -134,7 +133,7 @@ fun RegistrationScreen(
                 enabled = state.isSubmitEnabled,
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                Text("Зарегистрироваться")
+                Text(stringResource(R.string.registration_button))
             }
         }
     }
@@ -238,22 +237,23 @@ private fun PasswordField(
     )
 }
 
+@Composable
 private fun pdConsentText(linkColor: Color): AnnotatedString = buildAnnotatedString {
-    append("Даю ")
+    append(stringResource(R.string.pd_consent_prefix))
     pushStringAnnotation(tag = "pd", annotation = "pd")
     pushStyle(SpanStyle(color = linkColor))
-    append("Согласие на обработку персональных данных")
+    append(stringResource(R.string.pd_consent_link))
     pop()
     pop()
-    append(", в соответствии с Политикой в отношении ПД")
+    append(stringResource(R.string.pd_consent_suffix))
 }
 
+@Composable
 private fun offerConsentText(linkColor: Color): AnnotatedString = buildAnnotatedString {
-    append("Подтверждаю что ознакомился(-ась) ")
-    append("с ")
+    append(stringResource(R.string.offer_consent_prefix))
     pushStringAnnotation(tag = "offer", annotation = "offer")
     pushStyle(SpanStyle(color = linkColor))
-    append("Договором-офертой")
+    append(stringResource(R.string.offer_consent_link))
     pop()
     pop()
 }
@@ -263,7 +263,6 @@ private fun ConsentRow(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     text: AnnotatedString,
-    accentColor: Color,
     onLinkClicked: (tag: String) -> Unit
 ) {
     Row(
@@ -296,7 +295,7 @@ private fun ConsentRow(
     }
 }
 
-@Preview(showBackground = true, widthDp = 360)
+@Preview(showBackground = true)
 @Composable
 fun RegistrationScreenPreview() {
     MaterialTheme {

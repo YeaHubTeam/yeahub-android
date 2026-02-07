@@ -43,7 +43,6 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:ui"))
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(project(":core:ui"))
     implementation(project(":core:utils"))
