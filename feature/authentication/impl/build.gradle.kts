@@ -40,18 +40,15 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.8"
-    }
 }
 
 dependencies {
-    implementation(project(":core:navigation-api"))
-    implementation(project(":core:network-api"))
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(project(":core:ui"))
     implementation(project(":core:utils"))
-
+    implementation(project(":core:network-api"))
+    implementation(project(":core:navigation-api"))
+    implementation(libs.timber)
     implementation(libs.androidx.core.ktx)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
@@ -59,31 +56,16 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.runtime.android)
-
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.koin.core)
     implementation(libs.koin.android)
     implementation(libs.koin.compose)
-
-    // Navigation dependencies
     implementation(libs.compose.shimmer)
     implementation(libs.androidx.navigation.compose)
-
-    // Timber
-    implementation(libs.timber)
-    implementation(libs.androidx.ui.tooling.preview.android)
-
-    // Retrofit (for HttpException)
-    implementation(libs.retrofit.core)
-
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     testImplementation(libs.junit.jupiter)
     testImplementation(platform(libs.junit.bom))
     testRuntimeOnly(libs.junit.platform.launcher)
-    implementation(libs.androidx.junit.ktx)
     testImplementation(libs.mockk)
-}
-tasks.withType<Test> {
-    useJUnitPlatform()
 }
