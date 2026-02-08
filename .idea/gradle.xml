@@ -21,6 +21,9 @@
             <option value="$PROJECT_DIR$/core/ui" />
             <option value="$PROJECT_DIR$/core/utils" />
             <option value="$PROJECT_DIR$/feature" />
+            <option value="$PROJECT_DIR$/feature/authentication" />
+            <option value="$PROJECT_DIR$/feature/authentication/api" />
+            <option value="$PROJECT_DIR$/feature/authentication/impl" />
             <option value="$PROJECT_DIR$/feature/detail-question" />
             <option value="$PROJECT_DIR$/feature/detail-question/api" />
             <option value="$PROJECT_DIR$/feature/detail-question/impl" />
@@ -42,12 +45,12 @@
             <option value="$PROJECT_DIR$/feature/public-questions" />
             <option value="$PROJECT_DIR$/feature/public-questions/api" />
             <option value="$PROJECT_DIR$/feature/public-questions/impl" />
-            <option value="$PROJECT_DIR$/feature/selection-specializations" />
-            <option value="$PROJECT_DIR$/feature/selection-specializations/api" />
-            <option value="$PROJECT_DIR$/feature/selection-specializations/impl" />
             <option value="$PROJECT_DIR$/feature/questions-or-collections" />
             <option value="$PROJECT_DIR$/feature/questions-or-collections/api" />
             <option value="$PROJECT_DIR$/feature/questions-or-collections/impl" />
+            <option value="$PROJECT_DIR$/feature/selection-specializations" />
+            <option value="$PROJECT_DIR$/feature/selection-specializations/api" />
+            <option value="$PROJECT_DIR$/feature/selection-specializations/impl" />
           </set>
         </option>
       </GradleProjectSettings>
