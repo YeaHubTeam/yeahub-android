@@ -1,6 +1,8 @@
 package ru.yeahub.interview_trainer.impl.interviewQuiz.presentation
 
 import androidx.compose.runtime.Immutable
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.PersistentMap
 
 sealed interface InterviewQuizState {
 
@@ -9,12 +11,12 @@ sealed interface InterviewQuizState {
 
     @Immutable
     data class Loaded(
-        val questions: List<VoQuestion>,
+        val questions: PersistentList<VoQuestion>,
         val questionsCount: Int,
         val questionIndex: Int,
         val question: VoQuestion,
         val isAnswerVisible: Boolean,
-        val answers: Map<Long, QuizAnswer>,
+        val answers: PersistentMap<Long, QuizAnswer>,
         val canGoPrev: Boolean,
         val canGoNext: Boolean,
         val selectedAnswer: QuizAnswer,
