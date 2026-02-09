@@ -1,12 +1,15 @@
 package ru.yeahub.interview_trainer.impl.interviewQuiz.presentation
 
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.PersistentMap
+
 class InterviewQuizScreenMapper {
 
     fun getScreenState(
-        questions: List<InterviewQuizState.Loaded.VoQuestion>,
+        questions: PersistentList<InterviewQuizState.Loaded.VoQuestion>,
         questionIndex: Int,
         isAnswerVisible: Boolean,
-        answers: Map<Long, InterviewQuizState.Loaded.QuizAnswer>,
+        answers: PersistentMap<Long, InterviewQuizState.Loaded.QuizAnswer>,
         selectedAnswer: InterviewQuizState.Loaded.QuizAnswer
     ): InterviewQuizState {
         val canGoNext = answers.containsKey(questions[questionIndex].id) &&

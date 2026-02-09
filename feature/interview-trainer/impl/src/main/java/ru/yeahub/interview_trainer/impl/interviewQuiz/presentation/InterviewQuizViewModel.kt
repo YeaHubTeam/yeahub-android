@@ -1,5 +1,9 @@
 package ru.yeahub.interview_trainer.impl.interviewQuiz.presentation
 
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.PersistentMap
+import kotlinx.collections.immutable.persistentMapOf
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -22,7 +26,7 @@ open class InterviewQuizViewModel(
     private val userInputState = MutableStateFlow(
         UserInput(
             isAnswerVisible = false,
-            answers = emptyMap(),
+            answers = persistentMapOf(),
             selectedAnswer = QuizAnswer.NONE
         )
     )
@@ -53,7 +57,7 @@ open class InterviewQuizViewModel(
 
     /** Создание списка вопросов для тестирования превью */
     @Suppress("MagicNumber")
-    private fun previewQuestions(): List<VoQuestion> {
+    private fun previewQuestions(): PersistentList<VoQuestion> {
         val shortAnswer = "Виртуальный DOM (VDOM) — это легковесное " +
             "представление реального DOM в памяти, которое используется в " +
             "JavaScript-библиотеках, таких как React и Vue, " +
@@ -69,12 +73,12 @@ open class InterviewQuizViewModel(
             questions.add(base.copy(id = index.toLong()))
         }
 
-        return questions
+        return questions.toPersistentList()
     }
 
     private data class UserInput(
         val isAnswerVisible: Boolean,
-        val answers: Map<Long, QuizAnswer>,
+        val answers: PersistentMap<Long, QuizAnswer>,
         val selectedAnswer: QuizAnswer
     )
 

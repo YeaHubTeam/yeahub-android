@@ -32,7 +32,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -47,9 +46,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentMapOf
 import ru.yeahub.core_ui.component.ErrorScreen
 import ru.yeahub.core_ui.component.PrimaryButton
 import ru.yeahub.core_ui.component.SecondaryButton
@@ -463,13 +462,13 @@ private val questionForPreview = InterviewQuizState.Loaded.VoQuestion(
     title = "Что такое Virtual DOM, и как он работает?",
     shortAnswer = shortAnswerForPreview
 )
-private val questions = listOf(
+private val questions = persistentListOf(
     questionForPreview,
     questionForPreview.copy(id = 1),
     questionForPreview.copy(id = 2),
     questionForPreview.copy(id = 3)
 )
-private val answers = mapOf(
+private val answers = persistentMapOf(
     1.toLong() to InterviewQuizState.Loaded.QuizAnswer.UNKNOWN,
     2.toLong() to InterviewQuizState.Loaded.QuizAnswer.KNOWN,
     3.toLong() to InterviewQuizState.Loaded.QuizAnswer.KNOWN
@@ -536,7 +535,7 @@ fun InterviewQuizScreen(
 @Preview(showBackground = true)
 @Composable
 fun DynamicPreviewUI() {
-    val mockViewModel = previewViewModel<InterviewQuizViewModel> {
+    val mockViewModel = viewModel {
         InterviewQuizViewModel(InterviewQuizScreenMapper())
     }
 
@@ -548,18 +547,3 @@ fun DynamicPreviewUI() {
         onEvent = mockViewModel::onEvent
     )
 }
-
-typealias PreviewViewModelCreator<VM> = () -> VM
-
-private class PreviewViewModelFactory<VM : ViewModel>(
-    private val creator: PreviewViewModelCreator<VM>
-) : ViewModelProvider.Factory {
-
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel> create(modelClass: Class<T>): T = creator() as T
-}
-
-@Composable
-private inline fun <reified VM : ViewModel> previewViewModel(
-    noinline creator: PreviewViewModelCreator<VM>
-): VM = viewModel(factory = remember { PreviewViewModelFactory(creator) })
