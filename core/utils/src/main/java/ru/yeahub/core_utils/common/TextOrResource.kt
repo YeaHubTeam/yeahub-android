@@ -1,9 +1,7 @@
 package ru.yeahub.core_utils.common
 
 import android.content.Context
-import androidx.compose.runtime.Immutable
 
-@Immutable
 sealed class TextOrResource {
     data class Text(val text: String) : TextOrResource()
     data class Resource(val resource: Int) : TextOrResource()
