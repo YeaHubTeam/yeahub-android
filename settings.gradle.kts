@@ -57,4 +57,6 @@ include(":feature:public-collections:api")
 include(":feature:questions-or-collections")
 include(":feature:questions-or-collections:api")
 include(":feature:questions-or-collections:impl")
+include(":feature:forgot-password:api")
+include(":feature:forgot-password:impl")
 
