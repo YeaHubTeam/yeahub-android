@@ -138,12 +138,9 @@ fun DefaultButton(
 
     val onSurfaceClick: () -> Unit = {
         if (fillButton) {
-            newContainerColor = if (newContainerColor == defaultColor) {
-                purple
-            } else {
-                defaultColor
-            }
-            newContentColor = if (newContentColor == black) {
+            showBorder = !showBorder
+
+            newContentColor = if (showBorder) {
                 defaultColor
             } else {
                 black
@@ -163,6 +160,7 @@ fun DefaultButton(
     }
     val border = when {
         showBorder && !fillButton && !buttonWithoutBackground -> activeBorder()
+        fillButton && enabled && activeButton -> activeBorder()
         fillButton && enabled -> null
         buttonWithoutBackground -> null
         else -> defaultsBorder()
@@ -171,7 +169,7 @@ fun DefaultButton(
         if (newContentColor == black && buttonWithoutBackground && activeButton) {
             purple
         } else if (newContentColor == black && fillButton && activeButton) {
-            defaultColor
+            black
         } else {
             newContentColor
         }
@@ -182,7 +180,7 @@ fun DefaultButton(
         enabled = enabled,
         shape = shape,
         color = if (activeButton && fillButton) {
-            purple
+            defaultColor
         } else {
             if (buttonWithoutBackground) Color.Transparent else newContainerColor
         },
