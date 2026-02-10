@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="registration_title">Регистрация</string>
+    <string name="nickname_title">Никнейм</string>
+    <string name="nickname_placeholder">Введите никнейм</string>
+    <string name="email_title">Электронная почта</string>
+    <string name="email_placeholder">Введите электронную почту</string>
+    <string name="password_title">Пароль</string>
+    <string name="password_placeholder">Введите пароль</string>
+    <string name="confirm_password_title">Подтвердить пароль</string>
+    <string name="registration_button">Зарегистрироваться</string>
+    <string name="marketing_opt_in_text">Даю согласие на получение рекламных и информационных рассылок</string>
+    <string name="pd_consent_prefix">"Даю "</string>
+    <string name="pd_consent_link">Согласие на обработку персональных данных</string>
+    <string name="pd_consent_suffix">, в соответствии с Политикой в отношении ПД</string>
+    <string name="offer_consent_prefix">"Подтверждаю что ознакомился(-ась) с "</string>
+    <string name="offer_consent_link">Договором-офертой</string>
+</resources>
