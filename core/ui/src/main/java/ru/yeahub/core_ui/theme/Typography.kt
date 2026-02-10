@@ -62,6 +62,12 @@ data class Typography(
         fontSize = 22.sp,
         lineHeight = 26.sp,
     ),
+    val head6: TextStyle = TextStyle(
+        fontFamily = sfProDisplay,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 16.sp,
+        lineHeight = 24.sp,
+    ),
     //Body
     val body1: TextStyle = TextStyle(
         fontFamily = manrope,
