@@ -45,7 +45,7 @@ open class CreateQuizViewModel(
 
     fun onEvent(event: CreateQuizEvent) {
         when (event) {
-            CreateQuizEvent.OnBackClick -> onBackClick()
+            is CreateQuizEvent.OnBackClick -> onBackClick()
 
             is CreateQuizEvent.OnPlusQuestionClick -> incrementQuestionsCount(
                 questionsCount = event.questionsCount
