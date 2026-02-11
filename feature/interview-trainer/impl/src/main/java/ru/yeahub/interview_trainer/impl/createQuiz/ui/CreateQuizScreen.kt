@@ -153,7 +153,7 @@ private fun ScreenUI(
 }
 
 @Composable
-fun HandleCommand(
+private fun HandleCommand(
     commandFlow: Flow<CreateQuizCommand>,
     onResult: (CreateQuizResult) -> Unit,
 ) {
