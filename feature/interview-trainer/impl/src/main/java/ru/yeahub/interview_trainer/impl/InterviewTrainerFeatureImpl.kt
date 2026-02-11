@@ -15,7 +15,7 @@ import timber.log.Timber
 
 private const val TITLE_TOP_APP_BAR = "title"
 
-class InterviewTrainerFeatureImpl() : FeatureApi {
+class InterviewTrainerFeatureImpl : FeatureApi {
     override fun getFeatureName(): String = FeatureRoute.InterviewTrainerFeature.FEATURE_NAME
 
     override fun registerGraph(
@@ -100,7 +100,8 @@ class InterviewTrainerFeatureImpl() : FeatureApi {
         specializationId: String,
         questionsCount: String,
     ) {
-        val interviewQuizRoute = getFeatureName() + "/" +
+        val featurePath = pathManager.getFeaturePath(getFeatureName()) ?: getFeatureName()
+        val interviewQuizRoute = featurePath + "/" +
                 FeatureRoute.InterviewTrainerFeature.INTERVIEW_QUIZ_SCREEN_NAME + "/" +
                 "$titleTopAppBar/$specializationId/$questionsCount"
 
