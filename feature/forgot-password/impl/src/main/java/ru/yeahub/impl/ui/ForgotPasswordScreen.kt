@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package ru.yeahub.impl.presentation
+package ru.yeahub.impl.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -26,11 +26,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ru.yeahub.core_ui.component.PrimaryButton
 import ru.yeahub.impl.R
+import ru.yeahub.impl.presentation.ForgotPasswordIntent
+import ru.yeahub.impl.presentation.ForgotPasswordState
 
 @Composable
 fun ForgotPasswordScreen(
     modifier: Modifier = Modifier,
-    onSendClick: (String) -> Unit = {}
+    state: ForgotPasswordState,
+    onIntent: (ForgotPasswordIntent) -> Unit
 ) {
     var email by remember { mutableStateOf("") }
 
@@ -63,7 +66,7 @@ fun ForgotPasswordScreen(
         )
 
         Spacer(Modifier.height(10.dp))
-
+        //DefaultTextField TextInput
         TextField(
             value = email,
             onValueChange = { email = it },
@@ -86,8 +89,10 @@ fun ForgotPasswordScreen(
 
         Spacer(Modifier.height(20.dp))
 
+        // DisabledSecondaryButton
+        // EnabledPrimaryButton
         PrimaryButton(
-            onClick = { onSendClick(email) },
+            onClick = { onIntent(ForgotPasswordIntent.SubmitClicked) },
             enabled = isEmailValid,
             modifier = Modifier
                 .fillMaxWidth()
@@ -101,7 +106,9 @@ fun ForgotPasswordScreen(
 @Preview(showBackground = true)
 @Composable
 private fun ForgotPasswordScreenPreview() {
-    MaterialTheme {
-        ForgotPasswordScreen()
-    }
+        ForgotPasswordScreen(
+            state = ForgotPasswordState(),
+            modifier = TODO(),
+            onIntent = TODO(),
+        )
 }
