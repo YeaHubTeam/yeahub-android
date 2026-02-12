@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package ru.yeahub.impl.presentation
+package ru.yeahub.impl.ui
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -29,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -94,7 +95,7 @@ private fun InstructionsSentDialogContent(
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.close),
-                    contentDescription = "Close",
+                    contentDescription = stringResource(R.string.close),
                     modifier = Modifier.size(24.dp)
                 )
             }
@@ -112,7 +113,7 @@ private fun InstructionsSentDialogContent(
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.letter),
-                        contentDescription = "Letter",
+                        contentDescription = stringResource(R.string.letter),
                         modifier = Modifier.size(112.dp)
                     )
                 }
@@ -120,7 +121,7 @@ private fun InstructionsSentDialogContent(
                 Spacer(Modifier.height(4.dp))
 
                 Text(
-                    text = "Мы отправили письмо\nс инструкциями",
+                    text = stringResource(R.string.instructions_letter),
                     style = MaterialTheme.typography.titleLarge,
                     color = Color(0xFF2B2B2B),
                     textAlign = TextAlign.Center
@@ -129,8 +130,7 @@ private fun InstructionsSentDialogContent(
                 Spacer(Modifier.height(10.dp))
 
                 Text(
-                    text = "Если вы не получили письмо\nс инструкциями, проверьте, пожалуйста," +
-                            "\nпапку «Спам» или попробуйте отправить\nзапрос еще раз",
+                    text = stringResource(R.string.instruction),
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color(0xFF2B2B2B),
                     textAlign = TextAlign.Center,
@@ -141,13 +141,13 @@ private fun InstructionsSentDialogContent(
 
                 if (secondsLeft > 0) {
                     Text(
-                        text = "Отправить повторно через $secondsLeft c",
+                        text = stringResource(R.string.resend, secondsLeft),
                         color = Color(0xFF9CA3AF),
                         style = MaterialTheme.typography.bodyMedium
                     )
                 } else {
                     Text(
-                        text = "Отправить повторно",
+                        text = stringResource(R.string.resend_button),
                         color = color,
                         style = MaterialTheme.typography.titleSmall,
                         modifier = Modifier
@@ -160,7 +160,7 @@ private fun InstructionsSentDialogContent(
                 Spacer(Modifier.height(8.dp))
 
                 Text(
-                    text = "Хорошо",
+                    text = stringResource(R.string.ok),
                     color = color,
                     style = MaterialTheme.typography.titleSmall,
                     modifier = Modifier
