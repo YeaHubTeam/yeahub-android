@@ -68,6 +68,12 @@ data class Typography(
         fontSize = 16.sp,
         lineHeight = 24.sp,
     ),
+    val head7: TextStyle = TextStyle(
+        fontFamily = sfProDisplay,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 18.sp,
+        lineHeight = 22.sp,
+    ),
     //Body
     val body1: TextStyle = TextStyle(
         fontFamily = manrope,
@@ -163,6 +169,12 @@ data class Typography(
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
         lineHeight = 21.sp,
+    ),
+    val body7Alt: TextStyle = TextStyle(
+        fontFamily = sfProText,
+        fontWeight = FontWeight.Normal,
+        fontSize = 14.sp,
+        lineHeight = 17.sp,
     ),
 )
 
