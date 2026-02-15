@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_photo">Фото профиля</string>
+    <string name="profile">Профиль</string>
+    <string name="unauthorized">Требуется авторизация</string>
+    <string name="account_deleted">Аккаунт удален</string>
+    <string name="error_screen_text">Что‑то пошло не так</string>
+    <string name="error_screen_title_text">УПС!</string>
+    <string name="on_back_button_text">Назад</string>
+    <string name="unknown_error_screen_text">Не удалось загрузить данные</string>
+    <string name="telegram">Telegram</string>
+    <string name="about_me">Обо мне</string>
+    <string name="collapse">Свернуть</string>
+    <string name="read_in_full">Читать полностью</string>
+    <string name="skills">Навыки</string>
+</resources>
