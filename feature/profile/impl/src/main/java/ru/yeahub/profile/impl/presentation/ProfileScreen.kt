@@ -64,7 +64,7 @@ private val SECTION_BOTTOM_PADDING = 24.dp
 
 private val CONTENT_PADDING_HORIZONTAL = 16.dp
 private val CONTENT_PADDING_VERTICAL = 23.dp
-private val PROFILE_TITLE_BOTTOM_PADDING = 16.dp
+private val PROFILE_TITLE_BOTTOM_PADDING = 32.dp
 
 private val SKILL_CHIP_PADDING = PaddingValues(
     start = 12.dp,
@@ -457,8 +457,7 @@ private fun SkillsTitle() {
 @Composable
 private fun SkillsList(skills: List<String>) {
     FlowRow(
-        horizontalArrangement = Arrangement.spacedBy(SKILLS_FLOW_SPACING),
-        verticalArrangement = Arrangement.spacedBy(SKILLS_FLOW_SPACING)
+        horizontalArrangement = Arrangement.spacedBy(SKILLS_FLOW_SPACING)
     ) {
         skills.forEach { skill ->
             SkillChip(skill = skill)
@@ -498,9 +497,7 @@ class ProfileScreenStateParamProvider : PreviewParameterProvider<ProfileScreenSt
                         "Kotlin",
                         "Jetpack Compose",
                         "Clean Architecture",
-                        "Coroutines",
-                        "Flow",
-                        "Room"
+                        "Coroutines"
                     ),
                     avatarUrl = null,
                     roles = listOf("Кандидат", "Участник сообщества", "Ментор"),
