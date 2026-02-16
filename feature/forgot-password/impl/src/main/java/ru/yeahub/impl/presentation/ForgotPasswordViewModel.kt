@@ -12,60 +12,61 @@ import kotlinx.coroutines.launch
 import ru.yeahub.impl.domain.ForgotPasswordResult
 import ru.yeahub.impl.domain.SendResetLinkUseCase
 
-class ForgotPasswordViewModel (
+class ForgotPasswordViewModel(
     private val sendResetLink: SendResetLinkUseCase
-    ) : ViewModel() {
+) : ViewModel() {
 
-        private val _state = MutableStateFlow(ForgotPasswordState())
-        val state: StateFlow<ForgotPasswordState> = _state.asStateFlow()
+    private val _state = MutableStateFlow(ForgotPasswordState())
+    val state: StateFlow<ForgotPasswordState> = _state.asStateFlow()
 
-        private val _effect = Channel<ForgotPasswordEffect>(Channel.BUFFERED)
-        val effect = _effect.receiveAsFlow()
+    private val _effect = Channel<ForgotPasswordEffect>(Channel.BUFFERED)
+    val effect = _effect.receiveAsFlow()
 
-        fun onIntent(intent: ForgotPasswordIntent) {
-            when (intent) {
-                is ForgotPasswordIntent.EmailChanged -> onEmailChanged(intent.value)
-                is ForgotPasswordIntent.SubmitClicked -> onSubmit()
-                is ForgotPasswordIntent.BackClicked -> emitEffect(ForgotPasswordEffect.NavigateBack)
-            }
+    fun onIntent(intent: ForgotPasswordIntent) {
+        when (intent) {
+            is ForgotPasswordIntent.EmailChanged -> onEmailChanged(intent.value)
+            is ForgotPasswordIntent.SubmitClicked -> onSubmit()
+            is ForgotPasswordIntent.BackClicked -> emitEffect(ForgotPasswordEffect.NavigateBack)
         }
+    }
 
-        private fun onEmailChanged(value: String) {
-            _state.update {
-                it.copy(
-                    email = value,
-                    isEmailError = false,
-                    emailErrorText = null,
-                    isSent = false
-                )
-            }
+    private fun onEmailChanged(value: String) {
+        _state.update {
+            it.copy(
+                email = value,
+                isEmailError = false,
+                emailErrorText = null,
+                isSent = false
+            )
         }
+    }
 
-        private fun onSubmit() {
-            val email = state.value.email
-            _state.update { it.copy(isLoading = true) }
+    private fun onSubmit() {
+        val email = state.value.email
+        _state.update { it.copy(isLoading = true) }
 
-            viewModelScope.launch {
-                when (val result = sendResetLink(email)) {
-                    is ForgotPasswordResult.Success -> {
-                        _state.update { it.copy(isLoading = false, isSent = true) }
-                        emitEffect(ForgotPasswordEffect.NavigateToCheckEmail)
+        viewModelScope.launch {
+            when (val result = sendResetLink(email)) {
+                is ForgotPasswordResult.Success -> {
+                    _state.update { it.copy(isLoading = false, isSent = true) }
+                    emitEffect(ForgotPasswordEffect.NavigateToCheckEmail)
+                }
+
+                is ForgotPasswordResult.Error -> {
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            isEmailError = true,
+                            emailErrorText = result.message
+                        )
                     }
-                    is ForgotPasswordResult.Error -> {
-                        _state.update {
-                            it.copy(
-                                isLoading = false,
-                                isEmailError = true,
-                                emailErrorText = result.message
-                            )
-                        }
-                        emitEffect(ForgotPasswordEffect.ShowSnackbar(result.message))
-                    }
+                    emitEffect(ForgotPasswordEffect.ShowSnackbar(result.message))
                 }
             }
         }
+    }
 
-        private fun emitEffect(effect: ForgotPasswordEffect) {
-            viewModelScope.launch { _effect.send(effect) }
-        }
+    private fun emitEffect(effect: ForgotPasswordEffect) {
+        viewModelScope.launch { _effect.send(effect) }
+    }
 }

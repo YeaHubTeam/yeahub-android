@@ -20,7 +20,8 @@ class PublicCollectionsScreenMapperTest {
     @ParameterizedTest
     @ArgumentsSource(PublicCollectionsScreenMapperArgumentsProvider::class)
     fun `should map GetCollectionResponseEntity to PublicCollectionsScreenState`(
-        testCase: PublicCollectionsScreenMapperTestCase) {
+        testCase: PublicCollectionsScreenMapperTestCase
+    ) {
         val result = mapper.getScreenState(
             testCase.dataToTest,
             header = testCase.header

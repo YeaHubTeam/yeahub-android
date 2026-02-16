@@ -24,7 +24,7 @@ class SpecializationSelectionMapperTest(
     private val toDomainMapper: SpecializationSelectionDataToDomainMapper
 ) {
 
-    class ArgumentsProvider1 : TestArgumentsProvider<SpecializationSelectionDataToDomainMapperTestCase1>(){
+    class ArgumentsProvider1 : TestArgumentsProvider<SpecializationSelectionDataToDomainMapperTestCase1>() {
         override fun testCases(): List<SpecializationSelectionDataToDomainMapperTestCase1> = listOf(
             SpecializationSelectionDataToDomainMapperTestCase1(
                 dataToTest = defaultSpecialResponse,
@@ -37,7 +37,7 @@ class SpecializationSelectionMapperTest(
         )
     }
 
-    class ArgumentsProvider2 : TestArgumentsProvider<SpecializationSelectionDataToDomainMapperTestCase2>(){
+    class ArgumentsProvider2 : TestArgumentsProvider<SpecializationSelectionDataToDomainMapperTestCase2>() {
         override fun testCases(): List<SpecializationSelectionDataToDomainMapperTestCase2> = listOf(
             SpecializationSelectionDataToDomainMapperTestCase2(
                 dataToTest = defaultSpecialListResponse,
@@ -46,7 +46,7 @@ class SpecializationSelectionMapperTest(
         )
     }
 
-    class ArgumentsProvider3 : TestArgumentsProvider<SpecializationSelectionDomainToVoMapperTestCase>(){
+    class ArgumentsProvider3 : TestArgumentsProvider<SpecializationSelectionDomainToVoMapperTestCase>() {
         override fun testCases(): List<SpecializationSelectionDomainToVoMapperTestCase> = listOf(
             SpecializationSelectionDomainToVoMapperTestCase(
                 dataToTest = listOf(defaultDomainSpecial, defaultDomainSpecialWithImage),
@@ -59,7 +59,7 @@ class SpecializationSelectionMapperTest(
     @ArgumentsSource(ArgumentsProvider1::class)
     fun specializationSelectionDataToDomainMapperTestCase1(
         testCase1: SpecializationSelectionDataToDomainMapperTestCase1
-    ){
+    ) {
         val result = toDomainMapper.dataToDomain(testCase1.dataToTest)
         assertEquals(testCase1.expectedResult, result)
     }
@@ -68,7 +68,7 @@ class SpecializationSelectionMapperTest(
     @ArgumentsSource(ArgumentsProvider2::class)
     fun specializationSelectionDataToDomainMapperTestCase2(
         testCase2: SpecializationSelectionDataToDomainMapperTestCase2
-    ){
+    ) {
         val result = toDomainMapper.dataListToDomainList(testCase2.dataToTest)
         assertEquals(testCase2.expectedResult, result)
     }
@@ -77,7 +77,7 @@ class SpecializationSelectionMapperTest(
     @ArgumentsSource(ArgumentsProvider3::class)
     fun specializationSelectionDomainToVoMapperTestCase(
         testCase: SpecializationSelectionDomainToVoMapperTestCase
-    ){
+    ) {
         val result = getScreenState(testCase.dataToTest)
         assertEquals(testCase.expectedResult, result)
     }

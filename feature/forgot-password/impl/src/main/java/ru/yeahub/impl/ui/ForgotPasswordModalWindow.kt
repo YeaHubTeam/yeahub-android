@@ -38,7 +38,6 @@ import ru.yeahub.core_ui.example.staticPreview.StaticPreview
 import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.impl.R
 
-
 @Composable
 fun InstructionsSentDialog(
     onDismiss: () -> Unit,
