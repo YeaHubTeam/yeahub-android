@@ -42,7 +42,7 @@ fun PrimaryButton(
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     shape: Shape = RoundedCornerShape(12.dp),
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
-    content: @Composable RowScope.() -> Unit,
+    content: @Composable RowScope.() -> Unit
 ) {
     DefaultButton(
         onClick = onClick,
@@ -67,7 +67,7 @@ fun SecondaryButton(
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     shape: Shape = RoundedCornerShape(12.dp),
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
-    content: @Composable RowScope.() -> Unit,
+    content: @Composable RowScope.() -> Unit
 ) {
     DefaultButton(
         onClick = onClick,
@@ -78,7 +78,7 @@ fun SecondaryButton(
         interactionSource = interactionSource,
         shape = shape,
         contentPadding = contentPadding,
-        content = content,
+        content = content
     )
 }
 
@@ -212,7 +212,7 @@ object YeahubButtonDefaults {
         contentColor: Color = Theme.colors.red600,
         containerColor: Color = Color.Transparent,
         disabledContentColor: Color = Theme.colors.red200,
-        disabledContainerColor: Color = Color.Transparent,
+        disabledContainerColor: Color = Color.Transparent
     ): YeahubButtonColors {
         return YeahubButtonColors(
             contentColor = contentColor,
@@ -239,7 +239,7 @@ data class YeahubButtonColors(
     private val contentColor: Color,
     private val containerColor: Color,
     private val disabledContentColor: Color,
-    private val disabledContainerColor: Color,
+    private val disabledContainerColor: Color
 ) : ButtonColors {
     @Composable
     override fun containerColor(enabled: Boolean): State<Color> {

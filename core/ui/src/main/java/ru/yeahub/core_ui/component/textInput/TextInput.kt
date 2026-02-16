@@ -249,7 +249,7 @@ fun DefaultTextField(
             unfocusedBorderColor = defaultBorder,
             focusedBorderColor = TextInputColorsDefaults.focusBorder(),
             disabledBorderColor = TextInputColorsDefaults.defaultsBorder(),
-            errorBorderColor = TextInputColorsDefaults.errorBorder(),
+            errorBorderColor = TextInputColorsDefaults.errorBorder()
         ),
         keyboardActions = KeyboardActions(
             onSearch = {
@@ -259,7 +259,7 @@ fun DefaultTextField(
             }
         ),
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-        interactionSource = interactionSource,
+        interactionSource = interactionSource
     )
 }
 
