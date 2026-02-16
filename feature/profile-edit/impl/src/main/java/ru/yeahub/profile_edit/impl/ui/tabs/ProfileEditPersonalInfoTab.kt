@@ -1,11 +1,13 @@
 package ru.yeahub.profile_edit.impl.ui.tabs
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
@@ -13,14 +15,18 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import ru.yeahub.core_ui.component.DropDownMenu
 import ru.yeahub.core_ui.component.UploadPhotoButton
 import ru.yeahub.core_ui.component.textInput.DefaultTextField
 import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.profile_edit.impl.presentation.ProfileEditState
 import ru.yeahub.profile_edit.impl.presentation.intents.ProfileEditScreenEvent
+import ru.yeahub.ui.R
 
 
 @Composable
@@ -138,25 +144,25 @@ private fun ProfileAvatarSection(
         modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-//        if (avatarUrl != null) {
-//            AsyncImage(
-//                model = avatarUrl,
-//                contentDescription = "Аватар",
-//                modifier = Modifier
-//                    .size(96.dp)
-//                    .clip(CircleShape),
-//                contentScale = ContentScale.Crop,
-//            )
-//        } else {
-//            AsyncImage(
-//                model = avatarUrl,
-//                contentDescription = "Аватар",
-//                modifier = Modifier
-//                    .size(96.dp)
-//                    .clip(CircleShape),
-//                contentScale = ContentScale.Crop,
-//            )
-//        }
+        if (avatarUrl != null) {
+            AsyncImage(
+                model = avatarUrl,
+                contentDescription = "Аватар",
+                modifier = Modifier
+                    .height(288.dp)
+                    .width(326.dp),
+                contentScale = ContentScale.Crop,
+            )
+        } else {
+            Image(
+                painter = painterResource(R.drawable.profile_edit_placeholder),
+                contentDescription = "Аватар",
+                modifier = Modifier
+                    .height(288.dp)
+                    .width(326.dp),
+                contentScale = ContentScale.Crop,
+            )
+        }
         Spacer(Modifier.height(8.dp))
         TextButton(onClick = onRemoveClick) {
             Text(

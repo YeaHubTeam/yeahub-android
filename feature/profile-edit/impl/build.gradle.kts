@@ -41,6 +41,8 @@ dependencies {
     implementation(project(":core:utils"))
     implementation(project(":core:ui"))
 
+    implementation(libs.coil.compose)
+
     implementation(libs.androidx.core.ktx)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
