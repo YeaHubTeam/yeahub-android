@@ -84,10 +84,9 @@ private fun InstructionsSentDialogContent(
         Box(
             modifier = Modifier
                 .clip(shape)
-                .padding(14.dp),
+                .padding(16.dp),
             contentAlignment = Alignment.TopEnd
         ) {
-            // Close button
             IconButton(
                 onClick = onDismiss,
                 modifier = Modifier
@@ -102,37 +101,29 @@ private fun InstructionsSentDialogContent(
 
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 4.dp),
+                    .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Spacer(Modifier.height(8.dp))
-
-                Box(
-                    contentAlignment = Alignment.Center
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.letter),
-                        contentDescription = stringResource(R.string.letter),
-                        modifier = Modifier.size(112.dp)
-                    )
-                }
-
-                Spacer(Modifier.height(4.dp))
+                Image(
+                    painter = painterResource(id = R.drawable.letter),
+                    contentDescription = stringResource(R.string.letter),
+                    modifier = Modifier
+                        .size(116.dp)
+                        .padding(vertical = 2.dp)
+                )
 
                 Text(
                     text = stringResource(R.string.instructions_letter),
-                    style = MaterialTheme.typography.titleLarge,
-                    color = Color(0xFF2B2B2B),
+                    style = Theme.typography.body5Accent,
                     textAlign = TextAlign.Center
                 )
 
-                Spacer(Modifier.height(10.dp))
+                Spacer(Modifier.height(6.dp))
 
                 Text(
                     text = stringResource(R.string.instruction),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color(0xFF2B2B2B),
+                    style = Theme.typography.body2,
+                    color = Theme.colors.black900,
                     textAlign = TextAlign.Center,
                     lineHeight = MaterialTheme.typography.bodyMedium.lineHeight
                 )
@@ -142,14 +133,14 @@ private fun InstructionsSentDialogContent(
                 if (secondsLeft > 0) {
                     Text(
                         text = stringResource(R.string.resend, secondsLeft),
-                        color = Color(0xFF9CA3AF),
-                        style = MaterialTheme.typography.bodyMedium
+                        color = Theme.colors.black300,
+                        style = Theme.typography.body2
                     )
                 } else {
                     Text(
                         text = stringResource(R.string.resend_button),
                         color = color,
-                        style = MaterialTheme.typography.titleSmall,
+                        style = Theme.typography.body2,
                         modifier = Modifier
                             .clip(RoundedCornerShape(10.dp))
                             .clickable(onClick = onResend)
@@ -162,11 +153,11 @@ private fun InstructionsSentDialogContent(
                 Text(
                     text = stringResource(R.string.ok),
                     color = color,
-                    style = MaterialTheme.typography.titleSmall,
+                    style = Theme.typography.body2,
                     modifier = Modifier
                         .clip(RoundedCornerShape(10.dp))
                         .clickable(onClick = onDismiss)
-                        .padding(horizontal = 12.dp, vertical = 8.dp)
+                        .padding(horizontal = 12.dp, vertical = 4.dp)
                 )
             }
         }
