@@ -97,4 +97,3 @@ data class SpecializationSelectionDomainToVoMapperTestCase(
     val dataToTest: List<DomainSpecilialization>,
     val expectedResult: List<VoSpecilialization>
 )
-

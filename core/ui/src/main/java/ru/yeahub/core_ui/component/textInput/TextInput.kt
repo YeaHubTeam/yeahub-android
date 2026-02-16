@@ -229,7 +229,9 @@ fun DefaultTextField(
                         .height(20.dp)
                 )
             }
-        } else null,
+        } else {
+            null
+        },
         isError = isError,
         shape = shape,
         textStyle = Theme.typography.body3.copy(

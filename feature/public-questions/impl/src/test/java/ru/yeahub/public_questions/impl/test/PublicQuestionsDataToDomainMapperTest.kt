@@ -1,7 +1,6 @@
 package ru.yeahub.public_questions.impl.test
 
 import org.junit.jupiter.api.Assertions
-
 import ru.yeahub.public_questions.impl.data.mapper.PublicQuestionsDataToDomainMapper
 import ru.yeahub.public_questions.impl.domain.entity.PublicQuestionModel
 import ru.yeahub.public_questions.impl.domain.entity.PublicQuestionsModel

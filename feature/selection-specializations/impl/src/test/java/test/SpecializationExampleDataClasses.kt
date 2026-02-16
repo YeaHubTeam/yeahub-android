@@ -59,4 +59,3 @@ object SpecializationExampleDataClasses {
         title = "default title num 1"
     )
 }
-
