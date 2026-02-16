@@ -83,7 +83,6 @@ fun PersonalInfoContent(
             selected = state.specialization,
             onSelected = { onAction(ProfileEditScreenEvent.ToDo) },
             modifier = Modifier.fillMaxWidth(),
-
         )
         Spacer(Modifier.height(12.dp))
 
