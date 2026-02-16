@@ -99,7 +99,7 @@ fun ForgotPasswordScreen(
 
 @Preview(showBackground = true)
 @Composable
-private fun ForgotPasswordScreenPreview() {
+fun ForgotPasswordScreenPreview() {
     ForgotPasswordScreen(
         state = ForgotPasswordState(),
         onIntent = {}
