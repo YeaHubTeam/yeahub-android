@@ -12,4 +12,5 @@
     <string name="email">Электронная почта</string>
     <string name="enter_email">Введите электронную почту</string>
     <string name="send_button">Отправить</string>
+    <string name="cant_send_a_letter">Не удалось отправить письмо</string>
 </resources>
