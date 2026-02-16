@@ -31,25 +31,47 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.Dp
 import ru.yeahub.core_ui.example.staticPreview.StaticPreview
 import ru.yeahub.core_ui.theme.Theme
+
+private const val SHIMMER_ALPHA_HIGH = 0.6f
+private const val SHIMMER_ALPHA_LOW = 0.2f
+private const val SHIMMER_START_OFFSET = -1000f
+private const val SHIMMER_END_OFFSET = 1000f
+private const val SHIMMER_GRADIENT_OFFSET = 500f
+private const val SHIMMER_ANIMATION_DURATION = 1500
+private const val TAG_COUNT = 3
+private const val ABOUT_LINES_COUNT = 4
+private const val ABOUT_LINES_COUNT_MINUS_ONE = 3
+private const val TITLE_WIDTH_FRACTION = 0.3f
+private const val NICKNAME_WIDTH_FRACTION = 0.4f
+private const val SPECIALIZATION_WIDTH_FRACTION = 0.6f
+private const val ABOUT_TITLE_WIDTH_FRACTION = 0.3f
+private const val ABOUT_LINE_1_WIDTH = 0.9f
+private const val ABOUT_LINE_2_WIDTH = 0.8f
+private const val ABOUT_LINE_3_WIDTH = 0.7f
+private const val ABOUT_LINE_4_WIDTH = 0.6f
+private const val SKILLS_TITLE_WIDTH_FRACTION = 0.25f
 
 @Composable
 fun ProfileScreenLoading() {
     val shimmerColors = listOf(
-        Theme.colors.black100.copy(alpha = 0.6f),
-        Theme.colors.black100.copy(alpha = 0.2f),
-        Theme.colors.black100.copy(alpha = 0.6f)
+        Theme.colors.black100.copy(alpha = SHIMMER_ALPHA_HIGH),
+        Theme.colors.black100.copy(alpha = SHIMMER_ALPHA_LOW),
+        Theme.colors.black100.copy(alpha = SHIMMER_ALPHA_HIGH)
     )
 
     val transition = rememberInfiniteTransition()
     val translateAnimation by transition.animateFloat(
-        initialValue = -1000f,
-        targetValue = 1000f,
+        initialValue = SHIMMER_START_OFFSET,
+        targetValue = SHIMMER_END_OFFSET,
         animationSpec = infiniteRepeatable(
-            animation = tween(1500, easing = LinearEasing),
+            animation = tween(
+                durationMillis = SHIMMER_ANIMATION_DURATION,
+                easing = LinearEasing
+            ),
             repeatMode = RepeatMode.Restart
         )
     )
@@ -57,7 +79,7 @@ fun ProfileScreenLoading() {
     val brush = Brush.linearGradient(
         colors = shimmerColors,
         start = Offset(translateAnimation, 0f),
-        end = Offset(translateAnimation + 500f, 500f)
+        end = Offset(translateAnimation + SHIMMER_GRADIENT_OFFSET, SHIMMER_GRADIENT_OFFSET)
     )
 
     Column(
@@ -69,7 +91,7 @@ fun ProfileScreenLoading() {
     ) {
         Box(
             modifier = Modifier
-                .fillMaxWidth(0.3f)
+                .fillMaxWidth(TITLE_WIDTH_FRACTION)
                 .height(24.dp)
                 .clip(RoundedCornerShape(4.dp))
                 .background(brush = brush)
@@ -131,7 +153,7 @@ private fun SkeletonTagsRow(brush: Brush) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        repeat(3) {
+        repeat(TAG_COUNT) {
             SkeletonTag(brush = brush)
         }
     }
@@ -154,7 +176,7 @@ private fun SkeletonNickname(brush: Brush) {
 
     Box(
         modifier = Modifier
-            .fillMaxWidth(0.4f)
+            .fillMaxWidth(NICKNAME_WIDTH_FRACTION)
             .height(20.dp)
             .clip(RoundedCornerShape(4.dp))
             .background(brush = brush)
@@ -167,7 +189,7 @@ private fun SkeletonSpecialization(brush: Brush) {
 
     Box(
         modifier = Modifier
-            .fillMaxWidth(0.6f)
+            .fillMaxWidth(SPECIALIZATION_WIDTH_FRACTION)
             .height(18.dp)
             .clip(RoundedCornerShape(4.dp))
             .background(brush = brush)
@@ -248,7 +270,7 @@ private fun AboutMeSkeleton(brush: Brush) {
 private fun AboutMeTitleSkeleton(brush: Brush) {
     Box(
         modifier = Modifier
-            .fillMaxWidth(0.3f)
+            .fillMaxWidth(ABOUT_TITLE_WIDTH_FRACTION)
             .height(20.dp)
             .clip(RoundedCornerShape(4.dp))
             .background(brush = brush)
@@ -257,12 +279,12 @@ private fun AboutMeTitleSkeleton(brush: Brush) {
 
 @Composable
 private fun AboutMeLinesSkeleton(brush: Brush) {
-    repeat(4) { index ->
+    repeat(ABOUT_LINES_COUNT) { index ->
         val width = when (index) {
-            0 -> 0.9f
-            1 -> 0.8f
-            2 -> 0.7f
-            else -> 0.6f
+            0 -> ABOUT_LINE_1_WIDTH
+            1 -> ABOUT_LINE_2_WIDTH
+            2 -> ABOUT_LINE_3_WIDTH
+            else -> ABOUT_LINE_4_WIDTH
         }
 
         Box(
@@ -273,7 +295,7 @@ private fun AboutMeLinesSkeleton(brush: Brush) {
                 .background(brush = brush)
         )
 
-        if (index < 3) {
+        if (index < ABOUT_LINES_COUNT_MINUS_ONE) {
             Spacer(modifier = Modifier.height(8.dp))
         }
     }
@@ -303,7 +325,7 @@ private fun SkillsSkeleton(brush: Brush) {
 private fun SkillsTitleSkeleton(brush: Brush) {
     Box(
         modifier = Modifier
-            .fillMaxWidth(0.25f)
+            .fillMaxWidth(SKILLS_TITLE_WIDTH_FRACTION)
             .height(18.dp)
             .clip(RoundedCornerShape(4.dp))
             .background(brush = brush)
@@ -317,15 +339,10 @@ private fun SkillsGridSkeleton(brush: Brush) {
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         SkillChipSkeleton(brush = brush, width = 80.dp)
-
         SkillChipSkeleton(brush = brush, width = 120.dp)
-
         SkillChipSkeleton(brush = brush, width = 100.dp)
-
         SkillChipSkeleton(brush = brush, width = 80.dp)
-
         SkillChipSkeleton(brush = brush, width = 120.dp)
-
         SkillChipSkeleton(brush = brush, width = 100.dp)
     }
 }

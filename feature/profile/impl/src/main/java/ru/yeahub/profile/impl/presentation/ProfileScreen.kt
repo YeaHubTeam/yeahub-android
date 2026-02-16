@@ -235,7 +235,7 @@ private fun SocialNetworksSection(userData: UserData) {
                     network = network,
                     onClick = {
                         val url = network.getUrlFromCode()
-                        url?.let { /* Открыть браузер */ }
+                        url?.let {}
                     }
                 )
                 Spacer(modifier = Modifier.width(4.dp))

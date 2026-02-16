@@ -10,32 +10,58 @@ class ProfileViewModel(
     private val screenMapper: ProfileScreenMapper,
 ) : BaseViewModel() {
 
-    // Заглушка данных, здесь будет запрос юзкейса
+    companion object {
+        private const val TIME_TO_CLEAN_UP_RESOURCES = 5000L
+        private const val USER_ID = "1"
+        private const val USERNAME = "john_doe"
+        private const val SPECIALIZATION = "Senior Android Developer"
+        private const val COUNTRY = "Россия"
+        private const val CITY = "Москва"
+        private const val TELEGRAM_USERNAME = "john_doe"
+
+        private const val ABOUT_ME_BASE = "Опытный Android разработчик с 5+ лет опыта. "
+        private const val ABOUT_ME_SPECIALIZATION =
+            "Специализируюсь на Kotlin, Compose, Clean Architecture. "
+        private const val ABOUT_ME_ADDITIONAL =
+            "Участвую в open-source проектах и люблю делиться знаниями."
+
+        private const val ABOUT_ME_BASE_REPEAT_COUNT = 20
+        private const val ABOUT_ME_SPECIALIZATION_REPEAT_COUNT = 10
+
+        private val SKILLS = listOf(
+            "Kotlin",
+            "Jetpack Compose",
+            "Clean Architecture",
+            "Coroutines",
+            "Flow",
+            "Room"
+        )
+
+        private val ROLES = listOf("Кандидат", "Участник сообщества", "Ментор")
+
+        private const val INSTAGRAM_USERNAME = "john_doe"
+        private const val LINKEDIN_USERNAME = "john-doe-123"
+        private const val GITHUB_USERNAME = "johndoe"
+    }
+
     private val userDataState = MutableStateFlow(
         UserData(
-            id = "1",
-            username = "john_doe",
-            specialization = "Senior Android Developer",
-            aboutMe = "Опытный Android разработчик с 5+ лет опыта. ".repeat(20) +
-                    "Специализируюсь на Kotlin, Compose, Clean Architecture. ".repeat(10) +
-                    "Участвую в open-source проектах и люблю делиться знаниями.",
-            skills = listOf(
-                "Kotlin",
-                "Jetpack Compose",
-                "Clean Architecture",
-                "Coroutines",
-                "Flow",
-                "Room"
-            ),
+            id = USER_ID,
+            username = USERNAME,
+            specialization = SPECIALIZATION,
+            aboutMe = ABOUT_ME_BASE.repeat(ABOUT_ME_BASE_REPEAT_COUNT) +
+                    ABOUT_ME_SPECIALIZATION.repeat(ABOUT_ME_SPECIALIZATION_REPEAT_COUNT) +
+                    ABOUT_ME_ADDITIONAL,
+            skills = SKILLS,
             avatarUrl = null,
-            roles = listOf("Кандидат", "Участник сообщества", "Ментор"),
-            country = "Россия",
-            city = "Москва",
-            telegramUsername = "john_doe",
+            roles = ROLES,
+            country = COUNTRY,
+            city = CITY,
+            telegramUsername = TELEGRAM_USERNAME,
             socialNetworks = listOf(
-                SocialNetwork("instagram", "john_doe"),
-                SocialNetwork("linkedin", "john-doe-123"),
-                SocialNetwork("github", "johndoe")
+                SocialNetwork("instagram", INSTAGRAM_USERNAME),
+                SocialNetwork("linkedin", LINKEDIN_USERNAME),
+                SocialNetwork("github", GITHUB_USERNAME)
             )
         )
     )
@@ -50,35 +76,24 @@ class ProfileViewModel(
             started = SharingStarted.WhileSubscribed(TIME_TO_CLEAN_UP_RESOURCES),
             initialValue = ProfileScreenState.Success(
                 userData = UserData(
-                    id = "1",
-                    username = "john_doe",
-                    specialization = "Senior Android Developer",
-                    aboutMe = "Опытный Android разработчик с 5+ лет опыта. ".repeat(20) +
-                            "Специализируюсь на Kotlin, Compose, Clean Architecture. ".repeat(10) +
-                            "Участвую в open-source проектах и люблю делиться знаниями.",
-                    skills = listOf(
-                        "Kotlin",
-                        "Jetpack Compose",
-                        "Clean Architecture",
-                        "Coroutines",
-                        "Flow",
-                        "Room"
-                    ),
+                    id = USER_ID,
+                    username = USERNAME,
+                    specialization = SPECIALIZATION,
+                    aboutMe = ABOUT_ME_BASE.repeat(ABOUT_ME_BASE_REPEAT_COUNT) +
+                            ABOUT_ME_SPECIALIZATION.repeat(ABOUT_ME_SPECIALIZATION_REPEAT_COUNT) +
+                            ABOUT_ME_ADDITIONAL,
+                    skills = SKILLS,
                     avatarUrl = null,
-                    roles = listOf("Кандидат", "Участник сообщества", "Ментор"),
-                    country = "Россия",
-                    city = "Москва",
-                    telegramUsername = "john_doe",
+                    roles = ROLES,
+                    country = COUNTRY,
+                    city = CITY,
+                    telegramUsername = TELEGRAM_USERNAME,
                     socialNetworks = listOf(
-                        SocialNetwork("instagram", "john_doe"),
-                        SocialNetwork("linkedin", "john-doe-123"),
-                        SocialNetwork("github", "johndoe")
+                        SocialNetwork("instagram", INSTAGRAM_USERNAME),
+                        SocialNetwork("linkedin", LINKEDIN_USERNAME),
+                        SocialNetwork("github", GITHUB_USERNAME)
                     )
                 )
             )
         )
-
-    companion object {
-        private const val TIME_TO_CLEAN_UP_RESOURCES = 5000L
-    }
 }
