@@ -159,8 +159,9 @@ private fun ProfileContent(
 
         UserAvatarSection(userData)
 
-        if (userData.aboutMe != null)
+        if (userData.aboutMe != null) {
             AboutMeSection(userData.aboutMe)
+        }
 
         SkillsSection(userData.skills)
     }
@@ -404,10 +405,11 @@ private fun ExpandCollapseButton(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = if (isExpanded)
+                text = if (isExpanded) {
                     stringResource(R.string.collapse)
-                else
-                    stringResource(R.string.read_in_full),
+                } else {
+                    stringResource(R.string.read_in_full)
+                },
                 style = Theme.typography.body3Strong,
                 color = Theme.colors.purple700
             )
@@ -484,7 +486,6 @@ class ProfileScreenStateParamProvider : PreviewParameterProvider<ProfileScreenSt
     override val values: Sequence<ProfileScreenState>
         get() = sequenceOf(
             ProfileScreenState.Loading,
-
             ProfileScreenState.Success(
                 userData = UserData(
                     id = "1",
@@ -507,18 +508,14 @@ class ProfileScreenStateParamProvider : PreviewParameterProvider<ProfileScreenSt
                     socialNetworks = listOf(
                         SocialNetwork("instagram", "john_doe"),
                         SocialNetwork("linkedin", "john-doe-123"),
-                        SocialNetwork("github", "johndoe"),
-                        SocialNetwork("twitter", "john_doe")
+                        SocialNetwork("github", "johndoe")
                     )
                 )
             ),
-
             ProfileScreenState.Error(
                 throwable = Throwable("Не удалось загрузить данные профиля")
             ),
-
             ProfileScreenState.Unauthorized,
-
             ProfileScreenState.UserDeleted
         )
 }
@@ -548,7 +545,6 @@ fun DynamicPreviewUI() {
         }
     }
 }
-
 
 typealias ViewModelCreator = () -> ViewModel?
 
