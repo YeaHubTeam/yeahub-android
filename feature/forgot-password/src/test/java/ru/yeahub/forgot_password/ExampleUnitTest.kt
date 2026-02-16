@@ -1,6 +1,6 @@
 package ru.yeahub.forgot_password
 
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
 import org.junit.Test
 
 /**
