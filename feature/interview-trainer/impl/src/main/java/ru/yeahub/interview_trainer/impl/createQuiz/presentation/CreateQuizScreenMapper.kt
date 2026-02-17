@@ -18,4 +18,8 @@ class CreateQuizScreenMapper() {
         selectedSpecializationId = selectedSpecializationId,
         questionsCount = questionsCount
     )
+
+    fun getScreenState(
+        throwable: Throwable,
+    ): CreateQuizState = CreateQuizState.Error(throwable)
 }
