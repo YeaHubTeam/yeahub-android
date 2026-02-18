@@ -31,6 +31,7 @@ val createQuizModule = module {
         GetSpecializationsListUseCaseImpl(repository = get())
     }
 
+    //ВьюМоделька экрана
     viewModel {
         CreateQuizViewModel(getSpecializationsListUseCase = get(), screenMapper = get())
     }
