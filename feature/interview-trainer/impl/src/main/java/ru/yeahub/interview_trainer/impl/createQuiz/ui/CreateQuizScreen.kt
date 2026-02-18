@@ -40,6 +40,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import org.koin.androidx.compose.koinViewModel
@@ -56,7 +58,7 @@ import ru.yeahub.core_utils.common.observe
 import ru.yeahub.interview_trainer.impl.R
 import ru.yeahub.interview_trainer.impl.createQuiz.domain.DomainSpecialization
 import ru.yeahub.interview_trainer.impl.createQuiz.domain.DomainSpecializationListResponse
-import ru.yeahub.interview_trainer.impl.createQuiz.domain.GetSpecializationsUseCase
+import ru.yeahub.interview_trainer.impl.createQuiz.domain.GetSpecializationsListUseCase
 import ru.yeahub.interview_trainer.impl.createQuiz.domain.SpecializationsRequest
 import ru.yeahub.interview_trainer.impl.createQuiz.presentation.CreateQuizCommand
 import ru.yeahub.interview_trainer.impl.createQuiz.presentation.CreateQuizEvent
@@ -172,7 +174,7 @@ private fun HandleCommand(
 
 @Composable
 private fun BaseCreateQuizScreen(
-    specializations: List<CreateQuizState.Loaded.VoSpecialization>,
+    specializations: ImmutableList<CreateQuizState.Loaded.VoSpecialization>,
     selectedSpecializationId: Long,
     questionsCount: Int,
     onSpecializationClick: (id: Long) -> Unit,
@@ -225,7 +227,7 @@ private fun BaseCreateQuizScreen(
 
 @Composable
 private fun ChooseSpecializationBlock(
-    specializations: List<CreateQuizState.Loaded.VoSpecialization>,
+    specializations: ImmutableList<CreateQuizState.Loaded.VoSpecialization>,
     selectedSpecializationId: Long,
     context: Context,
     onSpecializationClick: (Long) -> Unit,
@@ -378,7 +380,7 @@ private fun StartQuizButton(
     }
 }
 
-val specializations = listOf(
+val specializations = persistentListOf(
     CreateQuizState.Loaded.VoSpecialization(
         id = 11,
         title = "Frontend"
@@ -447,7 +449,7 @@ fun DynamicPreviewUI() {
         DomainSpecialization(id = voSpec.id, title = voSpec.title)
     }
 
-    val mockUseCase = object : GetSpecializationsUseCase {
+    val mockUseCase = object : GetSpecializationsListUseCase {
         override suspend fun invoke(
             request: SpecializationsRequest,
         ): DomainSpecializationListResponse {

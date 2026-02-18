@@ -1,13 +1,14 @@
 package ru.yeahub.interview_trainer.impl.createQuiz.presentation
 
 import androidx.compose.runtime.Immutable
+import kotlinx.collections.immutable.ImmutableList
 
 sealed interface CreateQuizState {
     //Изначальный
     data object Loading : CreateQuizState
 
     data class Loaded(
-        val specializations: List<VoSpecialization>,
+        val specializations: ImmutableList<VoSpecialization>,
         val selectedSpecializationId: Long,
         val questionsCount: Int,
     ) : CreateQuizState {

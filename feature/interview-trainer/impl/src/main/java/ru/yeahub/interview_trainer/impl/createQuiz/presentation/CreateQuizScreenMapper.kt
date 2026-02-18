@@ -1,5 +1,6 @@
 package ru.yeahub.interview_trainer.impl.createQuiz.presentation
 
+import kotlinx.collections.immutable.toImmutableList
 import ru.yeahub.interview_trainer.impl.createQuiz.domain.DomainSpecialization
 
 class CreateQuizScreenMapper() {
@@ -14,7 +15,7 @@ class CreateQuizScreenMapper() {
                 id = domainSpec.id,
                 title = domainSpec.title
             )
-        },
+        }.toImmutableList(),
         selectedSpecializationId = selectedSpecializationId,
         questionsCount = questionsCount
     )

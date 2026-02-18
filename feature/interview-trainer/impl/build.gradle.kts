@@ -50,9 +50,13 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.runtime.android)
 
+    // Блики
     implementation(libs.compose.shimmer)
 
-    //KOIN
+    // Неизменяемые коллекции
+    implementation(libs.immutable.collections)
+
+    // KOIN
     implementation(libs.koin.core)
     implementation(libs.koin.android)
     implementation(libs.koin.compose)
