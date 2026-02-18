@@ -1,7 +1,7 @@
 package ru.yeahub.profile_edit.impl.ui.tabs
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -31,7 +31,7 @@ import ru.yeahub.ui.R
 
 @Composable
 fun PersonalInfoContent(
-    state: ProfileEditState.Loaded,
+    state: ProfileEditState.PersonalInfoTabState,
     onAction: (ProfileEditScreenEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -39,14 +39,14 @@ fun PersonalInfoContent(
         modifier = modifier
             .fillMaxWidth()
             .verticalScroll(rememberScrollState())
-            .padding(horizontal = 16.dp, vertical = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp),
+            .background(color = Theme.colors.white900),
     ) {
         SectionTitle(title = "Фото профиля")
         Text(
             text = "Ваше фото будет видно всем членам сообщества Yeahub",
             style = Theme.typography.body2,
             color = Theme.colors.black900,
+            modifier = Modifier.fillMaxWidth(),
         )
         Spacer(Modifier.height(16.dp))
 
@@ -124,7 +124,7 @@ fun PersonalInfoContent(
 
         FieldLabel(text = "Платформа")
 
-        ProfileEditState.Loaded.SocialLinks.entries.forEach { platform ->
+        ProfileEditState.SocialLinks.entries.forEach { platform ->
             SocialLinkField(
                 platform = platform,
                 value = state.socialLinksUrlMap[platform].orEmpty(),
@@ -176,7 +176,7 @@ private fun ProfileAvatarSection(
 
 @Composable
 private fun SocialLinkField(
-    platform: ProfileEditState.Loaded.SocialLinks,
+    platform: ProfileEditState.SocialLinks,
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -227,14 +227,13 @@ private fun FieldLabel(
 @Preview(showBackground = true)
 @Composable
 fun ProfileEditPersonalInfoPreview() {
-    val personalInfoState = ProfileEditState.Loaded(
+    val personalInfoState = ProfileEditState.PersonalInfoTabState(
         avatarUrl = null,
         nickname = "John Doe",
         specializationList = emptyList(),
         specialization = "Android Разработчик",
         email = "johndoe@gmail.com",
         location = "Санкт-Петербург",
-        selectedTab = ProfileEditState.ProfileEditTabs.PersonalInfo,
         socialLinksUrlMap = emptyMap(),
     )
     PersonalInfoContent(state = personalInfoState, onAction = {})
