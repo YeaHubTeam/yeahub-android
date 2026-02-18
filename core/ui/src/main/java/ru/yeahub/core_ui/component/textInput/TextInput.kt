@@ -22,6 +22,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -30,6 +31,7 @@ import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
@@ -58,7 +60,6 @@ import ru.yeahub.ui.R
 private sealed class TextInputState {
     data object Default : TextInputState()
     data object Focused : TextInputState()
-    data object Active : TextInputState()
     data object Error : TextInputState()
     data object Disabled : TextInputState()
 }
@@ -80,7 +81,7 @@ fun TextInput(
     shape: Shape = RoundedCornerShape(12.dp),
     contentPadding: PaddingValues = OutlinedTextFieldDefaults.contentPadding(),
     singleLine: Boolean = true,
-    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
 ) {
     val isFocused by interactionSource.collectIsFocusedAsState()
 
@@ -96,7 +97,7 @@ fun TextInput(
     Box(
         modifier = modifier
             .width(300.dp)
-            .height(300.dp)
+            .height(300.dp),
     ) {
         SearchBar(
             inputField = {
@@ -106,7 +107,7 @@ fun TextInput(
                         onValueChange(newValue)
                     },
                     modifier = Modifier,
-                    label = label,
+                    placeholder = label,
                     isFocused = isFocused,
                     isEnabled = isEnabled,
                     isError = isError,
@@ -114,7 +115,7 @@ fun TextInput(
                     colors = colors,
                     shape = shape,
                     singleLine = singleLine,
-                    interactionSource = interactionSource
+                    interactionSource = interactionSource,
                 )
             },
             expanded = expanded,
@@ -124,7 +125,7 @@ fun TextInput(
             shape = shape,
             colors = SearchBarDefaults.colors(
                 containerColor = Color.Transparent,
-                dividerColor = Color.Transparent
+                dividerColor = Color.Transparent,
             ),
         ) {
             Surface(
@@ -132,7 +133,7 @@ fun TextInput(
                     .fillMaxWidth(),
                 shape = MaterialTheme.shapes.medium,
                 color = Theme.colors.white900,
-                border = BorderStroke(1.dp, TextInputColorsDefaults.defaultsBorder())
+                border = BorderStroke(1.dp, TextInputColorsDefaults.defaultsBorder()),
             ) {
                 LazyColumn(
                     modifier = Modifier.fillMaxWidth(),
@@ -145,13 +146,13 @@ fun TextInput(
                                     onValueChange(suggestion)
                                     onExpandedChange(false)
                                 }
-                                .padding(contentPadding)
+                                .padding(contentPadding),
                         ) {
                             Text(
                                 text = suggestion,
                                 color = colors.contentColor(isEnabled).value,
                                 style = Theme.typography.body3,
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth(),
                             )
                         }
                     }
@@ -166,7 +167,7 @@ fun TextInput(
 fun DefaultTextField(
     value: String,
     onValueChange: (String) -> Unit,
-    label: String,
+    placeholder: String,
     modifier: Modifier = Modifier,
     onExpandedChange: (Boolean) -> Unit,
     colors: ColorsTextInputYeaHub = TextInputColorsDefaults.defaultColors(),
@@ -175,7 +176,10 @@ fun DefaultTextField(
     isError: Boolean = false,
     singleLine: Boolean = true,
     shape: Shape = RoundedCornerShape(12.dp),
-    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+    readOnly: Boolean = false,
+    leadingIcon: (@Composable (() -> Unit))? = null,
+    trailingIcon: (@Composable (() -> Unit))? = null,
 ) {
     val containerColor by colors.containerColor(isEnabled)
     val contentColor by colors.contentColor(isEnabled)
@@ -186,26 +190,44 @@ fun DefaultTextField(
         !isEnabled -> TextInputState.Disabled
         isError -> TextInputState.Error
         isFocused -> TextInputState.Focused
-        value.isNotEmpty() -> TextInputState.Active
         else -> TextInputState.Default
     }
 
     val iconColor = when (state) {
-        TextInputState.Active -> Theme.colors.black900
-        else -> Theme.colors.black300
+        TextInputState.Default -> Theme.colors.black300
+        TextInputState.Disabled -> Theme.colors.black300
+        else -> Theme.colors.black900
     }
 
     val defaultBorder = when (state) {
-        TextInputState.Active -> TextInputColorsDefaults.activeBorder()
+        TextInputState.Focused -> TextInputColorsDefaults.activeBorder()
         TextInputState.Error -> TextInputColorsDefaults.errorBorder()
         else -> TextInputColorsDefaults.defaultsBorder()
     }
+
+    fun provideIconColor(
+        slot: (@Composable () -> Unit)?,
+        color: Color,
+    ): (@Composable () -> Unit)? =
+        slot?.let { content ->
+            {
+                CompositionLocalProvider(LocalContentColor provides color) {
+                    content()
+                }
+            }
+        }
+
+    val leadingIconSlot = provideIconColor(leadingIcon, iconColor)
+
+    val trailingIconSlot = provideIconColor(trailingIcon, iconColor)
+
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
-        label = {
+        readOnly = readOnly,
+        placeholder = {
             Text(
-                text = label,
+                text = placeholder,
                 color = Theme.colors.black300,
                 style = Theme.typography.body3,
             )
@@ -215,17 +237,8 @@ fun DefaultTextField(
             .height(58.dp),
         enabled = isEnabled,
         singleLine = singleLine,
-        leadingIcon =
-            {
-                Icon(
-                    painter = painterResource(id = R.drawable.icon_search),
-                    contentDescription = "Поиск",
-                    tint = iconColor,
-                    modifier = modifier
-                        .width(20.dp)
-                        .height(20.dp)
-                )
-            },
+        leadingIcon = leadingIconSlot,
+        trailingIcon = trailingIconSlot,
         isError = isError,
         shape = shape,
         textStyle = Theme.typography.body3,
@@ -249,7 +262,7 @@ fun DefaultTextField(
                 onExpandedChange(false)
                 keyboardController?.hide()
                 focusManager.clearFocus(force = true)
-            }
+            },
         ),
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
         interactionSource = interactionSource,
@@ -268,7 +281,7 @@ object TextInputColorsDefaults {
             containerColor = containerColor,
             contentColor = contentColor,
             disabledContentColor = disabledContentColor,
-            disabledContainerColor = disabledContainerColor
+            disabledContainerColor = disabledContainerColor,
         )
     }
 
@@ -307,7 +320,7 @@ data class TextInputParams(
     val value: String,
     val onValueChange: (String) -> Unit,
     val onExpandedChange: (Boolean) -> Unit,
-    val label: String,
+    val placeholder: String,
     val modifier: Modifier = Modifier,
     val isEnabled: Boolean = true,
     val isError: Boolean = false,
@@ -315,6 +328,15 @@ data class TextInputParams(
     val isFocus: Boolean = false,
     val colors: ColorsTextInputYeaHub = getTextInputColors(),
     val singleLine: Boolean = true,
+    val leadingIcon: (@Composable () -> Unit)? = {
+        Icon(
+            painter = painterResource(R.drawable.icon_search),
+            contentDescription = "Поиск",
+            modifier = modifier
+                .width(20.dp)
+                .height(20.dp),
+        )
+    },
 )
 
 fun getTextInputColors(): ColorsTextInputYeaHub {
@@ -332,33 +354,43 @@ class TextInputParamsProvider : PreviewParameterProvider<TextInputParams> {
             value = "",
             onValueChange = {},
             onExpandedChange = {},
-            label = "text",
+            placeholder = "placeholder",
             isEnabled = true,
-            isError = false
+            isError = false,
         ),
         TextInputParams(
             value = "text",
             onValueChange = {},
             onExpandedChange = {},
-            label = "text",
+            placeholder = "placeholder",
             isEnabled = true,
-            isError = false
+            isError = false,
+            isFocus = true,
         ),
         TextInputParams(
             value = "",
             onValueChange = {},
             onExpandedChange = {},
-            label = "text",
+            placeholder = "placeholder",
             isEnabled = false,
-            isError = false
+            isError = false,
         ),
         TextInputParams(
             value = "",
             onValueChange = {},
             onExpandedChange = {},
-            label = "text",
+            placeholder = "placeholder",
             isEnabled = true,
-            isError = true
+            isError = true,
+        ),
+        TextInputParams(
+            value = "text",
+            onValueChange = {},
+            onExpandedChange = {},
+            placeholder = "placeholder",
+            isEnabled = true,
+            isError = false,
+            isFocus = false,
         ),
     )
 }
@@ -366,22 +398,23 @@ class TextInputParamsProvider : PreviewParameterProvider<TextInputParams> {
 @StaticPreview
 @Composable
 fun TextInputPreview(
-    @PreviewParameter(TextInputParamsProvider::class) params: TextInputParams
+    @PreviewParameter(TextInputParamsProvider::class) params: TextInputParams,
 ) {
     Box(
         Modifier
             .background(Color.White)
-            .padding(10.dp)
+            .padding(10.dp),
     ) {
         DefaultTextField(
             value = params.value,
             onValueChange = params.onValueChange,
             onExpandedChange = params.onExpandedChange,
-            label = params.label,
+            placeholder = params.placeholder,
             isEnabled = params.isEnabled,
             isError = params.isError,
             colors = params.colors,
-            isFocused = params.isFocus
+            isFocused = params.isFocus,
+            leadingIcon = params.leadingIcon,
         )
     }
 }
@@ -389,7 +422,7 @@ fun TextInputPreview(
 @StandardScreenSizePreview
 @Composable
 fun TextInputDynamicPreview(
-    @PreviewParameter(TextInputPreviewProvider::class) params: Pair<String, List<String>>
+    @PreviewParameter(TextInputPreviewProvider::class) params: Pair<String, List<String>>,
 ) {
     val mockViewModel = object : SuggestionsViewModel() {
         init {
@@ -413,7 +446,7 @@ fun ScreenSuggestions(
         modifier = modifier
             .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
     ) {
         TextInput(
             value = text,
@@ -424,7 +457,7 @@ fun ScreenSuggestions(
             suggestions = suggestions,
             onQueryChanged = { viewModel.onQueryChange(it, suggestions) },
             expanded = expanded,
-            onExpandedChange = { expanded = it }
+            onExpandedChange = { expanded = it },
         )
     }
 }
