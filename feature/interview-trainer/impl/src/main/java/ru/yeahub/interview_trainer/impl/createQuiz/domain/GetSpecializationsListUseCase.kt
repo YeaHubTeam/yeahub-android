@@ -1,5 +1,5 @@
 package ru.yeahub.interview_trainer.impl.createQuiz.domain
 
-interface GetSpecializationsUseCase {
+interface GetSpecializationsListUseCase {
     suspend operator fun invoke(request: SpecializationsRequest): DomainSpecializationListResponse
 }
