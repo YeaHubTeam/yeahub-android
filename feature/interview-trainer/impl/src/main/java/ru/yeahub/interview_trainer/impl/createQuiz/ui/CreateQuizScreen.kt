@@ -14,7 +14,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -36,9 +38,13 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import org.koin.androidx.compose.koinViewModel
 import ru.yeahub.core_ui.component.ErrorScreen
 import ru.yeahub.core_ui.component.PrimaryButton
 import ru.yeahub.core_ui.component.SkillButton
@@ -52,7 +58,7 @@ import ru.yeahub.core_utils.common.observe
 import ru.yeahub.interview_trainer.impl.R
 import ru.yeahub.interview_trainer.impl.createQuiz.domain.DomainSpecialization
 import ru.yeahub.interview_trainer.impl.createQuiz.domain.DomainSpecializationListResponse
-import ru.yeahub.interview_trainer.impl.createQuiz.domain.GetSpecializationsUseCase
+import ru.yeahub.interview_trainer.impl.createQuiz.domain.GetSpecializationsListUseCase
 import ru.yeahub.interview_trainer.impl.createQuiz.domain.SpecializationsRequest
 import ru.yeahub.interview_trainer.impl.createQuiz.presentation.CreateQuizCommand
 import ru.yeahub.interview_trainer.impl.createQuiz.presentation.CreateQuizEvent
@@ -66,22 +72,45 @@ private val FIGMA_VERTICAL_BLOCKS_PADDING = 16.dp
 private val FIGMA_VERTICAL_FIRST_AND_LAST_ELEMENT_PADDING = 24.dp
 
 @Composable
+fun CreateQuizScreen(
+    onResult: (CreateQuizResult) -> Unit,
+    titleTopAppBarResId: Int,
+) {
+    val viewModel: CreateQuizViewModel = koinViewModel()
+
+    val screenState by viewModel.screenState.collectAsStateWithLifecycle()
+
+    HandleCommand(
+        commandFlow = viewModel.commands,
+        onResult = { result -> onResult(result) }
+    )
+
+    ScreenUI(
+        state = screenState,
+        onEvent = viewModel::onEvent,
+        titleTopAppBar = TextOrResource.Resource(titleTopAppBarResId)
+    )
+}
+
+@Composable
 private fun ScreenUI(
     state: CreateQuizState,
     onEvent: (CreateQuizEvent) -> Unit,
-    headerText: TextOrResource,
+    titleTopAppBar: TextOrResource,
 ) {
     Scaffold(
         containerColor = colors.black10,
         topBar = {
             TopAppBarWithBottomBorder(
-                title = headerText,
+                title = titleTopAppBar,
                 onBackClick = { onEvent(CreateQuizEvent.OnBackClick) }
             )
         }
     ) { paddingValues ->
         Box(
-            modifier = Modifier.padding(paddingValues)
+            modifier = Modifier
+                .padding(paddingValues)
+                .verticalScroll(rememberScrollState())
         ) {
             when (state) {
                 CreateQuizState.Loading -> CreateQuizLoading()
@@ -126,7 +155,7 @@ private fun ScreenUI(
 }
 
 @Composable
-fun HandleCommand(
+private fun HandleCommand(
     commandFlow: Flow<CreateQuizCommand>,
     onResult: (CreateQuizResult) -> Unit,
 ) {
@@ -145,7 +174,7 @@ fun HandleCommand(
 
 @Composable
 private fun BaseCreateQuizScreen(
-    specializations: List<CreateQuizState.Loaded.VoSpecialization>,
+    specializations: ImmutableList<CreateQuizState.Loaded.VoSpecialization>,
     selectedSpecializationId: Long,
     questionsCount: Int,
     onSpecializationClick: (id: Long) -> Unit,
@@ -198,7 +227,7 @@ private fun BaseCreateQuizScreen(
 
 @Composable
 private fun ChooseSpecializationBlock(
-    specializations: List<CreateQuizState.Loaded.VoSpecialization>,
+    specializations: ImmutableList<CreateQuizState.Loaded.VoSpecialization>,
     selectedSpecializationId: Long,
     context: Context,
     onSpecializationClick: (Long) -> Unit,
@@ -351,7 +380,7 @@ private fun StartQuizButton(
     }
 }
 
-val specializations = listOf(
+val specializations = persistentListOf(
     CreateQuizState.Loaded.VoSpecialization(
         id = 11,
         title = "Frontend"
@@ -409,7 +438,7 @@ fun CreateQuizScreenPreview(
     ScreenUI(
         state = state,
         onEvent = { },
-        headerText = TextOrResource.Resource(R.string.create_quiz_top_bar_header_text),
+        titleTopAppBar = TextOrResource.Resource(R.string.create_quiz_top_bar_header_text),
     )
 }
 
@@ -420,7 +449,7 @@ fun DynamicPreviewUI() {
         DomainSpecialization(id = voSpec.id, title = voSpec.title)
     }
 
-    val mockUseCase = object : GetSpecializationsUseCase {
+    val mockUseCase = object : GetSpecializationsListUseCase {
         override suspend fun invoke(
             request: SpecializationsRequest,
         ): DomainSpecializationListResponse {
@@ -433,7 +462,7 @@ fun DynamicPreviewUI() {
     }
 
     val mockViewModel = viewModelCreator<CreateQuizViewModel> {
-        CreateQuizViewModel(mockUseCase, CreateQuizScreenMapper)
+        CreateQuizViewModel(mockUseCase, CreateQuizScreenMapper())
     }
 
     val mockState by mockViewModel.screenState.collectAsState()
@@ -458,7 +487,7 @@ fun DynamicPreviewUI() {
         ScreenUI(
             state = mockState,
             onEvent = mockViewModel::onEvent,
-            headerText = TextOrResource.Resource(R.string.create_quiz_top_bar_header_text)
+            titleTopAppBar = TextOrResource.Resource(R.string.create_quiz_top_bar_header_text)
         )
     }
 }

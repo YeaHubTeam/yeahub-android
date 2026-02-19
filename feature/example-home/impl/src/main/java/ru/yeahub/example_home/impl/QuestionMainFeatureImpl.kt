@@ -4,6 +4,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
+import ru.yeahub.core_utils.common.TextOrResource
 import ru.yeahub.example_home.impl.presentation.view.QuestionsMainScreen
 import ru.yeahub.navigation_api.FeatureApi
 import ru.yeahub.navigation_api.FeatureRoute
@@ -28,7 +29,7 @@ class QuestionMainFeatureImpl : FeatureApi {
         navGraphBuilder: NavGraphBuilder,
         navController: NavHostController,
         pathManager: NavigationPathManager,
-        modifier: Modifier
+        modifier: Modifier,
     ) {
         val currentPath = pathManager.getCurrentPath()
         Timber.d("HomeFeatureImpl registerGraph: currentPath: $currentPath")
@@ -50,6 +51,9 @@ class QuestionMainFeatureImpl : FeatureApi {
                 },
                 onNavigateToCollections = {
                     handleCollectionsNavigation(pathManager, navController)
+                },
+                onNavigateToInterviewTrainer = {
+                    handleInterviewTrainerNavigation(pathManager, navController)
                 }
             )
         }
@@ -60,7 +64,7 @@ class QuestionMainFeatureImpl : FeatureApi {
      */
     private fun handleQuestionsNavigation(
         pathManager: NavigationPathManager,
-        navController: NavHostController
+        navController: NavHostController,
     ) {
         // Сбрасываем текущий путь на корневую фичу
         pathManager.setCurrentPath(FeatureRoute.QuestionsFeature.FEATURE_NAME)
@@ -83,7 +87,7 @@ class QuestionMainFeatureImpl : FeatureApi {
      */
     private fun handleCollectionsNavigation(
         pathManager: NavigationPathManager,
-        navController: NavHostController
+        navController: NavHostController,
     ) {
         // Сбрасываем текущий путь на корневую фичу
         pathManager.setCurrentPath(FeatureRoute.CollectionsFeature.FEATURE_NAME)
@@ -93,6 +97,33 @@ class QuestionMainFeatureImpl : FeatureApi {
         Timber.d("HomeFeatureImpl handleQuestionsNavigation: Navigating to: $questionsPath")
 
         navController.navigate(questionsPath) {
+            popUpTo(navController.graph.startDestinationId) {
+                saveState = true
+            }
+            launchSingleTop = true
+            restoreState = true
+        }
+    }
+
+    /**
+     * Обработка навигации к интервью тренажеру.
+     */
+    private fun handleInterviewTrainerNavigation(
+        pathManager: NavigationPathManager,
+        navController: NavHostController,
+    ) {
+        val titleTopAppBarResId = TextOrResource.Resource(R.string.create_quiz_top_bar_header_text)
+
+        // Сбрасываем текущий путь на корневую фичу
+        pathManager.setCurrentPath(FeatureRoute.InterviewTrainerFeature.FEATURE_NAME)
+
+        val createQuizPath = pathManager.createChildPath(
+            featureName = FeatureRoute.InterviewTrainerFeature.CREATE_QUIZ_SCREEN_NAME
+        ) + "/" + titleTopAppBarResId.resource
+
+        Timber.d("HomeFeatureImpl handleInterviewTrainerNavigation: Navigating to: $createQuizPath")
+
+        navController.navigate(createQuizPath) {
             popUpTo(navController.graph.startDestinationId) {
                 saveState = true
             }

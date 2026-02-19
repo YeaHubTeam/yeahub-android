@@ -1,8 +1,9 @@
 package ru.yeahub.interview_trainer.impl.createQuiz.presentation
 
+import kotlinx.collections.immutable.toImmutableList
 import ru.yeahub.interview_trainer.impl.createQuiz.domain.DomainSpecialization
 
-object CreateQuizScreenMapper {
+class CreateQuizScreenMapper() {
 
     fun getScreenState(
         specializations: List<DomainSpecialization>,
@@ -14,8 +15,12 @@ object CreateQuizScreenMapper {
                 id = domainSpec.id,
                 title = domainSpec.title
             )
-        },
+        }.toImmutableList(),
         selectedSpecializationId = selectedSpecializationId,
         questionsCount = questionsCount
     )
+
+    fun getScreenState(
+        throwable: Throwable,
+    ): CreateQuizState = CreateQuizState.Error(throwable)
 }

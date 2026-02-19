@@ -45,6 +45,10 @@ class QuestionMainViewModel(
                         )
                         QuestionMainItemType.Collections ->
                             _command.emit(QuestionMainScreenCommand.NavigateToCollections)
+
+                        QuestionMainItemType.InterviewTrainer -> {
+                            _command.emit(QuestionMainScreenCommand.NavigateToInterviewTrainer)
+                        }
                     }
                 }
             }
