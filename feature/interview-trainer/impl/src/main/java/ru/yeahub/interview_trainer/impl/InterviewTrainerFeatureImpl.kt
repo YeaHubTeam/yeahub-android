@@ -14,6 +14,7 @@ import ru.yeahub.navigation_api.NavigationPathManager
 import timber.log.Timber
 
 private const val TITLE_TOP_APP_BAR = "title"
+private const val NOT_FOUND_NUMBER = 404
 
 class InterviewTrainerFeatureImpl : FeatureApi {
     override fun getFeatureName(): String = FeatureRoute.InterviewTrainerFeature.FEATURE_NAME
@@ -29,7 +30,7 @@ class InterviewTrainerFeatureImpl : FeatureApi {
 
         val featurePath = pathManager.getFeaturePath(getFeatureName()) ?: getFeatureName()
 
-        //Регистрируем путь экрана создания тренировки (interview_trainer/create_quiz/{title})
+        //Регистрируем путь экрана создания тренировки (interview_trainer/create_quiz/{titleId})
         val createQuizRoute =
             "$featurePath/${FeatureRoute.InterviewTrainerFeature.CREATE_QUIZ_SCREEN_NAME}/{$TITLE_TOP_APP_BAR}"
 
@@ -39,11 +40,12 @@ class InterviewTrainerFeatureImpl : FeatureApi {
             route = createQuizRoute,
             arguments = listOf(
                 navArgument(TITLE_TOP_APP_BAR) {
-                    type = NavType.StringType
+                    type = NavType.IntType
                 }
             )
         ) { backStackEntry ->
-            val titleTopAppBar = backStackEntry.arguments?.getString(TITLE_TOP_APP_BAR) ?: ""
+            val titleTopAppBarResId =
+                backStackEntry.arguments?.getInt(TITLE_TOP_APP_BAR) ?: NOT_FOUND_NUMBER
 
             // Вынос в отдельную переменную для оптимизации (чтоб не пересоздавать лямбду)
             val onResult = { result: CreateQuizResult ->
@@ -57,13 +59,13 @@ class InterviewTrainerFeatureImpl : FeatureApi {
                         pathManager = pathManager,
                         navController = navController,
                         featurePath = featurePath,
-                        titleTopAppBar = titleTopAppBar,
+                        titleTopAppBarResId = titleTopAppBarResId,
                         specializationId = result.specializationId.toString(),
                         questionsCount = result.questionCount.toString()
                     )
                 }
             }
-            CreateQuizScreen(onResult = onResult, titleTopAppBar = titleTopAppBar)
+            CreateQuizScreen(onResult = onResult, titleTopAppBarResId = titleTopAppBarResId)
         }
     }
 
@@ -97,14 +99,14 @@ class InterviewTrainerFeatureImpl : FeatureApi {
         pathManager: NavigationPathManager,
         navController: NavHostController,
         featurePath: String,
-        titleTopAppBar: String,
+        titleTopAppBarResId: Int,
         specializationId: String,
         questionsCount: String,
     ) {
-        //Регистрируем путь экрана тренировки (interview_trainer/create_quiz/{title})
+        //Регистрируем путь экрана тренировки (interview_trainer/create_quiz/{titleId})
         val interviewQuizRoute = featurePath + "/" +
                 FeatureRoute.InterviewTrainerFeature.INTERVIEW_QUIZ_SCREEN_NAME + "/" +
-                "$titleTopAppBar/$specializationId/$questionsCount"
+                "$titleTopAppBarResId/$specializationId/$questionsCount"
 
         Timber.d("InterviewTrainerFeatureImpl registerGraph: $interviewQuizRoute")
 

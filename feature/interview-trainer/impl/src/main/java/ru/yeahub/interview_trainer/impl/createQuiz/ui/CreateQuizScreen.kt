@@ -74,7 +74,7 @@ private val FIGMA_VERTICAL_FIRST_AND_LAST_ELEMENT_PADDING = 24.dp
 @Composable
 fun CreateQuizScreen(
     onResult: (CreateQuizResult) -> Unit,
-    titleTopAppBar: String,
+    titleTopAppBarResId: Int,
 ) {
     val viewModel: CreateQuizViewModel = koinViewModel()
 
@@ -88,7 +88,7 @@ fun CreateQuizScreen(
     ScreenUI(
         state = screenState,
         onEvent = viewModel::onEvent,
-        titleTopAppBar = TextOrResource.Text(titleTopAppBar)
+        titleTopAppBar = TextOrResource.Resource(titleTopAppBarResId)
     )
 }
 
