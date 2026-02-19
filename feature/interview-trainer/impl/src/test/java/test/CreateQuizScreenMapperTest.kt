@@ -1,5 +1,6 @@
 package test
 
+import kotlinx.collections.immutable.persistentListOf
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ArgumentsSource
@@ -50,13 +51,13 @@ class CreateQuizScreenMapperTest {
         )
 
         val defaultLoadedState = CreateQuizState.Loaded(
-            specializations = listOf(defaultVoSpecial, defaultVoSpecialWithImage),
+            specializations = persistentListOf(defaultVoSpecial, defaultVoSpecialWithImage),
             selectedSpecializationId = 0L,
             questionsCount = 10
         )
 
         val loadedStateWithDifferentSelection = CreateQuizState.Loaded(
-            specializations = listOf(defaultVoSpecial, defaultVoSpecialWithImage),
+            specializations = persistentListOf(defaultVoSpecial, defaultVoSpecialWithImage),
             selectedSpecializationId = 1L,
             questionsCount = 5
         )
