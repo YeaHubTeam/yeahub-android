@@ -195,7 +195,7 @@ val stateWithContent = QuestionMainScreenState.Content(
             description = TextOrResource.Resource(R.string.base_questions_description),
             imageRes = R.drawable.icon_base_question
         ),
-        //imageRes тренажера потом изменить на нормальный
+        // TODO("imageRes тренажера потом изменить на нормальный")
         QuestionMainUiModel(
             type = QuestionMainItemType.InterviewTrainer,
             title = TextOrResource.Resource(R.string.interview_trainer_title),
