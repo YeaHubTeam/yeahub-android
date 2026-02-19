@@ -14,7 +14,7 @@ import ru.yeahub.interview_trainer.impl.createQuiz.presentation.CreateQuizViewMo
 import ru.yeahub.navigation_api.FeatureApi
 
 val createQuizModule = module {
-    // FeatureImpl для навигации
+    // FeatureImpl для реализации навигации фичи
     single { InterviewTrainerFeatureImpl() } bind FeatureApi::class
 
     // Мапперы
@@ -31,7 +31,7 @@ val createQuizModule = module {
         GetSpecializationsListUseCaseImpl(repository = get())
     }
 
-    //ВьюМоделька экрана
+    // ВьюМоделька экрана
     viewModel {
         CreateQuizViewModel(getSpecializationsListUseCase = get(), screenMapper = get())
     }

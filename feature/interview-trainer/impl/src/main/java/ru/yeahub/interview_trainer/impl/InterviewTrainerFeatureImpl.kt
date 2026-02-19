@@ -29,7 +29,7 @@ class InterviewTrainerFeatureImpl : FeatureApi {
 
         val featurePath = pathManager.getFeaturePath(getFeatureName()) ?: getFeatureName()
 
-        //Создаем путь экрана создания тренировки (interview_trainer/create_quiz/{title}
+        //Регистрируем путь экрана создания тренировки (interview_trainer/create_quiz/{title})
         val createQuizRoute =
             "$featurePath/${FeatureRoute.InterviewTrainerFeature.CREATE_QUIZ_SCREEN_NAME}/{$TITLE_TOP_APP_BAR}"
 
@@ -45,25 +45,25 @@ class InterviewTrainerFeatureImpl : FeatureApi {
         ) { backStackEntry ->
             val titleTopAppBar = backStackEntry.arguments?.getString(TITLE_TOP_APP_BAR) ?: ""
 
-            CreateQuizScreen(
-                onResult = { result ->
-                    when (result) {
-                        is CreateQuizResult.NavigateBack -> handleBackNavigation(
-                            pathManager,
-                            navController
-                        )
+            // Вынос в отдельную переменную для оптимизации (чтоб не пересоздавать лямбду)
+            val onResult = { result: CreateQuizResult ->
+                when (result) {
+                    is CreateQuizResult.NavigateBack -> handleBackNavigation(
+                        pathManager = pathManager,
+                        navController = navController
+                    )
 
-                        is CreateQuizResult.NavigateToInterviewQuizScreen -> handleQuizNavigation(
-                            pathManager = pathManager,
-                            navController = navController,
-                            titleTopAppBar = titleTopAppBar,
-                            specializationId = result.specializationId.toString(),
-                            questionsCount = result.questionCount.toString()
-                        )
-                    }
-                },
-                titleTopAppBar = titleTopAppBar
-            )
+                    is CreateQuizResult.NavigateToInterviewQuizScreen -> handleQuizNavigation(
+                        pathManager = pathManager,
+                        navController = navController,
+                        featurePath = featurePath,
+                        titleTopAppBar = titleTopAppBar,
+                        specializationId = result.specializationId.toString(),
+                        questionsCount = result.questionCount.toString()
+                    )
+                }
+            }
+            CreateQuizScreen(onResult = onResult, titleTopAppBar = titleTopAppBar)
         }
     }
 
@@ -96,11 +96,12 @@ class InterviewTrainerFeatureImpl : FeatureApi {
     private fun handleQuizNavigation(
         pathManager: NavigationPathManager,
         navController: NavHostController,
+        featurePath: String,
         titleTopAppBar: String,
         specializationId: String,
         questionsCount: String,
     ) {
-        val featurePath = pathManager.getFeaturePath(getFeatureName()) ?: getFeatureName()
+        //Регистрируем путь экрана тренировки (interview_trainer/create_quiz/{title})
         val interviewQuizRoute = featurePath + "/" +
                 FeatureRoute.InterviewTrainerFeature.INTERVIEW_QUIZ_SCREEN_NAME + "/" +
                 "$titleTopAppBar/$specializationId/$questionsCount"
@@ -108,5 +109,6 @@ class InterviewTrainerFeatureImpl : FeatureApi {
         Timber.d("InterviewTrainerFeatureImpl registerGraph: $interviewQuizRoute")
 
         navController.navigate(interviewQuizRoute)
+        pathManager.setCurrentPath(interviewQuizRoute)
     }
 }
