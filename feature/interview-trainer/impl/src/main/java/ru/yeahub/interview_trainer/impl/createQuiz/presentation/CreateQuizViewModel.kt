@@ -1,10 +1,12 @@
 package ru.yeahub.interview_trainer.impl.createQuiz.presentation
 
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -24,21 +26,26 @@ open class CreateQuizViewModel(
             questionsCount = MIN_QUESTIONS_COUNT
         )
     )
+    val request = SpecializationsRequest(page = 1, limit = 99)
+    val specsDef = viewModelScopeSafe.async {
+        getSpecializationsListUseCase(request).data
+    }
 
-    val screenState = userInputState
-        .map { userInput ->
-            val request = SpecializationsRequest(page = 1, limit = 99)
+    val screenState = userInputState.map { userInput ->
+        val specializations = specsDef.await()
 
-            screenMapper.getScreenState(
-                specializations = getSpecializationsListUseCase(request).data,
-                selectedSpecializationId = userInput.selectedSpecializationId,
-                questionsCount = userInput.questionsCount
-            )
-        }.stateIn(
-            scope = viewModelScopeSafe,
-            started = SharingStarted.WhileSubscribed(TIME_TO_CLEAN_UP_RESOURCES),
-            initialValue = CreateQuizState.Loading
+        screenMapper.getScreenState(
+            specializations = specializations,
+            selectedSpecializationId = userInput.selectedSpecializationId,
+            questionsCount = userInput.questionsCount,
         )
+    }.catch { throwable ->
+        emit(screenMapper.getScreenState(throwable))
+    }.stateIn(
+        scope = viewModelScopeSafe,
+        started = SharingStarted.WhileSubscribed(TIME_TO_CLEAN_UP_RESOURCES),
+        initialValue = CreateQuizState.Loading
+    )
 
     private val _commands = MutableSharedFlow<CreateQuizCommand>()
     val commands: SharedFlow<CreateQuizCommand> = _commands
