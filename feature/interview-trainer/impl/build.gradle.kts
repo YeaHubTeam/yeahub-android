@@ -52,6 +52,7 @@ dependencies {
 
     // Блики
     implementation(libs.compose.shimmer)
+    implementation(libs.immutable.collections)
 
     // Неизменяемые коллекции
     implementation(libs.immutable.collections)
