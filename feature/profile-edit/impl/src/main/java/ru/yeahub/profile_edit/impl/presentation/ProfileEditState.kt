@@ -22,18 +22,29 @@ sealed interface ProfileEditState {
         val title: TextOrResource.Resource,
     ) {
         PersonalInfo(
-            0, TextOrResource.Resource(ru.yeahub.ui.R.string.profile_personal_information),
+            index = 0,
+            title = TextOrResource.Resource(ru.yeahub.ui.R.string.profile_personal_information),
         ),
         AboutMe(
-            1, TextOrResource.Resource(ru.yeahub.ui.R.string.profile_about_me),
+            index = 1,
+            title = TextOrResource.Resource(ru.yeahub.ui.R.string.profile_about_me),
         ),
         Skills(
-            2, TextOrResource.Resource(ru.yeahub.ui.R.string.profile_skills),
+            index = 2,
+            title = TextOrResource.Resource(ru.yeahub.ui.R.string.profile_skills),
         )
     }
 
     enum class SocialLinks {
-        Instagram, Linkedin, Twitter, GitHub, Behance, Whatsapp, Telegram, VK, Dribble,
+        Instagram,
+        Linkedin,
+        Twitter,
+        GitHub,
+        Behance,
+        Whatsapp,
+        Telegram,
+        VK,
+        Dribble,
     }
 
     data class PersonalInfoTabState(
@@ -58,5 +69,3 @@ sealed interface ProfileEditState {
         val name: String,
     )
 }
-
-

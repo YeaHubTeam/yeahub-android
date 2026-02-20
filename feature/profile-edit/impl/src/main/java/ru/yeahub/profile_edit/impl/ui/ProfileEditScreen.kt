@@ -93,10 +93,9 @@ fun ProfileEditScreen(
     }
 }
 
-
 @Preview
 @Composable
-private fun ProfileEditPreview() {
+fun ProfileEditPreview() {
     val screenState = ProfileEditState.Loaded(
         selectedTab = ProfileEditState.ProfileEditTabs.PersonalInfo,
         personalInfoState = ProfileEditState.PersonalInfoTabState(

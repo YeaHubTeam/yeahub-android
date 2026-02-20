@@ -28,7 +28,6 @@ import ru.yeahub.profile_edit.impl.presentation.ProfileEditState
 import ru.yeahub.profile_edit.impl.presentation.intents.ProfileEditScreenEvent
 import ru.yeahub.ui.R
 
-
 private val PERSONAL_INFO_TOP_PADDING = 2.dp
 private val PERSONAL_INFO_TOP_SPACER = 10.dp
 
