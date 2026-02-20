@@ -7,6 +7,7 @@
     <string name="create_quiz_start_quiz_button_text">Начать</string>
     <string name="decrease_question_count_content_description">Уменьшить количество вопросов</string>
     <string name="increase_question_count_content_description">Увеличить количество вопросов</string>
+    <string name="start_interview_training_content_description">Увеличить количество вопросов</string>
 
     <string name="title_error_screen_text">УПС!</string>
     <string name="error_screen_text">Что‑то пошло не так</string>
