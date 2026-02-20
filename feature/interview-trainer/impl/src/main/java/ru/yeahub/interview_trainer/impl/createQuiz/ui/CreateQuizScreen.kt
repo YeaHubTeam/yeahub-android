@@ -28,7 +28,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -138,7 +137,7 @@ private fun ScreenUI(
                         )
                     )
                 },
-                titleText = TextOrResource.Resource(R.string.create_quiz_screen_main_title),
+                titleText = stringResource(R.string.create_quiz_screen_main_title),
                 paddingValues = paddingValues
             )
         }
@@ -172,12 +171,10 @@ private fun BaseCreateQuizScreen(
     onPlusQuestionCountClick: (count: Int) -> Unit,
     onMinusQuestionCountClick: (count: Int) -> Unit,
     onStartQuizClick: (specializationId: Long, questionsCount: Int) -> Unit,
-    titleText: TextOrResource,
+    titleText: String,
     paddingValues: PaddingValues,
     modifier: Modifier = Modifier,
 ) {
-    val context = LocalContext.current
-
     Box(
         modifier = modifier
             .padding(paddingValues = paddingValues)
@@ -189,7 +186,7 @@ private fun BaseCreateQuizScreen(
             Text(
                 modifier = Modifier
                     .padding(vertical = FIGMA_VERTICAL_FIRST_AND_LAST_ELEMENT_PADDING),
-                text = titleText.getString(context),
+                text = titleText,
                 style = LocalAppTypography.current.head5,
             )
 
@@ -197,7 +194,7 @@ private fun BaseCreateQuizScreen(
                 specializations = specializations,
                 selectedSpecializationId = selectedSpecializationId,
                 onSpecializationClick = onSpecializationClick,
-                titleText = TextOrResource.Resource(R.string.create_quiz_specialization_param_header_text)
+                titleText = stringResource(R.string.create_quiz_specialization_param_header_text)
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -206,7 +203,7 @@ private fun BaseCreateQuizScreen(
                 questionsCount = questionsCount,
                 onPlusQuestionCountClick = onPlusQuestionCountClick,
                 onMinusQuestionCountClick = onMinusQuestionCountClick,
-                titleText = TextOrResource.Resource(R.string.create_quiz_question_count_param_header_text)
+                titleText = stringResource(R.string.create_quiz_question_count_param_header_text)
             )
 
             Spacer(modifier = Modifier.weight(1f))
@@ -225,15 +222,13 @@ private fun ChooseSpecializationBlock(
     specializations: ImmutableList<CreateQuizState.Loaded.VoSpecialization>,
     selectedSpecializationId: Long,
     onSpecializationClick: (Long) -> Unit,
-    titleText: TextOrResource,
+    titleText: String,
     modifier: Modifier = Modifier,
 ) {
-    val context = LocalContext.current
-
     Column(modifier = modifier) {
         Text(
             style = LocalAppTypography.current.body3Accent,
-            text = titleText.getString(context),
+            text = titleText,
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -268,15 +263,13 @@ private fun ChooseQuestionsCountBlock(
     questionsCount: Int,
     onPlusQuestionCountClick: (count: Int) -> Unit,
     onMinusQuestionCountClick: (count: Int) -> Unit,
-    titleText: TextOrResource,
+    titleText: String,
     modifier: Modifier = Modifier,
 ) {
-    val context = LocalContext.current
-
     Column(modifier = modifier) {
         Text(
             style = LocalAppTypography.current.body3Accent,
-            text = titleText.getString(context),
+            text = titleText,
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -346,8 +339,6 @@ private fun StartQuizButton(
     onStartQuizClick: (specializationId: Long, questionsCount: Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val context = LocalContext.current
-
     PrimaryButton(
         modifier = modifier
             .padding(vertical = FIGMA_VERTICAL_FIRST_AND_LAST_ELEMENT_PADDING)
@@ -372,7 +363,7 @@ private fun StartQuizButton(
             Icon(
                 modifier = Modifier.size(16.dp),
                 painter = painterResource(ru.yeahub.ui.R.drawable.arrow_next),
-                contentDescription = "Start Interview Quiz Session",
+                contentDescription = stringResource(R.string.start_interview_training_content_description),
                 tint = colors.white900
             )
         }
