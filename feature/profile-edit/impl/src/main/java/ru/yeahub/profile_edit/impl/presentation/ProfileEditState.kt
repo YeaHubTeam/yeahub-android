@@ -1,6 +1,7 @@
 package ru.yeahub.profile_edit.impl.presentation
 
 import androidx.compose.runtime.Immutable
+import ru.yeahub.core_utils.common.TextOrResource
 
 sealed interface ProfileEditState {
 
@@ -18,8 +19,18 @@ sealed interface ProfileEditState {
 
     enum class ProfileEditTabs(
         val index: Int,
-        val title: String,
-    ) { PersonalInfo(0, "Личная информация"), AboutMe(1, "Обо мне"), Skills(2, "Навыки") }
+        val title: TextOrResource.Resource,
+    ) {
+        PersonalInfo(
+            0, TextOrResource.Resource(ru.yeahub.ui.R.string.profile_personal_information),
+        ),
+        AboutMe(
+            1, TextOrResource.Resource(ru.yeahub.ui.R.string.profile_about_me),
+        ),
+        Skills(
+            2, TextOrResource.Resource(ru.yeahub.ui.R.string.profile_skills),
+        )
+    }
 
     enum class SocialLinks {
         Instagram, Linkedin, Twitter, GitHub, Behance, Whatsapp, Telegram, VK, Dribble,
