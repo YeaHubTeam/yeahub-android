@@ -3,7 +3,6 @@ package ru.yeahub.profile_edit.impl.ui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -17,6 +16,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ru.yeahub.core_ui.component.CoreTopTabs
@@ -52,7 +52,8 @@ fun ProfileEditScreen(
                 .fillMaxWidth()
                 .padding(paddingValues)
                 .padding(horizontal = 16.dp)
-                .padding(vertical = 12.dp),
+                .padding(top = 16.dp)
+                .padding(bottom = 16.dp),
             color = Theme.colors.white900,
             shape = RoundedCornerShape(16.dp),
         ) {
@@ -61,6 +62,7 @@ fun ProfileEditScreen(
                     .fillMaxSize()
                     .padding(
                         horizontal = 16.dp,
+                        vertical = 16.dp,
                     ),
             ) {
                 CoreTopTabs(
@@ -70,12 +72,10 @@ fun ProfileEditScreen(
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(48.dp),
-                    tabs = tabs.map { it.title },
+                        .height(32.dp),
+                    tabs = tabs.map { stringResource(it.title.resource) },
                     edgePadding = (-16).dp,
-                )
-                Spacer(
-                    modifier = Modifier.padding(16.dp),
+                    indicatorHeight = 10.dp,
                 )
                 Box(
                     modifier = Modifier
@@ -90,7 +90,6 @@ fun ProfileEditScreen(
                 }
             }
         }
-        Spacer(Modifier.height(16.dp))
     }
 }
 
