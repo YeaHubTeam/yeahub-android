@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,36 +33,28 @@ import ru.yeahub.core_ui.theme.LocalAppTypography
 import ru.yeahub.core_ui.theme.colors
 import ru.yeahub.interview_trainer.impl.R
 
-private val FIGMA_HORIZONTAL_PADDING = 16.dp
-private val FIGMA_VERTICAL_BLOCKS_PADDING = 16.dp
-private val FIGMA_VERTICAL_FIRST_AND_LAST_ELEMENT_PADDING = 24.dp
-
-@StaticPreview
 @Composable
 fun CreateQuizLoading(
+    paddingValues: PaddingValues,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier = modifier
-            .padding(horizontal = FIGMA_HORIZONTAL_PADDING)
-    ) {
-        Text(
-            modifier = Modifier
-                .padding(vertical = 24.dp),
-            style = LocalAppTypography.current.head5,
-            text = stringResource(R.string.create_quiz_screen_main_title),
-            color = colors.black900
-        )
+    Box(modifier = modifier.padding(paddingValues)) {
+        Column(
+            modifier = Modifier.padding(horizontal = 16.dp)
+        ) {
+            Text(
+                modifier = Modifier.padding(vertical = 24.dp),
+                style = LocalAppTypography.current.head5,
+                text = stringResource(R.string.create_quiz_screen_main_title),
+                color = colors.black900
+            )
 
-        PlaceHolderBlock()
+            PlaceHolderBlock()
 
-        Spacer(modifier = Modifier.height(FIGMA_VERTICAL_BLOCKS_PADDING))
+            Spacer(modifier = Modifier.weight(1f))
 
-        PlaceHolderBlock()
-
-        Spacer(modifier = Modifier.weight(1f))
-
-        DisabledStartQuizButton()
+            DisabledStartQuizButton()
+        }
     }
 }
 
@@ -88,7 +81,7 @@ private fun PlaceHolderBlock(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(148.dp)
+                .height(640.dp)
                 .background(Color.LightGray, shape = RoundedCornerShape(4.dp))
         )
     }
@@ -100,7 +93,7 @@ private fun DisabledStartQuizButton(
 ) {
     SecondaryButton(
         modifier = modifier
-            .padding(vertical = FIGMA_VERTICAL_FIRST_AND_LAST_ELEMENT_PADDING)
+            .padding(vertical = 24.dp)
             .height(48.dp)
             .fillMaxWidth(),
         enabled = false,
@@ -128,4 +121,10 @@ private fun DisabledStartQuizButton(
             )
         }
     }
+}
+
+@StaticPreview
+@Composable
+internal fun StaticPreviewCreateQuizLoading() {
+    CreateQuizLoading(paddingValues = PaddingValues(0.dp))
 }
