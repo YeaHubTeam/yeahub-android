@@ -4,5 +4,5 @@ import ru.yeahub.authentication.impl.registration.domain.entity.RegistrationMode
 
 interface RegistrationRepositoryApi {
 
-    suspend fun registration(user: RegistrationModel): Result<Unit>
+    suspend fun register(registrationModel: RegistrationModel): Result<Unit>
 }
