@@ -170,6 +170,8 @@ fun DefaultButton(
             purple
         } else if (newContentColor == black && fillButton && activeButton) {
             black
+        } else if (newContentColor == Theme.colors.white900) {
+            black
         } else {
             newContentColor
         }
