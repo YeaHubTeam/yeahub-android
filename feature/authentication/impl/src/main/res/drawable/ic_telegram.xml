@@ -1,0 +1,56 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="44dp"
+    android:height="44dp"
+    android:viewportWidth="44"
+    android:viewportHeight="44">
+
+  <!-- Круг до краёв -->
+  <path
+      android:pathData="M22,44C34.15,44 44,34.15 44,22C44,9.85 34.15,0 22,0C9.85,0 0,9.85 0,22C0,34.15 9.85,44 22,44Z">
+
+    <aapt:attr name="android:fillColor">
+      <gradient
+          android:startX="24.75"
+          android:startY="10.1"
+          android:endX="13.75"
+          android:endY="35.75"
+          android:type="linear">
+
+        <item android:offset="0" android:color="#FF37AEE2"/>
+        <item android:offset="1" android:color="#FF1E96C8"/>
+
+      </gradient>
+    </aapt:attr>
+
+  </path>
+
+  <!-- Самолётик увеличен -->
+  <path
+      android:pathData="M18.98,32.67C18.27,32.67 18.39,32.40 18.14,31.70L16.05,24.79L32.18,15.23"
+      android:fillColor="#C8DAEA"/>
+
+  <path
+      android:pathData="M18.98,32.67C19.53,32.67 19.77,32.42 20.07,32.12L22.99,29.27L19.33,27.06"
+      android:fillColor="#A9C9DD"/>
+
+  <path
+      android:pathData="M19.33,27.06L28.14,33.57C29.15,34.13 29.88,33.84 30.14,32.65L33.75,15.75C34.12,14.29 33.18,13.64 32.19,14.09L10.95,22.26C9.49,22.85 9.50,23.65 10.67,24.01L16.12,25.70L28.71,17.76C29.30,17.40 29.84,17.59 29.40,17.99">
+
+    <aapt:attr name="android:fillColor">
+      <gradient
+          android:startX="21.5"
+          android:startY="24.8"
+          android:endX="23.9"
+          android:endY="32.4"
+          android:type="linear">
+
+        <item android:offset="0" android:color="#FFEFF7FC"/>
+        <item android:offset="1" android:color="#FFFFFFFF"/>
+
+      </gradient>
+    </aapt:attr>
+
+  </path>
+
+</vector>
