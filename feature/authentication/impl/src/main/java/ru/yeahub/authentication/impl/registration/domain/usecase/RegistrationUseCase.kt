@@ -9,4 +9,3 @@ class RegistrationUseCase(private val repository: RegistrationRepositoryApi) {
         return repository.register(user)
     }
 }
-

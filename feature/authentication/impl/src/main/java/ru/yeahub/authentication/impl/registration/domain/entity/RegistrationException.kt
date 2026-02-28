@@ -1,11 +1,20 @@
 package ru.yeahub.authentication.impl.registration.domain.entity
 
-sealed class RegistrationException : Exception() {
+data class Failure(
+    val cause: Throwable? = null,
+    val httpCode: Int? = null
+)
 
-    class EmailAlreadyExists : RegistrationException()
-    class NickNameTaken : RegistrationException()
-    class InvalidCredentials : RegistrationException()
-    class NetworkError : RegistrationException()
-    class ServerError : RegistrationException()
-    class UnknownError(override val cause: Throwable) : RegistrationException()
+sealed interface RegistrationError {
+    data object EmailAlreadyExists : RegistrationError
+    data object NickNameTaken : RegistrationError
+    data object InvalidCredentials : RegistrationError
+    data object Network : RegistrationError
+    data object Server : RegistrationError
+    data object Unknown : RegistrationError
 }
+
+class RegistrationException(
+    val error: RegistrationError,
+    val failure: Failure = Failure()
+) : Exception(failure.cause)
