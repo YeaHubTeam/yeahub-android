@@ -5,7 +5,8 @@ import ru.yeahub.authentication.impl.registration.domain.repository.Registration
 
 class RegistrationUseCase(private val repository: RegistrationRepositoryApi) {
 
-    suspend fun invoke(user: RegistrationModel): Result<Unit> {
-        return repository.registration(user)
+    suspend operator fun invoke(user: RegistrationModel): Result<Unit> {
+        return repository.register(user)
     }
 }
+
