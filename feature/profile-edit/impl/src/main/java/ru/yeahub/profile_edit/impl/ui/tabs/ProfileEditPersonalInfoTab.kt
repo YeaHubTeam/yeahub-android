@@ -26,6 +26,8 @@ import ru.yeahub.core_ui.component.textInput.DefaultTextField
 import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.profile_edit.impl.presentation.ProfileEditState
 import ru.yeahub.profile_edit.impl.presentation.intents.ProfileEditScreenEvent
+import ru.yeahub.profile_edit.impl.ui.FieldLabel
+import ru.yeahub.profile_edit.impl.ui.SectionTitle
 import ru.yeahub.ui.R
 
 private val PERSONAL_INFO_TOP_PADDING = 2.dp
@@ -212,32 +214,6 @@ private fun ProfileAvatarSection(
             )
         }
     }
-}
-
-@Composable
-private fun SectionTitle(
-    title: String,
-    modifier: Modifier = Modifier,
-) {
-    Text(
-        text = title,
-        style = Theme.typography.head7,
-        color = Theme.colors.black900,
-        modifier = modifier,
-    )
-}
-
-@Composable
-private fun FieldLabel(
-    text: String,
-    modifier: Modifier = Modifier,
-) {
-    Text(
-        text = text,
-        style = Theme.typography.body7,
-        color = Theme.colors.black900,
-        modifier = modifier.padding(bottom = 4.dp),
-    )
 }
 
 @Composable
