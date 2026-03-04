@@ -17,13 +17,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import ru.yeahub.core_ui.example.staticPreview.StaticPreview
 import ru.yeahub.core_ui.theme.Theme
-import ru.yeahub.core_utils.common.RussianPluralForms
-import ru.yeahub.core_utils.common.formatRussianCount
 import ru.yeahub.ui.R
 
 @Composable
@@ -88,9 +87,10 @@ fun CollectionCard(
                     contentDescription = null
                 )
                 Text(
-                    text = formatRussianCount(
+                    text = pluralStringResource(
+                        id = R.plurals.questions_count,
                         count = questionsCount,
-                        forms = QUESTION_COUNT_WORD_FORMS,
+                        questionsCount
                     ),
                     style = Theme.typography.body1,
                     color = Theme.colors.purple700
@@ -112,9 +112,3 @@ fun CollectionCardPreview() {
         }
     )
 }
-
-private val QUESTION_COUNT_WORD_FORMS = RussianPluralForms(
-    one = "вопрос",
-    few = "вопроса",
-    many = "вопросов",
-)
