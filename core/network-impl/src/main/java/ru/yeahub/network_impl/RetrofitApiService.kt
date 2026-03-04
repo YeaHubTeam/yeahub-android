@@ -25,7 +25,7 @@ interface RetrofitApiService : ApiService {
         @Query("collection") collection: Int?,
         @Query("rate") rate: List<Int>?,
         @Query("keywords") keywords: List<String>?,
-        @Query("specialization") specialization: Int?,
+        @Query("specializationId") specializationId: Int?,
         @Query("orderBy") orderBy: String?,
         @Query("order") order: String?,
         @Query("random") random: Boolean?
