@@ -44,9 +44,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import ru.yeahub.core_ui.component.ErrorScreen
 import ru.yeahub.core_ui.component.SkillButton
@@ -199,7 +196,14 @@ private fun UserAvatarImage(userData: UserData) {
             .background(Theme.colors.black50),
         contentAlignment = Alignment.Center
     ) {
-        if (!userData.avatarUrl.isNullOrBlank()) {
+        if (userData.avatarUrl.isNullOrBlank()) {
+            Image(
+                painter = painterResource(id = R.drawable.surikatik),
+                contentDescription = stringResource(R.string.profile_photo),
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+        } else {
             AsyncImage(
                 model = userData.avatarUrl,
                 contentDescription = stringResource(R.string.profile_photo),
@@ -207,13 +211,6 @@ private fun UserAvatarImage(userData: UserData) {
                 modifier = Modifier.fillMaxSize(),
                 error = painterResource(id = R.drawable.surikatik),
                 placeholder = painterResource(id = R.drawable.surikatik)
-            )
-        } else {
-            Image(
-                painter = painterResource(id = R.drawable.surikatik),
-                contentDescription = stringResource(R.string.profile_photo),
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize()
             )
         }
     }
@@ -527,11 +524,13 @@ class ProfileScreenStateParamProvider : PreviewParameterProvider<ProfileScreenSt
 )
 @Composable
 fun DynamicPreviewUI() {
-    val mockViewModel = viewModelCreator<ProfileViewModel> {
-        ProfileViewModel(ProfileScreenMapper())
+    val viewModel = remember {
+        ProfileViewModel(
+            screenMapper = ProfileScreenMapper()
+        )
     }
 
-    val state by mockViewModel.screenState.collectAsState()
+    val state by viewModel.screenState.collectAsState()
 
     Box(
         modifier = Modifier
@@ -539,26 +538,10 @@ fun DynamicPreviewUI() {
             .background(Theme.colors.black25)
     ) {
         ProvidePreviewCompositionLocals {
-            ProfileScreen(
-                state = state
-            )
+            ProfileScreen(state = state)
         }
     }
 }
-
-typealias ViewModelCreator = () -> ViewModel?
-
-class ViewModelFactory(
-    private val viewModelCreator: ViewModelCreator = { null },
-) : ViewModelProvider.Factory {
-
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel> create(modelClass: Class<T>): T = viewModelCreator() as T
-}
-
-@Composable
-inline fun <reified VM : ViewModel> viewModelCreator(noinline creator: ViewModelCreator): VM =
-    viewModel(factory = remember { ViewModelFactory(creator) })
 
 @StaticPreview
 @Composable
@@ -566,7 +549,5 @@ fun StaticPreviewUI(
     @PreviewParameter(ProfileScreenStateParamProvider::class)
     state: ProfileScreenState
 ) {
-    ProfileScreen(
-        state = state
-    )
+    ProfileScreen(state = state)
 }
