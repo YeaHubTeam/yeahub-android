@@ -16,22 +16,19 @@ class RegistrationRepositoryImpl(
     private val mapper: RegistrationDomainToDataMapper
 ) : RegistrationRepositoryApi {
 
-    override suspend fun register(registrationModel: RegistrationModel): Result<Unit> =
+    override suspend fun register(registrationModel: RegistrationModel) =
         try {
             val request = mapper.map(registrationModel)
             remoteDataSourceApi.register(request)
-            Result.success(Unit)
         } catch (e: CancellationException) {
             throw e
         } catch (e: IOException) {
-            Result.failure(
-                RegistrationException(
-                    error = RegistrationError.Network,
-                    failure = Failure(cause = e)
-                )
+            throw RegistrationException(
+                error = RegistrationError.Network,
+                failure = Failure(cause = e)
             )
         } catch (e: HttpException) {
-            Result.failure(mapHttpException(e))
+            throw mapHttpException(e)
         }
 
     private fun mapHttpException(e: HttpException): RegistrationException {

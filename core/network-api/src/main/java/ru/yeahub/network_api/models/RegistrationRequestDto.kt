@@ -1,6 +1,6 @@
 package ru.yeahub.network_api.models
 
-data class RegistrationRequest(
+data class RegistrationRequestDto(
     val nickname: String,
     val email: String,
     val password: String,
