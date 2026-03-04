@@ -60,3 +60,6 @@ include(":feature:questions-or-collections:impl")
 
 include(":feature:authentication:api")
 include(":feature:authentication:impl")
+include(":feature:enter-and-registration")
+include(":feature:enter-and-registration:api")
+include(":feature:enter-and-registration:impl")
