@@ -23,6 +23,9 @@
     <string name="error_screen_title_text">УПС!</string>
     <string name="on_back_button_text">Назад</string>
     <string name="unknown_error_screen_text">Не удалось загрузить данные</string>
+    <string name="question_count_word_one">вопрос</string>
+    <string name="question_count_word_few">вопроса</string>
+    <string name="question_count_word_many">вопросов</string>
     <plurals name="questions_count">
         <item quantity="one">%1$d вопрос</item>
         <item quantity="few">%1$d вопроса</item>
