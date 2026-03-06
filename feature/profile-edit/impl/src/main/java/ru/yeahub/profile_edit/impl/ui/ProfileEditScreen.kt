@@ -43,6 +43,16 @@ fun ProfileEditScreen(
     aboutMeContent: @Composable (() -> Unit),
     skillsContent: @Composable (() -> Unit),
 ) {
+    val tabTitles = remember(tabs) {
+        tabs.map { tab ->
+            when (tab) {
+                PersonalInfo -> ru.yeahub.ui.R.string.profile_personal_information
+                AboutMe -> ru.yeahub.ui.R.string.profile_about_me
+                Skills -> ru.yeahub.ui.R.string.profile_skills
+            }
+        }
+    }
+
     Scaffold(
         containerColor = Theme.colors.black10,
         topBar = {
@@ -79,15 +89,7 @@ fun ProfileEditScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(32.dp),
-                    tabs = tabs.map { tab ->
-                        stringResource(
-                            when (tab) {
-                                PersonalInfo -> ru.yeahub.ui.R.string.profile_personal_information
-                                AboutMe -> ru.yeahub.ui.R.string.profile_about_me
-                                Skills -> ru.yeahub.ui.R.string.profile_skills
-                            },
-                        )
-                    },
+                    tabs = tabTitles.map { stringResource(it) },
                     edgePadding = (-16).dp,
                     indicatorHeight = 10.dp,
                 )
