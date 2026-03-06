@@ -12,25 +12,33 @@ android {
         minSdk = 24
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles("consumer-rules.pro")
     }
 
     buildTypes {
         release {
             isMinifyEnabled = false
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt")
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
             )
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-    kotlinOptions {
-        jvmTarget = "17"
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     buildFeatures {
         compose = true
+    }
+    testOptions {
+        unitTests.all {
+            it.useJUnitPlatform()
+            it.jvmArgs("-XX:+EnableDynamicAgentLoading")
+        }
+    }
+    kotlinOptions {
+        jvmTarget = "11"
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.8"
@@ -40,22 +48,25 @@ android {
 dependencies {
     implementation(project(":core:navigation-api"))
     implementation(project(":core:network-api"))
-    implementation(project(":core:utils"))
+    implementation(libs.androidx.compose.material.icons.extended)
     implementation(project(":core:ui"))
+    implementation(project(":core:utils"))
 
+    implementation(libs.androidx.core.ktx)
     implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.runtime.android)
 
-    implementation(libs.compose.shimmer)
-
+    implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.koin.core)
     implementation(libs.koin.android)
     implementation(libs.koin.compose)
 
     // Navigation dependencies
+    implementation(libs.compose.shimmer)
     implementation(libs.androidx.navigation.compose)
 
     // Timber
@@ -65,6 +76,8 @@ dependencies {
     // Retrofit (for HttpException)
     implementation(libs.retrofit.core)
 
+    debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.androidx.ui.test.manifest)
     testImplementation(libs.junit.jupiter)
     testImplementation(platform(libs.junit.bom))
     testRuntimeOnly(libs.junit.platform.launcher)
