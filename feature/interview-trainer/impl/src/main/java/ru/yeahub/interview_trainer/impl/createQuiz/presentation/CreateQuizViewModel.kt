@@ -26,8 +26,8 @@ open class CreateQuizViewModel(
             questionsCount = MIN_QUESTIONS_COUNT
         )
     )
-    val request = SpecializationsRequest(page = 1, limit = 99)
-    val specsDef = viewModelScopeSafe.async {
+    val specsDef = viewModelScopeSafe.async(Dispatchers.IO) {
+        val request = SpecializationsRequest(page = 1, limit = 99)
         getSpecializationsListUseCase(request).data
     }
 
