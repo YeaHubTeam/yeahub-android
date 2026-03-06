@@ -19,6 +19,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentMapOf
 import ru.yeahub.core_ui.component.CoreTopTabs
 import ru.yeahub.core_ui.component.TopAppBarWithBottomBorder
 import ru.yeahub.core_ui.theme.Theme
@@ -66,14 +68,22 @@ fun ProfileEditScreen(
                     ),
             ) {
                 CoreTopTabs(
-                    selectedIndex = state.selectedTab.index,
+                    selectedIndex = state.selectedTab.ordinal,
                     onSelected = { index ->
                         onTabSelected(ProfileEditState.ProfileEditTabs.entries[index])
                     },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(32.dp),
-                    tabs = tabs.map { stringResource(it.title.resource) },
+                    tabs = tabs.map { tab ->
+                        stringResource(
+                            when (tab) {
+                                ProfileEditState.ProfileEditTabs.PersonalInfo -> ru.yeahub.ui.R.string.profile_personal_information
+                                ProfileEditState.ProfileEditTabs.AboutMe -> ru.yeahub.ui.R.string.profile_about_me
+                                ProfileEditState.ProfileEditTabs.Skills -> ru.yeahub.ui.R.string.profile_skills
+                            },
+                        )
+                    },
                     edgePadding = (-16).dp,
                     indicatorHeight = 10.dp,
                 )
@@ -82,10 +92,10 @@ fun ProfileEditScreen(
                         .fillMaxWidth()
                         .background(Theme.colors.white900),
                 ) {
-                    when (state.selectedTab.index) {
-                        0 -> personalInfoContent()
-                        1 -> aboutMeContent()
-                        2 -> skillsContent()
+                    when (state.selectedTab) {
+                        ProfileEditState.ProfileEditTabs.PersonalInfo -> personalInfoContent()
+                        ProfileEditState.ProfileEditTabs.AboutMe -> aboutMeContent()
+                        ProfileEditState.ProfileEditTabs.Skills -> skillsContent()
                     }
                 }
             }
@@ -105,14 +115,14 @@ fun ProfileEditPreview() {
             specialization = "Android Разработчик",
             email = "johndoe@gmail.com",
             location = "Санкт-Петербург",
-            socialLinksUrlMap = emptyMap(),
+            socialLinksUrlMap = persistentMapOf(),
         ),
         aboutMeTabState = ProfileEditState.AboutMeTabState(
             aboutMeField = "",
         ),
         skillsTabState = ProfileEditState.SkillsTabState(
-            listOfSkills = emptyList(),
-            listOfChosenSkills = emptyList(),
+            listOfSkills = persistentListOf(),
+            listOfChosenSkills = persistentListOf(),
         ),
     )
 
