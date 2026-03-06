@@ -26,13 +26,17 @@ import ru.yeahub.core_ui.component.TopAppBarWithBottomBorder
 import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.core_utils.common.TextOrResource
 import ru.yeahub.profile_edit.impl.presentation.ProfileEditState
+import ru.yeahub.profile_edit.impl.presentation.ProfileEditState.ProfileEditTabs
+import ru.yeahub.profile_edit.impl.presentation.ProfileEditState.ProfileEditTabs.AboutMe
+import ru.yeahub.profile_edit.impl.presentation.ProfileEditState.ProfileEditTabs.PersonalInfo
+import ru.yeahub.profile_edit.impl.presentation.ProfileEditState.ProfileEditTabs.Skills
 import ru.yeahub.profile_edit.impl.ui.tabs.PersonalInfoContent
 
 @Composable
 fun ProfileEditScreen(
-    tabs: List<ProfileEditState.ProfileEditTabs>,
+    tabs: List<ProfileEditTabs>,
     state: ProfileEditState.Loaded,
-    onTabSelected: (ProfileEditState.ProfileEditTabs) -> Unit,
+    onTabSelected: (ProfileEditTabs) -> Unit,
     onBackClick: () -> Unit,
     headerText: TextOrResource,
     personalInfoContent: @Composable (() -> Unit),
@@ -70,7 +74,7 @@ fun ProfileEditScreen(
                 CoreTopTabs(
                     selectedIndex = state.selectedTab.ordinal,
                     onSelected = { index ->
-                        onTabSelected(ProfileEditState.ProfileEditTabs.entries[index])
+                        onTabSelected(ProfileEditTabs.entries[index])
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -78,9 +82,9 @@ fun ProfileEditScreen(
                     tabs = tabs.map { tab ->
                         stringResource(
                             when (tab) {
-                                ProfileEditState.ProfileEditTabs.PersonalInfo -> ru.yeahub.ui.R.string.profile_personal_information
-                                ProfileEditState.ProfileEditTabs.AboutMe -> ru.yeahub.ui.R.string.profile_about_me
-                                ProfileEditState.ProfileEditTabs.Skills -> ru.yeahub.ui.R.string.profile_skills
+                                PersonalInfo -> ru.yeahub.ui.R.string.profile_personal_information
+                                AboutMe -> ru.yeahub.ui.R.string.profile_about_me
+                                Skills -> ru.yeahub.ui.R.string.profile_skills
                             },
                         )
                     },
@@ -93,9 +97,9 @@ fun ProfileEditScreen(
                         .background(Theme.colors.white900),
                 ) {
                     when (state.selectedTab) {
-                        ProfileEditState.ProfileEditTabs.PersonalInfo -> personalInfoContent()
-                        ProfileEditState.ProfileEditTabs.AboutMe -> aboutMeContent()
-                        ProfileEditState.ProfileEditTabs.Skills -> skillsContent()
+                        PersonalInfo -> personalInfoContent()
+                        AboutMe -> aboutMeContent()
+                        Skills -> skillsContent()
                     }
                 }
             }
@@ -107,7 +111,7 @@ fun ProfileEditScreen(
 @Composable
 fun ProfileEditPreview() {
     val screenState = ProfileEditState.Loaded(
-        selectedTab = ProfileEditState.ProfileEditTabs.PersonalInfo,
+        selectedTab = PersonalInfo,
         personalInfoState = ProfileEditState.PersonalInfoTabState(
             avatarUrl = null,
             nickname = "John Doe",
@@ -140,7 +144,7 @@ fun ProfileEditPreview() {
         },
         aboutMeContent = { },
         skillsContent = { },
-        tabs = ProfileEditState.ProfileEditTabs.entries,
+        tabs = ProfileEditTabs.entries,
         headerText = TextOrResource.Text("Редактирование профиля"),
     )
 }
