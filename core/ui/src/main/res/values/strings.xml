@@ -24,4 +24,26 @@
     <string name="error_screen_title_text">УПС!</string>
     <string name="on_back_button_text">Назад</string>
     <string name="unknown_error_screen_text">Не удалось загрузить данные</string>
+    <string name="profile_photo">Фото профиля</string>
+    <string name="profile_photo_description">Ваше фото будет видно всем членам
+сообщества Yeahub</string>
+    <string name="profile_personal_info_title">Личная информация</string>
+    <string name="profile_personal_info_subtitle">Ваша подробная информация</string>
+    <string name="profile_nickname_label">Никнейм *</string>
+    <string name="profile_nickname_placeholder">Придумайте никнейм</string>
+    <string name="profile_specialization_label">IT Специальность*</string>
+    <string name="profile_specialization_placeholder">Граф. дизайнер</string>
+    <string name="profile_email_label">Email для связи</string>
+    <string name="profile_email_placeholder">Email@gmail.com</string>
+    <string name="profile_location_label">Локация</string>
+    <string name="profile_location_placeholder">Напр. Санкт-Петербург, Россия</string>
+    <string name="profile_links_title">Личные ссылки</string>
+    <string name="profile_links_subtitle">Поделитесь своими профилями в других\nсоц. сетях</string>
+    <string name="profile_link_placeholder">Ссылка</string>
+    <string name="profile_remove_photo">Удалить фото</string>
+    <string name="profile_personal_information">"Личная информация"</string>
+    <string name="profile_about_me">Обо мне</string>
+    <string name="profile_skills">Навыки</string>
+    <string name="profile_photo_click_for_edit">Кликни для изменения</string>
+    <string name="profile_photo_helper">JPG, PNG, JPEG (не более 5мб)</string>
 </resources>

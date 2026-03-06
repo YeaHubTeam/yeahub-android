@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -31,8 +32,8 @@ import ru.yeahub.ui.R
 @Composable
 fun UploadPhotoButton(
     modifier: Modifier = Modifier,
-    title: String = "Кликни для изменения",
-    helper: String = "JPG, PNG, JPEG (не более 5мб)",
+    title: String = stringResource(R.string.profile_photo_click_for_edit),
+    helper: String = stringResource(R.string.profile_photo_helper),
     onClick: () -> Unit,
 ) {
     val shape = RoundedCornerShape(12.dp)
@@ -68,11 +69,11 @@ fun UploadPhotoButton(
 
             Spacer(Modifier.height(12.dp))
 
-            Text(text = title, style = Theme.typography.body3, color = Theme.colors.purple700)
+            Text(text = title, style = Theme.typography.body7Alt, color = Theme.colors.purple700)
 
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(33.dp))
 
-            Text(text = helper, style = Theme.typography.body7, color = Theme.colors.black200)
+            Text(text = helper, style = Theme.typography.body7Alt, color = Theme.colors.black200)
         }
     }
 }

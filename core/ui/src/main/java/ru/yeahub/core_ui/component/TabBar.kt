@@ -2,11 +2,13 @@ package ru.yeahub.core_ui.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -15,8 +17,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
@@ -69,12 +73,13 @@ fun CoreTopTabs(
         divider = { HorizontalDivider(thickness = 0.dp) },
         indicator = { positions ->
             val pos = positions[selectedIndex]
-            Box(
+            TabRowDefaults.SecondaryIndicator(
                 Modifier
                     .tabIndicatorOffset(pos)
                     .padding(horizontal = indicatorHorizontalPadding)
                     .height(indicatorHeight)
                     .background(colors.indicatorColor),
+                color = colors.indicatorColor,
             )
         },
     ) {
@@ -84,14 +89,22 @@ fun CoreTopTabs(
                 selected = isSelected,
                 onClick = { onSelected(index) },
                 text = {
-                    Text(
-                        text = title,
-                        color = if (isSelected) colors.selectedTextColor else colors.unselectedTextColor,
-                        style = Theme.typography.head6,
-                        maxLines = 1,
-                        softWrap = false,
-                        overflow = TextOverflow.Visible,
-                    )
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(26.dp),
+                        contentAlignment = Alignment.TopStart,
+                    ) {
+                        Text(
+                            text = title,
+                            color = if (isSelected) colors.selectedTextColor else colors.unselectedTextColor,
+                            style = Theme.typography.head6,
+                            maxLines = 1,
+                            softWrap = false,
+                            overflow = TextOverflow.Visible,
+                            textAlign = TextAlign.Left,
+                        )
+                    }
                 },
             )
         }
