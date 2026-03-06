@@ -24,7 +24,6 @@ sealed interface ProfileEditState {
         Skills,
     }
 
-
     enum class SocialLinks {
         Instagram,
         Linkedin,
