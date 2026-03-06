@@ -47,4 +47,6 @@
     <string name="profile_skills">Навыки</string>
     <string name="profile_photo_click_for_edit">Кликни для изменения</string>
     <string name="profile_photo_helper">JPG, PNG, JPEG (не более 5мб)</string>
+    <string name="about_me_tab">О себе любимом(-ой)</string>
+    <string name="about_me_tab_label">Расскажи о себе всему сообществу. Мы ценим человека за его профессиональные качества, поэтому пиши всё, чем хочешь поделиться.</string>
 </resources>

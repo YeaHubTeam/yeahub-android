@@ -24,6 +24,7 @@ import ru.yeahub.core_ui.component.TopAppBarWithBottomBorder
 import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.core_utils.common.TextOrResource
 import ru.yeahub.profile_edit.impl.presentation.ProfileEditState
+import ru.yeahub.profile_edit.impl.ui.tabs.AboutMeContent
 import ru.yeahub.profile_edit.impl.ui.tabs.PersonalInfoContent
 
 @Composable
@@ -128,8 +129,13 @@ fun ProfileEditPreview() {
                 onAction = { },
             )
         },
-        aboutMeContent = { },
-        skillsContent = { },
+        aboutMeContent = {
+            AboutMeContent(
+                state = state.aboutMeTabState
+            )
+        },
+        skillsContent = {
+        },
         tabs = ProfileEditState.ProfileEditTabs.entries,
         headerText = TextOrResource.Text("Редактирование профиля"),
     )
