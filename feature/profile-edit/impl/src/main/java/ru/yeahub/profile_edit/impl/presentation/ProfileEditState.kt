@@ -1,6 +1,5 @@
 package ru.yeahub.profile_edit.impl.presentation
 
-import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.PersistentMap
 
@@ -8,7 +7,6 @@ sealed interface ProfileEditState {
 
     data object Loading : ProfileEditState
 
-    @Immutable
     data class Loaded(
         val selectedTab: ProfileEditTabs,
         val personalInfoState: PersonalInfoTabState,

@@ -141,7 +141,7 @@ fun ProfileEditPreview() {
         personalInfoContent = {
             PersonalInfoContent(
                 state = state.personalInfoState,
-                onAction = { },
+                onEvent = { },
             )
         },
         aboutMeContent = { },
