@@ -80,6 +80,7 @@ dependencies {
     implementation(libs.koin.core)
     implementation(libs.koin.android)
     implementation(libs.koin.compose)
+    implementation(libs.immutable.collections)
 
     implementation(libs.androidx.navigation.compose)
     androidTestImplementation(libs.androidx.espresso.core)

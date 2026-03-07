@@ -1,6 +1,7 @@
 package ru.yeahub.profile.impl.presentation
 
 import ru.yeahub.profile.impl.R
+import kotlinx.collections.immutable.PersistentList
 
 sealed interface ProfileScreenState {
 
@@ -11,7 +12,7 @@ sealed interface ProfileScreenState {
     ) : ProfileScreenState
 
     data class Error(
-        val throwable: Throwable
+        val message: String
     ) : ProfileScreenState
 
     data object Unauthorized : ProfileScreenState
@@ -22,21 +23,20 @@ sealed interface ProfileScreenState {
 data class UserData(
     val id: String,
     val username: String,
-    val avatarUrl: String? = null,
-    val city: String? = null,
-    val country: String? = null,
-    val telegramUsername: String? = null,
-    val aboutMe: String? = null,
-    val roles: List<String> = emptyList(),
-    val skills: List<String> = emptyList(),
-    val specialization: String? = null,
-    val socialNetworks: List<SocialNetwork> = emptyList()
+    val avatarUrl: String?,
+    val city: String?,
+    val country: String?,
+    val telegramUsername: String?,
+    val aboutMe: String?,
+    val roles: PersistentList<String>,
+    val skills: PersistentList<String>,
+    val specialization: String?,
+    val socialNetworks: PersistentList<SocialNetwork>
 )
 
 data class SocialNetwork(
     val code: String,
-    val title: String,
-    val url: String? = null
+    val title: String
 ) {
     fun getUrlFromCode(username: String? = null): String? {
         val userIdentifier = username ?: title

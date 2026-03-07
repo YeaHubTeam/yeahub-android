@@ -45,6 +45,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import kotlinx.collections.immutable.persistentListOf
 import ru.yeahub.core_ui.component.ErrorScreen
 import ru.yeahub.core_ui.component.SkillButton
 import ru.yeahub.core_ui.component.TagContainer
@@ -103,12 +104,12 @@ fun ProfileScreen(
             )
 
             is ProfileScreenState.Error -> ErrorScreen(
-                error = state.throwable.localizedMessage,
+                error = state.message,
                 errorText = TextOrResource.Resource(R.string.error_screen_text),
                 titleText = TextOrResource.Resource(R.string.error_screen_title_text),
                 backText = TextOrResource.Resource(R.string.on_back_button_text),
                 unknownErrorText = TextOrResource.Resource(R.string.unknown_error_screen_text),
-                onBack = { /* TODO */ }
+                onBackClicked = { /* TODO */ }
             )
 
             ProfileScreenState.Unauthorized -> ErrorScreen(
@@ -117,7 +118,7 @@ fun ProfileScreen(
                 titleText = TextOrResource.Resource(R.string.error_screen_title_text),
                 backText = TextOrResource.Resource(R.string.on_back_button_text),
                 unknownErrorText = TextOrResource.Resource(R.string.unknown_error_screen_text),
-                onBack = { /* TODO */ }
+                onBackClicked = { /* TODO */ }
             )
 
             ProfileScreenState.UserDeleted -> ErrorScreen(
@@ -126,7 +127,7 @@ fun ProfileScreen(
                 titleText = TextOrResource.Resource(R.string.error_screen_title_text),
                 backText = TextOrResource.Resource(R.string.on_back_button_text),
                 unknownErrorText = TextOrResource.Resource(R.string.unknown_error_screen_text),
-                onBack = { /* TODO */ }
+                onBackClicked = { /* TODO */ }
             )
         }
     }
@@ -491,18 +492,18 @@ class ProfileScreenStateParamProvider : PreviewParameterProvider<ProfileScreenSt
                     aboutMe = "Опытный Android разработчик с 5+ лет опыта. " +
                             "Специализируюсь на Kotlin, Compose, Clean Architecture. " +
                             "Участвую в open-source проектах и люблю делиться знаниями.",
-                    skills = listOf(
+                    skills = persistentListOf(
                         "Kotlin",
                         "Jetpack Compose",
                         "Clean Architecture",
                         "Coroutines"
                     ),
                     avatarUrl = null,
-                    roles = listOf("Кандидат", "Участник сообщества", "Ментор"),
+                    roles = persistentListOf("Кандидат", "Участник сообщества", "Ментор"),
                     country = "Россия",
                     city = "Москва",
                     telegramUsername = "john_doe",
-                    socialNetworks = listOf(
+                    socialNetworks = persistentListOf(
                         SocialNetwork("instagram", "john_doe"),
                         SocialNetwork("linkedin", "john-doe-123"),
                         SocialNetwork("github", "johndoe")
@@ -510,7 +511,7 @@ class ProfileScreenStateParamProvider : PreviewParameterProvider<ProfileScreenSt
                 )
             ),
             ProfileScreenState.Error(
-                throwable = Throwable("Не удалось загрузить данные профиля")
+                message = "Не удалось загрузить данные профиля"
             ),
             ProfileScreenState.Unauthorized,
             ProfileScreenState.UserDeleted

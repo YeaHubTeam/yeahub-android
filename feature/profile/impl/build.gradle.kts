@@ -54,6 +54,8 @@ dependencies {
     implementation(libs.koin.android)
     implementation(libs.koin.compose)
 
+    implementation(libs.immutable.collections)
+
     implementation(libs.compose.shimmer)
 
     implementation(libs.coil.compose)

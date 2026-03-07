@@ -1,5 +1,6 @@
 package ru.yeahub.profile.impl.presentation
 
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
@@ -28,7 +29,7 @@ class ProfileViewModel(
         private const val ABOUT_ME_BASE_REPEAT_COUNT = 20
         private const val ABOUT_ME_SPECIALIZATION_REPEAT_COUNT = 10
 
-        private val SKILLS = listOf(
+        private val SKILLS = persistentListOf(
             "Kotlin",
             "Jetpack Compose",
             "Clean Architecture",
@@ -37,7 +38,7 @@ class ProfileViewModel(
             "Room"
         )
 
-        private val ROLES = listOf("Кандидат", "Участник сообщества", "Ментор")
+        private val ROLES = persistentListOf("Кандидат", "Участник сообщества", "Ментор")
 
         private const val INSTAGRAM_USERNAME = "john_doe"
         private const val LINKEDIN_USERNAME = "john-doe-123"
@@ -58,7 +59,7 @@ class ProfileViewModel(
             country = COUNTRY,
             city = CITY,
             telegramUsername = TELEGRAM_USERNAME,
-            socialNetworks = listOf(
+            socialNetworks = persistentListOf(
                 SocialNetwork("instagram", INSTAGRAM_USERNAME),
                 SocialNetwork("linkedin", LINKEDIN_USERNAME),
                 SocialNetwork("github", GITHUB_USERNAME)
@@ -88,7 +89,7 @@ class ProfileViewModel(
                     country = COUNTRY,
                     city = CITY,
                     telegramUsername = TELEGRAM_USERNAME,
-                    socialNetworks = listOf(
+                    socialNetworks = persistentListOf(
                         SocialNetwork("instagram", INSTAGRAM_USERNAME),
                         SocialNetwork("linkedin", LINKEDIN_USERNAME),
                         SocialNetwork("github", GITHUB_USERNAME)

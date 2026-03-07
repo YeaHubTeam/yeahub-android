@@ -58,7 +58,6 @@ dependencies {
     implementation(libs.koin.android)
     implementation(libs.koin.compose)
 
-    // Timber
     implementation(libs.timber)
 
     testImplementation(libs.junit)
