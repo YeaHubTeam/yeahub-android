@@ -1,7 +1,7 @@
 package ru.yeahub.profile.impl.presentation
 
-import ru.yeahub.profile.impl.R
 import kotlinx.collections.immutable.PersistentList
+import ru.yeahub.profile.impl.R
 
 sealed interface ProfileScreenState {
 
