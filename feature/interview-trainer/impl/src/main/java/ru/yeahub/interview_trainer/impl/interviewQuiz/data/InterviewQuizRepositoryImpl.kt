@@ -13,9 +13,9 @@ class InterviewQuizRepositoryImpl(
     override suspend fun getQuestionsList(
         request: QuestionsRequest
     ): DomainQuestionsListResponse = mapper.mapDataListToDomainList(
-        dataResponse = networkProvider.apiService.getQuestions(
-            page = request.page,
-            limit = request.limit
+        dataResponse = networkProvider.apiService.getQuizMockQuestions(
+            limit = request.limit,
+            specialization = request.specialization
         )
     )
 }
