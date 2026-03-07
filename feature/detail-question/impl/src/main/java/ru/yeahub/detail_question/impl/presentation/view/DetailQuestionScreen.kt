@@ -199,7 +199,7 @@ fun DetailQuestionScreenState(
         is DetailQuestionState.LoadingState -> LoadingScreen(padding)
         is DetailQuestionState.ErrorState -> ErrorScreen(
             error = uiState.message,
-            onBack = { onBackClick() },
+            onBackClicked = { onBackClick() },
             titleText = TextOrResource.Resource(R.string.error_screen_title_text),
             backText = TextOrResource.Resource(R.string.on_back_button_text),
             unknownErrorText = TextOrResource.Resource(R.string.unknown_error_screen_text),

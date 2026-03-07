@@ -80,6 +80,7 @@ dependencies {
     implementation(libs.koin.core)
     implementation(libs.koin.android)
     implementation(libs.koin.compose)
+    implementation(libs.immutable.collections)
 
     implementation(libs.androidx.navigation.compose)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -115,6 +116,7 @@ dependencies {
     implementation(project(":feature:questions-or-collections:impl"))
     implementation(project(":feature:public-collections:impl"))
     implementation(project(":feature:selection-specializations:impl"))
+    implementation(project(":feature:profile"))
 }
 
 tasks.withType<Test> {

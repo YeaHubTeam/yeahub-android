@@ -187,7 +187,7 @@ fun ScreenUI(
                         titleText = TextOrResource.Resource(R.string.title_error_screen_text),
                         backText = TextOrResource.Resource(R.string.back_error_screen_text),
                         unknownErrorText = TextOrResource.Resource(R.string.unknown_error_screen_text),
-                        onBack = { onEvent(PublicCollectionsScreenEvent.OnBackClick) },
+                        onBackClicked = { onEvent(PublicCollectionsScreenEvent.OnBackClick) },
                         errorText = TextOrResource.Resource(R.string.error_screen_text)
                     )
                 } else {

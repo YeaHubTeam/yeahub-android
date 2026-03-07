@@ -248,7 +248,7 @@ fun ScreenUI(
                         titleText = TextOrResource.Text("Crash"),
                         backText = TextOrResource.Text("Back"),
                         unknownErrorText = TextOrResource.Text("Loading data failed"),
-                        onBack = { onSpecialEvent(SpecializationScreenEvent.OnBackClick) }
+                        onBackClicked = { onSpecialEvent(SpecializationScreenEvent.OnBackClick) }
                     )
                 }
 

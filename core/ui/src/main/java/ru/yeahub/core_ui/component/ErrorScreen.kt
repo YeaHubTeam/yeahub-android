@@ -31,7 +31,7 @@ fun ErrorScreen(
     titleText: TextOrResource,
     backText: TextOrResource,
     unknownErrorText: TextOrResource,
-    onBack: () -> Unit,
+    onBackClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -80,7 +80,7 @@ fun ErrorScreen(
                     color = Theme.colors.black700
                 )
                 PrimaryButton(
-                    onClick = onBack,
+                    onClick = onBackClicked,
                     modifier = Modifier
                         .fillMaxWidth()
                 ) {
@@ -133,7 +133,7 @@ fun ShowErrorScreenPreview(
 fun StatesErrorScreenPreview(params: ErrorScreenParams) {
     ErrorScreen(
         error = params.errorMessage,
-        onBack = params.onBack,
+        onBackClicked = params.onBack,
         titleText = TextOrResource.Text("УПС!"),
         backText = TextOrResource.Text("Назад"),
         unknownErrorText = TextOrResource.Text("Не удалось загрузить данные"),

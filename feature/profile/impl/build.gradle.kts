@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "ru.yeahub.example_profile.impl"
+    namespace = "ru.yeahub.profile.impl"
     compileSdk = 35
 
     defaultConfig {
@@ -25,44 +25,47 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = "17"
-    }
-    buildFeatures {
-        compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.8"
+        jvmTarget = "11"
     }
 }
 
 dependencies {
     implementation(project(":core:ui"))
+    implementation(project(":core:utils"))
+    implementation(project(":core:network-api"))
     implementation(project(":core:navigation-api"))
-    implementation(project(":feature:example-profile:api"))
+
+    implementation(libs.timber)
 
     implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material)
-
     implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.runtime.android)
+    implementation(libs.androidx.ui.tooling.preview)
 
     implementation(libs.koin.core)
     implementation(libs.koin.android)
     implementation(libs.koin.compose)
 
-    implementation(libs.timber)
+    implementation(libs.immutable.collections)
 
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
+    implementation(libs.compose.shimmer)
+
+    implementation(libs.coil.compose)
 
     implementation(libs.androidx.navigation.compose)
+    debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.androidx.ui.test.manifest)
+
+    testImplementation(libs.junit.jupiter)
+    testImplementation(platform(libs.junit.bom))
+    testRuntimeOnly(libs.junit.platform.launcher)
+    testImplementation(libs.mockk)
 }
