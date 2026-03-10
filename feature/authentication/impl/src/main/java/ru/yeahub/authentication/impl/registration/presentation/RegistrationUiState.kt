@@ -10,7 +10,9 @@ data class RegistrationUiState(
     val isMailingAccepted: Boolean,
     val isPasswordVisible: Boolean,
     val isConfirmPasswordVisible: Boolean,
-    val isSubmitEnabled: Boolean
+    val isSubmitEnabled: Boolean,
+    val isLoading: Boolean,
+    val error: String?,
 )
 
 sealed class RegistrationAction {

@@ -2,11 +2,19 @@ package ru.yeahub.authentication.impl.registration.presentation
 
 import android.util.Patterns
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import ru.yeahub.authentication.impl.registration.domain.entity.RegistrationError
+import ru.yeahub.authentication.impl.registration.domain.entity.RegistrationException
+import ru.yeahub.authentication.impl.registration.domain.entity.RegistrationModel
+import ru.yeahub.authentication.impl.registration.domain.usecase.RegistrationUseCase
 
-class RegistrationViewModel : ViewModel() {
+class RegistrationViewModel(
+    private val registrationUseCase: RegistrationUseCase
+) : ViewModel() {
 
     private val _state = MutableStateFlow(
         RegistrationUiState(
@@ -19,7 +27,9 @@ class RegistrationViewModel : ViewModel() {
             isMailingAccepted = false,
             isPasswordVisible = false,
             isConfirmPasswordVisible = false,
-            isSubmitEnabled = false
+            isSubmitEnabled = false,
+            isLoading = false,
+            error = null
         )
     )
     val state: StateFlow<RegistrationUiState> = _state
@@ -54,7 +64,9 @@ class RegistrationViewModel : ViewModel() {
                 _state.update { it.copy(isPdAccepted = action.value).revalidate() }
             }
 
-            RegistrationAction.SubmitClicked -> {}
+            RegistrationAction.SubmitClicked -> {
+                submitRegistration()
+            }
 
             RegistrationAction.ToggleConfirmPasswordVisible -> {
                 _state.update { it.copy(isConfirmPasswordVisible = !it.isConfirmPasswordVisible) }
@@ -62,6 +74,37 @@ class RegistrationViewModel : ViewModel() {
 
             RegistrationAction.TogglePasswordVisible -> {
                 _state.update { it.copy(isPasswordVisible = !it.isPasswordVisible) }
+            }
+        }
+    }
+
+    private fun submitRegistration() {
+        val currentState = _state.value
+        _state.update { it.copy(isLoading = true, error = null) }
+        viewModelScope.launch {
+            try {
+                val userModel = RegistrationModel(
+                    nickname = currentState.nickname,
+                    email = currentState.email,
+                    password = currentState.password,
+                    isMailingAccepted = currentState.isMailingAccepted
+                )
+                registrationUseCase.invoke(userModel)
+                _state.update { it.copy(isLoading = true) }
+            } catch (e: RegistrationException) {
+                val errorMassage = when (e.error) {
+                    RegistrationError.EmailAlreadyExists -> "Такой Email уже существует"
+                    RegistrationError.NickNameTaken -> "Никнейм занят"
+                    RegistrationError.InvalidCredentials -> "Неверные данные"
+                    RegistrationError.Network -> "Ошибка сети. Проверьте подключение"
+                    RegistrationError.Server, RegistrationError.Unknown -> "Произошла ошибка на сервере"
+                }
+                _state.update {
+                    it.copy(
+                        isLoading = false,
+                        error = errorMassage
+                    )
+                }
             }
         }
     }
