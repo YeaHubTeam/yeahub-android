@@ -176,7 +176,7 @@ fun DefaultTextField(
     isEnabled: Boolean = true,
     isError: Boolean = false,
     singleLine: Boolean = true,
-    showLeadingIcon: Boolean = true,
+    showLeadingIcon: Boolean = false,
     shape: Shape = RoundedCornerShape(12.dp),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
 ) {
@@ -251,7 +251,7 @@ fun DefaultTextField(
             unfocusedBorderColor = defaultBorder,
             focusedBorderColor = TextInputColorsDefaults.focusBorder(),
             disabledBorderColor = TextInputColorsDefaults.defaultsBorder(),
-            errorBorderColor = TextInputColorsDefaults.errorBorder()
+            errorBorderColor = TextInputColorsDefaults.errorBorder(),
         ),
         keyboardActions = KeyboardActions(
             onSearch = {
@@ -261,7 +261,7 @@ fun DefaultTextField(
             }
         ),
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-        interactionSource = interactionSource
+        interactionSource = interactionSource,
     )
 }
 

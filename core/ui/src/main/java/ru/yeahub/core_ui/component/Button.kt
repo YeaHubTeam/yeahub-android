@@ -53,7 +53,7 @@ fun PrimaryButton(
         interactionSource = interactionSource,
         shape = shape,
         contentPadding = contentPadding,
-        content = content
+        content = content,
     )
 }
 
@@ -78,7 +78,7 @@ fun SecondaryButton(
         interactionSource = interactionSource,
         shape = shape,
         contentPadding = contentPadding,
-        content = content
+        content = content,
     )
 }
 
@@ -103,7 +103,7 @@ fun OutlineButton(
         interactionSource = interactionSource,
         shape = shape,
         contentPadding = contentPadding,
-        content = content
+        content = content,
     )
 }
 
@@ -130,7 +130,7 @@ private fun DefaultButton(
         color = containerColor,
         contentColor = contentColor,
         border = border,
-        interactionSource = interactionSource
+        interactionSource = interactionSource,
     ) {
         CompositionLocalProvider(
             value = LocalContentColor provides contentColor
@@ -140,7 +140,7 @@ private fun DefaultButton(
                     .padding(contentPadding),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
-                content = content
+                content = content,
             )
         }
     }
@@ -158,7 +158,7 @@ object YeahubButtonDefaults {
             contentColor = contentColor,
             containerColor = containerColor,
             disabledContentColor = disabledContentColor,
-            disabledContainerColor = disabledContainerColor
+            disabledContainerColor = disabledContainerColor,
         )
     }
 
@@ -173,7 +173,7 @@ object YeahubButtonDefaults {
             contentColor = contentColor,
             containerColor = containerColor,
             disabledContentColor = disabledContentColor,
-            disabledContainerColor = disabledContainerColor
+            disabledContainerColor = disabledContainerColor,
         )
     }
 
@@ -188,7 +188,7 @@ object YeahubButtonDefaults {
             contentColor = contentColor,
             containerColor = containerColor,
             disabledContentColor = disabledContentColor,
-            disabledContainerColor = disabledContainerColor
+            disabledContainerColor = disabledContainerColor,
         )
     }
 
@@ -203,7 +203,7 @@ object YeahubButtonDefaults {
             contentColor = contentColor,
             containerColor = containerColor,
             disabledContentColor = disabledContentColor,
-            disabledContainerColor = disabledContainerColor
+            disabledContainerColor = disabledContainerColor,
         )
     }
 
@@ -218,7 +218,7 @@ object YeahubButtonDefaults {
             contentColor = contentColor,
             containerColor = containerColor,
             disabledContentColor = disabledContentColor,
-            disabledContainerColor = disabledContainerColor
+            disabledContainerColor = disabledContainerColor,
         )
     }
 
@@ -229,7 +229,7 @@ object YeahubButtonDefaults {
     ): BorderStroke {
         return BorderStroke(
             width = width,
-            color = borderColor
+            color = borderColor,
         )
     }
 }

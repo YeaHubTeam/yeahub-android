@@ -4,8 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import ru.yeahub.impl.presentation.ForgotPasswordEffect
 import ru.yeahub.impl.presentation.ForgotPasswordViewModel
+import ru.yeahub.impl.presentation.intents.ForgotPasswordCommand
 
 @Composable
 fun ForgotPasswordRoute(
@@ -14,20 +14,20 @@ fun ForgotPasswordRoute(
     onCheckEmail: () -> Unit,
     showSnackbar: suspend (String) -> Unit
 ) {
-    val state by viewModel.state.collectAsState()
+    val state by viewModel.uiState.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.effect.collect { effect ->
-            when (effect) {
-                is ForgotPasswordEffect.NavigateBack -> onBack()
-                is ForgotPasswordEffect.NavigateToCheckEmail -> onCheckEmail()
-                is ForgotPasswordEffect.ShowSnackbar -> showSnackbar(effect.message)
+        viewModel.commands.collect { command ->
+            when (command) {
+                is ForgotPasswordCommand.NavigateBack -> onBack()
+                is ForgotPasswordCommand.NavigateToCheckEmail -> onCheckEmail()
+                is ForgotPasswordCommand.ShowSnackbar -> showSnackbar(command.message)
             }
         }
     }
 
     ForgotPasswordScreen(
         state = state,
-        onIntent = viewModel::onIntent
+        onEvent = viewModel::handleEvents
     )
 }

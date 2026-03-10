@@ -18,6 +18,8 @@ output-metadata.json
 # IntelliJ
 *.iml
 .idea/
+gradle.xml
+compiler.xml
 !.idea/runConfigurations/
 misc.xml
 deploymentTargetDropDown.xml

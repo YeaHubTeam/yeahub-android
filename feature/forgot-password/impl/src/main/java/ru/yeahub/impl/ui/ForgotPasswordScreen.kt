@@ -21,17 +21,15 @@ import ru.yeahub.core_ui.component.textInput.DefaultTextField
 import ru.yeahub.core_ui.component.textInput.TextInputColorsDefaults
 import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.impl.R
-import ru.yeahub.impl.presentation.ForgotPasswordIntent
-import ru.yeahub.impl.presentation.ForgotPasswordState
+import ru.yeahub.impl.presentation.intents.ForgotPasswordEvent
+import ru.yeahub.impl.presentation.state.ForgotPasswordScreenState
 
 @Composable
 fun ForgotPasswordScreen(
     modifier: Modifier = Modifier,
-    state: ForgotPasswordState,
-    onIntent: (ForgotPasswordIntent) -> Unit
+    state: ForgotPasswordScreenState,
+    onEvent: (ForgotPasswordEvent) -> Unit
 ) {
-    val isEmailValid = state.email.contains("@") && state.email.contains(".")
-
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -59,13 +57,30 @@ fun ForgotPasswordScreen(
         )
 
         Spacer(Modifier.height(6.dp))
-        
+
+        val email = when (state) {
+            is ForgotPasswordScreenState.Content -> state.email
+            else -> ""
+        }
+        val isLoading = when (state) {
+            is ForgotPasswordScreenState.Content -> state.isLoading
+            else -> false
+        }
+        val emailError = when (state) {
+            is ForgotPasswordScreenState.Content -> state.emailError
+            else -> null
+        }
+        val isEmailValid = when (state) {
+            is ForgotPasswordScreenState.Content -> state.isEmailValid
+            else -> false
+        }
+
         DefaultTextField(
-            value = state.email,
-            onValueChange = { onIntent(ForgotPasswordIntent.EmailChanged(it)) },
+            value = email,
+            onValueChange = { onEvent(ForgotPasswordEvent.EmailChanged(it)) },
             label = stringResource(R.string.enter_email),
-            isEnabled = !state.isLoading,
-            isError = state.isEmailError,
+            isEnabled = !isLoading,
+            isError = emailError != null,
             showLeadingIcon = false,
             onExpandedChange = { },
             modifier = Modifier
@@ -74,11 +89,20 @@ fun ForgotPasswordScreen(
             colors = TextInputColorsDefaults.defaultColors()
         )
 
+        if (emailError != null) {
+            Spacer(Modifier.height(4.dp))
+            Text(
+                text = emailError,
+                style = Theme.typography.body3,
+                color = Theme.colors.red500
+            )
+        }
+
         Spacer(Modifier.height(20.dp))
 
         PrimaryButton(
-            onClick = { onIntent(ForgotPasswordIntent.SubmitClicked) },
-            enabled = isEmailValid && !state.isLoading,
+            onClick = { onEvent(ForgotPasswordEvent.SubmitClicked) },
+            enabled = isEmailValid && !isLoading,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(48.dp),
@@ -97,11 +121,53 @@ fun ForgotPasswordScreen(
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, name = "Initial State")
 @Composable
-fun ForgotPasswordScreenPreview() {
+fun ForgotPasswordScreenPreview_Initial() {
     ForgotPasswordScreen(
-        state = ForgotPasswordState(),
-        onIntent = {}
+        state = ForgotPasswordScreenState.Initial,
+        onEvent = {}
+    )
+}
+
+@Preview(showBackground = true, name = "Valid Email")
+@Composable
+fun ForgotPasswordScreenPreview_Valid() {
+    ForgotPasswordScreen(
+        state = ForgotPasswordScreenState.Content(
+            email = "user@example.com",
+            isLoading = false,
+            emailError = null,
+            isSent = false
+        ),
+        onEvent = {}
+    )
+}
+
+@Preview(showBackground = true, name = "Invalid Email")
+@Composable
+fun ForgotPasswordScreenPreview_Invalid() {
+    ForgotPasswordScreen(
+        state = ForgotPasswordScreenState.Content(
+            email = "invalid-email",
+            isLoading = false,
+            emailError = "Введите корректный email",
+            isSent = false
+        ),
+        onEvent = {}
+    )
+}
+
+@Preview(showBackground = true, name = "Loading")
+@Composable
+fun ForgotPasswordScreenPreview_Loading() {
+    ForgotPasswordScreen(
+        state = ForgotPasswordScreenState.Content(
+            email = "user@example.com",
+            isLoading = true,
+            emailError = null,
+            isSent = false
+        ),
+        onEvent = {}
     )
 }
