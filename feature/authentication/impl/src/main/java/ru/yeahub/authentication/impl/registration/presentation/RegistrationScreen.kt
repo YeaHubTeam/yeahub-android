@@ -45,195 +45,184 @@ import ru.yeahub.core_ui.theme.Theme
 
 @Composable
 fun RegistrationScreen(
-    state: RegistrationUiState,
-    onAction: (RegistrationAction) -> Unit,
-    onOpenPdPolicy: () -> Unit,
-    onOpenOffer: () -> Unit
+        state: RegistrationUiState,
+        onAction: (RegistrationAction) -> Unit,
+        onOpenPdPolicy: () -> Unit,
+        onOpenOffer: () -> Unit
 ) {
     val linkColor = MaterialTheme.colorScheme.primary
 
     Scaffold { paddings ->
         Column(
-            modifier = Modifier
-                .padding(paddings)
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp, vertical = 24.dp),
-            verticalArrangement = Arrangement.spacedBy(14.dp)
+                modifier =
+                        Modifier.padding(paddings)
+                                .fillMaxSize()
+                                .verticalScroll(rememberScrollState())
+                                .padding(horizontal = 16.dp, vertical = 24.dp),
+                verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
             Text(
-                text = stringResource(R.string.registration_title),
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.SemiBold
+                    text = stringResource(R.string.registration_title),
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.SemiBold
             )
 
             FormTextField(
-                title = stringResource(R.string.nickname_title),
-                placeholder = stringResource(R.string.nickname_placeholder),
-                value = state.nickname,
-                onValueChange = { onAction(RegistrationAction.NicknameChanged(it)) },
-                keyboardType = KeyboardType.Ascii
+                    title = stringResource(R.string.nickname_title),
+                    placeholder = stringResource(R.string.nickname_placeholder),
+                    value = state.nickname,
+                    onValueChange = { onAction(RegistrationAction.NicknameChanged(it)) },
+                    keyboardType = KeyboardType.Ascii
             )
 
             FormTextField(
-                title = stringResource(R.string.email_title),
-                placeholder = stringResource(R.string.email_placeholder),
-                value = state.email,
-                onValueChange = { onAction(RegistrationAction.EmailChanged(it)) },
-                keyboardType = KeyboardType.Email
+                    title = stringResource(R.string.email_title),
+                    placeholder = stringResource(R.string.email_placeholder),
+                    value = state.email,
+                    onValueChange = { onAction(RegistrationAction.EmailChanged(it)) },
+                    keyboardType = KeyboardType.Email
             )
 
             FormPasswordField(
-                title = stringResource(R.string.password_title),
-                placeholder = stringResource(R.string.password_placeholder),
-                value = state.password,
-                isVisible = state.isPasswordVisible,
-                onValueChange = { onAction(RegistrationAction.PasswordChanged(it)) },
-                onToggleVisibility = { onAction(RegistrationAction.TogglePasswordVisible) }
+                    title = stringResource(R.string.password_title),
+                    placeholder = stringResource(R.string.password_placeholder),
+                    value = state.password,
+                    isVisible = state.isPasswordVisible,
+                    onValueChange = { onAction(RegistrationAction.PasswordChanged(it)) },
+                    onToggleVisibility = { onAction(RegistrationAction.TogglePasswordVisible) }
             )
 
             FormPasswordField(
-                title = stringResource(R.string.confirm_password_title),
-                placeholder = stringResource(R.string.password_placeholder),
-                value = state.confirmPassword,
-                isVisible = state.isConfirmPasswordVisible,
-                onValueChange = { onAction(RegistrationAction.ConfirmPasswordChanged(it)) },
-                onToggleVisibility = { onAction(RegistrationAction.ToggleConfirmPasswordVisible) }
+                    title = stringResource(R.string.confirm_password_title),
+                    placeholder = stringResource(R.string.password_placeholder),
+                    value = state.confirmPassword,
+                    isVisible = state.isConfirmPasswordVisible,
+                    onValueChange = { onAction(RegistrationAction.ConfirmPasswordChanged(it)) },
+                    onToggleVisibility = {
+                        onAction(RegistrationAction.ToggleConfirmPasswordVisible)
+                    }
             )
 
             ConsentRow(
-                checked = state.isPdAccepted,
-                onCheckedChange = { onAction(RegistrationAction.PdAcceptedChanged(it)) },
-                text = pdConsentText(linkColor),
-                onLinkClicked = { tag ->
-                    if (tag == "pd") onOpenPdPolicy()
-                }
+                    checked = state.isPdAccepted,
+                    onCheckedChange = { onAction(RegistrationAction.PdAcceptedChanged(it)) },
+                    text = pdConsentText(linkColor),
+                    onLinkClicked = { tag -> if (tag == "pd") onOpenPdPolicy() }
             )
 
             ConsentRow(
-                checked = state.isOfferAccepted,
-                onCheckedChange = { onAction(RegistrationAction.OfferAcceptedChanged(it)) },
-                text = offerConsentText(linkColor),
-                onLinkClicked = { tag ->
-                    if (tag == "offer") onOpenOffer()
-                }
+                    checked = state.isOfferAccepted,
+                    onCheckedChange = { onAction(RegistrationAction.OfferAcceptedChanged(it)) },
+                    text = offerConsentText(linkColor),
+                    onLinkClicked = { tag -> if (tag == "offer") onOpenOffer() }
             )
 
             ConsentRow(
-                checked = state.isMailingAccepted,
-                onCheckedChange = { onAction(RegistrationAction.MailingAcceptedChanged(it)) },
-                text = AnnotatedString(stringResource(R.string.marketing_opt_in_text)),
-                onLinkClicked = { }
+                    checked = state.isMailingAccepted,
+                    onCheckedChange = { onAction(RegistrationAction.MailingAcceptedChanged(it)) },
+                    text = AnnotatedString(stringResource(R.string.marketing_opt_in_text)),
+                    onLinkClicked = {}
             )
 
             Spacer(Modifier.height(8.dp))
 
             PrimaryButton(
-                onClick = { onAction(RegistrationAction.SubmitClicked) },
-                enabled = state.isSubmitEnabled,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Text(stringResource(R.string.registration_button))
-            }
+                    onClick = { onAction(RegistrationAction.SubmitClicked) },
+                    enabled = state.isSubmitEnabled,
+                    modifier = Modifier.fillMaxWidth(),
+            ) { Text(stringResource(R.string.registration_button)) }
         }
     }
 }
 
 @Composable
 private fun FormTextField(
-    title: String,
-    placeholder: String,
-    value: String,
-    onValueChange: (String) -> Unit,
-    keyboardType: KeyboardType,
-    modifier: Modifier = Modifier,
+        title: String,
+        placeholder: String,
+        value: String,
+        onValueChange: (String) -> Unit,
+        keyboardType: KeyboardType,
+        modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(4.dp)) {
         Text(text = title)
 
         OutlinedTextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = value,
-            onValueChange = onValueChange,
-            placeholder = {
-                Text(
-                    text = placeholder,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            },
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                unfocusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+                modifier = Modifier.fillMaxWidth(),
+                value = value,
+                onValueChange = onValueChange,
+                placeholder = {
+                    Text(text = placeholder, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
+                colors =
+                        OutlinedTextFieldDefaults.colors(
+                                focusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                unfocusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
         )
     }
 }
 
 @Composable
 private fun FormPasswordField(
-    title: String,
-    placeholder: String,
-    value: String,
-    isVisible: Boolean,
-    onValueChange: (String) -> Unit,
-    onToggleVisibility: () -> Unit,
-    modifier: Modifier = Modifier,
+        title: String,
+        placeholder: String,
+        value: String,
+        isVisible: Boolean,
+        onValueChange: (String) -> Unit,
+        onToggleVisibility: () -> Unit,
+        modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(4.dp)) {
         Text(text = title)
 
         PasswordField(
-            placeholder = placeholder,
-            value = value,
-            isVisible = isVisible,
-            onValueChange = onValueChange,
-            onToggleVisibility = onToggleVisibility
+                placeholder = placeholder,
+                value = value,
+                isVisible = isVisible,
+                onValueChange = onValueChange,
+                onToggleVisibility = onToggleVisibility
         )
     }
 }
 
 @Composable
 private fun PasswordField(
-    placeholder: String,
-    value: String,
-    isVisible: Boolean,
-    onValueChange: (String) -> Unit,
-    onToggleVisibility: () -> Unit,
-    modifier: Modifier = Modifier,
+        placeholder: String,
+        value: String,
+        isVisible: Boolean,
+        onValueChange: (String) -> Unit,
+        onToggleVisibility: () -> Unit,
+        modifier: Modifier = Modifier,
 ) {
     OutlinedTextField(
-        modifier = modifier.fillMaxWidth(),
-        value = value,
-        onValueChange = onValueChange,
-        placeholder = {
-            Text(
-                text = placeholder,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        },
-        singleLine = true,
-        visualTransformation = if (isVisible) VisualTransformation.None else PasswordVisualTransformation(),
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-        trailingIcon = {
-            IconButton(onClick = onToggleVisibility) {
-                Icon(
-                    imageVector = if (isVisible) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
-                    contentDescription = null
-                )
-            }
-        },
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            unfocusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+            modifier = modifier.fillMaxWidth(),
+            value = value,
+            onValueChange = onValueChange,
+            placeholder = {
+                Text(text = placeholder, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            },
+            singleLine = true,
+            visualTransformation =
+                    if (isVisible) VisualTransformation.None else PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+            trailingIcon = {
+                IconButton(onClick = onToggleVisibility) {
+                    Icon(
+                            imageVector =
+                                    if (isVisible) Icons.Filled.VisibilityOff
+                                    else Icons.Filled.Visibility,
+                            contentDescription = null
+                    )
+                }
+            },
+            colors =
+                    OutlinedTextFieldDefaults.colors(
+                            focusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            unfocusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
     )
 }
 
@@ -260,37 +249,36 @@ private fun offerConsentText(linkColor: Color): AnnotatedString = buildAnnotated
 
 @Composable
 private fun ConsentRow(
-    checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit,
-    text: AnnotatedString,
-    onLinkClicked: (tag: String) -> Unit
+        checked: Boolean,
+        onCheckedChange: (Boolean) -> Unit,
+        text: AnnotatedString,
+        onLinkClicked: (tag: String) -> Unit
 ) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.Top
-    ) {
+    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.Top) {
         Checkbox(
-            checked = checked,
-            onCheckedChange = onCheckedChange,
-            colors = CheckboxDefaults.colors(
-                checkedColor = Theme.colors.purple700,
-                uncheckedColor = Theme.colors.purple200,
-                checkmarkColor = Theme.colors.white900
-            )
+                checked = checked,
+                onCheckedChange = onCheckedChange,
+                colors =
+                        CheckboxDefaults.colors(
+                                checkedColor = Theme.colors.purple700,
+                                uncheckedColor = Theme.colors.purple200,
+                                checkmarkColor = Theme.colors.white900
+                        )
         )
         Spacer(Modifier.width(8.dp))
         ClickableText(
-            text = text,
-            style = MaterialTheme.typography.bodySmall.copy(
-                color = MaterialTheme.colorScheme.onSurface,
-                textDecoration = null
-            ),
-            onClick = { offset ->
-                text.getStringAnnotations(start = offset, end = offset)
-                    .firstOrNull()
-                    ?.let { onLinkClicked(it.tag) }
-                    ?: onCheckedChange(!checked)
-            }
+                text = text,
+                style =
+                        MaterialTheme.typography.bodySmall.copy(
+                                color = MaterialTheme.colorScheme.onSurface,
+                                textDecoration = null
+                        ),
+                onClick = { offset ->
+                    text.getStringAnnotations(start = offset, end = offset).firstOrNull()?.let {
+                        onLinkClicked(it.tag)
+                    }
+                            ?: onCheckedChange(!checked)
+                }
         )
     }
 }
@@ -300,21 +288,24 @@ private fun ConsentRow(
 fun RegistrationScreenPreview() {
     MaterialTheme {
         RegistrationScreen(
-            state = RegistrationUiState(
-                nickname = "admin",
-                email = "admin@mail.ru",
-                password = "1234",
-                confirmPassword = "1234",
-                isPasswordVisible = true,
-                isConfirmPasswordVisible = true,
-                isPdAccepted = true,
-                isOfferAccepted = true,
-                isMailingAccepted = false,
-                isSubmitEnabled = true
-            ),
-            onAction = {},
-            onOpenPdPolicy = {},
-            onOpenOffer = {}
+                state =
+                        RegistrationUiState(
+                                nickname = "admin",
+                                email = "admin@mail.ru",
+                                password = "1234",
+                                confirmPassword = "1234",
+                                isPasswordVisible = true,
+                                isConfirmPasswordVisible = true,
+                                isPdAccepted = true,
+                                isOfferAccepted = true,
+                                isMailingAccepted = false,
+                                isSubmitEnabled = true,
+                                isLoading = false,
+                                error = null
+                        ),
+                onAction = {},
+                onOpenPdPolicy = {},
+                onOpenOffer = {}
         )
     }
 }
