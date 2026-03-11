@@ -6,8 +6,11 @@ import ru.yeahub.network_api.models.GetPublicQuestionsResponse
 import ru.yeahub.network_api.models.GetSkillsResponse
 import ru.yeahub.network_api.models.GetSpecializationResponse
 import ru.yeahub.network_api.models.GetSpecializationsResponse
+import ru.yeahub.network_api.models.RegistrationRequestDto
 
 interface ApiService {
+
+    suspend fun register(request: RegistrationRequestDto)
 
     suspend fun getQuestions(
         page: Int,
