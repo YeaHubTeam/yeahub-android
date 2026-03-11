@@ -14,6 +14,9 @@ class InterviewQuizRepositoryImpl(
         request: QuestionsRequest
     ): DomainQuestionsListResponse = mapper.mapDataListToDomainList(
         dataResponse = networkProvider.apiService.getQuizMockQuestions(
+            skills = null,
+            complexity = null,
+            collection = null,
             limit = request.limit,
             specialization = request.specialization
         )

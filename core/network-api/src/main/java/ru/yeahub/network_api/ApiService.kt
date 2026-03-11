@@ -54,10 +54,10 @@ interface ApiService {
     ): GetCollectionsResponse
 
     suspend fun getQuizMockQuestions(
-        skills: List<String>? =  null,
-        complexity: List<Int>? = null,
-        collection: Int? = null,
-        limit: Int? = null,
+        skills: List<String>?,
+        complexity: List<Int>?,
+        collection: Int?,
+        limit: Int?,
         specialization: Int,
     ): GetNewMockQuizResponse
 }
