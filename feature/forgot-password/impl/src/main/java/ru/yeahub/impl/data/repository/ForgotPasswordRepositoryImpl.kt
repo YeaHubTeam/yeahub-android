@@ -36,7 +36,7 @@ class ForgotPasswordRepositoryImpl(
             ForgotPasswordResult.Error(
                 "Некорректные данные. Проверьте введенный email."
             )
-        } catch (e: Throwable) {
+        } catch (e: Exception) {
             Timber.e(
                 "Unexpected error sending reset link for email: $email," +
                         "error: ${e.message}"
