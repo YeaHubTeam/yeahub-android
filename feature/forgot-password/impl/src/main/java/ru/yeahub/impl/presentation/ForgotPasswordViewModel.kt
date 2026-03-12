@@ -22,7 +22,7 @@ class ForgotPasswordViewModel(
     private val sendResetLinkUseCase: SendResetLinkUseCase
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(
+    private val mutableState = MutableStateFlow(
         ForgotPasswordState(
             email = "",
             isLoading = false,
@@ -32,18 +32,18 @@ class ForgotPasswordViewModel(
         )
     )
 
-    private val _uiState =
+    private val mutableUiState =
         MutableStateFlow<ForgotPasswordScreenState>(ForgotPasswordScreenState.Initial)
-    val uiState: StateFlow<ForgotPasswordScreenState> = _uiState.asStateFlow()
+    val uiState: StateFlow<ForgotPasswordScreenState> = mutableUiState.asStateFlow()
 
-    private val _commands =
+    private val mutableCommands =
         MutableSharedFlow<ForgotPasswordCommand>()
-    val commands: SharedFlow<ForgotPasswordCommand> = _commands
+    val commands: SharedFlow<ForgotPasswordCommand> = mutableCommands
 
     init {
         viewModelScope.launch {
-            _state.collect { state ->
-                _uiState.value = forgotPasswordScreenMapper.getScreenState(state)
+            mutableState.collect { state ->
+                mutableUiState.value = forgotPasswordScreenMapper.getScreenState(state)
             }
         }
     }
@@ -57,7 +57,7 @@ class ForgotPasswordViewModel(
     }
 
     private fun onEmailChanged(value: String) {
-        _state.update { currentState ->
+        mutableState.update { currentState ->
             val validationError = if (value.isNotBlank()) {
                 forgotPasswordScreenMapper.validateEmail(value)
             } else {
@@ -72,22 +72,22 @@ class ForgotPasswordViewModel(
     }
 
     private fun onSubmit() {
-        val currentState = _state.value
+        val currentState = mutableState.value
         val email = currentState.email.trim()
 
         if (!forgotPasswordScreenMapper.canSubmit(email)) {
-            _state.update {
+            mutableState.update {
                 it.copy(emailValidationError = forgotPasswordScreenMapper.validateEmail(email))
             }
             return
         }
 
-        _state.update { it.copy(isLoading = true, error = null) }
+        mutableState.update { it.copy(isLoading = true, error = null) }
 
         viewModelScope.launch {
             when (val result = sendResetLinkUseCase(email)) {
                 is ForgotPasswordResult.Success -> {
-                    _state.update {
+                    mutableState.update {
                         it.copy(
                             isLoading = false,
                             isSuccessDialogVisible = true
@@ -97,7 +97,7 @@ class ForgotPasswordViewModel(
                 }
 
                 is ForgotPasswordResult.Error -> {
-                    _state.update {
+                    mutableState.update {
                         it.copy(
                             isLoading = false,
                             error = result.message
@@ -111,13 +111,13 @@ class ForgotPasswordViewModel(
 
     private fun handleBackClick() {
         viewModelScope.launch {
-            _commands.emit(ForgotPasswordCommand.NavigateBack)
+            mutableCommands.emit(ForgotPasswordCommand.NavigateBack)
         }
     }
 
     private fun emitCommand(command: ForgotPasswordCommand) {
         viewModelScope.launch {
-            _commands.emit(command)
+            mutableCommands.emit(command)
         }
     }
 }
