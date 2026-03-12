@@ -29,14 +29,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import ru.yeahub.authentication.impl.R
 import ru.yeahub.core_ui.component.PrimaryButton
@@ -51,7 +51,7 @@ private val BLOCK_SPACING = 14.dp
 @Composable
 fun LoginScreen(
     state: LoginUiState,
-    onAction: (Todo) -> Unit,
+    onEvent: (LoginScreenEvent) -> Unit,
     modifier: Modifier,
 ) {
     Scaffold { paddings ->
@@ -76,7 +76,7 @@ fun LoginScreen(
                 value = state.email,
                 errorText = state.emailError,
                 keyboardType = KeyboardType.Email,
-                onValueChange = { onAction(Todo) },
+                onValueChange = { onEvent(LoginScreenEvent.OnEmailChanged(it)) },
                 modifier = Modifier,
             )
 
@@ -84,9 +84,7 @@ fun LoginScreen(
                 password = state.password,
                 isVisible = state.isPasswordVisible,
                 errorText = state.passwordError,
-                onValueChange = { onAction(Todo) },
-                onToggleVisibility = { onAction(Todo) },
-                onForgotPasswordClick = { onAction(Todo) },
+                onEvent = onEvent,
                 modifier = Modifier,
             )
 
@@ -95,7 +93,7 @@ fun LoginScreen(
             PrimaryButtonWithLoading(
                 enabled = state.isSubmitEnabled && !state.isLoading,
                 loading = state.isLoading,
-                onClick = { onAction(Todo) },
+                onClick = { onEvent(LoginScreenEvent.OnLoginClick) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(48.dp),
@@ -105,20 +103,11 @@ fun LoginScreen(
                     fontWeight = FontWeight.SemiBold
                 )
             }
-
-            Text(
-                text = stringResource(R.string.social_login_title),
-                style = LocalAppTypography.current.body3,
-                color = colors.black900
+            Spacer(
+                modifier = Modifier.size(72.dp)
             )
-
-            SocialRow(
-                onTelegramClick = { onAction(Todo) },
-                modifier = Modifier.fillMaxWidth(),
-            )
-
             BottomSignUpRow(
-                onSignUpClick = { onAction(Todo) },
+                onSignUpClick = { onEvent(LoginScreenEvent.OnSignUpClick) },
                 modifier = Modifier.fillMaxWidth(),
             )
         }
@@ -130,9 +119,7 @@ private fun PasswordBlock(
     password: String,
     isVisible: Boolean,
     errorText: String?,
-    onValueChange: (String) -> Unit,
-    onToggleVisibility: () -> Unit,
-    onForgotPasswordClick: () -> Unit,
+    onEvent: (LoginScreenEvent) -> Unit,
     modifier: Modifier,
 ) {
     Column(
@@ -150,8 +137,8 @@ private fun PasswordBlock(
             value = password,
             isVisible = isVisible,
             errorText = errorText,
-            onValueChange = onValueChange,
-            onToggleVisibility = onToggleVisibility,
+            onValueChange = { onEvent(LoginScreenEvent.OnPasswordChanged(it)) },
+            onToggleVisibility = { onEvent(LoginScreenEvent.OnTogglePasswordVisible) },
             modifier = Modifier,
         )
 
@@ -163,7 +150,9 @@ private fun PasswordBlock(
                 text = stringResource(R.string.forgot_password),
                 style = LocalAppTypography.current.body3,
                 color = colors.purple700,
-                modifier = Modifier.clickable(onClick = onForgotPasswordClick)
+                modifier = Modifier.clickable(
+                    onClick = { onEvent(LoginScreenEvent.OnForgotPasswordClick) }
+                )
             )
         }
     }
@@ -310,51 +299,6 @@ private fun PrimaryButtonWithLoading(
 }
 
 @Composable
-private fun SocialRow(
-    onTelegramClick: () -> Unit,
-    modifier: Modifier,
-) {
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        SocialIconButton(
-            iconRes = R.drawable.ic_telegram,
-            contentDescription = "Telegram",
-            onClick = onTelegramClick,
-            modifier = Modifier,
-        )
-    }
-}
-
-@Composable
-private fun SocialIconButton(
-    iconRes: Int,
-    contentDescription: String,
-    onClick: () -> Unit,
-    modifier: Modifier,
-) {
-    val shape = RoundedCornerShape(50.dp)
-
-    Row(
-        modifier = modifier
-            .size(44.dp)
-            .background(color = Color.Transparent, shape = shape)
-            .clickable(onClick = onClick),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
-    ) {
-        Icon(
-            modifier = Modifier.size(32.dp),
-            painter = painterResource(iconRes),
-            contentDescription = contentDescription,
-            tint = Color.Unspecified
-        )
-    }
-}
-
-@Composable
 private fun BottomSignUpRow(
     onSignUpClick: () -> Unit,
     modifier: Modifier,
@@ -383,23 +327,125 @@ private fun BottomSignUpRow(
     }
 }
 
+/**
+ * Динамическое Preview
+ */
+@Preview(
+    name = "Dynamic Login Preview",
+    showBackground = true
+)
+@Composable
+fun DynamicLoginPreview(
+    @PreviewParameter(LoginStatePreviewProvider::class) state: LoginUiState
+) {
+    YeaHubTheme {
+        val onEvent: (LoginScreenEvent) -> Unit = {}
+        StandardScreenSizePreview {
+            LoginScreen(
+                state = state,
+                onEvent = onEvent,
+                modifier = Modifier,
+            )
+        }
+    }
+}
+
+class LoginStatePreviewProvider : PreviewParameterProvider<LoginUiState> {
+    override val values: Sequence<LoginUiState> = sequenceOf(
+        // Пустое состояние
+        LoginUiState(
+            email = "",
+            password = "",
+            isPasswordVisible = false,
+            emailError = null,
+            passwordError = null,
+            isSubmitEnabled = false,
+            isLoading = false,
+        ),
+        // Заполненное состояние
+        LoginUiState(
+            email = "user@example.com",
+            password = "password123",
+            isPasswordVisible = false,
+            emailError = null,
+            passwordError = null,
+            isSubmitEnabled = true,
+            isLoading = false,
+        ),
+        // Состояние с ошибками
+        LoginUiState(
+            email = "invalid-email",
+            password = "123",
+            isPasswordVisible = false,
+            emailError = "Введите корректный email",
+            passwordError = "Минимум 6 символов",
+            isSubmitEnabled = false,
+            isLoading = false,
+        ),
+        // Состояние загрузки
+        LoginUiState(
+            email = "user@example.com",
+            password = "password123",
+            isPasswordVisible = false,
+            emailError = null,
+            passwordError = null,
+            isSubmitEnabled = true,
+            isLoading = true,
+        ),
+        // Состояние с видимым паролем
+        LoginUiState(
+            email = "user@example.com",
+            password = "password123",
+            isPasswordVisible = true,
+            emailError = null,
+            passwordError = null,
+            isSubmitEnabled = true,
+            isLoading = false,
+        )
+    )
+}
+
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview_Empty() {
     YeaHubTheme {
-        LoginScreen(
-            state = LoginUiState(
-                email = "admin@mail.ru",
-                password = "123456",
-                isPasswordVisible = false,
-                emailError = null,
-                passwordError = null,
-                isSubmitEnabled = true,
-                isLoading = false,
-            ),
-            onAction = {},
-            modifier = Modifier,
-        )
+        StandardScreenSizePreview {
+            LoginScreen(
+                state = LoginUiState(
+                    email = "",
+                    password = "",
+                    isPasswordVisible = false,
+                    emailError = null,
+                    passwordError = null,
+                    isSubmitEnabled = false,
+                    isLoading = false,
+                ),
+                onEvent = {},
+                modifier = Modifier,
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun LoginScreenPreview_Filled() {
+    YeaHubTheme {
+        StandardScreenSizePreview {
+            LoginScreen(
+                state = LoginUiState(
+                    email = "admin@mail.ru",
+                    password = "123456",
+                    isPasswordVisible = false,
+                    emailError = null,
+                    passwordError = null,
+                    isSubmitEnabled = true,
+                    isLoading = false,
+                ),
+                onEvent = {},
+                modifier = Modifier,
+            )
+        }
     }
 }
 
@@ -407,19 +453,21 @@ fun LoginScreenPreview_Empty() {
 @Composable
 fun LoginScreenPreview_Loading() {
     YeaHubTheme {
-        LoginScreen(
-            state = LoginUiState(
-                email = "admin@mail.ru",
-                password = "123456",
-                isPasswordVisible = false,
-                emailError = null,
-                passwordError = null,
-                isSubmitEnabled = true,
-                isLoading = true,
-            ),
-            onAction = {},
-            modifier = Modifier,
-        )
+        StandardScreenSizePreview {
+            LoginScreen(
+                state = LoginUiState(
+                    email = "admin@mail.ru",
+                    password = "123456",
+                    isPasswordVisible = false,
+                    emailError = null,
+                    passwordError = null,
+                    isSubmitEnabled = true,
+                    isLoading = true,
+                ),
+                onEvent = {},
+                modifier = Modifier,
+            )
+        }
     }
 }
 
@@ -427,18 +475,20 @@ fun LoginScreenPreview_Loading() {
 @Composable
 fun LoginScreenPreview_Errors() {
     YeaHubTheme {
-        LoginScreen(
-            state = LoginUiState(
-                email = "admin@",
-                password = "1",
-                isPasswordVisible = false,
-                emailError = "Введите корректный email",
-                passwordError = "Минимум 6 символов",
-                isSubmitEnabled = false,
-                isLoading = false,
-            ),
-            onAction = {},
-            modifier = Modifier,
-        )
+        StandardScreenSizePreview {
+            LoginScreen(
+                state = LoginUiState(
+                    email = "admin@",
+                    password = "1",
+                    isPasswordVisible = false,
+                    emailError = "Введите корректный email",
+                    passwordError = "Минимум 6 символов",
+                    isSubmitEnabled = false,
+                    isLoading = false,
+                ),
+                onEvent = {},
+                modifier = Modifier,
+            )
+        }
     }
 }

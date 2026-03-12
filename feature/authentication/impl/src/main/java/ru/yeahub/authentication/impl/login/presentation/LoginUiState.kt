@@ -1,8 +1,5 @@
 package ru.yeahub.authentication.impl.login.presentation
 
-import androidx.compose.runtime.Immutable
-
-@Immutable
 data class LoginUiState(
     val email: String,
     val password: String,

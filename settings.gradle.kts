@@ -57,7 +57,6 @@ include(":feature:public-collections:api")
 include(":feature:questions-or-collections")
 include(":feature:questions-or-collections:api")
 include(":feature:questions-or-collections:impl")
-
 include(":feature:authentication:api")
 include(":feature:authentication:impl")
 include(":feature:enter-and-registration")
