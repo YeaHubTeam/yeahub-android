@@ -14,6 +14,7 @@ class ForgotPasswordRepositoryImpl(
     private val mapper: ForgotPasswordMapper
 ) : ForgotPasswordRepository {
 
+    @Suppress("TooGenericExceptionCaught")
     override suspend fun sendResetLink(email: String): ForgotPasswordResult {
         return try {
             val dto = api.forgotPassword(ForgotPasswordRequestDto(email))
