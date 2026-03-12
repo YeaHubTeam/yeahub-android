@@ -2,7 +2,8 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel target="11">
-      <module name="YeaHub.feature.enter-and-registration.mylibrary" target="21" />
+      <module name="YeaHub.feature.profile-edit.api" target="21" />
+      <module name="YeaHub.feature.profile-edit.impl" target="21" />
     </bytecodeTargetLevel>
   </component>
 </project>

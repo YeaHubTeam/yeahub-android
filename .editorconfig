@@ -24,4 +24,5 @@ ktlint_standard_multiline-expression-wrapping = disabled
 ktlint_standard_no-trailing-spaces = disabled
 ktlint_standard_no-multi-spaces = disabled
 ktlint_standard_blank-line-before-declaration = disabled
+ktlint_standard_import-ordering = disabled
 #immune for no-wildcard in detekt config (detekt-setting/detekt.yml)

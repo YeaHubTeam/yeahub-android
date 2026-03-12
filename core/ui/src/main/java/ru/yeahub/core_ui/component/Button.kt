@@ -23,6 +23,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
@@ -41,7 +42,7 @@ fun PrimaryButton(
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     shape: Shape = RoundedCornerShape(12.dp),
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
-    content: @Composable RowScope.() -> Unit,
+    content: @Composable RowScope.() -> Unit
 ) {
     DefaultButton(
         onClick = onClick,
@@ -52,7 +53,7 @@ fun PrimaryButton(
         interactionSource = interactionSource,
         shape = shape,
         contentPadding = contentPadding,
-        content = content
+        content = content,
     )
 }
 
@@ -66,7 +67,7 @@ fun SecondaryButton(
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     shape: Shape = RoundedCornerShape(12.dp),
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
-    content: @Composable RowScope.() -> Unit,
+    content: @Composable RowScope.() -> Unit
 ) {
     DefaultButton(
         onClick = onClick,
@@ -102,7 +103,7 @@ fun OutlineButton(
         interactionSource = interactionSource,
         shape = shape,
         contentPadding = contentPadding,
-        content = content
+        content = content,
     )
 }
 
@@ -129,7 +130,7 @@ private fun DefaultButton(
         color = containerColor,
         contentColor = contentColor,
         border = border,
-        interactionSource = interactionSource
+        interactionSource = interactionSource,
     ) {
         CompositionLocalProvider(
             value = LocalContentColor provides contentColor
@@ -138,7 +139,8 @@ private fun DefaultButton(
                 modifier = Modifier
                     .padding(contentPadding),
                 horizontalArrangement = Arrangement.Center,
-                content = content
+                verticalAlignment = Alignment.CenterVertically,
+                content = content,
             )
         }
     }
@@ -156,7 +158,7 @@ object YeahubButtonDefaults {
             contentColor = contentColor,
             containerColor = containerColor,
             disabledContentColor = disabledContentColor,
-            disabledContainerColor = disabledContainerColor
+            disabledContainerColor = disabledContainerColor,
         )
     }
 
@@ -171,7 +173,7 @@ object YeahubButtonDefaults {
             contentColor = contentColor,
             containerColor = containerColor,
             disabledContentColor = disabledContentColor,
-            disabledContainerColor = disabledContainerColor
+            disabledContainerColor = disabledContainerColor,
         )
     }
 
@@ -186,7 +188,7 @@ object YeahubButtonDefaults {
             contentColor = contentColor,
             containerColor = containerColor,
             disabledContentColor = disabledContentColor,
-            disabledContainerColor = disabledContainerColor
+            disabledContainerColor = disabledContainerColor,
         )
     }
 
@@ -201,7 +203,7 @@ object YeahubButtonDefaults {
             contentColor = contentColor,
             containerColor = containerColor,
             disabledContentColor = disabledContentColor,
-            disabledContainerColor = disabledContainerColor
+            disabledContainerColor = disabledContainerColor,
         )
     }
 
@@ -210,13 +212,13 @@ object YeahubButtonDefaults {
         contentColor: Color = Theme.colors.red600,
         containerColor: Color = Color.Transparent,
         disabledContentColor: Color = Theme.colors.red200,
-        disabledContainerColor: Color = Color.Transparent,
+        disabledContainerColor: Color = Color.Transparent
     ): YeahubButtonColors {
         return YeahubButtonColors(
             contentColor = contentColor,
             containerColor = containerColor,
             disabledContentColor = disabledContentColor,
-            disabledContainerColor = disabledContainerColor
+            disabledContainerColor = disabledContainerColor,
         )
     }
 
@@ -227,7 +229,7 @@ object YeahubButtonDefaults {
     ): BorderStroke {
         return BorderStroke(
             width = width,
-            color = borderColor
+            color = borderColor,
         )
     }
 }
@@ -237,7 +239,7 @@ data class YeahubButtonColors(
     private val contentColor: Color,
     private val containerColor: Color,
     private val disabledContentColor: Color,
-    private val disabledContainerColor: Color,
+    private val disabledContainerColor: Color
 ) : ButtonColors {
     @Composable
     override fun containerColor(enabled: Boolean): State<Color> {

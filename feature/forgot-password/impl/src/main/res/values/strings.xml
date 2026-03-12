@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="close">Close</string>
+    <string name="letter">Letter</string>
+    <string name="instructions_letter">Мы отправили письмо\nс инструкциями</string>
+    <string name="instruction">Если вы не получили письмо\nс инструкциями, проверьте, пожалуйста,\nпапку «Спам» или попробуйте отправить\nзапрос еще раз</string>
+    <string name="resend">Отправить повторно через %1$d c</string>
+    <string name="resend_button">Отправить повторно</string>
+    <string name="ok">Хорошо</string>
+    <string name="title_forgot_password">Забыли пароль?</string>
+    <string name="enter_email_instruction">Для восстановления пароля введите адрес\nэл.почты, на который вы регистрировались.\nМы отправим письмо для восстановления пароля</string>
+    <string name="email">Электронная почта</string>
+    <string name="enter_email">Введите электронную почту</string>
+    <string name="send_button">Отправить</string>
+    <string name="cant_send_a_letter">Не удалось отправить письмо</string>
+</resources>

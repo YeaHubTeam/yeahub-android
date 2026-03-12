@@ -46,9 +46,11 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 import ru.yeahub.core_ui.example.dynamicPreview.StandardScreenSizePreview
 import ru.yeahub.core_ui.example.staticPreview.StaticPreview
@@ -174,6 +176,7 @@ fun DefaultTextField(
     isEnabled: Boolean = true,
     isError: Boolean = false,
     singleLine: Boolean = true,
+    showLeadingIcon: Boolean = false,
     shape: Shape = RoundedCornerShape(12.dp),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
 ) {
@@ -203,7 +206,7 @@ fun DefaultTextField(
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
-        label = {
+        placeholder = {
             Text(
                 text = label,
                 color = Theme.colors.black300,
@@ -215,7 +218,7 @@ fun DefaultTextField(
             .height(58.dp),
         enabled = isEnabled,
         singleLine = singleLine,
-        leadingIcon =
+        leadingIcon = if (showLeadingIcon) {
             {
                 Icon(
                     painter = painterResource(id = R.drawable.icon_search),
@@ -225,10 +228,16 @@ fun DefaultTextField(
                         .width(20.dp)
                         .height(20.dp)
                 )
-            },
+            }
+        } else {
+            null
+        },
         isError = isError,
         shape = shape,
-        textStyle = Theme.typography.body3,
+        textStyle = Theme.typography.body3.copy(
+            textAlign = TextAlign.Center,
+            fontSize = 14.sp
+        ),
         colors = OutlinedTextFieldDefaults.colors(
             cursorColor = if (state == TextInputState.Focused) contentColor else Color.Transparent,
             unfocusedTextColor = contentColor,

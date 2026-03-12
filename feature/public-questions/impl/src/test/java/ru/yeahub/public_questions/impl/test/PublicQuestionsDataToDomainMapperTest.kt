@@ -1,10 +1,7 @@
 package ru.yeahub.public_questions.impl.test
 
+import java.util.stream.Stream
 import org.junit.jupiter.api.Assertions
-
-import ru.yeahub.public_questions.impl.data.mapper.PublicQuestionsDataToDomainMapper
-import ru.yeahub.public_questions.impl.domain.entity.PublicQuestionModel
-import ru.yeahub.public_questions.impl.domain.entity.PublicQuestionsModel
 import org.junit.jupiter.api.extension.ExtensionContext
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
@@ -15,7 +12,9 @@ import ru.yeahub.network_api.models.GetQuestionResponse
 import ru.yeahub.network_api.models.NestedSkillResponse
 import ru.yeahub.network_api.models.NestedSpecializationResponse
 import ru.yeahub.network_api.models.NestedUserReferenceDto
-import java.util.stream.Stream
+import ru.yeahub.public_questions.impl.data.mapper.PublicQuestionsDataToDomainMapper
+import ru.yeahub.public_questions.impl.domain.entity.PublicQuestionModel
+import ru.yeahub.public_questions.impl.domain.entity.PublicQuestionsModel
 
 class PublicQuestionsDataToDomainMapperTest {
     private val mapper = PublicQuestionsDataToDomainMapper()
