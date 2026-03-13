@@ -19,6 +19,15 @@ import ru.yeahub.test.TestArgumentsProvider
 class UserProfileMapperTest {
     private val mapper = UserProfileDataToDomainMapper()
 
+    @ParameterizedTest
+    @ArgumentsSource(ArgumentsProvider::class)
+    fun `profile data to domain mapper test cases`(
+        testCase: ProfileDataToDomainMapperTestCase,
+    ) {
+        val result = mapper.mapDataToDomain(testCase.dataToTest)
+        Assertions.assertEquals(testCase.expectedResult, result)
+    }
+
     class ArgumentsProvider :
         TestArgumentsProvider<ProfileDataToDomainMapperTestCase>() {
         override fun testCases(): List<ProfileDataToDomainMapperTestCase> = listOf(
@@ -51,15 +60,6 @@ class UserProfileMapperTest {
                 expectedResult = ProfileExampleDataClasses.domainProfileWithCleanDescription
             )
         )
-    }
-
-    @ParameterizedTest
-    @ArgumentsSource(ArgumentsProvider::class)
-    fun `profile data to domain mapper test cases`(
-        testCase: ProfileDataToDomainMapperTestCase,
-    ) {
-        val result = mapper.mapDataToDomain(testCase.dataToTest)
-        Assertions.assertEquals(testCase.expectedResult, result)
     }
 
     object ProfileExampleDataClasses {
