@@ -38,6 +38,7 @@ dependencies {
     implementation(project(":core:utils"))
     implementation(project(":core:network-api"))
     implementation(project(":core:navigation-api"))
+    implementation(project(":core:test"))
 
     implementation(libs.timber)
 
@@ -68,4 +69,14 @@ dependencies {
     testImplementation(platform(libs.junit.bom))
     testRuntimeOnly(libs.junit.platform.launcher)
     testImplementation(libs.mockk)
+
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
+
+    implementation(libs.androidx.junit.ktx)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
 }
