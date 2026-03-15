@@ -6,9 +6,11 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import ru.yeahub.core_utils.BaseViewModel
+import ru.yeahub.profile.impl.domain.GetProfileUseCase
 
 class ProfileViewModel(
-    private val screenMapper: ProfileScreenMapper,
+    private val getProfileUseCase: GetProfileUseCase,
+    private val screenMapper: ProfileScreenMapper
 ) : BaseViewModel() {
 
     companion object {
