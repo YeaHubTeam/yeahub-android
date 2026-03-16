@@ -38,7 +38,8 @@
     <string name="profile_location_label">Локация</string>
     <string name="profile_location_placeholder">Напр. Санкт-Петербург, Россия</string>
     <string name="profile_links_title">Личные ссылки</string>
-    <string name="profile_links_subtitle">Поделитесь своими профилями в других\nсоц. сетях</string>
+    <string name="profile_links_subtitle">Поделитесь своими профилями в других
+соц. сетях</string>
     <string name="profile_link_placeholder">Ссылка</string>
     <string name="profile_remove_photo">Удалить фото</string>
     <string name="profile_personal_information">"Личная информация"</string>
@@ -46,4 +47,6 @@
     <string name="profile_skills">Навыки</string>
     <string name="profile_photo_click_for_edit">Кликни для изменения</string>
     <string name="profile_photo_helper">JPG, PNG, JPEG (не более 5мб)</string>
+    <string name="about_me_tab">О себе любимом(-ой)</string>
+    <string name="about_me_tab_label">Расскажи о себе всему сообществу. Мы ценим человека за его профессиональные качества, поэтому пиши всё, чем хочешь поделиться.</string>
 </resources>
