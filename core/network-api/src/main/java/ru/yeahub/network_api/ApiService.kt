@@ -20,7 +20,7 @@ interface ApiService {
         collection: Int? = null,
         rate: List<Int>? = null,
         keywords: List<String>? = null,
-        specialization: Int? = null,
+        specializationId: Int? = null,
         orderBy: String? = null,
         order: String? = null,
         random: Boolean? = null
