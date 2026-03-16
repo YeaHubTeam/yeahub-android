@@ -2,6 +2,8 @@ package ru.yeahub.impl.presentation.mapper
 
 import ru.yeahub.impl.presentation.state.ForgotPasswordScreenState
 import ru.yeahub.impl.presentation.state.ForgotPasswordState
+import ru.yeahub.impl.presentation.validator.EmailValidationResult
+import ru.yeahub.impl.presentation.validator.EmailValidator
 
 class ForgotPasswordScreenMapper(
     private val emailValidator: EmailValidator,

@@ -58,22 +58,15 @@ fun ForgotPasswordScreen(
 
         Spacer(Modifier.height(6.dp))
 
-        val email = when (state) {
-            is ForgotPasswordScreenState.Content -> state.email
-            else -> ""
-        }
-        val isLoading = when (state) {
-            is ForgotPasswordScreenState.Content -> state.isLoading
-            else -> false
-        }
-        val emailError = when (state) {
-            is ForgotPasswordScreenState.Content -> state.emailError
+        val contentState = when (state) {
+            is ForgotPasswordScreenState.Content -> state
             else -> null
         }
-        val isEmailValid = when (state) {
-            is ForgotPasswordScreenState.Content -> state.isEmailValid
-            else -> false
-        }
+
+        val email = contentState?.email.orEmpty()
+        val isLoading = contentState?.isLoading ?: false
+        val emailError = contentState?.emailError
+        val isEmailValid = contentState?.isEmailValid ?: false
 
         DefaultTextField(
             value = email,
@@ -149,7 +142,7 @@ fun ForgotPasswordScreenPreview_Valid() {
 fun ForgotPasswordScreenPreview_Invalid() {
     ForgotPasswordScreen(
         state = ForgotPasswordScreenState.Content(
-            email = "invalid-email",
+            email = "invalid email",
             isLoading = false,
             emailError = "Введите корректный email",
             isSent = false

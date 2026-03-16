@@ -2,11 +2,14 @@ package ru.yeahub.impl.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.yeahub.impl.domain.ForgotPasswordResult
@@ -17,6 +20,7 @@ import ru.yeahub.impl.presentation.mapper.ForgotPasswordScreenMapper
 import ru.yeahub.impl.presentation.state.ForgotPasswordScreenState
 import ru.yeahub.impl.presentation.state.ForgotPasswordState
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class ForgotPasswordViewModel(
     private val forgotPasswordScreenMapper: ForgotPasswordScreenMapper,
     private val sendResetLinkUseCase: SendResetLinkUseCase
@@ -32,23 +36,21 @@ class ForgotPasswordViewModel(
         )
     )
 
-    private val mutableUiState =
-        MutableStateFlow<ForgotPasswordScreenState>(ForgotPasswordScreenState.Initial)
-    val uiState: StateFlow<ForgotPasswordScreenState> = mutableUiState.asStateFlow()
+    val uiState: StateFlow<ForgotPasswordScreenState> = mutableState
+        .mapLatest { state -> forgotPasswordScreenMapper
+            .getScreenState(state)
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = ForgotPasswordScreenState.Initial
+        )
 
     private val mutableCommands =
         MutableSharedFlow<ForgotPasswordCommand>()
     val commands: SharedFlow<ForgotPasswordCommand> = mutableCommands
 
-    init {
-        viewModelScope.launch {
-            mutableState.collect { state ->
-                mutableUiState.value = forgotPasswordScreenMapper.getScreenState(state)
-            }
-        }
-    }
-
-    fun handleEvents(event: ForgotPasswordEvent) {
+    fun onEvent(event: ForgotPasswordEvent) {
         when (event) {
             is ForgotPasswordEvent.EmailChanged -> onEmailChanged(event.value)
             is ForgotPasswordEvent.SubmitClicked -> onSubmit()

@@ -1,6 +1,6 @@
 package ru.yeahub.impl.presentation.state
 
-data class ForgotPasswordState(
+data class ForgotPasswordState (
     val email: String,
     val isLoading: Boolean,
     val error: String?,
