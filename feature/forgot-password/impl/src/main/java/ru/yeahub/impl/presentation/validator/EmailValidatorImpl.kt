@@ -2,7 +2,7 @@ package ru.yeahub.impl.presentation.validator
 
 import android.util.Patterns
 
-class EmailValidatorImpl: EmailValidator {
+class EmailValidatorImpl : EmailValidator {
 
     override fun validate(email: String): EmailValidationResult {
         val trimmedEmail = email.trim()

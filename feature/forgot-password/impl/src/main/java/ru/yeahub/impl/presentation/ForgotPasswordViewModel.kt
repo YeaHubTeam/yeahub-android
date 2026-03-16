@@ -26,7 +26,8 @@ class ForgotPasswordViewModel(
     private val sendResetLinkUseCase: SendResetLinkUseCase
 ) : ViewModel() {
 
-    private val mutableState = MutableStateFlow<ForgotPasswordState>(
+    private val mutableState =
+        MutableStateFlow<ForgotPasswordState>(
         ForgotPasswordState.Content(
             email = "",
             emailValidationError = null,
@@ -35,9 +36,7 @@ class ForgotPasswordViewModel(
     )
 
     val uiState: StateFlow<ForgotPasswordScreenState> = mutableState
-        .mapLatest { state ->
-            forgotPasswordScreenMapper.getScreenState(state)
-        }
+        .mapLatest { state -> forgotPasswordScreenMapper.getScreenState(state) }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
