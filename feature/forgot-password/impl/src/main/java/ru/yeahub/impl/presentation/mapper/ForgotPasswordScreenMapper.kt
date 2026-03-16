@@ -9,21 +9,30 @@ class ForgotPasswordScreenMapper(
     private val emailValidator: EmailValidator,
 ) {
     fun getScreenState(state: ForgotPasswordState): ForgotPasswordScreenState {
-        return when {
-            state.error != null -> {
+        return when (state) {
+            is ForgotPasswordState.Error -> {
                 ForgotPasswordScreenState.Error(message = state.error)
             }
 
-            state.email.isBlank() && state.emailValidationError == null -> {
-                ForgotPasswordScreenState.Initial
+            is ForgotPasswordState.Content -> {
+                if (state.email.isBlank() && state.emailValidationError == null) {
+                    ForgotPasswordScreenState.Initial
+                } else {
+                    ForgotPasswordScreenState.Content(
+                        email = state.email,
+                        isLoading = false,
+                        emailError = state.emailValidationError,
+                        isSent = state.isSuccessDialogVisible,
+                    )
+                }
             }
 
-            else -> {
+            is ForgotPasswordState.Loading -> {
                 ForgotPasswordScreenState.Content(
                     email = state.email,
-                    isLoading = state.isLoading,
+                    isLoading = true,
                     emailError = state.emailValidationError,
-                    isSent = state.isSuccessDialogVisible,
+                    isSent = false,
                 )
             }
         }

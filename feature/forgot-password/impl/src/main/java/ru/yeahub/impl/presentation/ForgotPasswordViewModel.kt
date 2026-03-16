@@ -26,19 +26,17 @@ class ForgotPasswordViewModel(
     private val sendResetLinkUseCase: SendResetLinkUseCase
 ) : ViewModel() {
 
-    private val mutableState = MutableStateFlow(
-        ForgotPasswordState(
+    private val mutableState = MutableStateFlow<ForgotPasswordState>(
+        ForgotPasswordState.Content(
             email = "",
-            isLoading = false,
-            error = null,
-            emailValidationError = "",
+            emailValidationError = null,
             isSuccessDialogVisible = false,
         )
     )
 
     val uiState: StateFlow<ForgotPasswordScreenState> = mutableState
-        .mapLatest { state -> forgotPasswordScreenMapper
-            .getScreenState(state)
+        .mapLatest { state ->
+            forgotPasswordScreenMapper.getScreenState(state)
         }
         .stateIn(
             scope = viewModelScope,
@@ -59,16 +57,17 @@ class ForgotPasswordViewModel(
     }
 
     private fun onEmailChanged(value: String) {
-        mutableState.update { currentState ->
-            val validationError = if (value.isNotBlank()) {
-                forgotPasswordScreenMapper.validateEmail(value)
-            } else {
-                null
-            }
-            currentState.copy(
+        val validationError = if (value.isNotBlank()) {
+            forgotPasswordScreenMapper.validateEmail(value)
+        } else {
+            null
+        }
+
+        mutableState.update {
+            ForgotPasswordState.Content(
                 email = value,
                 emailValidationError = validationError,
-                error = null
+                isSuccessDialogVisible = false,
             )
         }
     }
@@ -79,20 +78,30 @@ class ForgotPasswordViewModel(
 
         if (!forgotPasswordScreenMapper.canSubmit(email)) {
             mutableState.update {
-                it.copy(emailValidationError = forgotPasswordScreenMapper.validateEmail(email))
+                ForgotPasswordState.Content(
+                    email = email,
+                    emailValidationError = forgotPasswordScreenMapper.validateEmail(email),
+                    isSuccessDialogVisible = false,
+                )
             }
             return
         }
 
-        mutableState.update { it.copy(isLoading = true, error = null) }
+        mutableState.update {
+            ForgotPasswordState.Loading(
+                email = email,
+                emailValidationError = null,
+            )
+        }
 
         viewModelScope.launch {
             when (val result = sendResetLinkUseCase(email)) {
                 is ForgotPasswordResult.Success -> {
                     mutableState.update {
-                        it.copy(
-                            isLoading = false,
-                            isSuccessDialogVisible = true
+                        ForgotPasswordState.Content(
+                            email = email,
+                            emailValidationError = null,
+                            isSuccessDialogVisible = true,
                         )
                     }
                     emitCommand(ForgotPasswordCommand.NavigateToCheckEmail)
@@ -100,9 +109,10 @@ class ForgotPasswordViewModel(
 
                 is ForgotPasswordResult.Error -> {
                     mutableState.update {
-                        it.copy(
-                            isLoading = false,
-                            error = result.message
+                        ForgotPasswordState.Error(
+                            email = email,
+                            error = result.message,
+                            emailValidationError = null,
                         )
                     }
                     emitCommand(ForgotPasswordCommand.ShowSnackbar(result.message))
@@ -122,4 +132,11 @@ class ForgotPasswordViewModel(
             mutableCommands.emit(command)
         }
     }
+
+    private val ForgotPasswordState.email: String
+        get() = when (this) {
+            is ForgotPasswordState.Content -> email
+            is ForgotPasswordState.Loading -> email
+            is ForgotPasswordState.Error -> email
+        }
 }
