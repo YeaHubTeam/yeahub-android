@@ -1,13 +1,12 @@
 package ru.yeahub.profile_edit.impl.presentation
 
-import androidx.compose.runtime.Immutable
-import ru.yeahub.core_utils.common.TextOrResource
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.PersistentMap
 
 sealed interface ProfileEditState {
 
     data object Loading : ProfileEditState
 
-    @Immutable
     data class Loaded(
         val selectedTab: ProfileEditTabs,
         val personalInfoState: PersonalInfoTabState,
@@ -17,22 +16,10 @@ sealed interface ProfileEditState {
 
     data class Error(val throwable: Throwable) : ProfileEditState
 
-    enum class ProfileEditTabs(
-        val index: Int,
-        val title: TextOrResource.Resource,
-    ) {
-        PersonalInfo(
-            index = 0,
-            title = TextOrResource.Resource(ru.yeahub.ui.R.string.profile_personal_information),
-        ),
-        AboutMe(
-            index = 1,
-            title = TextOrResource.Resource(ru.yeahub.ui.R.string.profile_about_me),
-        ),
-        Skills(
-            index = 2,
-            title = TextOrResource.Resource(ru.yeahub.ui.R.string.profile_skills),
-        )
+    enum class ProfileEditTabs {
+        PersonalInfo,
+        AboutMe,
+        Skills,
     }
 
     enum class SocialLinks {
@@ -54,14 +41,14 @@ sealed interface ProfileEditState {
         val specialization: String,
         val email: String,
         val location: String,
-        val socialLinksUrlMap: Map<SocialLinks, String>,
+        val socialLinksUrlMap: PersistentMap<SocialLinks, String>,
     )
 
     data class AboutMeTabState(val aboutMeField: String)
 
     data class SkillsTabState(
-        val listOfSkills: List<Skill>,
-        val listOfChosenSkills: List<Skill>,
+        val listOfSkills: PersistentList<Skill>,
+        val listOfChosenSkills: PersistentList<Skill>,
     )
 
     data class Skill(

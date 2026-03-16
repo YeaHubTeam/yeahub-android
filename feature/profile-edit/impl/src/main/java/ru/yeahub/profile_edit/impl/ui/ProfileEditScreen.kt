@@ -19,25 +19,40 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentMapOf
 import ru.yeahub.core_ui.component.CoreTopTabs
 import ru.yeahub.core_ui.component.TopAppBarWithBottomBorder
 import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.core_utils.common.TextOrResource
 import ru.yeahub.profile_edit.impl.presentation.ProfileEditState
-import ru.yeahub.profile_edit.impl.ui.tabs.AboutMeContent
+import ru.yeahub.profile_edit.impl.presentation.ProfileEditState.ProfileEditTabs
+import ru.yeahub.profile_edit.impl.presentation.ProfileEditState.ProfileEditTabs.AboutMe
+import ru.yeahub.profile_edit.impl.presentation.ProfileEditState.ProfileEditTabs.PersonalInfo
+import ru.yeahub.profile_edit.impl.presentation.ProfileEditState.ProfileEditTabs.Skills
 import ru.yeahub.profile_edit.impl.ui.tabs.PersonalInfoContent
 
 @Composable
 fun ProfileEditScreen(
-    tabs: List<ProfileEditState.ProfileEditTabs>,
+    tabs: List<ProfileEditTabs>,
     state: ProfileEditState.Loaded,
-    onTabSelected: (ProfileEditState.ProfileEditTabs) -> Unit,
+    onTabSelected: (ProfileEditTabs) -> Unit,
     onBackClick: () -> Unit,
     headerText: TextOrResource,
     personalInfoContent: @Composable (() -> Unit),
     aboutMeContent: @Composable (() -> Unit),
     skillsContent: @Composable (() -> Unit),
 ) {
+    val tabTitles = remember(tabs) {
+        tabs.map { tab ->
+            when (tab) {
+                PersonalInfo -> ru.yeahub.ui.R.string.profile_personal_information
+                AboutMe -> ru.yeahub.ui.R.string.profile_about_me
+                Skills -> ru.yeahub.ui.R.string.profile_skills
+            }
+        }
+    }
+
     Scaffold(
         containerColor = Theme.colors.black10,
         topBar = {
@@ -67,14 +82,14 @@ fun ProfileEditScreen(
                     ),
             ) {
                 CoreTopTabs(
-                    selectedIndex = state.selectedTab.index,
+                    selectedIndex = state.selectedTab.ordinal,
                     onSelected = { index ->
-                        onTabSelected(ProfileEditState.ProfileEditTabs.entries[index])
+                        onTabSelected(ProfileEditTabs.entries[index])
                     },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(32.dp),
-                    tabs = tabs.map { stringResource(it.title.resource) },
+                    tabs = tabTitles.map { stringResource(it) },
                     edgePadding = (-16).dp,
                     indicatorHeight = 10.dp,
                 )
@@ -83,10 +98,10 @@ fun ProfileEditScreen(
                         .fillMaxWidth()
                         .background(Theme.colors.white900),
                 ) {
-                    when (state.selectedTab.index) {
-                        0 -> personalInfoContent()
-                        1 -> aboutMeContent()
-                        2 -> skillsContent()
+                    when (state.selectedTab) {
+                        PersonalInfo -> personalInfoContent()
+                        AboutMe -> aboutMeContent()
+                        Skills -> skillsContent()
                     }
                 }
             }
@@ -98,7 +113,7 @@ fun ProfileEditScreen(
 @Composable
 fun ProfileEditPreview() {
     val screenState = ProfileEditState.Loaded(
-        selectedTab = ProfileEditState.ProfileEditTabs.PersonalInfo,
+        selectedTab = PersonalInfo,
         personalInfoState = ProfileEditState.PersonalInfoTabState(
             avatarUrl = null,
             nickname = "John Doe",
@@ -106,14 +121,14 @@ fun ProfileEditPreview() {
             specialization = "Android Разработчик",
             email = "johndoe@gmail.com",
             location = "Санкт-Петербург",
-            socialLinksUrlMap = emptyMap(),
+            socialLinksUrlMap = persistentMapOf(),
         ),
         aboutMeTabState = ProfileEditState.AboutMeTabState(
             aboutMeField = "",
         ),
         skillsTabState = ProfileEditState.SkillsTabState(
-            listOfSkills = emptyList(),
-            listOfChosenSkills = emptyList(),
+            listOfSkills = persistentListOf(),
+            listOfChosenSkills = persistentListOf(),
         ),
     )
 
@@ -126,17 +141,12 @@ fun ProfileEditPreview() {
         personalInfoContent = {
             PersonalInfoContent(
                 state = state.personalInfoState,
-                onAction = { },
+                onEvent = { },
             )
         },
-        aboutMeContent = {
-            AboutMeContent(
-                state = state.aboutMeTabState
-            )
-        },
-        skillsContent = {
-        },
-        tabs = ProfileEditState.ProfileEditTabs.entries,
+        aboutMeContent = { },
+        skillsContent = { },
+        tabs = ProfileEditTabs.entries,
         headerText = TextOrResource.Text("Редактирование профиля"),
     )
 }

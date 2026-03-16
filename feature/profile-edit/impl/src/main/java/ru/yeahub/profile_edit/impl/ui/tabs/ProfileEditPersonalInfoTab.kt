@@ -20,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import kotlinx.collections.immutable.persistentMapOf
 import ru.yeahub.core_ui.component.DropDownMenu
 import ru.yeahub.core_ui.component.UploadPhotoButton
 import ru.yeahub.core_ui.component.textInput.DefaultTextField
@@ -52,7 +53,7 @@ private val REMOVE_PHOTO_BUTTON_HEIGHT = 30.dp
 @Composable
 fun PersonalInfoContent(
     state: ProfileEditState.PersonalInfoTabState,
-    onAction: (ProfileEditScreenEvent) -> Unit,
+    onEvent: (ProfileEditScreenEvent) -> Unit,
 ) {
     LazyColumn(
         modifier = Modifier
@@ -79,13 +80,13 @@ fun PersonalInfoContent(
         item {
             ProfileAvatarSection(
                 avatarUrl = state.avatarUrl,
-                onRemoveClick = { onAction(ProfileEditScreenEvent.ToDo) },
+                onRemoveClick = { onEvent(ProfileEditScreenEvent.ToDo) },
             )
             Spacer(Modifier.height(AVATAR_BOTTOM_SPACER))
         }
         item {
             UploadPhotoButton(
-                onClick = { onAction(ProfileEditScreenEvent.ToDo) },
+                onClick = { onEvent(ProfileEditScreenEvent.ToDo) },
             )
             Spacer(Modifier.height(UPLOAD_BUTTON_BOTTOM_SPACER))
         }
@@ -103,7 +104,7 @@ fun PersonalInfoContent(
             FieldLabel(text = stringResource(R.string.profile_nickname_label))
             DefaultTextField(
                 value = state.nickname,
-                onValueChange = { onAction(ProfileEditScreenEvent.ToDo) },
+                onValueChange = { onEvent(ProfileEditScreenEvent.ToDo) },
                 placeholder = stringResource(R.string.profile_nickname_placeholder),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -118,7 +119,7 @@ fun PersonalInfoContent(
                 placeholder = stringResource(R.string.profile_nickname_placeholder),
                 items = state.specializationList,
                 selected = state.specialization,
-                onSelected = { onAction(ProfileEditScreenEvent.ToDo) },
+                onSelected = { onEvent(ProfileEditScreenEvent.ToDo) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(TEXT_FIELD_HEIGHT),
@@ -143,7 +144,7 @@ fun PersonalInfoContent(
             FieldLabel(text = stringResource(R.string.profile_location_label))
             DefaultTextField(
                 value = state.location,
-                onValueChange = { onAction(ProfileEditScreenEvent.ToDo) },
+                onValueChange = { onEvent(ProfileEditScreenEvent.ToDo) },
                 placeholder = stringResource(R.string.profile_location_placeholder),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -167,7 +168,7 @@ fun PersonalInfoContent(
                 SocialLinkField(
                     platform = platform,
                     value = state.socialLinksUrlMap[platform].orEmpty(),
-                    onValueChange = { onAction(ProfileEditScreenEvent.ToDo) },
+                    onValueChange = { onEvent(ProfileEditScreenEvent.ToDo) },
                 )
             }
         }
@@ -252,7 +253,7 @@ fun ProfileEditPersonalInfoPreview() {
         specialization = "Android Разработчик",
         email = "johndoe@gmail.com",
         location = "Санкт-Петербург",
-        socialLinksUrlMap = emptyMap(),
+        socialLinksUrlMap = persistentMapOf(),
     )
-    PersonalInfoContent(state = personalInfoState, onAction = {})
+    PersonalInfoContent(state = personalInfoState, onEvent = {})
 }
