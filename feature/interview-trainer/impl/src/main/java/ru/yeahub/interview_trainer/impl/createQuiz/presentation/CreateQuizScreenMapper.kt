@@ -1,26 +1,33 @@
 package ru.yeahub.interview_trainer.impl.createQuiz.presentation
 
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Deferred
 import ru.yeahub.interview_trainer.impl.createQuiz.domain.DomainSpecialization
+import java.io.IOException
 
 class CreateQuizScreenMapper {
 
-    fun getScreenState(
-        specializations: List<DomainSpecialization>,
+    suspend fun getScreenState(
+        specializationsDef: Deferred<List<DomainSpecialization>>,
         selectedSpecializationId: Long,
         questionsCount: Int,
-    ): CreateQuizState = CreateQuizState.Loaded(
-        specializations = specializations.map { domainSpec ->
-            CreateQuizState.Loaded.VoSpecialization(
-                id = domainSpec.id,
-                title = domainSpec.title
-            )
-        }.toImmutableList(),
-        selectedSpecializationId = selectedSpecializationId,
-        questionsCount = questionsCount
-    )
+    ): CreateQuizState = try {
+        val specializations = specializationsDef.await()
 
-    fun getScreenState(
-        throwable: Throwable,
-    ): CreateQuizState = CreateQuizState.Error(throwable)
+        CreateQuizState.Loaded(
+            specializations = specializations.map { domainSpecialization ->
+                CreateQuizState.Loaded.VoSpecialization(
+                    id = domainSpecialization.id,
+                    title = domainSpecialization.title
+                )
+            }.toImmutableList(),
+            selectedSpecializationId = selectedSpecializationId,
+            questionsCount = questionsCount
+        )
+    } catch (ce: CancellationException) {
+        throw ce
+    } catch (throwable: IOException) {
+        CreateQuizState.Error(throwable)
+    }
 }
