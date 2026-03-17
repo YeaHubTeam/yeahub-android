@@ -133,7 +133,7 @@ fun ProfileEditPreview() {
             avatarUrl = null,
             nickname = "John Doe",
             specializationList = emptyList(),
-            specialization = "Android Разработчик",
+            specialization = "",
             email = "johndoe@gmail.com",
             location = "Санкт-Петербург",
             socialLinksUrlMap = persistentMapOf(),
