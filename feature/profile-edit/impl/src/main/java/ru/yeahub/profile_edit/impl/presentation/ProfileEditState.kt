@@ -12,6 +12,7 @@ sealed interface ProfileEditState {
         val personalInfoState: PersonalInfoTabState,
         val aboutMeTabState: AboutMeTabState,
         val skillsTabState: SkillsTabState,
+        val hasUnsavedChanges: Boolean,
     ) : ProfileEditState
 
     data class Error(val throwable: Throwable) : ProfileEditState
