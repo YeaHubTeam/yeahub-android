@@ -32,7 +32,8 @@
     <string name="profile_nickname_label">Никнейм *</string>
     <string name="profile_nickname_placeholder">Придумайте никнейм</string>
     <string name="profile_specialization_label">IT Специальность*</string>
-    <string name="profile_specialization_placeholder">Граф. дизайнер</string>
+    <string name="profile_specialization_placeholder">Выберите специализацию</string>
+    <string name="profile_change_specialization">Сменить специальность</string>
     <string name="profile_email_label">Email для связи</string>
     <string name="profile_email_placeholder">Email@gmail.com</string>
     <string name="profile_location_label">Локация</string>
