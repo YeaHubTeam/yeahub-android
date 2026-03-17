@@ -80,13 +80,13 @@ fun PersonalInfoContent(
         item {
             ProfileAvatarSection(
                 avatarUrl = state.avatarUrl,
-                onRemoveClick = { onEvent(ProfileEditScreenEvent.ToDo) },
+                onRemoveClick = { onEvent(ProfileEditScreenEvent.DeleteAvatar) },
             )
             Spacer(Modifier.height(AVATAR_BOTTOM_SPACER))
         }
         item {
             UploadPhotoButton(
-                onClick = { onEvent(ProfileEditScreenEvent.ToDo) },
+                onClick = { onEvent(ProfileEditScreenEvent.UploadAvatar) },
             )
             Spacer(Modifier.height(UPLOAD_BUTTON_BOTTOM_SPACER))
         }
@@ -104,7 +104,7 @@ fun PersonalInfoContent(
             FieldLabel(text = stringResource(R.string.profile_nickname_label))
             DefaultTextField(
                 value = state.nickname,
-                onValueChange = { onEvent(ProfileEditScreenEvent.ToDo) },
+                onValueChange = { onEvent(ProfileEditScreenEvent.OnNicknameChanged(it)) },
                 placeholder = stringResource(R.string.profile_nickname_placeholder),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -116,10 +116,10 @@ fun PersonalInfoContent(
         item {
             FieldLabel(text = stringResource(R.string.profile_specialization_label))
             DropDownMenu(
-                placeholder = stringResource(R.string.profile_nickname_placeholder),
+                placeholder = stringResource(R.string.profile_specialization_label),
                 items = state.specializationList,
                 selected = state.specialization,
-                onSelected = { onEvent(ProfileEditScreenEvent.ToDo) },
+                onSelected = { onEvent(ProfileEditScreenEvent.ChooseSpecialization(it)) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(TEXT_FIELD_HEIGHT),
@@ -144,7 +144,7 @@ fun PersonalInfoContent(
             FieldLabel(text = stringResource(R.string.profile_location_label))
             DefaultTextField(
                 value = state.location,
-                onValueChange = { onEvent(ProfileEditScreenEvent.ToDo) },
+                onValueChange = { onEvent(ProfileEditScreenEvent.OnLocationChanged(it)) },
                 placeholder = stringResource(R.string.profile_location_placeholder),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -168,7 +168,14 @@ fun PersonalInfoContent(
                 SocialLinkField(
                     platform = platform,
                     value = state.socialLinksUrlMap[platform].orEmpty(),
-                    onValueChange = { onEvent(ProfileEditScreenEvent.ToDo) },
+                    onValueChange = {
+                        onEvent(
+                            ProfileEditScreenEvent.OnSocialLinkChanged(
+                                link = platform,
+                                url = it,
+                            ),
+                        )
+                    },
                 )
             }
         }
