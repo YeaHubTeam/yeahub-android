@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -23,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
 import ru.yeahub.core_ui.component.CoreTopTabs
+import ru.yeahub.core_ui.component.PrimaryButton
 import ru.yeahub.core_ui.component.TopAppBarWithBottomBorder
 import ru.yeahub.core_ui.component.UnsavedChangesDialog
 import ru.yeahub.core_ui.theme.Theme
@@ -33,6 +35,7 @@ import ru.yeahub.profile_edit.impl.presentation.ProfileEditState.ProfileEditTabs
 import ru.yeahub.profile_edit.impl.presentation.ProfileEditState.ProfileEditTabs.PersonalInfo
 import ru.yeahub.profile_edit.impl.presentation.ProfileEditState.ProfileEditTabs.Skills
 import ru.yeahub.profile_edit.impl.ui.tabs.PersonalInfoContent
+import ru.yeahub.ui.R
 
 @Composable
 fun ProfileEditScreen(
@@ -41,6 +44,7 @@ fun ProfileEditScreen(
     showUnsavedChangesDialog: Boolean,
     onTabSelected: (ProfileEditTabs) -> Unit,
     onBackClick: () -> Unit,
+    onSaveClick: () -> Unit,
     onLeaveConfirmed: () -> Unit,
     onLeaveDismissed: () -> Unit,
     headerText: TextOrResource,
@@ -54,9 +58,9 @@ fun ProfileEditScreen(
     val tabTitles = remember(tabs) {
         tabs.map { tab ->
             when (tab) {
-                PersonalInfo -> ru.yeahub.ui.R.string.profile_personal_information
-                AboutMe -> ru.yeahub.ui.R.string.profile_about_me
-                Skills -> ru.yeahub.ui.R.string.profile_skills
+                PersonalInfo -> R.string.profile_personal_information
+                AboutMe -> R.string.profile_about_me
+                Skills -> R.string.profile_skills
             }
         }
     }
@@ -69,6 +73,16 @@ fun ProfileEditScreen(
                 onBackClick = onBackClick,
             )
         },
+        bottomBar = {
+            PrimaryButton(
+                onClick = onSaveClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+            ) {
+                Text(text = stringResource(R.string.save))
+            }
+        },
     ) { paddingValues ->
 
         Surface(
@@ -77,7 +91,7 @@ fun ProfileEditScreen(
                 .padding(paddingValues)
                 .padding(horizontal = 16.dp)
                 .padding(top = 16.dp)
-                .padding(bottom = 16.dp),
+                .padding(bottom = 0.dp),
             color = Theme.colors.white900,
             shape = RoundedCornerShape(16.dp),
         ) {
@@ -167,6 +181,7 @@ fun ProfileEditPreview() {
         skillsContent = { },
         tabs = ProfileEditTabs.entries,
         headerText = TextOrResource.Text("Редактирование профиля"),
+        onSaveClick = { },
     )
 }
 
@@ -213,5 +228,6 @@ fun ProfileEditWithDialogPreview() {
         },
         aboutMeContent = {},
         skillsContent = {},
+        onSaveClick = { },
     )
 }
