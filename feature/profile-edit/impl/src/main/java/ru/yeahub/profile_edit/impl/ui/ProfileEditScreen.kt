@@ -1,5 +1,6 @@
 package ru.yeahub.profile_edit.impl.ui
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,6 +24,7 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
 import ru.yeahub.core_ui.component.CoreTopTabs
 import ru.yeahub.core_ui.component.TopAppBarWithBottomBorder
+import ru.yeahub.core_ui.component.UnsavedChangesDialog
 import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.core_utils.common.TextOrResource
 import ru.yeahub.profile_edit.impl.presentation.ProfileEditState
@@ -36,13 +38,19 @@ import ru.yeahub.profile_edit.impl.ui.tabs.PersonalInfoContent
 fun ProfileEditScreen(
     tabs: List<ProfileEditTabs>,
     state: ProfileEditState.Loaded,
+    showUnsavedChangesDialog: Boolean,
     onTabSelected: (ProfileEditTabs) -> Unit,
     onBackClick: () -> Unit,
+    onLeaveConfirmed: () -> Unit,
+    onLeaveDismissed: () -> Unit,
     headerText: TextOrResource,
     personalInfoContent: @Composable (() -> Unit),
     aboutMeContent: @Composable (() -> Unit),
     skillsContent: @Composable (() -> Unit),
 ) {
+    BackHandler {
+        onBackClick()
+    }
     val tabTitles = remember(tabs) {
         tabs.map { tab ->
             when (tab) {
@@ -107,6 +115,13 @@ fun ProfileEditScreen(
             }
         }
     }
+
+    if (showUnsavedChangesDialog) {
+        UnsavedChangesDialog(
+            onLeave = onLeaveConfirmed,
+            onStay = onLeaveDismissed,
+        )
+    }
 }
 
 @Preview
@@ -130,14 +145,18 @@ fun ProfileEditPreview() {
             listOfSkills = persistentListOf(),
             listOfChosenSkills = persistentListOf(),
         ),
+        hasUnsavedChanges = true,
     )
 
     var state by remember { mutableStateOf(screenState) }
 
     ProfileEditScreen(
         state = state,
+        showUnsavedChangesDialog = false,
         onTabSelected = { state = state.copy(selectedTab = it) },
         onBackClick = {},
+        onLeaveConfirmed = {},
+        onLeaveDismissed = {},
         personalInfoContent = {
             PersonalInfoContent(
                 state = state.personalInfoState,
@@ -148,5 +167,51 @@ fun ProfileEditPreview() {
         skillsContent = { },
         tabs = ProfileEditTabs.entries,
         headerText = TextOrResource.Text("Редактирование профиля"),
+    )
+}
+
+@Preview
+@Composable
+fun ProfileEditWithDialogPreview() {
+    val screenState = ProfileEditState.Loaded(
+        selectedTab = PersonalInfo,
+        personalInfoState = ProfileEditState.PersonalInfoTabState(
+            avatarUrl = null,
+            nickname = "John Doe",
+            specializationList = emptyList(),
+            specialization = "Android Разработчик",
+            email = "johndoe@gmail.com",
+            location = "Санкт-Петербург",
+            socialLinksUrlMap = persistentMapOf(),
+        ),
+        aboutMeTabState = ProfileEditState.AboutMeTabState(
+            aboutMeField = "",
+        ),
+        skillsTabState = ProfileEditState.SkillsTabState(
+            listOfSkills = persistentListOf(),
+            listOfChosenSkills = persistentListOf(),
+        ),
+        hasUnsavedChanges = true,
+    )
+
+    var state by remember { mutableStateOf(screenState) }
+
+    ProfileEditScreen(
+        state = state,
+        showUnsavedChangesDialog = true,
+        onTabSelected = {},
+        onBackClick = {},
+        onLeaveConfirmed = {},
+        onLeaveDismissed = {},
+        tabs = ProfileEditTabs.entries,
+        headerText = TextOrResource.Text("Редактирование профиля"),
+        personalInfoContent = {
+            PersonalInfoContent(
+                state = state.personalInfoState,
+                onEvent = { },
+            )
+        },
+        aboutMeContent = {},
+        skillsContent = {},
     )
 }
