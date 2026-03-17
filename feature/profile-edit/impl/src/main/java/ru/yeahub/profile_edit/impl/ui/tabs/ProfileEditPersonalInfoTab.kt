@@ -3,12 +3,14 @@ package ru.yeahub.profile_edit.impl.ui.tabs
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -116,15 +118,33 @@ fun PersonalInfoContent(
         item {
             FieldLabel(text = stringResource(R.string.profile_specialization_label))
             DropDownMenu(
-                placeholder = stringResource(R.string.profile_specialization_label),
+                placeholder = stringResource(R.string.profile_specialization_placeholder),
                 items = state.specializationList,
                 selected = state.specialization,
                 onSelected = { onEvent(ProfileEditScreenEvent.ChooseSpecialization(it)) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(TEXT_FIELD_HEIGHT),
+                leadingIcon = {
+                    Icon(
+                        painter = painterResource(R.drawable.icon_search),
+                        contentDescription = "Поиск",
+                        modifier = Modifier
+                            .width(20.dp)
+                            .height(20.dp),
+                    )
+                },
             )
-            Spacer(Modifier.height(FIELD_BOTTOM_SPACER))
+            TextButton(
+                onClick = { onEvent(ProfileEditScreenEvent.CannotChangeSpecializationToast) },
+                contentPadding = PaddingValues(0.dp),
+            ) {
+                Text(
+                    text = stringResource(R.string.profile_change_specialization),
+                    style = Theme.typography.head7,
+                    color = Theme.colors.purple700,
+                )
+            }
         }
         item {
             FieldLabel(text = stringResource(R.string.profile_email_label))
@@ -137,6 +157,7 @@ fun PersonalInfoContent(
                     .height(TEXT_FIELD_HEIGHT),
                 onExpandedChange = {},
                 readOnly = true,
+                isEnabled = false,
             )
             Spacer(Modifier.height(FIELD_BOTTOM_SPACER))
         }
