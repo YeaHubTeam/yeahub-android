@@ -4,10 +4,25 @@ import android.util.Patterns
 
 class RegistrationUiStateMapper {
 
+    fun getInitialFormState(): RegistrationFormState = RegistrationFormState(
+        nickname = "",
+        email = "",
+        password = "",
+        confirmPassword = "",
+        isPdAccepted = false,
+        isOfferAccepted = false,
+        isMailingAccepted = false,
+        isPasswordVisible = false,
+        isConfirmPasswordVisible = false,
+        isSubmitEnabled = false,
+    )
+
+    fun getInitialState(): RegistrationUiState = RegistrationUiState.Content(getInitialFormState())
+
     fun getScreenState(
-            formState: RegistrationFormState,
-            isLoading: Boolean,
-            errorMessage: String?
+        formState: RegistrationFormState,
+        isLoading: Boolean,
+        errorMessage: String?
     ): RegistrationUiState {
         val validatedForm = formState.revalidate()
         return when {
@@ -25,7 +40,7 @@ class RegistrationUiStateMapper {
         val requiredConsentsOk = isPdAccepted && isOfferAccepted
 
         return copy(
-                isSubmitEnabled = nicknameOk && emailOk && passOk && confirmOk && requiredConsentsOk
+            isSubmitEnabled = nicknameOk && emailOk && passOk && confirmOk && requiredConsentsOk
         )
     }
 }

@@ -21,7 +21,7 @@ class RegistrationViewModel(
     private val mapper: RegistrationUiStateMapper
 ) : ViewModel() {
 
-    private val formData = MutableStateFlow(RegistrationFormState())
+    private val formData = MutableStateFlow(mapper.getInitialFormState())
     private val isLoading = MutableStateFlow(false)
     private val error = MutableStateFlow<String?>(null)
 
@@ -32,7 +32,7 @@ class RegistrationViewModel(
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(UI_STATE_STOP_TIMEOUT),
-                initialValue = RegistrationUiState.Content()
+                initialValue = mapper.getInitialState()
             )
 
     fun onAction(action: RegistrationAction) {
