@@ -46,6 +46,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
@@ -58,6 +59,10 @@ import ru.yeahub.core_ui.example.staticPreview.StaticPreview
 import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.core_utils.common.TextOrResource
 import ru.yeahub.interview_trainer.impl.R
+import ru.yeahub.interview_trainer.impl.interviewQuiz.domain.DomainQuestion
+import ru.yeahub.interview_trainer.impl.interviewQuiz.domain.DomainQuestionsListResponse
+import ru.yeahub.interview_trainer.impl.interviewQuiz.domain.GetQuestionsListUseCase
+import ru.yeahub.interview_trainer.impl.interviewQuiz.domain.QuestionsRequest
 import ru.yeahub.interview_trainer.impl.interviewQuiz.presentation.InterviewQuizEvent
 import ru.yeahub.interview_trainer.impl.interviewQuiz.presentation.InterviewQuizScreenMapper
 import ru.yeahub.interview_trainer.impl.interviewQuiz.presentation.InterviewQuizState
@@ -535,8 +540,33 @@ fun InterviewQuizScreen(
 @Preview(showBackground = true)
 @Composable
 fun DynamicPreviewUI() {
+    val mockDomainQuestionsList = questions.map {
+        DomainQuestion(it.id, it.title, it.shortAnswer)
+    }
+
+    val getMockQuestionsListUseCase = object : GetQuestionsListUseCase {
+        override suspend fun invoke(request: QuestionsRequest): DomainQuestionsListResponse {
+            return DomainQuestionsListResponse(
+                fullCount = mockDomainQuestionsList.size,
+                questions = mockDomainQuestionsList
+            )
+        }
+    }
+
+    val savedStateHandle = SavedStateHandle(
+        mapOf(
+            "specializationId" to "1",
+            "questionsCount" to "10",
+            "titleTopAppBarResId" to 123
+        )
+    )
+
     val mockViewModel = viewModel {
-        InterviewQuizViewModel(InterviewQuizScreenMapper())
+        InterviewQuizViewModel(
+            savedStateHandle = savedStateHandle,
+            screenMapper = InterviewQuizScreenMapper(),
+            getQuestionsListUseCase = getMockQuestionsListUseCase,
+        )
     }
 
     val state by mockViewModel.screenState.collectAsState()
