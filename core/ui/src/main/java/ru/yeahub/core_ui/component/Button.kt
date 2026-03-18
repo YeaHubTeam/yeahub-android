@@ -243,12 +243,12 @@ data class YeahubButtonColors(
 ) : ButtonColors {
     @Composable
     override fun containerColor(enabled: Boolean): State<Color> {
-        return rememberUpdatedState(if (enabled) containerColor else disabledContentColor)
+        return rememberUpdatedState(if (enabled) containerColor else disabledContainerColor)
     }
 
     @Composable
     override fun contentColor(enabled: Boolean): State<Color> {
-        return rememberUpdatedState(if (enabled) contentColor else disabledContainerColor)
+        return rememberUpdatedState(if (enabled) contentColor else disabledContentColor)
     }
 }
 
