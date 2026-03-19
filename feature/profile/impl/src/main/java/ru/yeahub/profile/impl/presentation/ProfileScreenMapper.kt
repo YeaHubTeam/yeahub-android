@@ -1,10 +1,30 @@
 package ru.yeahub.profile.impl.presentation
 
-class ProfileScreenMapper() {
+import kotlinx.collections.immutable.toPersistentList
+import ru.yeahub.profile.impl.domain.DomainUserProfile
+
+object ProfileScreenMapper {
 
     fun getScreenState(
-        userData: UserData,
-    ): ProfileScreenState = ProfileScreenState.Success(
-        userData = userData
+        userData: DomainUserProfile,
+    ): ProfileScreenState.Success = ProfileScreenState.Success(
+        userData = UserData(
+            id = userData.id,
+            username = userData.username,
+            avatarUrl = userData.avatarUrl,
+            city = userData.city,
+            country = userData.country,
+            telegramUsername = userData.telegramUsername,
+            aboutMe = userData.aboutMe,
+            roles = userData.roles,
+            skills = userData.skills,
+            specialization = userData.specialization,
+            socialNetworks = userData.socialNetworks.map { domainNetwork ->
+                VOSocialNetwork(
+                    code = domainNetwork.code,
+                    title = domainNetwork.url ?: ""
+                )
+            }.toPersistentList()
+        )
     )
 }
