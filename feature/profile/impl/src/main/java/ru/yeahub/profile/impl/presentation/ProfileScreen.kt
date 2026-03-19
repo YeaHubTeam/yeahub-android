@@ -57,8 +57,8 @@ import ru.yeahub.core_utils.common.TextOrResource
 import ru.yeahub.core_utils.common.observe
 import ru.yeahub.profile.impl.R
 import ru.yeahub.profile.impl.domain.DomainUserProfile
-import ru.yeahub.profile.impl.domain.SocialNetwork
 import ru.yeahub.profile.impl.domain.GetProfileUseCase
+import ru.yeahub.profile.impl.domain.SocialNetwork
 
 private val CARD_CORNER_RADIUS = 12.dp
 private val CARD_SHADOW_ELEVATION = 2.dp

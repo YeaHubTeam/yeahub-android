@@ -9,8 +9,8 @@ import ru.yeahub.profile.impl.presentation.ProfileScreenMapper
 import ru.yeahub.profile.impl.presentation.ProfileScreenState
 import ru.yeahub.profile.impl.presentation.UserData
 import ru.yeahub.profile.impl.presentation.VOSocialNetwork
-import ru.yeahub.profile.impl.domain.SocialNetwork as DomainSocialNetwork
 import ru.yeahub.test.TestArgumentsProvider
+import ru.yeahub.profile.impl.domain.SocialNetwork as DomainSocialNetwork
 
 class ProfileScreenMapperTest {
 
