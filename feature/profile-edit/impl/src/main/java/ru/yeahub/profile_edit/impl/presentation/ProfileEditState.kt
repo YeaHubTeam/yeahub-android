@@ -2,6 +2,7 @@ package ru.yeahub.profile_edit.impl.presentation
 
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.PersistentMap
+import ru.yeahub.core_utils.common.TextOrResource
 
 sealed interface ProfileEditState {
 
@@ -35,15 +36,17 @@ sealed interface ProfileEditState {
         Dribble,
     }
 
+    data class ValidatedField(val value: String, val error: TextOrResource?)
+
     data class PersonalInfoTabState(
         val avatarUrl: String?,
-        val nickname: String,
+        val nickname: ValidatedField,
         val specializationList: List<String>,
         val specialization: String,
         val isSpecializationEditable: Boolean,
         val email: String,
-        val location: String,
-        val socialLinksUrlMap: PersistentMap<SocialLinks, String>,
+        val location: ValidatedField,
+        val socialLinks: PersistentMap<SocialLinks, ValidatedField>,
     )
 
     data class AboutMeTabState(val aboutMeField: String)
