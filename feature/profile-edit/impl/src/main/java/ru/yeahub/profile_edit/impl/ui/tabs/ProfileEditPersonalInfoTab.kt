@@ -2,6 +2,7 @@ package ru.yeahub.profile_edit.impl.ui.tabs
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -17,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -27,7 +29,9 @@ import ru.yeahub.core_ui.component.DropDownMenu
 import ru.yeahub.core_ui.component.UploadPhotoButton
 import ru.yeahub.core_ui.component.textInput.DefaultTextField
 import ru.yeahub.core_ui.theme.Theme
+import ru.yeahub.core_utils.common.TextOrResource
 import ru.yeahub.profile_edit.impl.presentation.ProfileEditState
+import ru.yeahub.profile_edit.impl.presentation.ProfileEditState.SocialLinks
 import ru.yeahub.profile_edit.impl.presentation.intents.ProfileEditScreenEvent
 import ru.yeahub.profile_edit.impl.ui.FieldLabel
 import ru.yeahub.profile_edit.impl.ui.SectionTitle
@@ -43,7 +47,7 @@ private val UPLOAD_BUTTON_BOTTOM_SPACER = 24.dp
 
 private val SECTION_SUBTITLE_BOTTOM_SPACER = 12.dp
 private val FIELD_BOTTOM_SPACER = 12.dp
-private val LINKS_SECTION_TOP_SPACER = 24.dp
+private val LINKS_SECTION_TOP_SPACER = 8.dp
 private val LINKS_SECTION_TITLE_BOTTOM_SPACER = 6.dp
 private val SOCIAL_LINK_VERTICAL_PADDING = 4.dp
 
@@ -51,6 +55,7 @@ private val TEXT_FIELD_HEIGHT = 52.dp
 private val AVATAR_HEIGHT = 263.dp
 private val AVATAR_WIDTH = 326.dp
 private val REMOVE_PHOTO_BUTTON_HEIGHT = 30.dp
+private val VALIDATION_ERROR_HEIGHT = 16.dp
 
 @Composable
 fun PersonalInfoContent(
@@ -104,16 +109,11 @@ fun PersonalInfoContent(
         }
         item {
             FieldLabel(text = stringResource(R.string.profile_nickname_label))
-            DefaultTextField(
-                value = state.nickname,
+            ValidatedTextField(
+                field = state.nickname,
                 onValueChange = { onEvent(ProfileEditScreenEvent.OnNicknameChanged(it)) },
                 placeholder = stringResource(R.string.profile_nickname_placeholder),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(TEXT_FIELD_HEIGHT),
-                onExpandedChange = {},
             )
-            Spacer(Modifier.height(FIELD_BOTTOM_SPACER))
         }
         item {
             FieldLabel(text = stringResource(R.string.profile_specialization_label))
@@ -164,14 +164,10 @@ fun PersonalInfoContent(
         }
         item {
             FieldLabel(text = stringResource(R.string.profile_location_label))
-            DefaultTextField(
-                value = state.location,
+            ValidatedTextField(
+                field = state.location,
                 onValueChange = { onEvent(ProfileEditScreenEvent.OnLocationChanged(it)) },
                 placeholder = stringResource(R.string.profile_location_placeholder),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(TEXT_FIELD_HEIGHT),
-                onExpandedChange = {},
             )
             Spacer(Modifier.height(LINKS_SECTION_TOP_SPACER))
         }
@@ -185,11 +181,12 @@ fun PersonalInfoContent(
             )
             Spacer(Modifier.height(LINKS_SECTION_TITLE_BOTTOM_SPACER))
         }
-        ProfileEditState.SocialLinks.entries.forEach { platform ->
+        SocialLinks.entries.forEach { platform ->
             item {
                 SocialLinkField(
                     platform = platform,
-                    value = state.socialLinksUrlMap[platform].orEmpty(),
+                    field = state.socialLinks[platform]
+                        ?: ProfileEditState.ValidatedField("", null),
                     onValueChange = {
                         onEvent(
                             ProfileEditScreenEvent.OnSocialLinkChanged(
@@ -248,27 +245,56 @@ private fun ProfileAvatarSection(
 
 @Composable
 private fun SocialLinkField(
-    platform: ProfileEditState.SocialLinks,
-    value: String,
+    platform: SocialLinks,
+    field: ProfileEditState.ValidatedField,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier.padding(vertical = SOCIAL_LINK_VERTICAL_PADDING)) {
+    Column(modifier = modifier) {
         Text(
             text = platform.name,
             style = Theme.typography.body3Accent,
             color = Theme.colors.black900,
         )
         Spacer(Modifier.height(SOCIAL_LINK_VERTICAL_PADDING))
-        DefaultTextField(
-            value = value,
+        ValidatedTextField(
+            field = field,
             onValueChange = onValueChange,
             placeholder = stringResource(R.string.profile_link_placeholder),
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(TEXT_FIELD_HEIGHT),
-            onExpandedChange = {},
         )
+    }
+}
+
+@Composable
+private fun ValidatedTextField(
+    field: ProfileEditState.ValidatedField,
+    onValueChange: (String) -> Unit,
+    placeholder: String,
+    modifier: Modifier = Modifier,
+) {
+    DefaultTextField(
+        value = field.value,
+        onValueChange = onValueChange,
+        placeholder = placeholder,
+        modifier = modifier
+            .fillMaxWidth()
+            .height(TEXT_FIELD_HEIGHT),
+        onExpandedChange = {},
+        isError = field.error != null,
+    )
+    ValidationErrorText(error = field.error)
+}
+
+@Composable
+private fun ValidationErrorText(error: TextOrResource?) {
+    Box(modifier = Modifier.height(VALIDATION_ERROR_HEIGHT)) {
+        error?.let {
+            Text(
+                text = it.getString(LocalContext.current),
+                style = Theme.typography.body7Alt,
+                color = Theme.colors.red700,
+            )
+        }
     }
 }
 
@@ -277,13 +303,21 @@ private fun SocialLinkField(
 fun ProfileEditPersonalInfoPreview() {
     val personalInfoState = ProfileEditState.PersonalInfoTabState(
         avatarUrl = null,
-        nickname = "John Doe",
+        nickname = ProfileEditState.ValidatedField("John Doe", null),
         specializationList = emptyList(),
         specialization = "Android Разработчик",
-        email = "johndoe@gmail.com",
-        location = "Санкт-Петербург",
-        socialLinksUrlMap = persistentMapOf(),
         isSpecializationEditable = false,
+        email = "johndoe@gmail.com",
+        location = ProfileEditState.ValidatedField("Санкт-Петербург", null),
+        socialLinks = persistentMapOf(
+            Pair(
+                SocialLinks.Linkedin,
+                ProfileEditState.ValidatedField(
+                    "",
+                    TextOrResource.Resource(R.string.error_max_length_255),
+                ),
+            ),
+        ),
     )
     PersonalInfoContent(state = personalInfoState, onEvent = {})
 }
