@@ -45,6 +45,9 @@
     <string name="profile_link_placeholder">Ссылка</string>
     <string name="profile_remove_photo">Удалить фото</string>
     <string name="profile_personal_information">"Личная информация"</string>
+    <string name="error_max_length_30">"Максимальная длина 30 символов"</string>
+    <string name="error_minimal_length_2">"Минимальная длина 2 символа"</string>
+    <string name="error_max_length_255">"Максимальная длина 255 символов"</string>
     <string name="profile_about_me">Обо мне</string>
     <string name="profile_skills">Навыки</string>
     <string name="profile_photo_click_for_edit">Кликни для изменения</string>
