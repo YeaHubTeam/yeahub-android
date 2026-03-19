@@ -40,6 +40,7 @@ sealed interface ProfileEditState {
         val nickname: String,
         val specializationList: List<String>,
         val specialization: String,
+        val isSpecializationEditable: Boolean,
         val email: String,
         val location: String,
         val socialLinksUrlMap: PersistentMap<SocialLinks, String>,

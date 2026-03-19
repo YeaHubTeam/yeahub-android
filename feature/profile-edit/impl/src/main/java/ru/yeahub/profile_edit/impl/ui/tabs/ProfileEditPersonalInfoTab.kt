@@ -134,6 +134,7 @@ fun PersonalInfoContent(
                             .height(20.dp),
                     )
                 },
+                isEnabled = state.isSpecializationEditable,
             )
             TextButton(
                 onClick = { onEvent(ProfileEditScreenEvent.CannotChangeSpecializationToast) },
@@ -282,6 +283,7 @@ fun ProfileEditPersonalInfoPreview() {
         email = "johndoe@gmail.com",
         location = "Санкт-Петербург",
         socialLinksUrlMap = persistentMapOf(),
+        isSpecializationEditable = false,
     )
     PersonalInfoContent(state = personalInfoState, onEvent = {})
 }

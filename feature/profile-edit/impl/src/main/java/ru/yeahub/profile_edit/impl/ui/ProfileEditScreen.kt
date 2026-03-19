@@ -151,6 +151,7 @@ fun ProfileEditPreview() {
             email = "johndoe@gmail.com",
             location = "Санкт-Петербург",
             socialLinksUrlMap = persistentMapOf(),
+            isSpecializationEditable = false,
         ),
         aboutMeTabState = ProfileEditState.AboutMeTabState(
             aboutMeField = "",
@@ -198,6 +199,7 @@ fun ProfileEditWithDialogPreview() {
             email = "johndoe@gmail.com",
             location = "Санкт-Петербург",
             socialLinksUrlMap = persistentMapOf(),
+            isSpecializationEditable = true,
         ),
         aboutMeTabState = ProfileEditState.AboutMeTabState(
             aboutMeField = "",
