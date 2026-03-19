@@ -34,6 +34,8 @@ import ru.yeahub.profile_edit.impl.presentation.ProfileEditState.ProfileEditTabs
 import ru.yeahub.profile_edit.impl.presentation.ProfileEditState.ProfileEditTabs.AboutMe
 import ru.yeahub.profile_edit.impl.presentation.ProfileEditState.ProfileEditTabs.PersonalInfo
 import ru.yeahub.profile_edit.impl.presentation.ProfileEditState.ProfileEditTabs.Skills
+import ru.yeahub.profile_edit.impl.presentation.ProfileEditState.SocialLinks
+import ru.yeahub.profile_edit.impl.ui.tabs.AboutMeContent
 import ru.yeahub.profile_edit.impl.ui.tabs.PersonalInfoContent
 import ru.yeahub.ui.R
 
@@ -145,13 +147,24 @@ fun ProfileEditPreview() {
         selectedTab = PersonalInfo,
         personalInfoState = ProfileEditState.PersonalInfoTabState(
             avatarUrl = null,
-            nickname = "John Doe",
+            nickname = ProfileEditState.ValidatedField(
+                value = "J",
+                error = TextOrResource.Resource(R.string.error_minimal_length_2),
+            ),
             specializationList = emptyList(),
-            specialization = "",
-            email = "johndoe@gmail.com",
-            location = "Санкт-Петербург",
-            socialLinksUrlMap = persistentMapOf(),
+            specialization = "Android разработчик",
             isSpecializationEditable = false,
+            email = "johndoe@gmail.com",
+            location = ProfileEditState.ValidatedField("Санкт-Петербург", null),
+            socialLinks = persistentMapOf(
+                Pair(
+                    SocialLinks.Linkedin,
+                    ProfileEditState.ValidatedField(
+                        "",
+                        TextOrResource.Resource(R.string.error_max_length_255),
+                    ),
+                ),
+            ),
         ),
         aboutMeTabState = ProfileEditState.AboutMeTabState(
             aboutMeField = "",
@@ -178,7 +191,7 @@ fun ProfileEditPreview() {
                 onEvent = { },
             )
         },
-        aboutMeContent = { },
+        aboutMeContent = { AboutMeContent(state.aboutMeTabState) },
         skillsContent = { },
         tabs = ProfileEditTabs.entries,
         headerText = TextOrResource.Text("Редактирование профиля"),
@@ -193,13 +206,13 @@ fun ProfileEditWithDialogPreview() {
         selectedTab = PersonalInfo,
         personalInfoState = ProfileEditState.PersonalInfoTabState(
             avatarUrl = null,
-            nickname = "John Doe",
+            nickname = ProfileEditState.ValidatedField("John Doe", null),
             specializationList = emptyList(),
             specialization = "Android Разработчик",
+            isSpecializationEditable = false,
             email = "johndoe@gmail.com",
-            location = "Санкт-Петербург",
-            socialLinksUrlMap = persistentMapOf(),
-            isSpecializationEditable = true,
+            location = ProfileEditState.ValidatedField("Санкт-Петербург", null),
+            socialLinks = persistentMapOf(),
         ),
         aboutMeTabState = ProfileEditState.AboutMeTabState(
             aboutMeField = "",
