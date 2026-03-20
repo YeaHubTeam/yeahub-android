@@ -2,9 +2,9 @@ package ru.yeahub.profile_edit.impl.ui.tabs
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,19 +41,21 @@ private val PERSONAL_INFO_TOP_SPACER = 10.dp
 
 private val SECTION_TITLE_BOTTOM_SPACER = 6.dp
 private val PROFILE_DESCRIPTION_BOTTOM_SPACER = 16.dp
-private val AVATAR_BOTTOM_SPACER = 12.dp
+private val AVATAR_BOTTOM_SPACER = 16.dp
 private val UPLOAD_BUTTON_BOTTOM_SPACER = 24.dp
 
 private val SECTION_SUBTITLE_BOTTOM_SPACER = 12.dp
 private val FIELD_BOTTOM_SPACER = 12.dp
 private val LINKS_SECTION_TOP_SPACER = 8.dp
+private val SPECIALIZATION_SPACER = 8.dp
 private val LINKS_SECTION_TITLE_BOTTOM_SPACER = 6.dp
 private val SOCIAL_LINK_VERTICAL_PADDING = 4.dp
 
 private val TEXT_FIELD_HEIGHT = 52.dp
 private val AVATAR_HEIGHT = 263.dp
 private val AVATAR_WIDTH = 326.dp
-private val REMOVE_PHOTO_BUTTON_HEIGHT = 30.dp
+private val REMOVE_PHOTO_BUTTON_HEIGHT = 25.dp
+private val REMOVE_PHOTO_BUTTON_PADDING = 8.dp
 private val VALIDATION_ERROR_HEIGHT = 16.dp
 
 @Composable
@@ -136,16 +137,16 @@ fun PersonalInfoContent(
                 },
                 isEnabled = state.isSpecializationEditable,
             )
-            TextButton(
-                onClick = { onEvent(ProfileEditScreenEvent.CannotChangeSpecializationToast) },
-                contentPadding = PaddingValues(0.dp),
-            ) {
-                Text(
-                    text = stringResource(R.string.profile_change_specialization),
-                    style = Theme.typography.head7,
-                    color = Theme.colors.purple700,
-                )
-            }
+            Spacer(Modifier.height(SPECIALIZATION_SPACER))
+            Text(
+                text = stringResource(R.string.profile_change_specialization),
+                style = Theme.typography.head7,
+                color = Theme.colors.purple700,
+                modifier = Modifier.clickable {
+                    onEvent(ProfileEditScreenEvent.CannotChangeSpecializationToast)
+                },
+            )
+            Spacer(Modifier.height(FIELD_BOTTOM_SPACER))
         }
         item {
             FieldLabel(text = stringResource(R.string.profile_email_label))
@@ -230,16 +231,15 @@ private fun ProfileAvatarSection(
                 contentScale = ContentScale.Crop,
             )
         }
-        TextButton(
-            onClick = onRemoveClick,
-            modifier = Modifier.height(REMOVE_PHOTO_BUTTON_HEIGHT),
-        ) {
-            Text(
-                text = stringResource(R.string.profile_remove_photo),
-                style = Theme.typography.body7Alt,
-                color = Theme.colors.red700,
-            )
-        }
+        Text(
+            text = stringResource(R.string.profile_remove_photo),
+            style = Theme.typography.body7Alt,
+            color = Theme.colors.red700,
+            modifier = Modifier
+                .height(REMOVE_PHOTO_BUTTON_HEIGHT)
+                .padding(top = REMOVE_PHOTO_BUTTON_PADDING)
+                .clickable(onClick = onRemoveClick),
+        )
     }
 }
 
