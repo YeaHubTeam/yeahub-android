@@ -36,12 +36,11 @@ import ru.yeahub.profile_edit.impl.ui.FieldLabel
 import ru.yeahub.profile_edit.impl.ui.SectionTitle
 import ru.yeahub.ui.R
 
-private val PERSONAL_INFO_TOP_PADDING = 2.dp
-private val PERSONAL_INFO_TOP_SPACER = 10.dp
+private val PHOTO_SECTION_TOP_SPACER = 23.dp
 
 private val SECTION_TITLE_BOTTOM_SPACER = 6.dp
-private val PROFILE_DESCRIPTION_BOTTOM_SPACER = 16.dp
-private val AVATAR_BOTTOM_SPACER = 16.dp
+private val PROFILE_DESCRIPTION_BOTTOM_SPACER = 18.dp
+private val AVATAR_BOTTOM_SPACER = 18.dp
 private val UPLOAD_BUTTON_BOTTOM_SPACER = 24.dp
 
 private val SECTION_SUBTITLE_BOTTOM_SPACER = 12.dp
@@ -66,11 +65,10 @@ fun PersonalInfoContent(
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Theme.colors.white900)
-            .padding(top = PERSONAL_INFO_TOP_PADDING),
+            .background(Theme.colors.white900),
     ) {
         item {
-            Spacer(Modifier.padding(PERSONAL_INFO_TOP_SPACER))
+            Spacer(Modifier.height(PHOTO_SECTION_TOP_SPACER))
             SectionTitle(title = stringResource(R.string.profile_photo))
         }
         item {
