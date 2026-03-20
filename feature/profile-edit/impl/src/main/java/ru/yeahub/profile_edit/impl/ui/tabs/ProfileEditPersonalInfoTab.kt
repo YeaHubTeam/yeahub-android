@@ -23,6 +23,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
 import ru.yeahub.core_ui.component.DropDownMenu
 import ru.yeahub.core_ui.component.UploadPhotoButton
@@ -302,7 +303,7 @@ fun ProfileEditPersonalInfoPreview() {
     val personalInfoState = ProfileEditState.PersonalInfoTabState(
         avatarUrl = null,
         nickname = ProfileEditState.ValidatedField("John Doe", null),
-        specializationList = emptyList(),
+        specializationList = persistentListOf(),
         specialization = "Android Разработчик",
         isSpecializationEditable = false,
         email = "johndoe@gmail.com",

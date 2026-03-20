@@ -183,7 +183,7 @@ fun ProfileEditPreview() {
                 value = "J",
                 error = TextOrResource.Resource(R.string.error_minimal_length_2),
             ),
-            specializationList = listOf(
+            specializationList = persistentListOf(
                 "Android разработчик",
                 "iOS разработчик",
                 "Backend разработчик",
@@ -255,7 +255,7 @@ fun ProfileEditWithDialogPreview() {
         personalInfoState = ProfileEditState.PersonalInfoTabState(
             avatarUrl = null,
             nickname = ProfileEditState.ValidatedField("John Doe", null),
-            specializationList = emptyList(),
+            specializationList = persistentListOf(),
             specialization = "Android Разработчик",
             isSpecializationEditable = false,
             email = "johndoe@gmail.com",

@@ -41,7 +41,7 @@ sealed interface ProfileEditState {
     data class PersonalInfoTabState(
         val avatarUrl: String?,
         val nickname: ValidatedField,
-        val specializationList: List<String>,
+        val specializationList: PersistentList<String>,
         val specialization: String,
         val isSpecializationEditable: Boolean,
         val email: String,
