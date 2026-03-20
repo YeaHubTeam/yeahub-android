@@ -17,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -149,11 +150,13 @@ fun ProfileEditScreen(
                         .fillMaxWidth()
                         .background(Theme.colors.white900),
                 ) { page ->
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        when (ProfileEditTabs.entries[page]) {
-                            PersonalInfo -> personalInfoContent()
-                            AboutMe -> aboutMeContent()
-                            Skills -> skillsContent()
+                    key(page) {
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            when (ProfileEditTabs.entries[page]) {
+                                PersonalInfo -> personalInfoContent()
+                                AboutMe -> aboutMeContent()
+                                Skills -> skillsContent()
+                            }
                         }
                     }
                 }
