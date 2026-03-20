@@ -20,16 +20,8 @@ class ProfileViewModel(
     }
 
     val screenState = flow {
-        try {
-            val profile = getProfileUseCase()
-            emit(screenMapper.getScreenState(profile))
-        } catch (e: Exception) {
-            emit(
-                ProfileScreenState.Error(
-                    message = e.message ?: "Unknown error"
-                )
-            )
-        }
+        val profile = getProfileUseCase()
+        emit(screenMapper.getScreenState(profile))
     }.stateIn(
         scope = viewModelScopeSafe,
         started = SharingStarted.WhileSubscribed(TIME_TO_CLEAN_UP_RESOURCES),
