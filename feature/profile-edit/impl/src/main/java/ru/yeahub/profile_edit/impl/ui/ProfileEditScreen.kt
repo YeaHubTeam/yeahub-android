@@ -35,6 +35,7 @@ import ru.yeahub.profile_edit.impl.presentation.ProfileEditState.ProfileEditTabs
 import ru.yeahub.profile_edit.impl.presentation.ProfileEditState.ProfileEditTabs.PersonalInfo
 import ru.yeahub.profile_edit.impl.presentation.ProfileEditState.ProfileEditTabs.Skills
 import ru.yeahub.profile_edit.impl.presentation.ProfileEditState.SocialLinks
+import ru.yeahub.profile_edit.impl.presentation.intents.ProfileEditScreenEvent
 import ru.yeahub.profile_edit.impl.ui.tabs.AboutMeContent
 import ru.yeahub.profile_edit.impl.ui.tabs.PersonalInfoContent
 import ru.yeahub.ui.R
@@ -151,9 +152,14 @@ fun ProfileEditPreview() {
                 value = "J",
                 error = TextOrResource.Resource(R.string.error_minimal_length_2),
             ),
-            specializationList = emptyList(),
-            specialization = "Android разработчик",
-            isSpecializationEditable = false,
+            specializationList = listOf(
+                "Android разработчик",
+                "iOS разработчик",
+                "Backend разработчик",
+                "Frontend разработчик",
+            ),
+            specialization = "",
+            isSpecializationEditable = true,
             email = "johndoe@gmail.com",
             location = ProfileEditState.ValidatedField("Санкт-Петербург", null),
             socialLinks = persistentMapOf(
@@ -188,7 +194,19 @@ fun ProfileEditPreview() {
         personalInfoContent = {
             PersonalInfoContent(
                 state = state.personalInfoState,
-                onEvent = { },
+                onEvent = { event ->
+                    when (event) {
+                        is ProfileEditScreenEvent.ChooseSpecialization -> {
+                            state = state.copy(
+                                personalInfoState = state.personalInfoState.copy(
+                                    specialization = event.specialization,
+                                ),
+                            )
+                        }
+
+                        else -> {}
+                    }
+                },
             )
         },
         aboutMeContent = { AboutMeContent(state.aboutMeTabState) },
