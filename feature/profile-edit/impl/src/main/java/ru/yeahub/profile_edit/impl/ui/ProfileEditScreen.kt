@@ -8,14 +8,18 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -23,6 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
+import kotlinx.coroutines.launch
 import ru.yeahub.core_ui.component.CoreTopTabs
 import ru.yeahub.core_ui.component.PrimaryButton
 import ru.yeahub.core_ui.component.TopAppBarWithBottomBorder
@@ -67,6 +72,12 @@ fun ProfileEditScreen(
             }
         }
     }
+    val pagerState = rememberPagerState(
+        initialPage = state.selectedTab.ordinal,
+        pageCount = { ProfileEditTabs.entries.size },
+    )
+    val coroutineScope = rememberCoroutineScope()
+
 
     Scaffold(
         containerColor = Theme.colors.black10,
@@ -106,10 +117,24 @@ fun ProfileEditScreen(
                         vertical = 16.dp,
                     ),
             ) {
+
+                LaunchedEffect(state.selectedTab) {
+                    if (pagerState.currentPage != state.selectedTab.ordinal) {
+                        pagerState.animateScrollToPage(state.selectedTab.ordinal)
+                    }
+                }
+
+                LaunchedEffect(pagerState.currentPage) {
+                    val newTab = ProfileEditTabs.entries[pagerState.currentPage]
+                    if (state.selectedTab != newTab) {
+                        onTabSelected(newTab)
+                    }
+                }
+
                 CoreTopTabs(
-                    selectedIndex = state.selectedTab.ordinal,
+                    selectedIndex = pagerState.currentPage,
                     onSelected = { index ->
-                        onTabSelected(ProfileEditTabs.entries[index])
+                        coroutineScope.launch { pagerState.animateScrollToPage(index) }
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -118,15 +143,20 @@ fun ProfileEditScreen(
                     edgePadding = (-16).dp,
                     indicatorHeight = 10.dp,
                 )
-                Box(
+
+                HorizontalPager(
+                    state = pagerState,
                     modifier = Modifier
+                        .weight(1f)
                         .fillMaxWidth()
                         .background(Theme.colors.white900),
-                ) {
-                    when (state.selectedTab) {
-                        PersonalInfo -> personalInfoContent()
-                        AboutMe -> aboutMeContent()
-                        Skills -> skillsContent()
+                ) { page ->
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        when (ProfileEditTabs.entries[page]) {
+                            PersonalInfo -> personalInfoContent()
+                            AboutMe -> aboutMeContent()
+                            Skills -> skillsContent()
+                        }
                     }
                 }
             }
@@ -203,7 +233,6 @@ fun ProfileEditPreview() {
                                 ),
                             )
                         }
-
                         else -> {}
                     }
                 },
