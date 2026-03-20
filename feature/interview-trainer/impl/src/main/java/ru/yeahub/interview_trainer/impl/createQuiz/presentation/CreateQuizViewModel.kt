@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -25,17 +26,21 @@ open class CreateQuizViewModel(
             questionsCount = MIN_QUESTIONS_COUNT
         )
     )
-    val specializationsDef = viewModelScopeSafe.async(Dispatchers.IO) {
+    val specsDef = viewModelScopeSafe.async(Dispatchers.IO) {
         val request = SpecializationsRequest(page = 1, limit = 99)
         getSpecializationsListUseCase(request).data
     }
 
     val screenState = userInputState.map { userInput ->
+        val specializations = specsDef.await()
+
         screenMapper.getScreenState(
-            specializationsDef = specializationsDef,
+            specializations = specializations,
             selectedSpecializationId = userInput.selectedSpecializationId,
-            questionsCount = userInput.questionsCount
+            questionsCount = userInput.questionsCount,
         )
+    }.catch { throwable ->
+        emit(screenMapper.getScreenState(throwable))
     }.stateIn(
         scope = viewModelScopeSafe,
         started = SharingStarted.WhileSubscribed(TIME_TO_CLEAN_UP_RESOURCES),
