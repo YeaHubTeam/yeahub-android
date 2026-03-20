@@ -78,7 +78,6 @@ fun ProfileEditScreen(
     )
     val coroutineScope = rememberCoroutineScope()
 
-
     Scaffold(
         containerColor = Theme.colors.black10,
         topBar = {
@@ -117,7 +116,6 @@ fun ProfileEditScreen(
                         vertical = 16.dp,
                     ),
             ) {
-
                 LaunchedEffect(state.selectedTab) {
                     if (pagerState.currentPage != state.selectedTab.ordinal) {
                         pagerState.animateScrollToPage(state.selectedTab.ordinal)
