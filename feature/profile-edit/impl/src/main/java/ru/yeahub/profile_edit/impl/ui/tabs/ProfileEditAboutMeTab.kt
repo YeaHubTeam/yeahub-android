@@ -1,5 +1,6 @@
 package ru.yeahub.profile_edit.impl.ui.tabs
 
+import android.R.attr.singleLine
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -15,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import ru.yeahub.core_ui.component.textInput.DefaultTextField
 import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.profile_edit.impl.presentation.ProfileEditState
+import ru.yeahub.profile_edit.impl.presentation.intents.ProfileEditScreenEvent
 import ru.yeahub.profile_edit.impl.ui.SectionTitle
 import ru.yeahub.ui.R
 
@@ -25,7 +27,8 @@ private val PURPLE_AREA_TEXT_SPACER = 8.dp
 
 @Composable
 fun AboutMeContent(
-    state: ProfileEditState.AboutMeTabState
+    state: ProfileEditState.AboutMeTabState,
+    onEvent: (ProfileEditScreenEvent) -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -49,7 +52,7 @@ fun AboutMeContent(
         DefaultTextField(
             value = state.aboutMeField,
             placeholder = stringResource(R.string.about_me_tab_placeholder),
-            onValueChange = { /* TODO */ },
+            onValueChange = { onEvent(ProfileEditScreenEvent.ToDo) },
             onExpandedChange = { /* TODO */ },
             singleLine = false,
             modifier = Modifier
@@ -66,5 +69,8 @@ fun ProfileEditAboutMePreview() {
         aboutMeField = "Android разработчик с фокусом на Compose и архитектуру. ",
     )
 
-    AboutMeContent(state = aboutMeState)
+    AboutMeContent(
+        state = aboutMeState,
+        onEvent = {}
+    )
 }

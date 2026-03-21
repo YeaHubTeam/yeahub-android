@@ -9,10 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -22,6 +19,7 @@ import ru.yeahub.core_ui.component.DropDownMenu
 import ru.yeahub.core_ui.component.SkillButton
 import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.profile_edit.impl.presentation.ProfileEditState
+import ru.yeahub.profile_edit.impl.presentation.intents.ProfileEditScreenEvent
 import ru.yeahub.profile_edit.impl.ui.FieldLabel
 import ru.yeahub.profile_edit.impl.ui.SectionTitle
 import ru.yeahub.ui.R
@@ -34,12 +32,8 @@ private val SKILLS_SPACER_SMALL = 3.dp
 @Composable
 fun SkillsContent(
     state: ProfileEditState.SkillsTabState,
-    onSelectSkill: (ProfileEditState.Skill) -> Unit,
-    onDeleteSkill: (ProfileEditState.Skill) -> Unit,
+    onEvent: (ProfileEditScreenEvent) -> Unit
 ) {
-    var selectedSkill by remember {
-        mutableStateOf<ProfileEditState.Skill?>(null)
-    }
     val skillNames: List<String> = remember {
         state.listOfSkills.map { it.name }
     }
@@ -70,13 +64,9 @@ fun SkillsContent(
             DropDownMenu(
                 placeholder = stringResource(R.string.skills_dropdown_menu_placeholder),
                 items = skillNames,
-                selected = selectedSkill?.name.orEmpty(),
-                onSelected = { selectedName ->
-                    val skill = state.listOfSkills.find {
-                        it.name == selectedName
-                    } ?: return@DropDownMenu
-                    selectedSkill = skill
-                    onSelectSkill(skill)
+                selected = "",
+                onSelected = {
+                    onEvent(ProfileEditScreenEvent.ToDo)
                 },
                 modifier = Modifier.fillMaxWidth(),
             )
@@ -97,7 +87,11 @@ fun SkillsContent(
                         imageLeft = skill.image,
                         imageRight = R.drawable.icon_button_close,
                         text = skill.name,
-                        onRightIconClick = { onDeleteSkill(skill) },
+                        onRightIconClick = {
+                            onEvent(ProfileEditScreenEvent.ToDo)
+                        },
+                        imageSizeLeftWith = 20.dp,
+                        imageSizeLeftHigh = 20.dp,
                     )
                 }
             }
@@ -161,7 +155,6 @@ fun ProfileEditSkillsPreview() {
 
     SkillsContent(
         state = skillsState,
-        onSelectSkill = {},
-        onDeleteSkill = {}
+        onEvent = {},
     )
 }
