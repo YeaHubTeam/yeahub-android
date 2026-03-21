@@ -51,18 +51,14 @@ fun ProfileEditScreen(
     tabs: List<ProfileEditTabs>,
     state: ProfileEditState.Loaded,
     showUnsavedChangesDialog: Boolean,
-    onTabSelected: (ProfileEditTabs) -> Unit,
-    onBackClick: () -> Unit,
-    onSaveClick: () -> Unit,
-    onLeaveConfirmed: () -> Unit,
-    onLeaveDismissed: () -> Unit,
+    onEvent: (ProfileEditScreenEvent) -> Unit,
     headerText: TextOrResource,
     personalInfoContent: @Composable (() -> Unit),
     aboutMeContent: @Composable (() -> Unit),
     skillsContent: @Composable (() -> Unit),
 ) {
     BackHandler {
-        onBackClick()
+        onEvent(ProfileEditScreenEvent.BackPressed)
     }
     val tabTitles = remember(tabs) {
         tabs.map { tab ->
@@ -84,12 +80,12 @@ fun ProfileEditScreen(
         topBar = {
             TopAppBarWithBottomBorder(
                 title = headerText,
-                onBackClick = onBackClick,
+                onBackClick = { onEvent(ProfileEditScreenEvent.BackPressed) },
             )
         },
         bottomBar = {
             PrimaryButton(
-                onClick = onSaveClick,
+                onClick = { onEvent(ProfileEditScreenEvent.SaveProfile) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
@@ -126,7 +122,7 @@ fun ProfileEditScreen(
                 LaunchedEffect(pagerState.currentPage) {
                     val newTab = ProfileEditTabs.entries[pagerState.currentPage]
                     if (state.selectedTab != newTab) {
-                        onTabSelected(newTab)
+                        onEvent(ProfileEditScreenEvent.SwitchTab(newTab))
                     }
                 }
 
@@ -166,8 +162,8 @@ fun ProfileEditScreen(
 
     if (showUnsavedChangesDialog) {
         UnsavedChangesDialog(
-            onLeave = onLeaveConfirmed,
-            onStay = onLeaveDismissed,
+            onLeave = { onEvent(ProfileEditScreenEvent.DiscardChanges) },
+            onStay = { onEvent(ProfileEditScreenEvent.UnsavedChangesDialogDismissed) },
         )
     }
 }
@@ -218,10 +214,23 @@ fun ProfileEditPreview() {
     ProfileEditScreen(
         state = state,
         showUnsavedChangesDialog = false,
-        onTabSelected = { state = state.copy(selectedTab = it) },
-        onBackClick = {},
-        onLeaveConfirmed = {},
-        onLeaveDismissed = {},
+        onEvent = { event ->
+            when (event) {
+                is ProfileEditScreenEvent.SwitchTab -> {
+                    state = state.copy(selectedTab = event.tab)
+                }
+
+                is ProfileEditScreenEvent.ChooseSpecialization -> {
+                    state = state.copy(
+                        personalInfoState = state.personalInfoState.copy(
+                            specialization = event.specialization,
+                        ),
+                    )
+                }
+
+                else -> {}
+            }
+        },
         personalInfoContent = {
             PersonalInfoContent(
                 state = state.personalInfoState,
@@ -234,6 +243,7 @@ fun ProfileEditPreview() {
                                 ),
                             )
                         }
+
                         else -> {}
                     }
                 },
@@ -243,7 +253,6 @@ fun ProfileEditPreview() {
         skillsContent = { },
         tabs = ProfileEditTabs.entries,
         headerText = TextOrResource.Text("Редактирование профиля"),
-        onSaveClick = { },
     )
 }
 
@@ -277,10 +286,7 @@ fun ProfileEditWithDialogPreview() {
     ProfileEditScreen(
         state = state,
         showUnsavedChangesDialog = true,
-        onTabSelected = {},
-        onBackClick = {},
-        onLeaveConfirmed = {},
-        onLeaveDismissed = {},
+        onEvent = { },
         tabs = ProfileEditTabs.entries,
         headerText = TextOrResource.Text("Редактирование профиля"),
         personalInfoContent = {
@@ -291,6 +297,5 @@ fun ProfileEditWithDialogPreview() {
         },
         aboutMeContent = {},
         skillsContent = {},
-        onSaveClick = { },
     )
 }

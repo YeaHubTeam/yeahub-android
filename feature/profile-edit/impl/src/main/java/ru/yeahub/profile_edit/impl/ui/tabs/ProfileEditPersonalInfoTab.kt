@@ -111,7 +111,7 @@ fun PersonalInfoContent(
             FieldLabel(text = stringResource(R.string.profile_nickname_label))
             ValidatedTextField(
                 field = state.nickname,
-                onValueChange = { onEvent(ProfileEditScreenEvent.OnNicknameChanged(it)) },
+                onValueChange = { onEvent(ProfileEditScreenEvent.NicknameChanged(it)) },
                 placeholder = stringResource(R.string.profile_nickname_placeholder),
             )
         }
@@ -166,7 +166,7 @@ fun PersonalInfoContent(
             FieldLabel(text = stringResource(R.string.profile_location_label))
             ValidatedTextField(
                 field = state.location,
-                onValueChange = { onEvent(ProfileEditScreenEvent.OnLocationChanged(it)) },
+                onValueChange = { onEvent(ProfileEditScreenEvent.LocationChanged(it)) },
                 placeholder = stringResource(R.string.profile_location_placeholder),
             )
             Spacer(Modifier.height(LINKS_SECTION_TOP_SPACER))
@@ -189,7 +189,7 @@ fun PersonalInfoContent(
                         ?: ProfileEditState.ValidatedField("", null),
                     onValueChange = {
                         onEvent(
-                            ProfileEditScreenEvent.OnSocialLinkChanged(
+                            ProfileEditScreenEvent.SocialLinkChanged(
                                 link = platform,
                                 url = it,
                             ),
