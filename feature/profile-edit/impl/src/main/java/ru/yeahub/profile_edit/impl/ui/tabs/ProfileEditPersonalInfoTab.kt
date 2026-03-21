@@ -45,7 +45,7 @@ private val AVATAR_BOTTOM_SPACER = 18.dp
 private val UPLOAD_BUTTON_BOTTOM_SPACER = 24.dp
 
 private val SECTION_SUBTITLE_BOTTOM_SPACER = 12.dp
-private val FIELD_BOTTOM_SPACER = 12.dp
+private val NICKNAME_AND_SPECIALIZATION_FIELD_BOTTOM_SPACER = 12.dp
 private val LINKS_SECTION_TOP_SPACER = 8.dp
 private val SPECIALIZATION_SPACER = 8.dp
 private val LINKS_SECTION_TITLE_BOTTOM_SPACER = 6.dp
@@ -56,7 +56,7 @@ private val AVATAR_HEIGHT = 263.dp
 private val AVATAR_WIDTH = 326.dp
 private val REMOVE_PHOTO_BUTTON_HEIGHT = 25.dp
 private val REMOVE_PHOTO_BUTTON_PADDING = 8.dp
-private val VALIDATION_ERROR_HEIGHT = 16.dp
+private val VALIDATION_FIELD_BOTTOM_SPACER = 16.dp
 
 @Composable
 fun PersonalInfoContent(
@@ -145,7 +145,7 @@ fun PersonalInfoContent(
                     onEvent(ProfileEditScreenEvent.CannotChangeSpecializationToast)
                 },
             )
-            Spacer(Modifier.height(FIELD_BOTTOM_SPACER))
+            Spacer(Modifier.height(NICKNAME_AND_SPECIALIZATION_FIELD_BOTTOM_SPACER))
         }
         item {
             FieldLabel(text = stringResource(R.string.profile_email_label))
@@ -160,7 +160,7 @@ fun PersonalInfoContent(
                 readOnly = true,
                 isEnabled = false,
             )
-            Spacer(Modifier.height(FIELD_BOTTOM_SPACER))
+            Spacer(Modifier.height(NICKNAME_AND_SPECIALIZATION_FIELD_BOTTOM_SPACER))
         }
         item {
             FieldLabel(text = stringResource(R.string.profile_location_label))
@@ -281,20 +281,20 @@ private fun ValidatedTextField(
         onExpandedChange = {},
         isError = field.error != null,
     )
-    ValidationErrorText(error = field.error)
+    Box(modifier = Modifier.height(VALIDATION_FIELD_BOTTOM_SPACER)) {
+        if (field.error != null) {
+            ValidationErrorText(error = field.error)
+        }
+    }
 }
 
 @Composable
-private fun ValidationErrorText(error: TextOrResource?) {
-    Box(modifier = Modifier.height(VALIDATION_ERROR_HEIGHT)) {
-        error?.let {
-            Text(
-                text = it.getString(LocalContext.current),
-                style = Theme.typography.body7Alt,
-                color = Theme.colors.red700,
-            )
-        }
-    }
+private fun ValidationErrorText(error: TextOrResource) {
+    Text(
+        text = error.getString(LocalContext.current),
+        style = Theme.typography.body7Alt,
+        color = Theme.colors.red700,
+    )
 }
 
 @Preview(showBackground = true)
