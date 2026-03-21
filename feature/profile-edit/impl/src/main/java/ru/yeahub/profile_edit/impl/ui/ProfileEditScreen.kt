@@ -15,7 +15,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
@@ -50,7 +49,6 @@ import ru.yeahub.ui.R
 fun ProfileEditScreen(
     tabs: List<ProfileEditTabs>,
     state: ProfileEditState.Loaded,
-    showUnsavedChangesDialog: Boolean,
     onEvent: (ProfileEditScreenEvent) -> Unit,
     headerText: TextOrResource,
     personalInfoContent: @Composable (() -> Unit),
@@ -70,7 +68,6 @@ fun ProfileEditScreen(
         }
     }
     val pagerState = rememberPagerState(
-        initialPage = state.selectedTab.ordinal,
         pageCount = { ProfileEditTabs.entries.size },
     )
     val coroutineScope = rememberCoroutineScope()
@@ -113,19 +110,6 @@ fun ProfileEditScreen(
                         vertical = 16.dp,
                     ),
             ) {
-                LaunchedEffect(state.selectedTab) {
-                    if (pagerState.currentPage != state.selectedTab.ordinal) {
-                        pagerState.animateScrollToPage(state.selectedTab.ordinal)
-                    }
-                }
-
-                LaunchedEffect(pagerState.currentPage) {
-                    val newTab = ProfileEditTabs.entries[pagerState.currentPage]
-                    if (state.selectedTab != newTab) {
-                        onEvent(ProfileEditScreenEvent.SwitchTab(newTab))
-                    }
-                }
-
                 CoreTopTabs(
                     selectedIndex = pagerState.currentPage,
                     onSelected = { index ->
@@ -160,7 +144,7 @@ fun ProfileEditScreen(
         }
     }
 
-    if (showUnsavedChangesDialog) {
+    if (state.showUnsavedChangesDialog) {
         UnsavedChangesDialog(
             onLeave = { onEvent(ProfileEditScreenEvent.DiscardChanges) },
             onStay = { onEvent(ProfileEditScreenEvent.UnsavedChangesDialogDismissed) },
@@ -172,7 +156,6 @@ fun ProfileEditScreen(
 @Composable
 fun ProfileEditPreview() {
     val screenState = ProfileEditState.Loaded(
-        selectedTab = PersonalInfo,
         personalInfoState = ProfileEditState.PersonalInfoTabState(
             avatarUrl = null,
             nickname = ProfileEditState.ValidatedField(
@@ -206,20 +189,15 @@ fun ProfileEditPreview() {
             listOfSkills = persistentListOf(),
             listOfChosenSkills = persistentListOf(),
         ),
-        hasUnsavedChanges = true,
+        showUnsavedChangesDialog = false,
     )
 
     var state by remember { mutableStateOf(screenState) }
 
     ProfileEditScreen(
         state = state,
-        showUnsavedChangesDialog = false,
         onEvent = { event ->
             when (event) {
-                is ProfileEditScreenEvent.SwitchTab -> {
-                    state = state.copy(selectedTab = event.tab)
-                }
-
                 is ProfileEditScreenEvent.ChooseSpecialization -> {
                     state = state.copy(
                         personalInfoState = state.personalInfoState.copy(
@@ -227,7 +205,6 @@ fun ProfileEditPreview() {
                         ),
                     )
                 }
-
                 else -> {}
             }
         },
@@ -243,7 +220,6 @@ fun ProfileEditPreview() {
                                 ),
                             )
                         }
-
                         else -> {}
                     }
                 },
@@ -260,7 +236,6 @@ fun ProfileEditPreview() {
 @Composable
 fun ProfileEditWithDialogPreview() {
     val screenState = ProfileEditState.Loaded(
-        selectedTab = PersonalInfo,
         personalInfoState = ProfileEditState.PersonalInfoTabState(
             avatarUrl = null,
             nickname = ProfileEditState.ValidatedField("John Doe", null),
@@ -278,14 +253,13 @@ fun ProfileEditWithDialogPreview() {
             listOfSkills = persistentListOf(),
             listOfChosenSkills = persistentListOf(),
         ),
-        hasUnsavedChanges = true,
+        showUnsavedChangesDialog = true,
     )
 
     var state by remember { mutableStateOf(screenState) }
 
     ProfileEditScreen(
         state = state,
-        showUnsavedChangesDialog = true,
         onEvent = { },
         tabs = ProfileEditTabs.entries,
         headerText = TextOrResource.Text("Редактирование профиля"),

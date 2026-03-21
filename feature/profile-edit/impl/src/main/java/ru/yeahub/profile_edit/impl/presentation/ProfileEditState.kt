@@ -9,11 +9,10 @@ sealed interface ProfileEditState {
     data object Loading : ProfileEditState
 
     data class Loaded(
-        val selectedTab: ProfileEditTabs,
         val personalInfoState: PersonalInfoTabState,
         val aboutMeTabState: AboutMeTabState,
         val skillsTabState: SkillsTabState,
-        val hasUnsavedChanges: Boolean,
+        val showUnsavedChangesDialog: Boolean,
     ) : ProfileEditState
 
     data class Error(val throwable: Throwable) : ProfileEditState

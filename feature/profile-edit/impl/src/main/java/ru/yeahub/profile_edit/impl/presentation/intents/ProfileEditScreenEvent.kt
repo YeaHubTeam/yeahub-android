@@ -6,7 +6,6 @@ import ru.yeahub.profile_edit.impl.presentation.ProfileEditState
 sealed interface ProfileEditScreenEvent {
 
     data object LoadData : ProfileEditScreenEvent
-    data class SwitchTab(val tab: ProfileEditState.ProfileEditTabs) : ProfileEditScreenEvent
     data object BackPressed : ProfileEditScreenEvent
     data object DiscardChanges : ProfileEditScreenEvent
     data object UnsavedChangesDialogDismissed : ProfileEditScreenEvent
