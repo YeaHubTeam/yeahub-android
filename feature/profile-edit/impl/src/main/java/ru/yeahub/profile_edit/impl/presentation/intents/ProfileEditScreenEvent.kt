@@ -25,6 +25,6 @@ sealed interface ProfileEditScreenEvent {
 
     data class AboutMeChanged(val text: String) : ProfileEditScreenEvent
 
-    data class AddSkill(val skill: ProfileEditState.Skill) : ProfileEditScreenEvent
+    data class AddSkill(val skillName: String) : ProfileEditScreenEvent
     data class RemoveSkill(val skill: ProfileEditState.Skill) : ProfileEditScreenEvent
 }
