@@ -3,7 +3,6 @@ package ru.yeahub.profile_edit.impl.ui.tabs
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,7 +16,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -35,28 +33,25 @@ import ru.yeahub.profile_edit.impl.presentation.ProfileEditState.SocialLinks
 import ru.yeahub.profile_edit.impl.presentation.intents.ProfileEditScreenEvent
 import ru.yeahub.profile_edit.impl.ui.FieldLabel
 import ru.yeahub.profile_edit.impl.ui.SectionTitle
+import ru.yeahub.profile_edit.impl.ui.ValidatedTextField
 import ru.yeahub.ui.R
 
 private val PHOTO_SECTION_TOP_SPACER = 23.dp
-
 private val SECTION_TITLE_BOTTOM_SPACER = 6.dp
 private val PROFILE_DESCRIPTION_BOTTOM_SPACER = 18.dp
 private val AVATAR_BOTTOM_SPACER = 18.dp
 private val UPLOAD_BUTTON_BOTTOM_SPACER = 24.dp
-
 private val SECTION_SUBTITLE_BOTTOM_SPACER = 12.dp
 private val NICKNAME_AND_SPECIALIZATION_FIELD_BOTTOM_SPACER = 12.dp
 private val LINKS_SECTION_TOP_SPACER = 8.dp
 private val SPECIALIZATION_SPACER = 8.dp
 private val LINKS_SECTION_TITLE_BOTTOM_SPACER = 6.dp
 private val SOCIAL_LINK_VERTICAL_PADDING = 4.dp
-
 private val TEXT_FIELD_HEIGHT = 52.dp
 private val AVATAR_HEIGHT = 263.dp
 private val AVATAR_WIDTH = 326.dp
 private val REMOVE_PHOTO_BUTTON_HEIGHT = 25.dp
 private val REMOVE_PHOTO_BUTTON_PADDING = 8.dp
-private val VALIDATION_FIELD_BOTTOM_SPACER = 16.dp
 
 @Composable
 fun PersonalInfoContent(
@@ -262,39 +257,6 @@ private fun SocialLinkField(
             placeholder = stringResource(R.string.profile_link_placeholder),
         )
     }
-}
-
-@Composable
-private fun ValidatedTextField(
-    field: ProfileEditState.ValidatedField,
-    onValueChange: (String) -> Unit,
-    placeholder: String,
-    modifier: Modifier = Modifier,
-) {
-    DefaultTextField(
-        value = field.value,
-        onValueChange = onValueChange,
-        placeholder = placeholder,
-        modifier = modifier
-            .fillMaxWidth()
-            .height(TEXT_FIELD_HEIGHT),
-        onExpandedChange = {},
-        isError = field.error != null,
-    )
-    Box(modifier = Modifier.height(VALIDATION_FIELD_BOTTOM_SPACER)) {
-        if (field.error != null) {
-            ValidationErrorText(error = field.error)
-        }
-    }
-}
-
-@Composable
-private fun ValidationErrorText(error: TextOrResource) {
-    Text(
-        text = error.getString(LocalContext.current),
-        style = Theme.typography.body7Alt,
-        color = Theme.colors.red700,
-    )
 }
 
 @Preview(showBackground = true)
