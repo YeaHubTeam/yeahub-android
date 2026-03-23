@@ -2,7 +2,7 @@ package ru.yeahub.profile.impl.presentation
 
 sealed interface ProfileEvent {
 
-    data class SocialNetworkOpened(
+    data class OnSocialNetworkClicked(
         val code: String,
         val url: String
     ) : ProfileEvent

@@ -27,28 +27,21 @@ class ProfileViewModel(
     }
 
     val screenState = flow {
+        emit(screenMapper.mapToLoading())
+
         try {
             val profile = getProfileUseCase()
-            emit(screenMapper.getScreenState(profile))
+            emit(screenMapper.mapToSuccess(profile))
         } catch (ce: CancellationException) {
             throw ce
         } catch (e: IOException) {
-            Timber.e(e, "Network error in mapper")
-            ProfileScreenState.Error(
-                message = "network_error"
-            )
+            emit(screenMapper.mapToError("network_error"))
         } catch (e: HttpException) {
-            Timber.e(e, "HTTP error in mapper: ${e.code()}")
             when (e.code()) {
-                HTTP_UNAUTHORIZED -> ProfileScreenState.Unauthorized
-                HTTP_FORBIDDEN -> ProfileScreenState.Error(
-                    message = "access_denied"
-                )
-
-                HTTP_NOT_FOUND -> ProfileScreenState.UserDeleted
-                else -> ProfileScreenState.Error(
-                    message = "server_error:${e.code()}"
-                )
+                401 -> emit(screenMapper.mapToUnauthorized())
+                403 -> emit(screenMapper.mapToError("access_denied"))
+                404 -> emit(screenMapper.mapToUserDeleted())
+                else -> emit(screenMapper.mapToError("server_error:${e.code()}"))
             }
         }
     }.stateIn(
@@ -64,7 +57,7 @@ class ProfileViewModel(
         when (event) {
             is ProfileEvent.OnBackClick -> onBackClick()
 
-            is ProfileEvent.SocialNetworkOpened -> onSocialNetworkOpened(
+            is ProfileEvent.OnSocialNetworkClicked -> onSocialNetworkOpened(
                 code = event.code,
                 url = event.url
             )

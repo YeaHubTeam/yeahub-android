@@ -5,7 +5,7 @@ import ru.yeahub.profile.impl.domain.DomainUserProfile
 
 object ProfileScreenMapper {
 
-    fun getScreenState(
+    fun mapToSuccess(
         userData: DomainUserProfile,
     ): ProfileScreenState =
         ProfileScreenState.Success(
@@ -28,4 +28,12 @@ object ProfileScreenMapper {
                 }.toPersistentList()
             )
         )
+
+    fun mapToLoading(): ProfileScreenState.Loading = ProfileScreenState.Loading
+
+    fun mapToError(message: String): ProfileScreenState.Error = ProfileScreenState.Error(message)
+
+    fun mapToUnauthorized(): ProfileScreenState.Unauthorized = ProfileScreenState.Unauthorized
+
+    fun mapToUserDeleted(): ProfileScreenState.UserDeleted = ProfileScreenState.UserDeleted
 }

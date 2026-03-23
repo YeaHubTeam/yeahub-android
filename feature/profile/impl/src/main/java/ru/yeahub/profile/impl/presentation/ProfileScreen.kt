@@ -262,7 +262,7 @@ private fun SocialNetworksSection(
                     network = network,
                     onClick = {
                         onEvent(
-                            ProfileEvent.SocialNetworkOpened(
+                            ProfileEvent.OnSocialNetworkClicked(
                                 code = network.code,
                                 url = network.title
                             )
