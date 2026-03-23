@@ -19,7 +19,7 @@ class ProfileScreenMapperTest {
     fun `getScreenState should map DomainUserProfile to ProfileScreenState Success`(
         testCase: ProfileScreenMapperTestCase,
     ) {
-        val result = ProfileScreenMapper.getScreenState(
+        val result = ProfileScreenMapper.mapToSuccess(
             userData = testCase.domainProfile
         )
         Assertions.assertEquals(testCase.expectedResult, result)
