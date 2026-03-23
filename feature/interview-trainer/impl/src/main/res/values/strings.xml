@@ -16,8 +16,6 @@
     <string name="quiz_check_result">Проверить результаты</string>
     <string name="quiz_collapse_answer">Свернуть ответ</string>
     <string name="quiz_show_answer">Показать ответ</string>
-    <string name="quiz_answer_unknown">Не знаю</string>
-    <string name="quiz_answer_known">Знаю</string>
     <string name="quiz_btn_complete">Завершить</string>
     <string name="quiz_btn_prev">Назад</string>
     <string name="quiz_btn_next">Далее</string>
