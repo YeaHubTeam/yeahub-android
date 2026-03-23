@@ -93,11 +93,11 @@ private fun ScreenUI(
             )
         }
     ) { innerPadding ->
-
         when (val currentState = state.value) {
             is InterviewQuizResultState.Loading -> {
                 InterviewQuizResultLoadingContent()
             }
+
             is InterviewQuizResultState.Error -> {
                 ErrorScreen(
                     error = currentState.throwable.localizedMessage,
@@ -108,7 +108,6 @@ private fun ScreenUI(
                     onBack = {}
                 )
             }
-
             is InterviewQuizResultState.Loaded -> {
                 BaseInterviewQuizResultScreen(
                     state = currentState,
@@ -203,7 +202,7 @@ private fun BaseInterviewQuizResultScreen(
             ) {
                 Text(
                     text = stringResource(R.string.interview_quiz_result_questuions),
-                    style = typography.head5,
+                    style = typography.body4,
                     color = colors.black900,
                     modifier = Modifier.padding(bottom = 12.dp)
                 )
@@ -235,7 +234,8 @@ private fun TitleSection(
     Text(
         text = stringResource(R.string.interview_quiz_result_result),
         style = typography.head5,
-        color = colors.black900
+        color = colors.black900,
+        modifier = Modifier.padding(top = 16.dp)
     )
 }
 
@@ -376,7 +376,7 @@ private fun OverallProgressStatistics(
                     color = colors.black700
                 )
                 Text(
-                    text = "пройдено",
+                    text = stringResource(R.string.interview_quiz_result_done),
                     style = typography.body4,
                     color = colors.black700
                 )
@@ -389,10 +389,10 @@ private fun OverallProgressStatistics(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            StatItem("Всего", totalQuestions.toString(), colors, typography)
-            StatItem("Новые", newQuestions.toString(), colors, typography)
-            StatItem("В процессе", inProgress.toString(), colors, typography)
-            StatItem("Изучено", studied.toString(), colors, typography)
+            StatItem(stringResource(R.string.interview_quiz_result_overall), totalQuestions.toString(), colors, typography)
+            StatItem(stringResource(R.string.interview_quiz_result_new), newQuestions.toString(), colors, typography)
+            StatItem(stringResource(R.string.interview_quiz_result_in_progress), inProgress.toString(), colors, typography)
+            StatItem(stringResource(R.string.interview_quiz_result_studied), studied.toString(), colors, typography)
         }
     }
 }
@@ -460,12 +460,7 @@ private fun QuestionItem(
                         style = typography.body3
                     )
 
-                    Spacer(modifier = Modifier.width(6.dp))
 
-                    Text(
-                        text = if (isCorrect) "Знаю" else "Не знаю",
-                        color = if (isCorrect) Color(0xFF6C3CF0) else Color(0xFF9E9E9E),
-                        style = typography.body3
                     )
                 }
             }
