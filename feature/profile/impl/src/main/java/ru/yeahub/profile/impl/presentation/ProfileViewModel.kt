@@ -11,7 +11,6 @@ import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import ru.yeahub.core_utils.BaseViewModel
 import ru.yeahub.profile.impl.domain.GetProfileUseCase
-import timber.log.Timber
 import java.io.IOException
 
 class ProfileViewModel(
@@ -21,9 +20,6 @@ class ProfileViewModel(
 
     companion object {
         private const val TIME_TO_CLEAN_UP_RESOURCES = 5000L
-        private const val HTTP_UNAUTHORIZED = 401
-        private const val HTTP_FORBIDDEN = 403
-        private const val HTTP_NOT_FOUND = 404
     }
 
     val screenState = flow {
@@ -35,14 +31,9 @@ class ProfileViewModel(
         } catch (ce: CancellationException) {
             throw ce
         } catch (e: IOException) {
-            emit(screenMapper.mapToError("network_error"))
+            emit(screenMapper.mapThrowableToState(e))
         } catch (e: HttpException) {
-            when (e.code()) {
-                401 -> emit(screenMapper.mapToUnauthorized())
-                403 -> emit(screenMapper.mapToError("access_denied"))
-                404 -> emit(screenMapper.mapToUserDeleted())
-                else -> emit(screenMapper.mapToError("server_error:${e.code()}"))
-            }
+            emit(screenMapper.mapThrowableToState(e))
         }
     }.stateIn(
         scope = viewModelScopeSafe,
