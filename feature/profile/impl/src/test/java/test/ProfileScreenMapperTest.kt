@@ -1,190 +1,187 @@
 package test
 
 import kotlinx.collections.immutable.persistentListOf
-import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.ArgumentsSource
+import okhttp3.ResponseBody.Companion.toResponseBody
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Test
+import retrofit2.HttpException
+import retrofit2.Response
 import ru.yeahub.profile.impl.domain.DomainUserProfile
 import ru.yeahub.profile.impl.presentation.ProfileScreenMapper
 import ru.yeahub.profile.impl.presentation.ProfileScreenState
-import ru.yeahub.profile.impl.presentation.UserData
-import ru.yeahub.profile.impl.presentation.VOSocialNetwork
-import ru.yeahub.test.TestArgumentsProvider
-import ru.yeahub.profile.impl.domain.SocialNetwork as DomainSocialNetwork
+import java.io.IOException
 
 class ProfileScreenMapperTest {
 
-    @ParameterizedTest
-    @ArgumentsSource(ArgumentsProvider::class)
-    fun `getScreenState should map DomainUserProfile to ProfileScreenState Success`(
-        testCase: ProfileScreenMapperTestCase,
-    ) {
-        val result = ProfileScreenMapper.mapToSuccess(
-            userData = testCase.domainProfile
-        )
-        Assertions.assertEquals(testCase.expectedResult, result)
+    private val mapper = ProfileScreenMapper
+
+    @Test
+    fun `map should return Loading state when result is null`() {
+        val state = mapper.map(result = null)
+
+        assertTrue(state is ProfileScreenState.Loading)
     }
 
-    object MapperExampleDataClasses {
-        val defaultDomainProfile = DomainUserProfile(
-            id = "1",
+    @Test
+    fun `map should return Success state when result is success`() {
+        val domainProfile = createTestDomainProfile()
+        val result = Result.success(domainProfile)
+
+        val state = mapper.map(result)
+
+        assertTrue(state is ProfileScreenState.Success)
+        val successState = state as ProfileScreenState.Success
+        assertEquals(domainProfile.id, successState.userData.id)
+        assertEquals(domainProfile.username, successState.userData.username)
+        assertEquals(domainProfile.avatarUrl, successState.userData.avatarUrl)
+        assertEquals(domainProfile.city, successState.userData.city)
+        assertEquals(domainProfile.country, successState.userData.country)
+        assertEquals(domainProfile.telegramUsername, successState.userData.telegramUsername)
+        assertEquals(domainProfile.aboutMe, successState.userData.aboutMe)
+        assertEquals(domainProfile.roles, successState.userData.roles)
+        assertEquals(domainProfile.skills, successState.userData.skills)
+        assertEquals(domainProfile.specialization, successState.userData.specialization)
+        assertEquals(domainProfile.socialNetworks.size, successState.userData.socialNetworks.size)
+        assertEquals(
+            domainProfile.socialNetworks.first().code,
+            successState.userData.socialNetworks.first().code
+        )
+        assertEquals(
+            domainProfile.socialNetworks.first().url,
+            successState.userData.socialNetworks.first().title
+        )
+    }
+
+    @Test
+    fun `map should return Error state when result contains IOException`() {
+        val exception = IOException("Network error")
+        val result = Result.failure<DomainUserProfile>(exception)
+
+        val state = mapper.map(result)
+
+        assertTrue(state is ProfileScreenState.Error)
+        val errorState = state as ProfileScreenState.Error
+        assertEquals("network_error", errorState.message)
+    }
+
+    @Test
+    fun `map should return Unauthorized state when result contains HttpException with code 401`() {
+        val exception = createHttpException(401)
+        val result = Result.failure<DomainUserProfile>(exception)
+
+        val state = mapper.map(result)
+
+        assertTrue(state is ProfileScreenState.Unauthorized)
+    }
+
+    @Test
+    fun `map should return Error state when result contains HttpException with code 403`() {
+        val exception = createHttpException(403)
+        val result = Result.failure<DomainUserProfile>(exception)
+
+        val state = mapper.map(result)
+
+        assertTrue(state is ProfileScreenState.Error)
+        val errorState = state as ProfileScreenState.Error
+        assertEquals("access_denied", errorState.message)
+    }
+
+    @Test
+    fun `map should return UserDeleted state when result contains HttpException with code 404`() {
+        val exception = createHttpException(404)
+        val result = Result.failure<DomainUserProfile>(exception)
+
+        val state = mapper.map(result)
+
+        assertTrue(state is ProfileScreenState.UserDeleted)
+    }
+
+    @Test
+    fun `map should return Error with server error message when result contains HttpException with code 500`() {
+        val exception = createHttpException(500)
+        val result = Result.failure<DomainUserProfile>(exception)
+
+        val state = mapper.map(result)
+
+        assertTrue(state is ProfileScreenState.Error)
+        val errorState = state as ProfileScreenState.Error
+        assertEquals("server_error:500", errorState.message)
+    }
+
+    @Test
+    fun `map should return Error state when result contains unknown exception`() {
+        val exception = RuntimeException("Unexpected error")
+        val result = Result.failure<DomainUserProfile>(exception)
+
+        val state = mapper.map(result)
+
+        assertTrue(state is ProfileScreenState.Error)
+        val errorState = state as ProfileScreenState.Error
+        assertEquals("unknown_error", errorState.message)
+    }
+
+    @Test
+    fun `map should correctly map social networks with null url to empty string`() {
+        val domainProfile = createTestDomainProfile().copy(
+            socialNetworks = persistentListOf(
+                ru.yeahub.profile.impl.domain.SocialNetwork("instagram", null),
+                ru.yeahub.profile.impl.domain.SocialNetwork("linkedin", null)
+            )
+        )
+        val result = Result.success(domainProfile)
+
+        val state = mapper.map(result)
+
+        assertTrue(state is ProfileScreenState.Success)
+        val successState = state as ProfileScreenState.Success
+        assertEquals("", successState.userData.socialNetworks[0].title)
+        assertEquals("", successState.userData.socialNetworks[1].title)
+    }
+
+    @Test
+    fun `map should correctly map empty social networks list`() {
+        val domainProfile = createTestDomainProfile().copy(socialNetworks = persistentListOf())
+        val result = Result.success(domainProfile)
+
+        val state = mapper.map(result)
+
+        assertTrue(state is ProfileScreenState.Success)
+        val successState = state as ProfileScreenState.Success
+        assertTrue(successState.userData.socialNetworks.isEmpty())
+    }
+
+    private fun createTestDomainProfile(): DomainUserProfile {
+        return DomainUserProfile(
+            id = "123",
             username = "john_doe",
-            specialization = "Senior Android Developer",
-            aboutMe = "Опытный Android разработчик",
-            skills = persistentListOf("Kotlin", "Compose", "Coroutines"),
             avatarUrl = "https://example.com/avatar.jpg",
-            roles = persistentListOf("Кандидат", "Ментор"),
-            country = "Россия",
             city = "Москва",
+            country = "Россия",
             telegramUsername = "john_telegram",
+            aboutMe = "About John Doe",
+            roles = persistentListOf("Кандидат", "Ментор"),
+            skills = persistentListOf("Kotlin", "Compose", "Coroutines"),
+            specialization = "Android Developer",
             socialNetworks = persistentListOf(
-                DomainSocialNetwork("instagram", "https://instagram.com/john_doe"),
-                DomainSocialNetwork("linkedin", "https://linkedin.com/in/john-doe"),
-                DomainSocialNetwork("github", "https://github.com/johndoe")
-            )
-        )
-
-        val domainProfileWithNulls = DomainUserProfile(
-            id = "2",
-            username = "jane_doe",
-            specialization = null,
-            aboutMe = null,
-            skills = persistentListOf(),
-            avatarUrl = null,
-            roles = persistentListOf(),
-            country = null,
-            city = null,
-            telegramUsername = null,
-            socialNetworks = persistentListOf()
-        )
-
-        val domainProfileWithEmptySocialNetworks = DomainUserProfile(
-            id = "3",
-            username = "alice",
-            specialization = "iOS Developer",
-            aboutMe = "iOS разработчик",
-            skills = persistentListOf("Swift", "SwiftUI"),
-            avatarUrl = null,
-            roles = persistentListOf("Кандидат"),
-            country = "Россия",
-            city = "СПб",
-            telegramUsername = null,
-            socialNetworks = persistentListOf()
-        )
-
-        val domainProfileWithNullUrls = DomainUserProfile(
-            id = "4",
-            username = "bob",
-            specialization = "Backend Developer",
-            aboutMe = "Java разработчик",
-            skills = persistentListOf("Java", "Spring"),
-            avatarUrl = null,
-            roles = persistentListOf("Кандидат"),
-            country = "Россия",
-            city = "Казань",
-            telegramUsername = null,
-            socialNetworks = persistentListOf(
-                DomainSocialNetwork("instagram", null),
-                DomainSocialNetwork("linkedin", null)
-            )
-        )
-
-        val expectedFullProfile = ProfileScreenState.Success(
-            userData = UserData(
-                id = "1",
-                username = "john_doe",
-                specialization = "Senior Android Developer",
-                aboutMe = "Опытный Android разработчик",
-                skills = persistentListOf("Kotlin", "Compose", "Coroutines"),
-                avatarUrl = "https://example.com/avatar.jpg",
-                roles = persistentListOf("Кандидат", "Ментор"),
-                country = "Россия",
-                city = "Москва",
-                telegramUsername = "john_telegram",
-                socialNetworks = persistentListOf(
-                    VOSocialNetwork("instagram", "https://instagram.com/john_doe"),
-                    VOSocialNetwork("linkedin", "https://linkedin.com/in/john-doe"),
-                    VOSocialNetwork("github", "https://github.com/johndoe")
-                )
-            )
-        )
-
-        val expectedProfileWithNulls = ProfileScreenState.Success(
-            userData = UserData(
-                id = "2",
-                username = "jane_doe",
-                specialization = null,
-                aboutMe = null,
-                skills = persistentListOf(),
-                avatarUrl = null,
-                roles = persistentListOf(),
-                country = null,
-                city = null,
-                telegramUsername = null,
-                socialNetworks = persistentListOf()
-            )
-        )
-
-        val expectedProfileWithEmptySocialNetworks = ProfileScreenState.Success(
-            userData = UserData(
-                id = "3",
-                username = "alice",
-                specialization = "iOS Developer",
-                aboutMe = "iOS разработчик",
-                skills = persistentListOf("Swift", "SwiftUI"),
-                avatarUrl = null,
-                roles = persistentListOf("Кандидат"),
-                country = "Россия",
-                city = "СПб",
-                telegramUsername = null,
-                socialNetworks = persistentListOf()
-            )
-        )
-
-        val expectedProfileWithNullUrls = ProfileScreenState.Success(
-            userData = UserData(
-                id = "4",
-                username = "bob",
-                specialization = "Backend Developer",
-                aboutMe = "Java разработчик",
-                skills = persistentListOf("Java", "Spring"),
-                avatarUrl = null,
-                roles = persistentListOf("Кандидат"),
-                country = "Россия",
-                city = "Казань",
-                telegramUsername = null,
-                socialNetworks = persistentListOf(
-                    VOSocialNetwork("instagram", ""),
-                    VOSocialNetwork("linkedin", "")
-                )
+                ru.yeahub.profile.impl.domain.SocialNetwork(
+                    "instagram",
+                    "https://instagram.com/john_doe"
+                ),
+                ru.yeahub.profile.impl.domain.SocialNetwork(
+                    "linkedin",
+                    "https://linkedin.com/in/john-doe"
+                ),
+                ru.yeahub.profile.impl.domain.SocialNetwork("github", "https://github.com/johndoe")
             )
         )
     }
 
-    data class ProfileScreenMapperTestCase(
-        val domainProfile: DomainUserProfile,
-        val expectedResult: ProfileScreenState.Success,
-    )
-
-    class ArgumentsProvider :
-        TestArgumentsProvider<ProfileScreenMapperTestCase>() {
-        override fun testCases(): List<ProfileScreenMapperTestCase> = listOf(
-            ProfileScreenMapperTestCase(
-                domainProfile = MapperExampleDataClasses.defaultDomainProfile,
-                expectedResult = MapperExampleDataClasses.expectedFullProfile
-            ),
-            ProfileScreenMapperTestCase(
-                domainProfile = MapperExampleDataClasses.domainProfileWithNulls,
-                expectedResult = MapperExampleDataClasses.expectedProfileWithNulls
-            ),
-            ProfileScreenMapperTestCase(
-                domainProfile = MapperExampleDataClasses.domainProfileWithEmptySocialNetworks,
-                expectedResult = MapperExampleDataClasses.expectedProfileWithEmptySocialNetworks
-            ),
-            ProfileScreenMapperTestCase(
-                domainProfile = MapperExampleDataClasses.domainProfileWithNullUrls,
-                expectedResult = MapperExampleDataClasses.expectedProfileWithNullUrls
-            )
+    private fun createHttpException(code: Int): HttpException {
+        val response = Response.error<Any>(
+            code,
+            "".toResponseBody(null)
         )
+        return HttpException(response)
     }
 }
