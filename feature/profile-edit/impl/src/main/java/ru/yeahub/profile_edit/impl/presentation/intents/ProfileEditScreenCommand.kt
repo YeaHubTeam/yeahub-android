@@ -1,6 +1,8 @@
 package ru.yeahub.profile_edit.impl.presentation.intents
 
-sealed interface ProfileEditScreenCommand {
+import ru.yeahub.core_utils.common.TextOrResource
 
-    data object ToDo : ProfileEditScreenCommand
+sealed interface ProfileEditScreenCommand {
+    data object ShowPhotoPicker : ProfileEditScreenCommand
+    data class ShowError(val message: TextOrResource) : ProfileEditScreenCommand
 }

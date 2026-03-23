@@ -27,13 +27,13 @@ fun UnsavedChangesDialog(
             )
         },
         dismissButton = {
-            PrimaryButton(onClick = onStay) {
+            PrimaryButton(onClick = onLeave) {
                 Text("Да")
             }
         },
         confirmButton = {
             OutlineButton(
-                onClick = onLeave,
+                onClick = onStay,
                 colors = YeahubButtonDefaults.secondaryOutlinedButtonColors(),
                 border = YeahubButtonDefaults.secondaryOutlineBorderDefaults(),
             ) {
