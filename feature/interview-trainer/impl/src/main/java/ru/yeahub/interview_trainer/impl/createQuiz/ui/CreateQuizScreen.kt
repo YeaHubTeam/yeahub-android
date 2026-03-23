@@ -434,7 +434,7 @@ internal fun CreateQuizScreenPreview(
 @Preview(showBackground = true)
 @Composable
 internal fun DynamicPreviewUI() {
-    val mockDomainList = testSpecializations.map { voSpec ->
+    val previewDomainList = testSpecializations.map { voSpec ->
         DomainSpecialization(id = voSpec.id, title = voSpec.title)
     }
 
@@ -444,38 +444,38 @@ internal fun DynamicPreviewUI() {
         ): DomainSpecializationListResponse {
             delay(RESPONSE_DELAY)
             return DomainSpecializationListResponse(
-                total = mockDomainList.size.toLong(),
-                data = mockDomainList
+                total = previewDomainList.size.toLong(),
+                data = previewDomainList
             )
         }
     }
 
-    val mockViewModel = viewModelCreator<CreateQuizViewModel> {
+    val previewViewModel = viewModelCreator<CreateQuizViewModel> {
         CreateQuizViewModel(mockUseCase, CreateQuizScreenMapper())
     }
 
-    val mockState = mockViewModel.screenState.collectAsState()
+    val previewState = previewViewModel.screenState.collectAsState()
 
     LaunchedEffect(Unit) {
         delay(RESPONSE_DELAY)
         //Изначальное кол-во == 1
-        mockViewModel.onEvent(CreateQuizEvent.OnPlusQuestionClick(1))
+        previewViewModel.onEvent(CreateQuizEvent.OnPlusQuestionClick(1))
         delay(RESPONSE_DELAY)
         // должно быть 2
-        mockViewModel.onEvent(CreateQuizEvent.OnPlusQuestionClick(2))
+        previewViewModel.onEvent(CreateQuizEvent.OnPlusQuestionClick(2))
         delay(RESPONSE_DELAY)
         // должно быть 3
-        mockViewModel.onEvent(CreateQuizEvent.OnMinusQuestionClick(3))
+        previewViewModel.onEvent(CreateQuizEvent.OnMinusQuestionClick(3))
         delay(RESPONSE_DELAY)
         // должно быть снова 2
-        mockViewModel.onEvent(CreateQuizEvent.OnSpecializationClick(27))
+        previewViewModel.onEvent(CreateQuizEvent.OnSpecializationClick(27))
         // С изначально выбранного Frontend Dev должно быть выбрано Android Dev
     }
 
     ProvidePreviewCompositionLocals {
         ScreenUI(
-            state = mockState,
-            onEvent = mockViewModel::onEvent,
+            state = previewState,
+            onEvent = previewViewModel::onEvent,
             titleTopAppBar = TextOrResource.Resource(R.string.create_quiz_top_bar_header_text)
         )
     }
