@@ -1,6 +1,5 @@
 package ru.yeahub.profile.impl.presentation
 
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -8,10 +7,8 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import retrofit2.HttpException
 import ru.yeahub.core_utils.BaseViewModel
 import ru.yeahub.profile.impl.domain.GetProfileUseCase
-import java.io.IOException
 
 class ProfileViewModel(
     private val getProfileUseCase: GetProfileUseCase,
@@ -23,18 +20,9 @@ class ProfileViewModel(
     }
 
     val screenState = flow {
-        emit(screenMapper.mapToLoading())
-
-        try {
-            val profile = getProfileUseCase()
-            emit(screenMapper.mapToSuccess(profile))
-        } catch (ce: CancellationException) {
-            throw ce
-        } catch (e: IOException) {
-            emit(screenMapper.mapThrowableToState(e))
-        } catch (e: HttpException) {
-            emit(screenMapper.mapThrowableToState(e))
-        }
+        emit(screenMapper.map(result = null))
+        val result = runCatching { getProfileUseCase() }
+        emit(screenMapper.map(result))
     }.stateIn(
         scope = viewModelScopeSafe,
         started = SharingStarted.WhileSubscribed(TIME_TO_CLEAN_UP_RESOURCES),

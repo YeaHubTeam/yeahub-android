@@ -11,7 +11,17 @@ object ProfileScreenMapper {
     private const val HTTP_FORBIDDEN = 403
     private const val HTTP_NOT_FOUND = 404
 
-    fun mapToSuccess(
+    fun map(result: Result<DomainUserProfile>? = null): ProfileScreenState {
+        return when (result) {
+            null -> ProfileScreenState.Loading
+            else -> result.fold(
+                onSuccess = { profile -> mapToSuccess(profile) },
+                onFailure = { throwable -> mapThrowableToState(throwable) }
+            )
+        }
+    }
+
+    private fun mapToSuccess(
         userData: DomainUserProfile,
     ): ProfileScreenState =
         ProfileScreenState.Success(
@@ -35,15 +45,15 @@ object ProfileScreenMapper {
             )
         )
 
-    fun mapToLoading(): ProfileScreenState.Loading = ProfileScreenState.Loading
+    private fun mapToError(message: String): ProfileScreenState.Error =
+        ProfileScreenState.Error(message)
 
-    fun mapToError(message: String): ProfileScreenState.Error = ProfileScreenState.Error(message)
+    private fun mapToUnauthorized(): ProfileScreenState.Unauthorized =
+        ProfileScreenState.Unauthorized
 
-    fun mapToUnauthorized(): ProfileScreenState.Unauthorized = ProfileScreenState.Unauthorized
+    private fun mapToUserDeleted(): ProfileScreenState.UserDeleted = ProfileScreenState.UserDeleted
 
-    fun mapToUserDeleted(): ProfileScreenState.UserDeleted = ProfileScreenState.UserDeleted
-
-    fun mapThrowableToState(throwable: Throwable): ProfileScreenState {
+    private fun mapThrowableToState(throwable: Throwable): ProfileScreenState {
         return when (throwable) {
             is IOException -> mapToError("network_error")
             is HttpException -> mapHttpExceptionToState(throwable)
