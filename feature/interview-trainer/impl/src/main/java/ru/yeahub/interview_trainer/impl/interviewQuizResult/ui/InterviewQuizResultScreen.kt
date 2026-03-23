@@ -47,7 +47,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.compose.koinViewModel
 import ru.yeahub.core_ui.component.ErrorScreen
+import ru.yeahub.core_ui.component.KnownAnswerButton
 import ru.yeahub.core_ui.component.TopAppBarWithBottomBorder
+import ru.yeahub.core_ui.component.UnknownAnswerButton
 import ru.yeahub.core_ui.example.staticPreview.StaticPreview
 import ru.yeahub.core_ui.theme.Colors
 import ru.yeahub.core_ui.theme.Theme.typography
@@ -55,6 +57,7 @@ import ru.yeahub.core_ui.theme.Typography
 import ru.yeahub.core_ui.theme.colors
 import ru.yeahub.core_utils.common.TextOrResource
 import ru.yeahub.interview_trainer.impl.R
+import ru.yeahub.interview_trainer.impl.interviewQuiz.presentation.InterviewQuizState
 import ru.yeahub.interview_trainer.impl.interviewQuizResult.InterviewQuizResultEvent
 
 private val H_PADDING = 16.dp
@@ -454,14 +457,19 @@ private fun QuestionItem(
                 ) {
                     val isCorrect = question.isCorrect
 
-                    Text(
-                        text = if (isCorrect) "👍" else "👎",
-                        color = if (isCorrect) Color(0xFF6C3CF0) else Color(0xFF9E9E9E),
-                        style = typography.body3
-                    )
-
-
-                    )
+                    if (isCorrect) {
+                        KnownAnswerButton(
+                            enabled = false,
+                            isHighlighted = true,
+                            onClick = {}
+                        )
+                    } else {
+                        UnknownAnswerButton(
+                            enabled = false,
+                            isHighlighted = false,
+                            onClick = {}
+                        )
+                    }
                 }
             }
         }
