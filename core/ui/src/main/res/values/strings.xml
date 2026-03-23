@@ -49,4 +49,10 @@
     <string name="profile_photo_helper">JPG, PNG, JPEG (не более 5мб)</string>
     <string name="about_me_tab">О себе любимом(-ой)</string>
     <string name="about_me_tab_label">Расскажи о себе всему сообществу. Мы ценим человека за его профессиональные качества, поэтому пиши всё, чем хочешь поделиться.</string>
+    <string name="about_me_tab_placeholder">Android разработчик с фокусом на Compose и архитектуру.</string>
+    <string name="skills_tab">Твои навыки</string>
+    <string name="skills_tab_label">Покажи, что ты умеешь, и в чём ты действительно хорош.</string>
+    <string name="skills_dropdown_menu_label">Навык</string>
+    <string name="skills_dropdown_menu_placeholder">Выбери навык из списка</string>
+    <string name="skills_selected_label">Выбранные навыки</string>
 </resources>
