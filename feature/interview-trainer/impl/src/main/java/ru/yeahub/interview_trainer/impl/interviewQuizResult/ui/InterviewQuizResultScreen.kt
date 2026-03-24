@@ -45,6 +45,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.collections.immutable.persistentListOf
 import org.koin.androidx.compose.koinViewModel
 import ru.yeahub.core_ui.component.ErrorScreen
 import ru.yeahub.core_ui.component.KnownAnswerButton
@@ -91,7 +92,7 @@ private fun ScreenUI(
         topBar = {
             TopAppBarWithBottomBorder(
                 title = TextOrResource.Resource(R.string.create_quiz_top_bar_header_text),
-                onBackClick = { onEvent(InterviewQuizResultEvent.OnBackClick) }
+                onBackClick = {  }
             )
         }
     ) { innerPadding ->
@@ -186,7 +187,7 @@ private fun BaseInterviewQuizResultScreen(
                         style = typography.body3,
                         color = colors.purple700,
                         modifier = Modifier.clickable {
-                            onEvent(InterviewQuizResultEvent.ViewDetailedStats)
+                            onEvent(InterviewQuizResultEvent.Todo)
                         }
                     )
                 }
@@ -484,7 +485,7 @@ class InterviewQuizResultStateParamProvider :
             newQuestions = 50,
             inProgress = 120,
             studied = 12,
-            skills = listOf(
+            skills = persistentListOf(
                 InterviewQuizResultState.Loaded.VoSkillStat("HTML", 60, 120),
                 InterviewQuizResultState.Loaded.VoSkillStat("CSS", 60, 120),
                 InterviewQuizResultState.Loaded.VoSkillStat("JavaScript", 60, 120),
@@ -492,7 +493,7 @@ class InterviewQuizResultStateParamProvider :
                 InterviewQuizResultState.Loaded.VoSkillStat("PHP", 60, 120),
                 InterviewQuizResultState.Loaded.VoSkillStat("JavaScript", 60, 120)
             ),
-            questions = listOf(
+            questions = persistentListOf(
                 InterviewQuizResultState.Loaded.VoQuestionResult(
                     "Что такое Virtual DOM, и как он работает?",
                     false
