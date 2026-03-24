@@ -99,7 +99,6 @@ private fun ScreenUI(
         when (val currentState = state.value) {
             is InterviewQuizResultState.Loading -> {
                 InterviewQuizResultLoading()
-
             }
 
             is InterviewQuizResultState.Error -> {
@@ -218,11 +217,8 @@ private fun BaseInterviewQuizResultScreen(
     }
 }
 
-
-
 @Composable
-private fun TitleSection(
-) {
+private fun TitleSection() {
     Text(
         text = stringResource(R.string.interview_quiz_result_result),
         style = typography.head5,
@@ -377,10 +373,30 @@ private fun OverallProgressStatistics(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            StatItem(stringResource(R.string.interview_quiz_result_overall), totalQuestions.toString(), colors, typography)
-            StatItem(stringResource(R.string.interview_quiz_result_new), newQuestions.toString(), colors, typography)
-            StatItem(stringResource(R.string.interview_quiz_result_in_progress), inProgress.toString(), colors, typography)
-            StatItem(stringResource(R.string.interview_quiz_result_studied), studied.toString(), colors, typography)
+            StatItem(
+                stringResource(R.string.interview_quiz_result_overall),
+                totalQuestions.toString(),
+                colors,
+                typography
+            )
+            StatItem(
+                stringResource(R.string.interview_quiz_result_new),
+                newQuestions.toString(),
+                colors,
+                typography
+            )
+            StatItem(
+                stringResource(R.string.interview_quiz_result_in_progress),
+                inProgress.toString(),
+                colors,
+                typography
+            )
+            StatItem(
+                stringResource(R.string.interview_quiz_result_studied),
+                studied.toString(),
+                colors,
+                typography
+            )
         }
     }
 }
@@ -460,7 +476,6 @@ private fun QuestionItem(
         }
     }
 }
-
 
 @StaticPreview
 @Composable
