@@ -57,7 +57,6 @@ import ru.yeahub.core_ui.theme.Typography
 import ru.yeahub.core_ui.theme.colors
 import ru.yeahub.core_utils.common.TextOrResource
 import ru.yeahub.interview_trainer.impl.R
-import ru.yeahub.interview_trainer.impl.interviewQuiz.presentation.InterviewQuizState
 import ru.yeahub.interview_trainer.impl.interviewQuizResult.InterviewQuizResultEvent
 
 private val H_PADDING = 16.dp
@@ -98,7 +97,8 @@ private fun ScreenUI(
     ) { innerPadding ->
         when (val currentState = state.value) {
             is InterviewQuizResultState.Loading -> {
-                InterviewQuizResultLoadingContent()
+                InterviewQuizResultLoading()
+
             }
 
             is InterviewQuizResultState.Error -> {
@@ -137,10 +137,8 @@ private fun BaseInterviewQuizResultScreen(
             .padding(horizontal = H_PADDING),
         verticalArrangement = Arrangement.spacedBy(V_SECTION)
     ) {
-        TitleSection(
-            typography = typography,
-            colors = colors
-        )
+        TitleSection()
+
         Card(
             shape = RoundedCornerShape(CARD_RADIUS),
             elevation = CardDefaults.cardElevation(CARD_ELEVATION),
@@ -174,7 +172,7 @@ private fun BaseInterviewQuizResultScreen(
                 Spacer(Modifier.height(V_BLOCK))
 
                 state.skills.forEach { skill ->
-                    SkillProgressRow(skill, colors, typography)
+                    SkillProgressRow(skill)
                 }
 
                 Spacer(Modifier.height(V_TINY))
@@ -219,20 +217,10 @@ private fun BaseInterviewQuizResultScreen(
     }
 }
 
-@Composable
-private fun InterviewQuizResultLoadingContent() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        CircularProgressIndicator()
-    }
-}
+
 
 @Composable
 private fun TitleSection(
-    typography: Typography,
-    colors: Colors
 ) {
     Text(
         text = stringResource(R.string.interview_quiz_result_result),
@@ -243,11 +231,7 @@ private fun TitleSection(
 }
 
 @Composable
-private fun SkillProgressRow(
-    skill: InterviewQuizResultState.Loaded.VoSkillStat,
-    colors: Colors,
-    typography: Typography
-) {
+private fun SkillProgressRow(skill: InterviewQuizResultState.Loaded.VoSkillStat) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -475,6 +459,7 @@ private fun QuestionItem(
         }
     }
 }
+
 
 @StaticPreview
 @Composable
