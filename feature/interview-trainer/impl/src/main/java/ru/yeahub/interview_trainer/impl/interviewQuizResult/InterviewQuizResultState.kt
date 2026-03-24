@@ -1,5 +1,7 @@
 import androidx.compose.runtime.Immutable
+import kotlinx.collections.immutable.PersistentList
 
+@Immutable
 sealed interface InterviewQuizResultState {
     data object Loading : InterviewQuizResultState
 
@@ -9,8 +11,8 @@ sealed interface InterviewQuizResultState {
         val newQuestions: Int,
         val inProgress: Int,
         val studied: Int,
-        val skills: List<VoSkillStat>,
-        val questions: List<VoQuestionResult>
+        val skills: PersistentList<VoSkillStat>,
+        val questions: PersistentList<VoQuestionResult>
     ) : InterviewQuizResultState {
         @Immutable
         data class VoSkillStat(
