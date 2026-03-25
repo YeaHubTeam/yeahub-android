@@ -62,23 +62,8 @@ fun ProvideDynamicPreview(
         }
     }
 
-    KoinIsolatedContext(context = koinApp) {
-        ProvidePreviewCompositionLocals(content)
-    }
+    KoinIsolatedContext(
+        context = koinApp,
+        content = { ProvidePreviewCompositionLocals(content) }
+    )
 }
-
-//@Composable
-//inline fun <reified BVM : BaseViewModel> ProvideDynamicPreview(
-//    noinline moduleDeclaration: ModuleDeclaration,
-//    noinline content: @Composable (BVM) -> Unit,
-//) {
-//    val koinApp = remember {
-//        koinApplication {
-//            modules(module(moduleDeclaration = moduleDeclaration))
-//        }
-//    }
-//
-//    KoinIsolatedContext(context = koinApp) {
-//        ProvidePreviewCompositionLocals { content(koinViewModel<BVM>()) }
-//    }
-//}
