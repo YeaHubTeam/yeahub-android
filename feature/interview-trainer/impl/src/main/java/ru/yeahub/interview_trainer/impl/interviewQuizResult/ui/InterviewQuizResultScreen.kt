@@ -52,9 +52,7 @@ import ru.yeahub.core_ui.component.KnownAnswerButton
 import ru.yeahub.core_ui.component.TopAppBarWithBottomBorder
 import ru.yeahub.core_ui.component.UnknownAnswerButton
 import ru.yeahub.core_ui.example.staticPreview.StaticPreview
-import ru.yeahub.core_ui.theme.Colors
 import ru.yeahub.core_ui.theme.Theme.typography
-import ru.yeahub.core_ui.theme.Typography
 import ru.yeahub.core_ui.theme.colors
 import ru.yeahub.core_utils.common.TextOrResource
 import ru.yeahub.interview_trainer.impl.R
