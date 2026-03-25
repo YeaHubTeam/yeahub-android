@@ -158,8 +158,6 @@ private fun BaseInterviewQuizResultScreen(
                     newQuestions = state.newQuestions,
                     inProgress = state.inProgress,
                     studied = state.studied,
-                    colors = colors,
-                    typography = typography
                 )
 
                 Spacer(Modifier.height(32.dp))
@@ -209,7 +207,7 @@ private fun BaseInterviewQuizResultScreen(
                 )
 
                 state.questions.forEach { question ->
-                    QuestionItem(question, colors, typography)
+                    QuestionItem(question)
                 }
             }
         }
@@ -274,9 +272,7 @@ private fun SkillProgressRow(skill: InterviewQuizResultState.Loaded.VoSkillStat)
 @Composable
 private fun StatItem(
     label: String,
-    value: String,
-    colors: Colors,
-    typography: Typography
+    value: String
 ) {
     Card(
         modifier = Modifier
@@ -312,9 +308,7 @@ private fun OverallProgressStatistics(
     totalQuestions: Int,
     newQuestions: Int,
     inProgress: Int,
-    studied: Int,
-    colors: Colors,
-    typography: Typography
+    studied: Int
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -375,27 +369,19 @@ private fun OverallProgressStatistics(
         ) {
             StatItem(
                 stringResource(R.string.interview_quiz_result_overall),
-                totalQuestions.toString(),
-                colors,
-                typography
+                totalQuestions.toString()
             )
             StatItem(
                 stringResource(R.string.interview_quiz_result_new),
-                newQuestions.toString(),
-                colors,
-                typography
+                newQuestions.toString()
             )
             StatItem(
                 stringResource(R.string.interview_quiz_result_in_progress),
-                inProgress.toString(),
-                colors,
-                typography
+                inProgress.toString()
             )
             StatItem(
                 stringResource(R.string.interview_quiz_result_studied),
-                studied.toString(),
-                colors,
-                typography
+                studied.toString()
             )
         }
     }
@@ -403,9 +389,7 @@ private fun OverallProgressStatistics(
 
 @Composable
 private fun QuestionItem(
-    question: InterviewQuizResultState.Loaded.VoQuestionResult,
-    colors: Colors,
-    typography: Typography
+    question: InterviewQuizResultState.Loaded.VoQuestionResult
 ) {
     Card(
         modifier = Modifier
