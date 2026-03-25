@@ -50,6 +50,9 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.runtime.android)
 
+    implementation(libs.koin.core)
+    implementation(libs.koin.compose)
+
     implementation(libs.coil.compose)
     implementation(libs.jsoup)
     implementation(libs.compose.markdown)
