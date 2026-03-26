@@ -19,4 +19,16 @@
     <string name="quiz_btn_complete">Завершить</string>
     <string name="quiz_btn_prev">Назад</string>
     <string name="quiz_btn_next">Далее</string>
+    <string name="interview_quiz_result_result">Результаты</string>
+
+    <string name="interview_quiz_result_statistics">Статистика пройденных вопросов собеседования</string>
+    <string name="interview_quiz_result_progress">Прогресс обучения по навыкам</string>
+    <string name="interview_quiz_result_show_all">Посмотреть статистику</string>
+    <string name="interview_quiz_result_questuions">Список пройденных вопросов собеседования</string>
+    <string name="interview_quiz_result_done">пройдено</string>
+    <string name="interview_quiz_result_overall">Всего</string>
+    <string name="interview_quiz_result_new">Новые</string>
+    <string name="interview_quiz_result_in_progress">В процессе</string>
+    <string name="interview_quiz_result_studied">Изучено</string>
+
 </resources>
