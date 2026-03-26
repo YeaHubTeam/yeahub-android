@@ -16,8 +16,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilledIconButton
@@ -53,9 +51,11 @@ import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.coroutines.flow.Flow
 import org.koin.androidx.compose.koinViewModel
 import ru.yeahub.core_ui.component.ErrorScreen
+import ru.yeahub.core_ui.component.KnownAnswerButton
 import ru.yeahub.core_ui.component.PrimaryButton
 import ru.yeahub.core_ui.component.SecondaryButton
 import ru.yeahub.core_ui.component.TopAppBarWithBottomBorder
+import ru.yeahub.core_ui.component.UnknownAnswerButton
 import ru.yeahub.core_ui.component.YeahubButtonDefaults
 import ru.yeahub.core_ui.example.staticPreview.StaticPreview
 import ru.yeahub.core_ui.theme.Theme
@@ -331,18 +331,16 @@ private fun QuestionCard(
             Spacer(Modifier.height(FIGMA_VERTICAL_FIRST_AND_LAST_ELEMENT_PADDING))
 
             Row(Modifier.padding(bottom = FIGMA_MEDIUM_PADDING)) {
-                QuizAnswerButton(
-                    painter = painterResource(R.drawable.thumbs_down_icon),
-                    text = TextOrResource.Resource(R.string.quiz_answer_unknown),
-                    onClick = onUnknownClick,
-                    isSelected = state.selectedAnswer == InterviewQuizState.Loaded.QuizAnswer.UNKNOWN
+                UnknownAnswerButton(
+                    enabled = true,
+                    isHighlighted = state.selectedAnswer == InterviewQuizState.Loaded.QuizAnswer.UNKNOWN,
+                    onClick = onUnknownClick
                 )
                 Spacer(Modifier.weight(1f))
-                QuizAnswerButton(
-                    painter = painterResource(R.drawable.thumbs_up_icon),
-                    text = TextOrResource.Resource(R.string.quiz_answer_known),
-                    onClick = onKnownClick,
-                    isSelected = state.selectedAnswer == InterviewQuizState.Loaded.QuizAnswer.KNOWN
+                KnownAnswerButton(
+                    enabled = true,
+                    isHighlighted = state.selectedAnswer == InterviewQuizState.Loaded.QuizAnswer.KNOWN,
+                    onClick = onKnownClick
                 )
             }
             HorizontalDivider(
@@ -453,51 +451,6 @@ private fun NavigationButton(
                 tint = color
             )
         }
-    }
-}
-
-@Composable
-private fun QuizAnswerButton(
-    painter: Painter,
-    text: TextOrResource,
-    onClick: () -> Unit,
-    isSelected: Boolean
-) {
-    val context = LocalContext.current
-
-    val contentColor = if (isSelected) {
-        Theme.colors.purple700
-    } else {
-        Theme.colors.black700
-    }
-
-    Button(
-        onClick = onClick,
-        modifier = Modifier
-            .width(120.dp)
-            .height(48.dp),
-        shape = RoundedCornerShape(FIGMA_RADIUS),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = Theme.colors.black10,
-            contentColor = contentColor
-        ),
-        contentPadding = PaddingValues(
-            horizontal = 12.dp,
-            vertical = FIGMA_LOW_PADDING
-        )
-    ) {
-        Icon(
-            painter = painter,
-            contentDescription = null,
-            modifier = Modifier.padding(end = FIGMA_LOW_PADDING)
-        )
-        Text(
-            text = when (text) {
-                is TextOrResource.Text -> text.text
-                is TextOrResource.Resource -> text.getString(context)
-            },
-            style = Theme.typography.body2
-        )
     }
 }
 
