@@ -65,7 +65,6 @@ private val V_TINY = 8.dp
 private val CARD_RADIUS = 12.dp
 private val CARD_ELEVATION = 4.dp
 private val SKILL_BAR_HEIGHT = 12.dp
-private val SKILL_BAR_SPACING = 12.dp
 
 @Composable
 fun InterviewQuizResultScreen() {
@@ -156,14 +155,14 @@ private fun BaseInterviewQuizResultScreen(
                     studied = state.studied,
                 )
 
-                Spacer(Modifier.height(32.dp))
+                Spacer(Modifier.height(16.dp))
 
                 Text(
                     text = stringResource(R.string.interview_quiz_result_progress),
-                    style = typography.head4,
+                    style = typography.body3Strong,
                     color = colors.black900
                 )
-                Spacer(Modifier.height(V_BLOCK))
+                Spacer(Modifier.height(13.dp))
 
                 state.skills.forEach { skill ->
                     SkillProgressRow(skill)
@@ -217,7 +216,7 @@ private fun TitleSection() {
         text = stringResource(R.string.interview_quiz_result_result),
         style = typography.head5,
         color = colors.black900,
-        modifier = Modifier.padding(top = 16.dp)
+        modifier = Modifier.padding(top = 24.dp)
     )
 }
 
@@ -228,31 +227,15 @@ private fun SkillProgressRow(skill: InterviewQuizResultState.Loaded.VoSkillStat)
             .fillMaxWidth()
             .padding(vertical = 6.dp)
     ) {
-        Text(
-            text = skill.name,
-            style = typography.body3Strong,
-            color = colors.black900,
-            modifier = Modifier.padding(bottom = 4.dp)
-        )
-
         Row(
             modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            LinearProgressIndicator(
-                progress = { skill.current.toFloat() / skill.max },
-                modifier = Modifier
-                    .weight(1f)
-                    .height(SKILL_BAR_HEIGHT)
-                    .clip(RoundedCornerShape(4.dp)),
-                color = colors.purple700,
-                trackColor = colors.purple400,
-                strokeCap = StrokeCap.Round,
-                gapSize = (-10).dp,
-                drawStopIndicator = {}
+            Text(
+                text = skill.name,
+                style = typography.body3Strong,
+                color = colors.black900
             )
-
-            Spacer(Modifier.width(SKILL_BAR_SPACING))
 
             Text(
                 text = "${skill.current}/${skill.max}".trim(),
@@ -262,6 +245,21 @@ private fun SkillProgressRow(skill: InterviewQuizResultState.Loaded.VoSkillStat)
                 overflow = TextOverflow.Ellipsis
             )
         }
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        LinearProgressIndicator(
+            progress = { skill.current.toFloat() / skill.max },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(SKILL_BAR_HEIGHT)
+                .clip(RoundedCornerShape(4.dp)),
+            color = colors.purple700,
+            trackColor = colors.purple400,
+            strokeCap = StrokeCap.Round,
+            gapSize = (-10).dp,
+            drawStopIndicator = {}
+        )
     }
 }
 
@@ -313,7 +311,7 @@ private fun OverallProgressStatistics(
         Spacer(Modifier.height(8.dp))
 
         Box(
-            modifier = Modifier.size(240.dp),
+            modifier = Modifier.size(250.dp),
             contentAlignment = Alignment.Center
         ) {
             Box(
@@ -404,7 +402,7 @@ private fun QuestionItem(
         ) {
             Box(
                 modifier = Modifier
-                    .size(72.dp)
+                    .size(104.dp)
                     .clip(RoundedCornerShape(12.dp))
                     .background(Color(0xFF0F1C2E))
             ) {
