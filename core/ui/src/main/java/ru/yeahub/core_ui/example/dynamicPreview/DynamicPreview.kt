@@ -2,6 +2,7 @@ package ru.yeahub.core_ui.example.dynamicPreview
 
 import android.content.res.Configuration
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.tooling.preview.Preview
 import org.koin.compose.KoinIsolatedContext
@@ -51,6 +52,7 @@ annotation class DynamicPreview
  * @param moduleDeclaration лямбда, задающая Koin-модуль с зависимостями экрана (UseCase, ViewModel)
  * @param content Composable-контент для отображения в превью (не обязательно весь экран)
  */
+
 @Composable
 fun ProvideDynamicPreview(
     moduleDeclaration: ModuleDeclaration,
@@ -64,6 +66,6 @@ fun ProvideDynamicPreview(
 
     KoinIsolatedContext(
         context = koinApp,
-        content = { ProvidePreviewCompositionLocals(content) }
+        content = { CompositionLocalProvider(content = content) }
     )
 }
