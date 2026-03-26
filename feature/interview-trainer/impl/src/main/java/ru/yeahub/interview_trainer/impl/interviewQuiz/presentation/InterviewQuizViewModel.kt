@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -54,6 +55,8 @@ open class InterviewQuizViewModel(
             answers = userInput.answers,
             selectedAnswer = userInput.selectedAnswer
         )
+    }.catch { e ->
+        screenMapper.getScreenState(e)
     }.stateIn(
         scope = viewModelScopeSafe,
         started = SharingStarted.WhileSubscribed(TIME_TO_CLEAN_UP_RESOURCES),

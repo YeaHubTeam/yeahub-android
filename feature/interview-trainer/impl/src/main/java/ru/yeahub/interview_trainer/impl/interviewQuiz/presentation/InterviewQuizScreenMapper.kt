@@ -41,4 +41,7 @@ class InterviewQuizScreenMapper {
             isLastQuestion = isLastQuestion
         )
     }
+
+    fun getScreenState(e: Throwable): InterviewQuizState =
+        InterviewQuizState.Error(e)
 }
