@@ -29,7 +29,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -47,9 +46,12 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
+import kotlinx.coroutines.flow.Flow
+import org.koin.androidx.compose.koinViewModel
 import ru.yeahub.core_ui.component.ErrorScreen
 import ru.yeahub.core_ui.component.PrimaryButton
 import ru.yeahub.core_ui.component.SecondaryButton
@@ -58,12 +60,15 @@ import ru.yeahub.core_ui.component.YeahubButtonDefaults
 import ru.yeahub.core_ui.example.staticPreview.StaticPreview
 import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.core_utils.common.TextOrResource
+import ru.yeahub.core_utils.common.observe
 import ru.yeahub.interview_trainer.impl.R
 import ru.yeahub.interview_trainer.impl.interviewQuiz.domain.DomainQuestion
 import ru.yeahub.interview_trainer.impl.interviewQuiz.domain.DomainQuestionsListResponse
 import ru.yeahub.interview_trainer.impl.interviewQuiz.domain.GetQuestionsListUseCase
 import ru.yeahub.interview_trainer.impl.interviewQuiz.domain.QuestionsRequest
+import ru.yeahub.interview_trainer.impl.interviewQuiz.presentation.InterviewQuizCommand
 import ru.yeahub.interview_trainer.impl.interviewQuiz.presentation.InterviewQuizEvent
+import ru.yeahub.interview_trainer.impl.interviewQuiz.presentation.InterviewQuizResult
 import ru.yeahub.interview_trainer.impl.interviewQuiz.presentation.InterviewQuizScreenMapper
 import ru.yeahub.interview_trainer.impl.interviewQuiz.presentation.InterviewQuizState
 import ru.yeahub.interview_trainer.impl.interviewQuiz.presentation.InterviewQuizViewModel
@@ -76,6 +81,27 @@ private val FIGMA_CARD_ELEVATION = 4.dp
 private val FIGMA_RADIUS = 12.dp
 
 @Composable
+fun InterviewQuizScreen(
+    onResult: (InterviewQuizResult) -> Unit,
+    titleTopAppBarResId: Int,
+) {
+    val viewModel: InterviewQuizViewModel = koinViewModel()
+
+    val screenState by viewModel.screenState.collectAsStateWithLifecycle()
+
+    HandleCommand(
+        commandFlow = viewModel.commands,
+        onResult = onResult
+    )
+
+    ScreenUI(
+        headerText = TextOrResource.Resource(titleTopAppBarResId),
+        state = screenState,
+        onEvent = viewModel::onEvent
+    )
+}
+
+@Composable
 private fun ScreenUI(
     headerText: TextOrResource,
     state: InterviewQuizState,
@@ -86,7 +112,7 @@ private fun ScreenUI(
         topBar = {
             TopAppBarWithBottomBorder(
                 title = headerText,
-                onBackClick = { TODO("onBackClick don't implemented") }
+                onBackClick = { onEvent(InterviewQuizEvent.OnBackClick) }
             )
         }
     ) { paddingValues ->
@@ -94,12 +120,12 @@ private fun ScreenUI(
             when (state) {
                 is InterviewQuizState.Loaded -> BaseQuizScreen(
                     state = state,
-                    onPreviousClick = { /* TODO */ },
-                    onNextClick = { /* TODO */ },
-                    onUnknownClick = { /* TODO */ },
-                    onKnownClick = { /* TODO */ },
-                    onShowAnswerClick = { /* TODO */ },
-                    onResultClick = { /* TODO */ }
+                    onPreviousClick = { onEvent(InterviewQuizEvent.OnPreviousQuestionClick) },
+                    onNextClick = { onEvent(InterviewQuizEvent.OnNextQuestionClick) },
+                    onUnknownClick = { onEvent(InterviewQuizEvent.OnUnknownAnswerClick) },
+                    onKnownClick = { onEvent(InterviewQuizEvent.OnKnownAnswerClick) },
+                    onShowAnswerClick = { onEvent(InterviewQuizEvent.OnShowHideAnswerClick) },
+                    onResultClick = { onEvent(InterviewQuizEvent.OnShowResultClick) }
                 )
 
                 is InterviewQuizState.Error -> ErrorScreen(
@@ -108,11 +134,29 @@ private fun ScreenUI(
                     titleText = TextOrResource.Resource(R.string.title_error_screen_text),
                     backText = TextOrResource.Resource(R.string.back_error_screen_text),
                     unknownErrorText = TextOrResource.Resource(R.string.unknown_error_screen_text),
-                    onBack = { TODO() }
+                    onBack = { onEvent(InterviewQuizEvent.OnBackClick) }
                 )
 
                 InterviewQuizState.Loading -> InterviewQuizLoading()
             }
+        }
+    }
+}
+
+@Composable
+private fun HandleCommand(
+    commandFlow: Flow<InterviewQuizCommand>,
+    onResult: (InterviewQuizResult) -> Unit,
+) {
+    commandFlow.observe { command ->
+        when (command) {
+            is InterviewQuizCommand.NavigateBack -> onResult(InterviewQuizResult.NavigateBack)
+
+            is InterviewQuizCommand.NavigateToInterviewQuizResultScreen -> onResult(
+                InterviewQuizResult.NavigateToInterviewQuizResultScreen(
+                    questionsWithAnswersList = command.questionsWithAnswersList
+                )
+            )
         }
     }
 }
@@ -196,7 +240,6 @@ private fun QuestionCard(
     onShowAnswerClick: () -> Unit,
     onResultClick: () -> Unit
 ) {
-    // TODO: нет фичи профиля
     var isFavorite by rememberSaveable { mutableStateOf(false) }
 
     val favoriteIcon: Painter =
@@ -541,7 +584,11 @@ fun InterviewQuizScreen(
 @Composable
 fun DynamicPreviewUI() {
     val mockDomainQuestionsList = questions.map {
-        DomainQuestion(it.id, it.title, it.shortAnswer)
+        DomainQuestion(
+            id = it.id,
+            title = "Вопрос под id ${it.id}",
+            shortAnswer = it.shortAnswer
+        )
     }
 
     val getMockQuestionsListUseCase = object : GetQuestionsListUseCase {
@@ -555,8 +602,8 @@ fun DynamicPreviewUI() {
 
     val savedStateHandle = SavedStateHandle(
         mapOf(
-            "specializationId" to "1",
-            "questionsCount" to "10",
+            "specializationId" to "2",
+            "questionsCount" to mockDomainQuestionsList.size.toString(),
             "titleTopAppBarResId" to 123
         )
     )
@@ -569,7 +616,7 @@ fun DynamicPreviewUI() {
         )
     }
 
-    val state by mockViewModel.screenState.collectAsState()
+    val state by mockViewModel.screenState.collectAsStateWithLifecycle()
 
     ScreenUI(
         headerText = TextOrResource.Resource(R.string.create_quiz_top_bar_header_text),

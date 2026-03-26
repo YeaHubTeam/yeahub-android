@@ -26,7 +26,7 @@ class InterviewQuizScreenMapper {
 
         val questionsCount = questions.size
 
-        val isLastQuestion = questionIndex != questions.lastIndex
+        val isLastQuestion = questionIndex == questions.lastIndex
 
         return InterviewQuizState.Loaded(
             questions = questions,
