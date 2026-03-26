@@ -1,9 +1,9 @@
 package ru.yeahub.interview_trainer.impl.interviewQuizResult
 
 import InterviewQuizResultState
-import ru.yeahub.interview_trainer.impl.R
 import kotlinx.collections.immutable.persistentListOf
 import ru.yeahub.core_utils.common.TextOrResource
+import ru.yeahub.interview_trainer.impl.R
 
 private const val DEFAULT_PERCENTAGE = 0.75f
 private const val DEFAULT_TOTAL_QUESTIONS = 20
