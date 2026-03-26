@@ -68,28 +68,26 @@ private val SKILL_BAR_HEIGHT = 12.dp
 private val SKILL_BAR_SPACING = 12.dp
 
 @Composable
-fun InterviewQuizResultScreen(titleTopAppBarResId: Int) {
+fun InterviewQuizResultScreen() {
     val viewModel: InterviewQuizResultViewModel = koinViewModel()
     val state = viewModel.state.collectAsStateWithLifecycle()
 
     ScreenUI(
         state = state,
-        onEvent = viewModel::onEvent,
-        titleTopAppBar = TextOrResource.Resource(titleTopAppBarResId)
+        onEvent = viewModel::onEvent
     )
 }
 
 @Composable
 private fun ScreenUI(
     state: State<InterviewQuizResultState>,
-    onEvent: (InterviewQuizResultEvent) -> Unit,
-    titleTopAppBar: TextOrResource,
+    onEvent: (InterviewQuizResultEvent) -> Unit
 ) {
     Scaffold(
         containerColor = colors.black10,
         topBar = {
             TopAppBarWithBottomBorder(
-                title = TextOrResource.Resource(R.string.create_quiz_top_bar_header_text),
+                title = state.value.titleTopAppBar,
                 onBackClick = {  }
             )
         }
@@ -467,8 +465,7 @@ internal fun InterviewQuizResultScreenPreview(
 ) {
     ScreenUI(
         state = rememberUpdatedState(state),
-        onEvent = {},
-        titleTopAppBar = TextOrResource.Resource(R.string.interview_quiz_result_result)
+        onEvent = {}
     )
 }
 
@@ -511,7 +508,8 @@ class InterviewQuizResultStateParamProvider :
                     "Что такое Virtual DOM, и как он работает?",
                     false
                 )
-            )
+            ),
+            titleTopAppBar = TextOrResource.Resource(R.string.create_quiz_top_bar_header_text)
         )
     )
 }
