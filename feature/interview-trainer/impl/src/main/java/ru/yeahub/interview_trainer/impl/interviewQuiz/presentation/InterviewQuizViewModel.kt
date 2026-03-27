@@ -72,7 +72,6 @@ open class InterviewQuizViewModel(
             InterviewQuizEvent.OnKnownAnswerClick -> onKnownAnswerClick()
             InterviewQuizEvent.OnUnknownAnswerClick -> onUnknownAnswerClick()
             InterviewQuizEvent.OnShowResultClick -> onFinishInterviewClick()
-            InterviewQuizEvent.OnFavoriteQuestionClick -> onFavoriteQuestionClick()
             InterviewQuizEvent.OnNextQuestionClick -> onNextQuestionClick()
             InterviewQuizEvent.OnPreviousQuestionClick -> onPreviousQuestionClick()
             InterviewQuizEvent.OnShowHideAnswerClick -> onShowHideAnswerClick()
@@ -124,10 +123,6 @@ open class InterviewQuizViewModel(
                 )
             )
         }
-    }
-
-    private fun onFavoriteQuestionClick() {
-        // TODO: Нет авторизации
     }
 
     private fun onNextQuestionClick() {

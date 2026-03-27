@@ -12,8 +12,6 @@ sealed interface InterviewQuizEvent {
 
     data object OnPreviousQuestionClick : InterviewQuizEvent
 
-    data object OnFavoriteQuestionClick : InterviewQuizEvent
-
     data object OnShowHideAnswerClick : InterviewQuizEvent
 
     data object OnBackClick : InterviewQuizEvent
