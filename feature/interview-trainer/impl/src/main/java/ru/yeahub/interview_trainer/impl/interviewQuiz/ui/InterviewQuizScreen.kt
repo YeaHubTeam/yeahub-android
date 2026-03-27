@@ -27,6 +27,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -49,6 +50,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import org.koin.androidx.compose.koinViewModel
 import ru.yeahub.core_ui.component.ErrorScreen
 import ru.yeahub.core_ui.component.KnownAnswerButton
@@ -81,13 +83,10 @@ private val FIGMA_CARD_ELEVATION = 4.dp
 private val FIGMA_RADIUS = 12.dp
 
 @Composable
-fun InterviewQuizScreen(
-    onResult: (InterviewQuizResult) -> Unit,
-    titleTopAppBarResId: Int,
-) {
+fun InterviewQuizScreen(onResult: (InterviewQuizResult) -> Unit) {
     val viewModel: InterviewQuizViewModel = koinViewModel()
 
-    val screenState by viewModel.screenState.collectAsStateWithLifecycle()
+    val screenState = viewModel.screenState.collectAsStateWithLifecycle()
 
     HandleCommand(
         commandFlow = viewModel.commands,
@@ -95,7 +94,6 @@ fun InterviewQuizScreen(
     )
 
     ScreenUI(
-        headerText = TextOrResource.Resource(titleTopAppBarResId),
         state = screenState,
         onEvent = viewModel::onEvent
     )
@@ -103,23 +101,22 @@ fun InterviewQuizScreen(
 
 @Composable
 private fun ScreenUI(
-    headerText: TextOrResource,
-    state: InterviewQuizState,
+    state: State<InterviewQuizState>,
     onEvent: (InterviewQuizEvent) -> Unit
 ) {
     Scaffold(
         containerColor = Theme.colors.black10,
         topBar = {
             TopAppBarWithBottomBorder(
-                title = headerText,
+                title = state.value.titleTopAppBar,
                 onBackClick = { onEvent(InterviewQuizEvent.OnBackClick) }
             )
         }
     ) { paddingValues ->
         Box(Modifier.padding(paddingValues)) {
-            when (state) {
+            when (val currentState = state.value) {
                 is InterviewQuizState.Loaded -> BaseQuizScreen(
-                    state = state,
+                    state = currentState,
                     onPreviousClick = { onEvent(InterviewQuizEvent.OnPreviousQuestionClick) },
                     onNextClick = { onEvent(InterviewQuizEvent.OnNextQuestionClick) },
                     onUnknownClick = { onEvent(InterviewQuizEvent.OnUnknownAnswerClick) },
@@ -129,7 +126,7 @@ private fun ScreenUI(
                 )
 
                 is InterviewQuizState.Error -> ErrorScreen(
-                    error = state.throwable.localizedMessage,
+                    error = currentState.throwable.localizedMessage,
                     errorText = TextOrResource.Resource(R.string.error_screen_text),
                     titleText = TextOrResource.Resource(R.string.title_error_screen_text),
                     backText = TextOrResource.Resource(R.string.back_error_screen_text),
@@ -290,7 +287,7 @@ private fun QuestionCard(
                     style = Theme.typography.body3Strong
                 )
                 FilledIconButton(
-                    onClick = { isFavorite = !isFavorite },
+                    onClick = { },
                     modifier = Modifier.size(48.dp),
                     shape = RoundedCornerShape(FIGMA_RADIUS),
                     colors = IconButtonDefaults.filledIconButtonColors(
@@ -478,6 +475,7 @@ private val answers = persistentMapOf(
 class QuizScreenStateParamProvider : PreviewParameterProvider<InterviewQuizState> {
     override val values: Sequence<InterviewQuizState> = sequenceOf(
         InterviewQuizState.Loaded(
+            titleTopAppBar = TextOrResource.Resource(R.string.create_quiz_top_bar_header_text),
             questions = questions,
             questionsCount = questions.size,
             questionIndex = 0,
@@ -490,6 +488,7 @@ class QuizScreenStateParamProvider : PreviewParameterProvider<InterviewQuizState
             isLastQuestion = false
         ),
         InterviewQuizState.Loaded(
+            titleTopAppBar = TextOrResource.Resource(R.string.create_quiz_top_bar_header_text),
             questions = questions,
             questionsCount = questions.size,
             questionIndex = 2,
@@ -502,6 +501,7 @@ class QuizScreenStateParamProvider : PreviewParameterProvider<InterviewQuizState
             isLastQuestion = false
         ),
         InterviewQuizState.Loaded(
+            titleTopAppBar = TextOrResource.Resource(R.string.create_quiz_top_bar_header_text),
             questions = questions,
             questionsCount = questions.size,
             questionIndex = 3,
@@ -526,9 +526,10 @@ fun InterviewQuizScreen(
     @PreviewParameter(QuizScreenStateParamProvider::class)
     state: InterviewQuizState
 ) {
+    val correctState = flowOf(state)
+
     ScreenUI(
-        headerText = TextOrResource.Resource(R.string.create_quiz_top_bar_header_text),
-        state = state,
+        state = correctState.collectAsStateWithLifecycle(InterviewQuizState.Loading),
         onEvent = {}
     )
 }
@@ -569,10 +570,9 @@ fun DynamicPreviewUI() {
         )
     }
 
-    val state by mockViewModel.screenState.collectAsStateWithLifecycle()
+    val state = mockViewModel.screenState.collectAsStateWithLifecycle()
 
     ScreenUI(
-        headerText = TextOrResource.Resource(R.string.create_quiz_top_bar_header_text),
         state = state,
         onEvent = mockViewModel::onEvent
     )

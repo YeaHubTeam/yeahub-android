@@ -6,6 +6,8 @@ import kotlinx.collections.immutable.persistentMapOf
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ArgumentsSource
+import ru.yeahub.core_utils.common.TextOrResource
+import ru.yeahub.interview_trainer.impl.R
 import ru.yeahub.interview_trainer.impl.interviewQuiz.domain.DomainQuestion
 import ru.yeahub.interview_trainer.impl.interviewQuiz.presentation.InterviewQuizScreenMapper
 import ru.yeahub.interview_trainer.impl.interviewQuiz.presentation.InterviewQuizState
@@ -87,6 +89,7 @@ class InterviewQuizScreenMapperTest {
                 answers = persistentMapOf(),
                 selectedAnswer = InterviewQuizState.Loaded.QuizAnswer.NONE,
                 expectedResult = InterviewQuizState.Loaded(
+                    titleTopAppBar = TextOrResource.Resource(R.string.create_quiz_top_bar_header_text),
                     questions = ScreenMapperExampleDataClasses.defaultVoQuestions,
                     questionsCount = 3,
                     questionIndex = 0,
@@ -108,6 +111,7 @@ class InterviewQuizScreenMapperTest {
                 ),
                 selectedAnswer = InterviewQuizState.Loaded.QuizAnswer.KNOWN,
                 expectedResult = InterviewQuizState.Loaded(
+                    titleTopAppBar = TextOrResource.Resource(R.string.create_quiz_top_bar_header_text),
                     questions = ScreenMapperExampleDataClasses.defaultVoQuestions,
                     questionsCount = 3,
                     questionIndex = 0,
@@ -132,6 +136,7 @@ class InterviewQuizScreenMapperTest {
                 ),
                 selectedAnswer = InterviewQuizState.Loaded.QuizAnswer.UNKNOWN,
                 expectedResult = InterviewQuizState.Loaded(
+                    titleTopAppBar = TextOrResource.Resource(R.string.create_quiz_top_bar_header_text),
                     questions = ScreenMapperExampleDataClasses.defaultVoQuestions,
                     questionsCount = 3,
                     questionIndex = 1,
@@ -158,6 +163,7 @@ class InterviewQuizScreenMapperTest {
                 ),
                 selectedAnswer = InterviewQuizState.Loaded.QuizAnswer.KNOWN,
                 expectedResult = InterviewQuizState.Loaded(
+                    titleTopAppBar = TextOrResource.Resource(R.string.create_quiz_top_bar_header_text),
                     questions = ScreenMapperExampleDataClasses.defaultVoQuestions,
                     questionsCount = 3,
                     questionIndex = 2,

@@ -2,6 +2,8 @@ package ru.yeahub.interview_trainer.impl.interviewQuiz.presentation
 
 import kotlinx.collections.immutable.PersistentMap
 import kotlinx.collections.immutable.toPersistentList
+import ru.yeahub.core_utils.common.TextOrResource
+import ru.yeahub.interview_trainer.impl.R
 import ru.yeahub.interview_trainer.impl.interviewQuiz.domain.DomainQuestion
 
 class InterviewQuizScreenMapper {
@@ -29,6 +31,7 @@ class InterviewQuizScreenMapper {
         val isLastQuestion = questionIndex == questions.lastIndex
 
         return InterviewQuizState.Loaded(
+            titleTopAppBar = TextOrResource.Resource(R.string.create_quiz_top_bar_header_text),
             questions = questions,
             questionsCount = questionsCount,
             questionIndex = questionIndex,
