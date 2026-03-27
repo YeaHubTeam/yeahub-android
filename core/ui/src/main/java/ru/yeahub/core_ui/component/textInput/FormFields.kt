@@ -37,7 +37,7 @@ import ru.yeahub.core_utils.common.TextOrResource
  * Использовать напрямую только если нужна сложная кастомная верстка внутри поля
  */
 @Composable
-fun YeaHubTextField(
+internal fun CoreTextField(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -110,7 +110,7 @@ fun YeaHubTextField(
  * Не имеет привязки к бизнес-логике (пароли, поиск и т.д.)
  */
 @Composable
-fun AppTextField(
+fun PrimaryTextField(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -127,7 +127,7 @@ fun AppTextField(
     enabled: Boolean = true,
     onFocusChanged: (Boolean) -> Unit = {},
 ) {
-    YeaHubTextField(
+    CoreTextField(
         value = value,
         onValueChange = onValueChange,
         modifier = modifier,
@@ -150,18 +150,22 @@ fun AppTextField(
                     )
                 }
             }
-        } else null
+        } else {
+            null
+        }
     )
 }
 
 @Preview(name = "1. Пустое поле ввода", showBackground = true)
 @Composable
-private fun AppTextFieldDefaultPreview() {
+internal fun PrimaryTextFieldDefaultPreview() {
     YeaHubTheme {
-        Box(modifier = Modifier
-            .background(Theme.colors.white900)
-            .padding(16.dp)) {
-            AppTextField(
+        Box(
+            modifier = Modifier
+                .background(Theme.colors.white900)
+                .padding(16.dp)
+        ) {
+            PrimaryTextField(
                 title = "Email",
                 placeholder = "example@mail.com",
                 value = "",
@@ -173,12 +177,14 @@ private fun AppTextFieldDefaultPreview() {
 
 @Preview(name = "2. Поиск с очисткой поля ввода", showBackground = true)
 @Composable
-private fun AppTextFieldFilledPreview() {
+internal fun PrimaryTextFieldFilledPreview() {
     YeaHubTheme {
-        Box(modifier = Modifier
-            .background(Theme.colors.white900)
-            .padding(16.dp)) {
-            AppTextField(
+        Box(
+            modifier = Modifier
+                .background(Theme.colors.white900)
+                .padding(16.dp)
+        ) {
+            PrimaryTextField(
                 title = "Поиск",
                 value = "Текст запроса",
                 onValueChange = {},
@@ -192,13 +198,15 @@ private fun AppTextFieldFilledPreview() {
 
 @Preview(name = "3. Пароль скрыт", showBackground = true)
 @Composable
-private fun AppTextFieldPasswordPreview() {
+internal fun PrimaryTextFieldPasswordPreview() {
     YeaHubTheme {
-        Box(modifier = Modifier
-            .background(Theme.colors.white900)
-            .padding(16.dp)) {
+        Box(
+            modifier = Modifier
+                .background(Theme.colors.white900)
+                .padding(16.dp)
+        ) {
             // Хардкодим стейты для превью, никаких remember
-            AppTextField(
+            PrimaryTextField(
                 title = "Пароль",
                 value = "password123",
                 onValueChange = {},
@@ -212,12 +220,14 @@ private fun AppTextFieldPasswordPreview() {
 
 @Preview(name = "4. Пароль виден и ошибка", showBackground = true)
 @Composable
-private fun AppTextFieldErrorPreview() {
+internal fun PrimaryTextFieldErrorPreview() {
     YeaHubTheme {
-        Box(modifier = Modifier
-            .background(Theme.colors.white900)
-            .padding(16.dp)) {
-            AppTextField(
+        Box(
+            modifier = Modifier
+                .background(Theme.colors.white900)
+                .padding(16.dp)
+        ) {
+            PrimaryTextField(
                 title = "Пароль",
                 value = "123",
                 onValueChange = {},
@@ -231,12 +241,14 @@ private fun AppTextFieldErrorPreview() {
 
 @Preview(name = "5. Заблокировано", showBackground = true)
 @Composable
-private fun AppTextFieldDisabledPreview() {
+internal fun PrimaryTextFieldDisabledPreview() {
     YeaHubTheme {
-        Box(modifier = Modifier
-            .background(Theme.colors.white900)
-            .padding(16.dp)) {
-            AppTextField(
+        Box(
+            modifier = Modifier
+                .background(Theme.colors.white900)
+                .padding(16.dp)
+        ) {
+            PrimaryTextField(
                 title = "Недоступно",
                 value = "Текст нельзя изменить",
                 onValueChange = {},
@@ -248,12 +260,14 @@ private fun AppTextFieldDisabledPreview() {
 
 @Preview(name = "6. Минималистично", showBackground = true)
 @Composable
-private fun AppTextFieldMinimalPreview() {
+internal fun PrimaryTextFieldMinimalPreview() {
     YeaHubTheme {
-        Box(modifier = Modifier
-            .background(Theme.colors.white900)
-            .padding(16.dp)) {
-            AppTextField(
+        Box(
+            modifier = Modifier
+                .background(Theme.colors.white900)
+                .padding(16.dp)
+        ) {
+            PrimaryTextField(
                 // Не передаем title и placeholder, проверяем верстку без них
                 value = "Только поле ввода",
                 onValueChange = {}
