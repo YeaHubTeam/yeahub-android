@@ -2,6 +2,7 @@ package ru.yeahub.core_ui.component.textInput
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -9,6 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Icon
@@ -19,8 +21,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
@@ -30,8 +33,8 @@ import ru.yeahub.core_ui.theme.YeaHubTheme
 import ru.yeahub.core_utils.common.TextOrResource
 
 /**
- * Базовый текстовый компонент проекта YeaHub.
- * Используйте его напрямую, если нужны специфические настройки (иконки, многострочность и т.д.).
+ * Базовый компонент
+ * Использовать напрямую только если нужна сложная кастомная верстка внутри поля
  */
 @Composable
 fun YeaHubTextField(
@@ -49,8 +52,6 @@ fun YeaHubTextField(
     enabled: Boolean = true,
     onFocusChanged: (Boolean) -> Unit = {},
 ) {
-    val isError = error != null
-
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -70,18 +71,12 @@ fun YeaHubTextField(
             value = value,
             onValueChange = onValueChange,
             enabled = enabled,
-            isError = isError,
+            isError = error != null,
             visualTransformation = visualTransformation,
             keyboardOptions = keyboardOptions,
             keyboardActions = keyboardActions,
-            placeholder = {
-                if (placeholder != null) {
-                    Text(
-                        text = placeholder,
-                        style = Theme.typography.body2,
-                        color = Theme.colors.black500
-                    )
-                }
+            placeholder = placeholder?.let {
+                { Text(text = it, style = Theme.typography.body2, color = Theme.colors.black500) }
             },
             trailingIcon = trailingIcon,
             singleLine = singleLine,
@@ -98,12 +93,11 @@ fun YeaHubTextField(
         )
 
         if (error != null) {
-            val errorMessage = when (error) {
-                is TextOrResource.Resource -> stringResource(error.resource)
-                is TextOrResource.Text -> error.text
-            }
             Text(
-                text = errorMessage,
+                text = when (error) {
+                    is TextOrResource.Resource -> stringResource(error.resource)
+                    is TextOrResource.Text -> error.text
+                },
                 color = Theme.colors.red700,
                 style = Theme.typography.body1
             )
@@ -112,17 +106,25 @@ fun YeaHubTextField(
 }
 
 /**
- * Стандартное поле ввода текста с заголовком и поддержкой ошибки (TextOrResource).
+ * Универсальное поле ввода для любых задач
+ * Не имеет привязки к бизнес-логике (пароли, поиск и т.д.)
  */
 @Composable
-fun FormTextField(
-    title: String,
-    placeholder: String,
+fun AppTextField(
     value: String,
     onValueChange: (String) -> Unit,
-    keyboardType: KeyboardType,
     modifier: Modifier = Modifier,
+    title: String? = null,
+    placeholder: String? = null,
     error: TextOrResource? = null,
+    actionIcon: Painter? = null,
+    actionContentDescription: String? = null,
+    onActionClick: (() -> Unit)? = null,
+    visualTransformation: VisualTransformation = VisualTransformation.None,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
+    singleLine: Boolean = true,
+    enabled: Boolean = true,
     onFocusChanged: (Boolean) -> Unit = {},
 ) {
     YeaHubTextField(
@@ -132,92 +134,129 @@ fun FormTextField(
         title = title,
         placeholder = placeholder,
         error = error,
-        keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
-        onFocusChanged = onFocusChanged
-    )
-}
-
-/**
- * Поле ввода пароля с переключателем видимости и поддержкой ошибки (TextOrResource).
- */
-@Composable
-fun FormPasswordField(
-    title: String,
-    placeholder: String,
-    value: String,
-    isVisible: Boolean,
-    onValueChange: (String) -> Unit,
-    onToggleVisibility: () -> Unit,
-    modifier: Modifier = Modifier,
-    error: TextOrResource? = null,
-    onFocusChanged: (Boolean) -> Unit = {},
-) {
-    YeaHubTextField(
-        value = value,
-        onValueChange = onValueChange,
-        modifier = modifier,
-        title = title,
-        placeholder = placeholder,
-        error = error,
-        visualTransformation = if (isVisible) VisualTransformation.None else PasswordVisualTransformation(),
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+        visualTransformation = visualTransformation,
+        keyboardOptions = keyboardOptions,
+        keyboardActions = keyboardActions,
+        singleLine = singleLine,
+        enabled = enabled,
         onFocusChanged = onFocusChanged,
-        trailingIcon = {
-            IconButton(onClick = onToggleVisibility) {
-                Icon(
-                    imageVector = if (isVisible) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
-                    contentDescription = null,
-                    tint = Theme.colors.black500
-                )
+        trailingIcon = if (actionIcon != null && onActionClick != null) {
+            {
+                IconButton(onClick = onActionClick, enabled = enabled) {
+                    Icon(
+                        painter = actionIcon,
+                        contentDescription = actionContentDescription,
+                        tint = Theme.colors.black500
+                    )
+                }
             }
-        }
+        } else null
     )
 }
 
-@Preview(showBackground = true)
+@Preview(name = "1. Пустое поле ввода", showBackground = true)
 @Composable
-internal fun FormFieldsPreview() {
+private fun AppTextFieldDefaultPreview() {
     YeaHubTheme {
-        Column(
-            modifier = Modifier
-                .background(Theme.colors.white900)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            FormTextField(
+        Box(modifier = Modifier
+            .background(Theme.colors.white900)
+            .padding(16.dp)) {
+            AppTextField(
                 title = "Email",
                 placeholder = "example@mail.com",
                 value = "",
-                onValueChange = {},
-                keyboardType = KeyboardType.Email
+                onValueChange = {}
             )
+        }
+    }
+}
 
-            FormTextField(
-                title = "Email с ошибкой",
-                placeholder = "example@mail.com",
-                value = "wrong-email",
+@Preview(name = "2. Поиск с очисткой поля ввода", showBackground = true)
+@Composable
+private fun AppTextFieldFilledPreview() {
+    YeaHubTheme {
+        Box(modifier = Modifier
+            .background(Theme.colors.white900)
+            .padding(16.dp)) {
+            AppTextField(
+                title = "Поиск",
+                value = "Текст запроса",
                 onValueChange = {},
-                keyboardType = KeyboardType.Email,
-                error = TextOrResource.Text("Некорректный формат почты")
+                actionIcon = rememberVectorPainter(Icons.Filled.Clear),
+                actionContentDescription = "Очистить",
+                onActionClick = {}
             )
+        }
+    }
+}
 
-            FormPasswordField(
+@Preview(name = "3. Пароль скрыт", showBackground = true)
+@Composable
+private fun AppTextFieldPasswordPreview() {
+    YeaHubTheme {
+        Box(modifier = Modifier
+            .background(Theme.colors.white900)
+            .padding(16.dp)) {
+            // Хардкодим стейты для превью, никаких remember
+            AppTextField(
                 title = "Пароль",
-                placeholder = "Введите пароль",
                 value = "password123",
-                isVisible = false,
                 onValueChange = {},
-                onToggleVisibility = {}
+                visualTransformation = PasswordVisualTransformation(),
+                actionIcon = rememberVectorPainter(Icons.Filled.Visibility),
+                onActionClick = {}
             )
+        }
+    }
+}
 
-            FormPasswordField(
-                title = "Пароль (видимый)",
-                placeholder = "Введите пароль",
-                value = "password123",
-                isVisible = true,
+@Preview(name = "4. Пароль виден и ошибка", showBackground = true)
+@Composable
+private fun AppTextFieldErrorPreview() {
+    YeaHubTheme {
+        Box(modifier = Modifier
+            .background(Theme.colors.white900)
+            .padding(16.dp)) {
+            AppTextField(
+                title = "Пароль",
+                value = "123",
                 onValueChange = {},
-                onToggleVisibility = {},
-                error = TextOrResource.Text("Пароль слишком короткий")
+                error = TextOrResource.Text("Минимальная длина 8 символов"),
+                actionIcon = rememberVectorPainter(Icons.Filled.VisibilityOff),
+                onActionClick = {}
+            )
+        }
+    }
+}
+
+@Preview(name = "5. Заблокировано", showBackground = true)
+@Composable
+private fun AppTextFieldDisabledPreview() {
+    YeaHubTheme {
+        Box(modifier = Modifier
+            .background(Theme.colors.white900)
+            .padding(16.dp)) {
+            AppTextField(
+                title = "Недоступно",
+                value = "Текст нельзя изменить",
+                onValueChange = {},
+                enabled = false
+            )
+        }
+    }
+}
+
+@Preview(name = "6. Минималистично", showBackground = true)
+@Composable
+private fun AppTextFieldMinimalPreview() {
+    YeaHubTheme {
+        Box(modifier = Modifier
+            .background(Theme.colors.white900)
+            .padding(16.dp)) {
+            AppTextField(
+                // Не передаем title и placeholder, проверяем верстку без них
+                value = "Только поле ввода",
+                onValueChange = {}
             )
         }
     }
