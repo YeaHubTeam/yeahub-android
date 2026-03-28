@@ -1,6 +1,7 @@
 package ru.yeahub.profile_edit.impl.ui
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -13,6 +14,28 @@ import ru.yeahub.core_ui.component.textInput.DefaultTextField
 import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.core_utils.common.TextOrResource
 import ru.yeahub.profile_edit.impl.presentation.ProfileEditState
+
+private val SECTION_TITLE_BOTTOM_SPACER = 6.dp
+private val SECTION_DESCRIPTION_BOTTOM_SPACER = 12.dp
+
+@Composable
+internal fun SectionHeader(
+    title: String,
+    description: String,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier = modifier) {
+        SectionTitle(title = title)
+        Spacer(Modifier.height(SECTION_TITLE_BOTTOM_SPACER))
+        Text(
+            text = description,
+            style = Theme.typography.body7Alt,
+            color = Theme.colors.black900,
+            modifier = Modifier.fillMaxWidth(),
+        )
+        Spacer(Modifier.height(SECTION_DESCRIPTION_BOTTOM_SPACER))
+    }
+}
 
 @Composable
 internal fun SectionTitle(
@@ -28,16 +51,21 @@ internal fun SectionTitle(
 }
 
 @Composable
-internal fun FieldLabel(
-    text: String,
+internal fun LabelWithField(
+    label: String,
     modifier: Modifier = Modifier,
+    content: @Composable () -> Unit,
 ) {
-    Text(
-        text = text,
-        style = Theme.typography.body7,
-        color = Theme.colors.black900,
-        modifier = modifier.padding(bottom = 4.dp),
-    )
+    Column(modifier = modifier) {
+        Text(
+            text = label,
+            style = Theme.typography.body7,
+            color = Theme.colors.black900,
+            modifier = Modifier.padding(bottom = 8.dp),
+        )
+        content()
+        Spacer(Modifier.height(8.dp))
+    }
 }
 
 @Composable
@@ -57,10 +85,8 @@ internal fun ValidatedTextField(
         onExpandedChange = {},
         isError = field.error != null,
     )
-    Box(modifier = Modifier.height(16.dp)) {
-        if (field.error != null) {
-            ValidationErrorText(error = field.error)
-        }
+    if (field.error != null) {
+        ValidationErrorText(error = field.error)
     }
 }
 
@@ -68,7 +94,7 @@ internal fun ValidatedTextField(
 private fun ValidationErrorText(error: TextOrResource) {
     Text(
         text = error.getString(LocalContext.current),
-        style = Theme.typography.body7Alt,
+        style = Theme.typography.body1,
         color = Theme.colors.red700,
     )
 }
