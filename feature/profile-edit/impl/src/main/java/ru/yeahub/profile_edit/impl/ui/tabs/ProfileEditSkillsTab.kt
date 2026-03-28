@@ -66,7 +66,7 @@ fun SkillsContent(
                 items = skillNames,
                 selected = "",
                 onSelected = {
-                    onEvent(ProfileEditScreenEvent.ToDo)
+                    onEvent(ProfileEditScreenEvent.AddSkill(skillName = it))
                 },
                 modifier = Modifier.fillMaxWidth(),
             )
@@ -88,7 +88,7 @@ fun SkillsContent(
                         imageRight = R.drawable.icon_button_close,
                         text = skill.name,
                         onRightIconClick = {
-                            onEvent(ProfileEditScreenEvent.ToDo)
+                            onEvent(ProfileEditScreenEvent.RemoveSkill(skill = skill))
                         },
                         imageSizeLeftWith = 20.dp,
                         imageSizeLeftHigh = 20.dp,

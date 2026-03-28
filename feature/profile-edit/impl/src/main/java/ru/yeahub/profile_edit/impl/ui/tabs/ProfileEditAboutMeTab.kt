@@ -1,6 +1,5 @@
 package ru.yeahub.profile_edit.impl.ui.tabs
 
-import android.R.attr.singleLine
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -52,8 +51,8 @@ fun AboutMeContent(
         DefaultTextField(
             value = state.aboutMeField,
             placeholder = stringResource(R.string.about_me_tab_placeholder),
-            onValueChange = { onEvent(ProfileEditScreenEvent.ToDo) },
-            onExpandedChange = { /* TODO */ },
+            onValueChange = { onEvent(ProfileEditScreenEvent.AboutMeChanged(it)) },
+            onExpandedChange = {},
             singleLine = false,
             modifier = Modifier
                 .fillMaxWidth()
