@@ -15,8 +15,9 @@ import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.core_utils.common.TextOrResource
 import ru.yeahub.profile_edit.impl.presentation.ProfileEditState
 
-private val SECTION_TITLE_BOTTOM_SPACER = 6.dp
-private val SECTION_DESCRIPTION_BOTTOM_SPACER = 12.dp
+internal val SECTION_TITLE_BOTTOM_SPACING = 6.dp
+internal val TAB_CONTENT_TOP_PADDING = 22.dp
+private val SECTION_DESCRIPTION_BOTTOM_SPACING = 12.dp
 
 @Composable
 internal fun SectionHeader(
@@ -26,14 +27,14 @@ internal fun SectionHeader(
 ) {
     Column(modifier = modifier) {
         SectionTitle(title = title)
-        Spacer(Modifier.height(SECTION_TITLE_BOTTOM_SPACER))
+        Spacer(Modifier.height(SECTION_TITLE_BOTTOM_SPACING))
         Text(
             text = description,
             style = Theme.typography.body7Alt,
             color = Theme.colors.black900,
             modifier = Modifier.fillMaxWidth(),
         )
-        Spacer(Modifier.height(SECTION_DESCRIPTION_BOTTOM_SPACER))
+        Spacer(Modifier.height(SECTION_DESCRIPTION_BOTTOM_SPACING))
     }
 }
 

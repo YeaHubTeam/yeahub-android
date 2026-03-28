@@ -15,7 +15,9 @@ import ru.yeahub.core_ui.component.textInput.DefaultTextField
 import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.profile_edit.impl.presentation.ProfileEditState
 import ru.yeahub.profile_edit.impl.presentation.intents.ProfileEditScreenEvent
+import ru.yeahub.profile_edit.impl.ui.SECTION_TITLE_BOTTOM_SPACING
 import ru.yeahub.profile_edit.impl.ui.SectionHeader
+import ru.yeahub.profile_edit.impl.ui.TAB_CONTENT_TOP_PADDING
 import ru.yeahub.ui.R
 
 @Composable
@@ -27,14 +29,14 @@ fun AboutMeContent(
         modifier = Modifier
             .fillMaxWidth()
             .background(Theme.colors.white900)
-            .padding(top = 22.dp),
+            .padding(top = TAB_CONTENT_TOP_PADDING),
     ) {
         SectionHeader(
             title = stringResource(R.string.about_me_tab),
             description = stringResource(R.string.about_me_tab_label),
         )
 
-        Spacer(Modifier.height(4.dp))
+        Spacer(Modifier.height(SECTION_TITLE_BOTTOM_SPACING))
 
         DefaultTextField(
             value = state.aboutMeField,

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Icon
@@ -33,18 +34,19 @@ import ru.yeahub.profile_edit.impl.presentation.ProfileEditState
 import ru.yeahub.profile_edit.impl.presentation.ProfileEditState.SocialLinks
 import ru.yeahub.profile_edit.impl.presentation.intents.ProfileEditScreenEvent
 import ru.yeahub.profile_edit.impl.ui.LabelWithField
+import ru.yeahub.profile_edit.impl.ui.SECTION_TITLE_BOTTOM_SPACING
 import ru.yeahub.profile_edit.impl.ui.SectionHeader
+import ru.yeahub.profile_edit.impl.ui.TAB_CONTENT_TOP_PADDING
 import ru.yeahub.profile_edit.impl.ui.ValidatedTextField
 import ru.yeahub.ui.R
 
-private val SECTION_BOTTOM_SPACER = 18.dp
-private val UPLOAD_BUTTON_BOTTOM_SPACER = 24.dp
-private val FIELD_GROUP_SPACER = 12.dp
-private val SMALL_SPACER = 6.dp
+private val SECTION_BOTTOM_SPACING = 18.dp
+private val UPLOAD_BUTTON_BOTTOM_SPACING = 24.dp
+private val FIELD_GROUP_SPACING = 12.dp
 private val AVATAR_HEIGHT = 263.dp
 private val AVATAR_WIDTH = 326.dp
-private val REMOVE_PHOTO_BUTTON_HEIGHT = 25.dp
-private val REMOVE_PHOTO_BUTTON_PADDING = 8.dp
+private val REMOVE_PHOTO_TEXT_HEIGHT = 25.dp
+private val REMOVE_PHOTO_TEXT_PADDING = 8.dp
 
 @Composable
 fun PersonalInfoContent(
@@ -55,25 +57,25 @@ fun PersonalInfoContent(
         modifier = Modifier
             .fillMaxWidth()
             .background(Theme.colors.white900),
-        contentPadding = PaddingValues(top = 22.dp),
+        contentPadding = PaddingValues(top = TAB_CONTENT_TOP_PADDING),
     ) {
         item {
             SectionHeader(
                 title = stringResource(R.string.profile_photo),
                 description = stringResource(R.string.profile_photo_description),
             )
-            Spacer(Modifier.height(SMALL_SPACER))
+            Spacer(Modifier.height(SECTION_TITLE_BOTTOM_SPACING))
         }
         item {
             ProfileAvatarSection(
                 avatarUrl = state.avatarUrl,
                 onRemoveClick = { onEvent(ProfileEditScreenEvent.DeleteAvatar) },
             )
-            Spacer(Modifier.height(SECTION_BOTTOM_SPACER))
+            Spacer(Modifier.height(SECTION_BOTTOM_SPACING))
             UploadPhotoButton(
                 onClick = { onEvent(ProfileEditScreenEvent.UploadAvatar) },
             )
-            Spacer(Modifier.height(UPLOAD_BUTTON_BOTTOM_SPACER))
+            Spacer(Modifier.height(UPLOAD_BUTTON_BOTTOM_SPACING))
         }
         item {
             SectionHeader(
@@ -102,9 +104,7 @@ fun PersonalInfoContent(
                         Icon(
                             painter = painterResource(R.drawable.icon_search),
                             contentDescription = "Поиск",
-                            modifier = Modifier
-                                .width(20.dp)
-                                .height(20.dp),
+                            modifier = Modifier.size(20.dp),
                         )
                     },
                     isEnabled = state.isSpecializationEditable,
@@ -118,7 +118,7 @@ fun PersonalInfoContent(
                     onEvent(ProfileEditScreenEvent.CannotChangeSpecializationToast)
                 },
             )
-            Spacer(Modifier.height(FIELD_GROUP_SPACER))
+            Spacer(Modifier.height(FIELD_GROUP_SPACING))
         }
         item {
             LabelWithField(label = stringResource(R.string.profile_email_label)) {
@@ -143,7 +143,7 @@ fun PersonalInfoContent(
                     placeholder = stringResource(R.string.profile_location_placeholder),
                 )
             }
-            Spacer(Modifier.height(FIELD_GROUP_SPACER))
+            Spacer(Modifier.height(FIELD_GROUP_SPACING))
             SectionHeader(
                 title = stringResource(R.string.profile_links_title),
                 description = stringResource(R.string.profile_links_subtitle),
@@ -205,8 +205,8 @@ private fun ProfileAvatarSection(
             style = Theme.typography.body7Alt,
             color = Theme.colors.red700,
             modifier = Modifier
-                .height(REMOVE_PHOTO_BUTTON_HEIGHT)
-                .padding(top = REMOVE_PHOTO_BUTTON_PADDING)
+                .height(REMOVE_PHOTO_TEXT_HEIGHT)
+                .padding(top = REMOVE_PHOTO_TEXT_PADDING)
                 .clickable(onClick = onRemoveClick),
         )
     }

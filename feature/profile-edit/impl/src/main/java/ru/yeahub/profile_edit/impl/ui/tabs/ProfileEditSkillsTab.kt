@@ -22,7 +22,9 @@ import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.profile_edit.impl.presentation.ProfileEditState
 import ru.yeahub.profile_edit.impl.presentation.intents.ProfileEditScreenEvent
 import ru.yeahub.profile_edit.impl.ui.LabelWithField
+import ru.yeahub.profile_edit.impl.ui.SECTION_TITLE_BOTTOM_SPACING
 import ru.yeahub.profile_edit.impl.ui.SectionHeader
+import ru.yeahub.profile_edit.impl.ui.TAB_CONTENT_TOP_PADDING
 import ru.yeahub.ui.R
 
 @Composable
@@ -44,14 +46,14 @@ fun SkillsContent(
         modifier = Modifier
             .fillMaxWidth()
             .background(Theme.colors.white900),
-        contentPadding = PaddingValues(top = 22.dp),
+        contentPadding = PaddingValues(top = TAB_CONTENT_TOP_PADDING),
     ) {
         item {
             SectionHeader(
                 title = stringResource(R.string.skills_tab),
                 description = stringResource(R.string.skills_tab_label),
             )
-            Spacer(modifier = Modifier.height(6.dp))
+            Spacer(modifier = Modifier.height(SECTION_TITLE_BOTTOM_SPACING))
         }
         item {
             LabelWithField(label = stringResource(R.string.skills_dropdown_menu_label)) {
@@ -67,7 +69,7 @@ fun SkillsContent(
                         .height(52.dp),
                 )
             }
-            Spacer(modifier = Modifier.height(6.dp))
+            Spacer(modifier = Modifier.height(SECTION_TITLE_BOTTOM_SPACING))
         }
         item {
             Text(

@@ -1,7 +1,6 @@
 package ru.yeahub.profile_edit.impl.ui
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -97,8 +96,7 @@ fun ProfileEditScreen(
                 .fillMaxWidth()
                 .padding(paddingValues)
                 .padding(horizontal = 16.dp)
-                .padding(top = 16.dp)
-                .padding(bottom = 0.dp),
+                .padding(top = 16.dp),
             color = Theme.colors.white900,
             shape = RoundedCornerShape(16.dp),
         ) {
@@ -127,8 +125,7 @@ fun ProfileEditScreen(
                     state = pagerState,
                     modifier = Modifier
                         .weight(1f)
-                        .fillMaxWidth()
-                        .background(Theme.colors.white900),
+                        .fillMaxWidth(),
                 ) { page ->
                     key(page) {
                         Box(modifier = Modifier.fillMaxSize()) {
