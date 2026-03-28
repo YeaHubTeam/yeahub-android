@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -31,23 +32,15 @@ import ru.yeahub.core_utils.common.TextOrResource
 import ru.yeahub.profile_edit.impl.presentation.ProfileEditState
 import ru.yeahub.profile_edit.impl.presentation.ProfileEditState.SocialLinks
 import ru.yeahub.profile_edit.impl.presentation.intents.ProfileEditScreenEvent
-import ru.yeahub.profile_edit.impl.ui.FieldLabel
-import ru.yeahub.profile_edit.impl.ui.SectionTitle
+import ru.yeahub.profile_edit.impl.ui.LabelWithField
+import ru.yeahub.profile_edit.impl.ui.SectionHeader
 import ru.yeahub.profile_edit.impl.ui.ValidatedTextField
 import ru.yeahub.ui.R
 
-private val PHOTO_SECTION_TOP_SPACER = 23.dp
-private val SECTION_TITLE_BOTTOM_SPACER = 6.dp
-private val PROFILE_DESCRIPTION_BOTTOM_SPACER = 18.dp
-private val AVATAR_BOTTOM_SPACER = 18.dp
+private val SECTION_BOTTOM_SPACER = 18.dp
 private val UPLOAD_BUTTON_BOTTOM_SPACER = 24.dp
-private val SECTION_SUBTITLE_BOTTOM_SPACER = 12.dp
-private val NICKNAME_AND_SPECIALIZATION_FIELD_BOTTOM_SPACER = 12.dp
-private val LINKS_SECTION_TOP_SPACER = 8.dp
-private val SPECIALIZATION_SPACER = 8.dp
-private val LINKS_SECTION_TITLE_BOTTOM_SPACER = 6.dp
-private val SOCIAL_LINK_VERTICAL_PADDING = 4.dp
-private val TEXT_FIELD_HEIGHT = 52.dp
+private val FIELD_GROUP_SPACER = 12.dp
+private val SMALL_SPACER = 6.dp
 private val AVATAR_HEIGHT = 263.dp
 private val AVATAR_WIDTH = 326.dp
 private val REMOVE_PHOTO_BUTTON_HEIGHT = 25.dp
@@ -62,76 +55,61 @@ fun PersonalInfoContent(
         modifier = Modifier
             .fillMaxWidth()
             .background(Theme.colors.white900),
+        contentPadding = PaddingValues(top = 22.dp),
     ) {
         item {
-            Spacer(Modifier.height(PHOTO_SECTION_TOP_SPACER))
-            SectionTitle(title = stringResource(R.string.profile_photo))
-        }
-        item {
-            Spacer(Modifier.height(SECTION_TITLE_BOTTOM_SPACER))
-            Text(
-                text = stringResource(R.string.profile_photo_description),
-                style = Theme.typography.body7Alt,
-                color = Theme.colors.black900,
-                modifier = Modifier.fillMaxWidth(),
+            SectionHeader(
+                title = stringResource(R.string.profile_photo),
+                description = stringResource(R.string.profile_photo_description),
             )
-        }
-        item {
-            Spacer(Modifier.height(PROFILE_DESCRIPTION_BOTTOM_SPACER))
+            Spacer(Modifier.height(SMALL_SPACER))
         }
         item {
             ProfileAvatarSection(
                 avatarUrl = state.avatarUrl,
                 onRemoveClick = { onEvent(ProfileEditScreenEvent.DeleteAvatar) },
             )
-            Spacer(Modifier.height(AVATAR_BOTTOM_SPACER))
-        }
-        item {
+            Spacer(Modifier.height(SECTION_BOTTOM_SPACER))
             UploadPhotoButton(
                 onClick = { onEvent(ProfileEditScreenEvent.UploadAvatar) },
             )
             Spacer(Modifier.height(UPLOAD_BUTTON_BOTTOM_SPACER))
         }
         item {
-            SectionTitle(title = stringResource(R.string.profile_personal_info_title))
-            Spacer(Modifier.height(SECTION_TITLE_BOTTOM_SPACER))
-            Text(
-                text = stringResource(R.string.profile_personal_info_subtitle),
-                style = Theme.typography.body7Alt,
-                color = Theme.colors.black500,
+            SectionHeader(
+                title = stringResource(R.string.profile_personal_info_title),
+                description = stringResource(R.string.profile_personal_info_subtitle),
             )
-            Spacer(Modifier.height(SECTION_SUBTITLE_BOTTOM_SPACER))
+            LabelWithField(label = stringResource(R.string.profile_nickname_label)) {
+                ValidatedTextField(
+                    field = state.nickname,
+                    onValueChange = { onEvent(ProfileEditScreenEvent.NicknameChanged(it)) },
+                    placeholder = stringResource(R.string.profile_nickname_placeholder),
+                )
+            }
         }
         item {
-            FieldLabel(text = stringResource(R.string.profile_nickname_label))
-            ValidatedTextField(
-                field = state.nickname,
-                onValueChange = { onEvent(ProfileEditScreenEvent.NicknameChanged(it)) },
-                placeholder = stringResource(R.string.profile_nickname_placeholder),
-            )
-        }
-        item {
-            FieldLabel(text = stringResource(R.string.profile_specialization_label))
-            DropDownMenu(
-                placeholder = stringResource(R.string.profile_specialization_placeholder),
-                items = state.specializationList,
-                selected = state.specialization,
-                onSelected = { onEvent(ProfileEditScreenEvent.ChooseSpecialization(it)) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(TEXT_FIELD_HEIGHT),
-                leadingIcon = {
-                    Icon(
-                        painter = painterResource(R.drawable.icon_search),
-                        contentDescription = "Поиск",
-                        modifier = Modifier
-                            .width(20.dp)
-                            .height(20.dp),
-                    )
-                },
-                isEnabled = state.isSpecializationEditable,
-            )
-            Spacer(Modifier.height(SPECIALIZATION_SPACER))
+            LabelWithField(label = stringResource(R.string.profile_specialization_label)) {
+                DropDownMenu(
+                    placeholder = stringResource(R.string.profile_specialization_placeholder),
+                    items = state.specializationList,
+                    selected = state.specialization,
+                    onSelected = { onEvent(ProfileEditScreenEvent.ChooseSpecialization(it)) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp),
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(R.drawable.icon_search),
+                            contentDescription = "Поиск",
+                            modifier = Modifier
+                                .width(20.dp)
+                                .height(20.dp),
+                        )
+                    },
+                    isEnabled = state.isSpecializationEditable,
+                )
+            }
             Text(
                 text = stringResource(R.string.profile_change_specialization),
                 style = Theme.typography.head7,
@@ -140,57 +118,54 @@ fun PersonalInfoContent(
                     onEvent(ProfileEditScreenEvent.CannotChangeSpecializationToast)
                 },
             )
-            Spacer(Modifier.height(NICKNAME_AND_SPECIALIZATION_FIELD_BOTTOM_SPACER))
+            Spacer(Modifier.height(FIELD_GROUP_SPACER))
         }
         item {
-            FieldLabel(text = stringResource(R.string.profile_email_label))
-            DefaultTextField(
-                value = state.email,
-                onValueChange = { },
-                placeholder = stringResource(R.string.profile_nickname_placeholder),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(TEXT_FIELD_HEIGHT),
-                onExpandedChange = {},
-                readOnly = true,
-                isEnabled = false,
-            )
-            Spacer(Modifier.height(NICKNAME_AND_SPECIALIZATION_FIELD_BOTTOM_SPACER))
+            LabelWithField(label = stringResource(R.string.profile_email_label)) {
+                DefaultTextField(
+                    value = state.email,
+                    onValueChange = { },
+                    placeholder = stringResource(R.string.profile_nickname_placeholder),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp),
+                    onExpandedChange = {},
+                    readOnly = true,
+                    isEnabled = false,
+                )
+            }
         }
         item {
-            FieldLabel(text = stringResource(R.string.profile_location_label))
-            ValidatedTextField(
-                field = state.location,
-                onValueChange = { onEvent(ProfileEditScreenEvent.LocationChanged(it)) },
-                placeholder = stringResource(R.string.profile_location_placeholder),
+            LabelWithField(label = stringResource(R.string.profile_location_label)) {
+                ValidatedTextField(
+                    field = state.location,
+                    onValueChange = { onEvent(ProfileEditScreenEvent.LocationChanged(it)) },
+                    placeholder = stringResource(R.string.profile_location_placeholder),
+                )
+            }
+            Spacer(Modifier.height(FIELD_GROUP_SPACER))
+            SectionHeader(
+                title = stringResource(R.string.profile_links_title),
+                description = stringResource(R.string.profile_links_subtitle),
             )
-            Spacer(Modifier.height(LINKS_SECTION_TOP_SPACER))
-        }
-        item {
-            SectionTitle(title = stringResource(R.string.profile_links_title))
-            Spacer(Modifier.height(LINKS_SECTION_TITLE_BOTTOM_SPACER))
-            Text(
-                text = stringResource(R.string.profile_links_subtitle),
-                style = Theme.typography.body7,
-                color = Theme.colors.black500,
-            )
-            Spacer(Modifier.height(LINKS_SECTION_TITLE_BOTTOM_SPACER))
         }
         SocialLinks.entries.forEach { platform ->
             item {
-                SocialLinkField(
-                    platform = platform,
-                    field = state.socialLinks[platform]
-                        ?: ProfileEditState.ValidatedField("", null),
-                    onValueChange = {
-                        onEvent(
-                            ProfileEditScreenEvent.SocialLinkChanged(
-                                link = platform,
-                                url = it,
-                            ),
-                        )
-                    },
-                )
+                LabelWithField(label = platform.name) {
+                    ValidatedTextField(
+                        field = state.socialLinks[platform]
+                            ?: ProfileEditState.ValidatedField("", null),
+                        onValueChange = {
+                            onEvent(
+                                ProfileEditScreenEvent.SocialLinkChanged(
+                                    link = platform,
+                                    url = it,
+                                ),
+                            )
+                        },
+                        placeholder = stringResource(R.string.profile_link_placeholder),
+                    )
+                }
             }
         }
     }
@@ -233,28 +208,6 @@ private fun ProfileAvatarSection(
                 .height(REMOVE_PHOTO_BUTTON_HEIGHT)
                 .padding(top = REMOVE_PHOTO_BUTTON_PADDING)
                 .clickable(onClick = onRemoveClick),
-        )
-    }
-}
-
-@Composable
-private fun SocialLinkField(
-    platform: SocialLinks,
-    field: ProfileEditState.ValidatedField,
-    onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Column(modifier = modifier) {
-        Text(
-            text = platform.name,
-            style = Theme.typography.body3Accent,
-            color = Theme.colors.black900,
-        )
-        Spacer(Modifier.height(SOCIAL_LINK_VERTICAL_PADDING))
-        ValidatedTextField(
-            field = field,
-            onValueChange = onValueChange,
-            placeholder = stringResource(R.string.profile_link_placeholder),
         )
     }
 }
