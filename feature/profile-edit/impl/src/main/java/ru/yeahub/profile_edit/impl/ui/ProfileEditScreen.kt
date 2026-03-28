@@ -225,7 +225,7 @@ fun ProfileEditPreview() {
                 },
             )
         },
-        aboutMeContent = { AboutMeContent(state.aboutMeTabState) },
+        aboutMeContent = { AboutMeContent(state.aboutMeTabState, onEvent = {}) },
         skillsContent = { },
         tabs = ProfileEditTabs.entries,
         headerText = TextOrResource.Text("Редактирование профиля"),
