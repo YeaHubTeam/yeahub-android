@@ -43,6 +43,7 @@ import ru.yeahub.profile_edit.impl.presentation.ProfileEditState.SocialLinks
 import ru.yeahub.profile_edit.impl.presentation.intents.ProfileEditScreenEvent
 import ru.yeahub.profile_edit.impl.ui.tabs.AboutMeContent
 import ru.yeahub.profile_edit.impl.ui.tabs.PersonalInfoContent
+import ru.yeahub.profile_edit.impl.ui.tabs.SkillsContent
 import ru.yeahub.ui.R
 
 @Composable
@@ -71,7 +72,6 @@ fun ProfileEditScreen(
         pageCount = { ProfileEditTabs.entries.size },
     )
     val coroutineScope = rememberCoroutineScope()
-
     Scaffold(
         containerColor = Theme.colors.black10,
         topBar = {
@@ -159,8 +159,8 @@ fun ProfileEditPreview() {
         personalInfoState = ProfileEditState.PersonalInfoTabState(
             avatarUrl = null,
             nickname = ProfileEditState.ValidatedField(
-                value = "J",
-                error = TextOrResource.Resource(R.string.error_minimal_length_2),
+                value = "Joe",
+                error = null,
             ),
             specializationList = persistentListOf(
                 "Android разработчик",
@@ -186,8 +186,54 @@ fun ProfileEditPreview() {
             aboutMeField = "",
         ),
         skillsTabState = ProfileEditState.SkillsTabState(
-            listOfSkills = persistentListOf(),
-            listOfChosenSkills = persistentListOf(),
+            listOfSkills = persistentListOf(
+                ProfileEditState.Skill(
+                    image = R.drawable.icon_true_button,
+                    name = "Kotlin1",
+                ),
+                ProfileEditState.Skill(
+                    image = R.drawable.icon_true_button,
+                    name = "Jetpack Compose",
+                ),
+                ProfileEditState.Skill(
+                    image = R.drawable.icon_true_button,
+                    name = "Coroutines",
+                ),
+            ),
+            listOfChosenSkills = persistentListOf(
+                ProfileEditState.Skill(
+                    image = R.drawable.icon_true_button,
+                    name = "Figma",
+                ),
+                ProfileEditState.Skill(
+                    image = R.drawable.icon_true_button,
+                    name = "Figma",
+                ),
+                ProfileEditState.Skill(
+                    image = R.drawable.icon_true_button,
+                    name = "Figma",
+                ),
+                ProfileEditState.Skill(
+                    image = R.drawable.icon_true_button,
+                    name = "Wireframe",
+                ),
+                ProfileEditState.Skill(
+                    image = R.drawable.icon_true_button,
+                    name = "Figma",
+                ),
+                ProfileEditState.Skill(
+                    image = R.drawable.icon_true_button,
+                    name = "Wireframe",
+                ),
+                ProfileEditState.Skill(
+                    image = R.drawable.icon_true_button,
+                    name = "Figma",
+                ),
+                ProfileEditState.Skill(
+                    image = R.drawable.icon_true_button,
+                    name = "Wirefra",
+                ),
+            ),
         ),
         showUnsavedChangesDialog = false,
     )
@@ -205,6 +251,7 @@ fun ProfileEditPreview() {
                         ),
                     )
                 }
+
                 else -> {}
             }
         },
@@ -220,13 +267,14 @@ fun ProfileEditPreview() {
                                 ),
                             )
                         }
+
                         else -> {}
                     }
                 },
             )
         },
         aboutMeContent = { AboutMeContent(state.aboutMeTabState, onEvent = {}) },
-        skillsContent = { },
+        skillsContent = { SkillsContent(state.skillsTabState, onEvent = {}) },
         tabs = ProfileEditTabs.entries,
         headerText = TextOrResource.Text("Редактирование профиля"),
     )
