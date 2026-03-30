@@ -1,12 +1,11 @@
 package ru.yeahub.core_ui.component
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -29,14 +28,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
-import ru.yeahub.core_ui.component.textInput.ColorsTextInputYeaHub
-import ru.yeahub.core_ui.component.textInput.DefaultTextField
-import ru.yeahub.core_ui.component.textInput.TextInput
-import ru.yeahub.core_ui.component.textInput.TextInputColorsDefaults
-import ru.yeahub.core_ui.component.textInput.getTextInputColors
 import ru.yeahub.core_ui.example.dynamicPreview.StandardScreenSizePreview
 import ru.yeahub.core_ui.example.staticPreview.StaticPreview
 import ru.yeahub.core_ui.theme.Theme
+import ru.yeahub.core_utils.common.TextOrResource
 import ru.yeahub.ui.R
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
@@ -48,10 +43,11 @@ fun DropDownMenu(
     selected: String,
     onSelected: (String) -> Unit,
     shape: Shape = RoundedCornerShape(12.dp),
+    title: String? = null,
     isExpanded: Boolean = false,
     isEnabled: Boolean = true,
-    isError: Boolean = false,
-    colors: ColorsTextInputYeaHub = TextInputColorsDefaults.defaultColors(),
+    error: TextOrResource? = null,
+    colors: YeahubTextFieldColors = YeahubTextFieldDefaults.colors(),
     trailingIcon: @Composable (() -> Unit)? = {
         Icon(
             painterResource(R.drawable.arrow_vector),
@@ -67,33 +63,31 @@ fun DropDownMenu(
     }
 
     ExposedDropdownMenuBox(
-        modifier = modifier
-            .width(328.dp)
-            .height(58.dp),
+        modifier = modifier,
         expanded = expanded,
         onExpandedChange = { if (isEnabled) expanded = it },
     ) {
-        DefaultTextField(
+        CoreTextField(
             value = selected,
             onValueChange = {},
-            readOnly = true,
-            isEnabled = isEnabled,
-            isError = isError,
+            title = title,
             placeholder = placeholder,
+            error = error,
+            enabled = isEnabled,
             trailingIcon = trailingIconRotating,
             leadingIcon = leadingIcon,
             shape = shape,
+            colors = colors,
             modifier = Modifier
                 .fillMaxWidth()
                 .menuAnchor(MenuAnchorType.PrimaryNotEditable, isEnabled),
-            onExpandedChange = { },
-            isFocused = isExpanded,
         )
 
         ExposedDropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
-            containerColor = colors.containerColor(isEnabled).value,
+            containerColor = Theme.colors.white900,
+            border = BorderStroke(1.dp, Theme.colors.purple700),
         ) {
             items.forEach { item ->
                 DropdownMenuItem(
@@ -101,7 +95,7 @@ fun DropDownMenu(
                         Text(
                             item,
                             style = Theme.typography.body3,
-                            color = colors.contentColor(isEnabled).value,
+                            color = if (isEnabled) colors.unfocusedTextColor else colors.disabledTextColor,
                         )
                     },
                     onClick = {
@@ -123,12 +117,17 @@ class DropDownMenuParamsProvider : PreviewParameterProvider<DropDownMenuParams> 
         DropDownMenuParams(
             items = listOf("Android", "Backend", "Frontend"),
             placeholder = "Выбери значение",
+            title = "Специализация",
+        ),
+        DropDownMenuParams(
+            items = listOf("Android", "Backend", "Frontend"),
+            placeholder = "Выбери значение",
             isExpanded = true,
         ),
         DropDownMenuParams(
             items = listOf("Android", "Backend", "Frontend"),
             placeholder = "Выбери значение",
-            isError = true,
+            error = TextOrResource.Text("Ошибка выбора"),
         ),
         DropDownMenuParams(
             items = listOf("Android", "Backend", "Frontend"),
@@ -168,12 +167,13 @@ fun DropDownMenuPreview(
             .padding(10.dp),
     ) {
         DropDownMenu(
+            title = params.title,
             placeholder = params.placeholder,
             items = params.items,
             selected = params.selected,
             onSelected = params.onSelected,
             isExpanded = params.isExpanded,
-            isError = params.isError,
+            error = params.error,
             isEnabled = params.isEnabled,
         )
     }
@@ -181,25 +181,17 @@ fun DropDownMenuPreview(
 
 @StandardScreenSizePreview
 @Composable
-fun DropDownMenuPreview() {
+fun DropDownMenuInteractivePreview() {
     val items = listOf("Android", "Backend", "Frontend")
     var selected: String by rememberSaveable { mutableStateOf("") }
 
     Column(modifier = Modifier.padding(12.dp)) {
         DropDownMenu(
+            title = "Специализация",
             placeholder = "Выбери значение",
             items = items,
             onSelected = { selected = it },
             selected = selected,
-            colors = getTextInputColors(),
-        )
-        TextInput(
-            value = "",
-            onValueChange = { },
-            label = "label",
-            expanded = false,
-            onExpandedChange = { },
-            onQueryChanged = { },
         )
     }
 }
@@ -210,8 +202,8 @@ data class DropDownMenuParams(
     val selected: String = "",
     val onSelected: (String) -> Unit = {},
     val modifier: Modifier = Modifier,
+    val title: String? = null,
     val isEnabled: Boolean = true,
-    val isError: Boolean = false,
+    val error: TextOrResource? = null,
     val isExpanded: Boolean = false,
-    val colors: ColorsTextInputYeaHub = getTextInputColors(),
 )
