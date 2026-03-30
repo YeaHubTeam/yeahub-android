@@ -132,11 +132,9 @@ internal fun CoreTextField(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    textFieldModifier: Modifier = Modifier,
     title: String? = null,
     placeholder: String? = null,
     error: TextOrResource? = null,
-    readOnly: Boolean = false,
     leadingIcon: @Composable (() -> Unit)? = null,
     trailingIcon: @Composable (() -> Unit)? = null,
     visualTransformation: VisualTransformation = VisualTransformation.None,
@@ -164,18 +162,18 @@ internal fun CoreTextField(
 
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         if (title != null) {
             Text(
                 text = title,
-                style = Theme.typography.body7,
+                style = Theme.typography.body2Accent,
                 color = colors.titleColor
             )
         }
 
         OutlinedTextField(
-            modifier = textFieldModifier
+            modifier = Modifier
                 .fillMaxWidth()
                 .onFocusChanged { onFocusChanged(it.isFocused) }
                 .then(
@@ -192,15 +190,13 @@ internal fun CoreTextField(
                     onValueChange(newTextFieldValue.text)
                 }
             },
-            textStyle = Theme.typography.body7,
-            readOnly = readOnly,
             enabled = enabled,
             isError = error != null,
             visualTransformation = visualTransformation,
             keyboardOptions = keyboardOptions,
             keyboardActions = keyboardActions,
             placeholder = placeholder?.let {
-                { Text(text = it, style = Theme.typography.body7, color = colors.placeholderColor) }
+                { Text(text = it, style = Theme.typography.body2, color = colors.placeholderColor) }
             },
             leadingIcon = leadingIcon,
             trailingIcon = trailingIcon,
@@ -268,11 +264,9 @@ fun PrimaryTextField(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    textFieldModifier: Modifier = Modifier,
     title: String? = null,
     placeholder: String? = null,
     error: TextOrResource? = null,
-    readOnly: Boolean = false,
     leadingIcon: Painter? = null,
     leadingIconContentDescription: String? = null,
     trailingIcon: Painter? = null,
@@ -290,10 +284,8 @@ fun PrimaryTextField(
         value = value,
         onValueChange = onValueChange,
         modifier = modifier,
-        textFieldModifier = textFieldModifier,
         title = title,
         placeholder = placeholder,
-        readOnly = readOnly,
         error = error,
         visualTransformation = visualTransformation,
         keyboardOptions = keyboardOptions,
@@ -354,7 +346,6 @@ fun SearchTextField(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    textFieldModifier: Modifier = Modifier,
     title: String? = null,
     placeholder: String,
     suggestions: List<String>,
@@ -375,7 +366,6 @@ fun SearchTextField(
             value = value,
             title = title,
             onValueChange = onValueChange,
-            textFieldModifier = textFieldModifier,
             placeholder = placeholder,
             enabled = enabled,
             colors = colors,
