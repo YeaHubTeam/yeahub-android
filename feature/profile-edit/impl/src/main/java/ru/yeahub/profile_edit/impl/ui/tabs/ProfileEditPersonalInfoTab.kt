@@ -26,18 +26,16 @@ import coil.compose.AsyncImage
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
 import ru.yeahub.core_ui.component.DropDownMenu
+import ru.yeahub.core_ui.component.PrimaryTextField
 import ru.yeahub.core_ui.component.UploadPhotoButton
-import ru.yeahub.core_ui.component.textInput.DefaultTextField
 import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.core_utils.common.TextOrResource
 import ru.yeahub.profile_edit.impl.presentation.ProfileEditState
 import ru.yeahub.profile_edit.impl.presentation.ProfileEditState.SocialLinks
 import ru.yeahub.profile_edit.impl.presentation.intents.ProfileEditScreenEvent
-import ru.yeahub.profile_edit.impl.ui.LabelWithField
 import ru.yeahub.profile_edit.impl.ui.SECTION_TITLE_BOTTOM_SPACING
 import ru.yeahub.profile_edit.impl.ui.SectionHeader
 import ru.yeahub.profile_edit.impl.ui.TAB_CONTENT_TOP_PADDING
-import ru.yeahub.profile_edit.impl.ui.ValidatedTextField
 import ru.yeahub.ui.R
 
 private val SECTION_BOTTOM_SPACING = 18.dp
@@ -82,34 +80,34 @@ fun PersonalInfoContent(
                 title = stringResource(R.string.profile_personal_info_title),
                 description = stringResource(R.string.profile_personal_info_subtitle),
             )
-            LabelWithField(label = stringResource(R.string.profile_nickname_label)) {
-                ValidatedTextField(
-                    field = state.nickname,
-                    onValueChange = { onEvent(ProfileEditScreenEvent.NicknameChanged(it)) },
-                    placeholder = stringResource(R.string.profile_nickname_placeholder),
-                )
-            }
+            PrimaryTextField(
+                title = stringResource(R.string.profile_nickname_label),
+                value = state.nickname.value,
+                error = state.nickname.error,
+                onValueChange = { onEvent(ProfileEditScreenEvent.NicknameChanged(it)) },
+                placeholder = stringResource(R.string.profile_nickname_placeholder),
+                modifier = Modifier.fillMaxWidth(),
+            )
+            Spacer(Modifier.height(8.dp))
         }
         item {
-            LabelWithField(label = stringResource(R.string.profile_specialization_label)) {
-                DropDownMenu(
-                    placeholder = stringResource(R.string.profile_specialization_placeholder),
-                    items = state.specializationList,
-                    selected = state.specialization,
-                    onSelected = { onEvent(ProfileEditScreenEvent.ChooseSpecialization(it)) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(52.dp),
-                    leadingIcon = {
-                        Icon(
-                            painter = painterResource(R.drawable.icon_search),
-                            contentDescription = "Поиск",
-                            modifier = Modifier.size(20.dp),
-                        )
-                    },
-                    isEnabled = state.isSpecializationEditable,
-                )
-            }
+            DropDownMenu(
+                title = stringResource(R.string.profile_specialization_label),
+                placeholder = stringResource(R.string.profile_specialization_placeholder),
+                items = state.specializationList,
+                selected = state.specialization,
+                onSelected = { onEvent(ProfileEditScreenEvent.ChooseSpecialization(it)) },
+                modifier = Modifier.fillMaxWidth(),
+                leadingIcon = {
+                    Icon(
+                        painter = painterResource(R.drawable.icon_search),
+                        contentDescription = "Поиск",
+                        modifier = Modifier.size(20.dp),
+                    )
+                },
+                isEnabled = state.isSpecializationEditable,
+            )
+            Spacer(Modifier.height(8.dp))
             Text(
                 text = stringResource(R.string.profile_change_specialization),
                 style = Theme.typography.head7,
@@ -121,28 +119,25 @@ fun PersonalInfoContent(
             Spacer(Modifier.height(FIELD_GROUP_SPACING))
         }
         item {
-            LabelWithField(label = stringResource(R.string.profile_email_label)) {
-                DefaultTextField(
-                    value = state.email,
-                    onValueChange = { },
-                    placeholder = stringResource(R.string.profile_nickname_placeholder),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(52.dp),
-                    onExpandedChange = {},
-                    readOnly = true,
-                    isEnabled = false,
-                )
-            }
+            PrimaryTextField(
+                title = stringResource(R.string.profile_email_label),
+                value = state.email,
+                onValueChange = {},
+                placeholder = stringResource(R.string.profile_nickname_placeholder),
+                enabled = false,
+                modifier = Modifier.fillMaxWidth(),
+            )
+            Spacer(Modifier.height(8.dp))
         }
         item {
-            LabelWithField(label = stringResource(R.string.profile_location_label)) {
-                ValidatedTextField(
-                    field = state.location,
-                    onValueChange = { onEvent(ProfileEditScreenEvent.LocationChanged(it)) },
-                    placeholder = stringResource(R.string.profile_location_placeholder),
-                )
-            }
+            PrimaryTextField(
+                title = stringResource(R.string.profile_location_label),
+                value = state.location.value,
+                error = state.location.error,
+                onValueChange = { onEvent(ProfileEditScreenEvent.LocationChanged(it)) },
+                placeholder = stringResource(R.string.profile_location_placeholder),
+                modifier = Modifier.fillMaxWidth(),
+            )
             Spacer(Modifier.height(FIELD_GROUP_SPACING))
             SectionHeader(
                 title = stringResource(R.string.profile_links_title),
@@ -151,21 +146,24 @@ fun PersonalInfoContent(
         }
         SocialLinks.entries.forEach { platform ->
             item {
-                LabelWithField(label = platform.name) {
-                    ValidatedTextField(
-                        field = state.socialLinks[platform]
-                            ?: ProfileEditState.ValidatedField("", null),
-                        onValueChange = {
-                            onEvent(
-                                ProfileEditScreenEvent.SocialLinkChanged(
-                                    link = platform,
-                                    url = it,
-                                ),
-                            )
-                        },
-                        placeholder = stringResource(R.string.profile_link_placeholder),
-                    )
-                }
+                val socialField = state.socialLinks[platform]
+                    ?: ProfileEditState.ValidatedField("", null)
+                PrimaryTextField(
+                    title = platform.name,
+                    value = socialField.value,
+                    error = socialField.error,
+                    onValueChange = {
+                        onEvent(
+                            ProfileEditScreenEvent.SocialLinkChanged(
+                                link = platform,
+                                url = it,
+                            ),
+                        )
+                    },
+                    placeholder = stringResource(R.string.profile_link_placeholder),
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                Spacer(Modifier.height(8.dp))
             }
         }
     }

@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import ru.yeahub.core_ui.component.textInput.DefaultTextField
+import ru.yeahub.core_ui.component.PrimaryTextField
 import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.profile_edit.impl.presentation.ProfileEditState
 import ru.yeahub.profile_edit.impl.presentation.intents.ProfileEditScreenEvent
@@ -38,15 +38,14 @@ fun AboutMeContent(
 
         Spacer(Modifier.height(SECTION_TITLE_BOTTOM_SPACING))
 
-        DefaultTextField(
+        PrimaryTextField(
             value = state.aboutMeField,
             placeholder = stringResource(R.string.about_me_tab_placeholder),
             onValueChange = { onEvent(ProfileEditScreenEvent.AboutMeChanged(it)) },
-            onExpandedChange = {},
             singleLine = false,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(160.dp),
+                .height(180.dp),
         )
     }
 }
