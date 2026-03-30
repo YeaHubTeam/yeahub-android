@@ -1,10 +1,10 @@
 package ru.yeahub.interview_trainer.impl.interviewQuiz.presentation
 
-sealed interface InterviewQuizCommand {
+sealed interface InterviewQuizResult {
 
     data class NavigateToInterviewQuizResultScreen(
         val questionsWithAnswersList: List<VoQuestionWithAnswer>
-    ) : InterviewQuizCommand
+    ) : InterviewQuizResult
 
-    data object NavigateBack : InterviewQuizCommand
+    data object NavigateBack : InterviewQuizResult
 }
