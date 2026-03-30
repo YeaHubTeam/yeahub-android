@@ -3,6 +3,7 @@ package ru.yeahub.interview_trainer.impl.createQuiz.presentation
 import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.ImmutableList
 
+@Immutable
 sealed interface CreateQuizState {
     //Изначальный
     data object Loading : CreateQuizState

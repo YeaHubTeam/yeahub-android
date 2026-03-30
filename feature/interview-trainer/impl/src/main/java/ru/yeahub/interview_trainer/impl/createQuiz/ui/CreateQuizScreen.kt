@@ -23,9 +23,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -75,7 +76,7 @@ fun CreateQuizScreen(
 ) {
     val viewModel: CreateQuizViewModel = koinViewModel()
 
-    val screenState by viewModel.screenState.collectAsStateWithLifecycle()
+    val screenState = viewModel.screenState.collectAsStateWithLifecycle()
 
     HandleCommand(
         commandFlow = viewModel.commands,
@@ -91,7 +92,7 @@ fun CreateQuizScreen(
 
 @Composable
 private fun ScreenUI(
-    state: CreateQuizState,
+    state: State<CreateQuizState>,
     onEvent: (CreateQuizEvent) -> Unit,
     titleTopAppBar: TextOrResource,
 ) {
@@ -104,11 +105,11 @@ private fun ScreenUI(
             )
         }
     ) { paddingValues ->
-        when (state) {
+        when (val currentState = state.value) {
             CreateQuizState.Loading -> CreateQuizLoading(paddingValues = paddingValues)
 
             is CreateQuizState.Error -> ErrorScreen(
-                error = state.throwable.localizedMessage,
+                error = currentState.throwable.localizedMessage,
                 errorText = TextOrResource.Resource(R.string.error_screen_text),
                 titleText = TextOrResource.Resource(R.string.title_error_screen_text),
                 backText = TextOrResource.Resource(R.string.back_error_screen_text),
@@ -117,9 +118,9 @@ private fun ScreenUI(
             )
 
             is CreateQuizState.Loaded -> BaseCreateQuizScreen(
-                specializations = state.specializations,
-                selectedSpecializationId = state.selectedSpecializationId,
-                questionsCount = state.questionsCount,
+                specializations = currentState.specializations,
+                selectedSpecializationId = currentState.selectedSpecializationId,
+                questionsCount = currentState.questionsCount,
                 onSpecializationClick = { id ->
                     onEvent(CreateQuizEvent.OnSpecializationClick(specializationId = id))
                 },
@@ -286,8 +287,8 @@ private fun ChooseQuestionsCountBlock(
 private fun QuestionCounter(
     onPlusQuestionCountClick: (count: Int) -> Unit,
     onMinusQuestionCountClick: (count: Int) -> Unit,
-    modifier: Modifier = Modifier,
     count: Int,
+    modifier: Modifier = Modifier,
 ) {
     Surface(
         modifier = modifier,
@@ -413,9 +414,7 @@ class CreateQuizScreenStateParamProvider : PreviewParameterProvider<CreateQuizSt
             questionsCount = 1
         ),
         CreateQuizState.Loading,
-        CreateQuizState.Error(
-            Throwable("Не удалось загрузить данные")
-        )
+        CreateQuizState.Error(Throwable("Не удалось загрузить данные"))
     )
 }
 
@@ -426,7 +425,7 @@ internal fun CreateQuizScreenPreview(
     state: CreateQuizState,
 ) {
     ScreenUI(
-        state = state,
+        state = rememberUpdatedState(state),
         onEvent = { },
         titleTopAppBar = TextOrResource.Resource(R.string.create_quiz_top_bar_header_text),
     )
@@ -435,7 +434,7 @@ internal fun CreateQuizScreenPreview(
 @Preview(showBackground = true)
 @Composable
 internal fun DynamicPreviewUI() {
-    val mockDomainList = testSpecializations.map { voSpec ->
+    val previewDomainList = testSpecializations.map { voSpec ->
         DomainSpecialization(id = voSpec.id, title = voSpec.title)
     }
 
@@ -445,38 +444,38 @@ internal fun DynamicPreviewUI() {
         ): DomainSpecializationListResponse {
             delay(RESPONSE_DELAY)
             return DomainSpecializationListResponse(
-                total = mockDomainList.size.toLong(),
-                data = mockDomainList
+                total = previewDomainList.size.toLong(),
+                data = previewDomainList
             )
         }
     }
 
-    val mockViewModel = viewModelCreator<CreateQuizViewModel> {
+    val previewViewModel = viewModelCreator<CreateQuizViewModel> {
         CreateQuizViewModel(mockUseCase, CreateQuizScreenMapper())
     }
 
-    val mockState by mockViewModel.screenState.collectAsState()
+    val previewState = previewViewModel.screenState.collectAsState()
 
     LaunchedEffect(Unit) {
         delay(RESPONSE_DELAY)
         //Изначальное кол-во == 1
-        mockViewModel.onEvent(CreateQuizEvent.OnPlusQuestionClick(1))
+        previewViewModel.onEvent(CreateQuizEvent.OnPlusQuestionClick(1))
         delay(RESPONSE_DELAY)
         // должно быть 2
-        mockViewModel.onEvent(CreateQuizEvent.OnPlusQuestionClick(2))
+        previewViewModel.onEvent(CreateQuizEvent.OnPlusQuestionClick(2))
         delay(RESPONSE_DELAY)
         // должно быть 3
-        mockViewModel.onEvent(CreateQuizEvent.OnMinusQuestionClick(3))
+        previewViewModel.onEvent(CreateQuizEvent.OnMinusQuestionClick(3))
         delay(RESPONSE_DELAY)
         // должно быть снова 2
-        mockViewModel.onEvent(CreateQuizEvent.OnSpecializationClick(27))
+        previewViewModel.onEvent(CreateQuizEvent.OnSpecializationClick(27))
         // С изначально выбранного Frontend Dev должно быть выбрано Android Dev
     }
 
     ProvidePreviewCompositionLocals {
         ScreenUI(
-            state = mockState,
-            onEvent = mockViewModel::onEvent,
+            state = previewState,
+            onEvent = previewViewModel::onEvent,
             titleTopAppBar = TextOrResource.Resource(R.string.create_quiz_top_bar_header_text)
         )
     }
