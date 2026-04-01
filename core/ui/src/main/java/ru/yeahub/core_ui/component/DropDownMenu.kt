@@ -38,7 +38,6 @@ import ru.yeahub.ui.R
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun DropDownMenu(
-
     placeholder: String,
     items: List<String>,
     selected: String,
