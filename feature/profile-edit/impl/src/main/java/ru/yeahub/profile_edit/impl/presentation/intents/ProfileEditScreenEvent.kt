@@ -1,9 +1,10 @@
 package ru.yeahub.profile_edit.impl.presentation.intents
 
 import android.net.Uri
-import ru.yeahub.profile_edit.impl.presentation.ProfileEditState
+import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSkill
+import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSocialLink
 
-sealed interface ProfileEditScreenEvent {
+internal sealed interface ProfileEditScreenEvent {
 
     data object LoadData : ProfileEditScreenEvent
     data object BackPressed : ProfileEditScreenEvent
@@ -19,12 +20,12 @@ sealed interface ProfileEditScreenEvent {
     data object ChangeSpecializationClicked : ProfileEditScreenEvent
     data class LocationChanged(val location: String) : ProfileEditScreenEvent
     data class SocialLinkChanged(
-        val link: ProfileEditState.SocialLinks,
+        val link: DomainProfileEditSocialLink,
         val url: String,
     ) : ProfileEditScreenEvent
 
     data class AboutMeChanged(val text: String) : ProfileEditScreenEvent
 
     data class AddSkill(val skillName: String) : ProfileEditScreenEvent
-    data class RemoveSkill(val skill: ProfileEditState.Skill) : ProfileEditScreenEvent
+    data class RemoveSkill(val skill: DomainProfileEditSkill) : ProfileEditScreenEvent
 }

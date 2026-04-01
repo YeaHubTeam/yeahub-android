@@ -22,7 +22,7 @@ import ru.yeahub.profile_edit.impl.ui.TAB_CONTENT_TOP_PADDING
 import ru.yeahub.ui.R
 
 @Composable
-fun AboutMeContent(
+internal fun AboutMeContent(
     state: ProfileEditState.AboutMeTabState,
     onEvent: (ProfileEditScreenEvent) -> Unit,
 ) {

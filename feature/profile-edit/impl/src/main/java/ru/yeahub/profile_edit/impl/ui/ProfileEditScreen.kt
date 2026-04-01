@@ -1,5 +1,6 @@
 package ru.yeahub.profile_edit.impl.ui
 
+import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,6 +16,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
@@ -27,21 +30,34 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 import ru.yeahub.core_ui.component.CoreTopTabs
 import ru.yeahub.core_ui.component.ErrorScreen
 import ru.yeahub.core_ui.component.PrimaryButton
 import ru.yeahub.core_ui.component.TopAppBarWithBottomBorder
 import ru.yeahub.core_ui.component.UnsavedChangesDialog
+import ru.yeahub.core_ui.example.dynamicPreview.ProvidePreviewCompositionLocals
 import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.core_utils.common.TextOrResource
+import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditData
+import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSkill
+import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSocialLink
+import ru.yeahub.profile_edit.impl.domain.usecase.GetProfileUseCase
+import ru.yeahub.profile_edit.impl.domain.usecase.SaveProfileUseCase
+import ru.yeahub.profile_edit.impl.domain.usecase.UploadAvatarUseCase
+import ru.yeahub.profile_edit.impl.presentation.ProfileEditScreenMapper
 import ru.yeahub.profile_edit.impl.presentation.ProfileEditState
 import ru.yeahub.profile_edit.impl.presentation.ProfileEditState.ProfileEditTabs
 import ru.yeahub.profile_edit.impl.presentation.ProfileEditState.ProfileEditTabs.AboutMe
 import ru.yeahub.profile_edit.impl.presentation.ProfileEditState.ProfileEditTabs.PersonalInfo
 import ru.yeahub.profile_edit.impl.presentation.ProfileEditState.ProfileEditTabs.Skills
-import ru.yeahub.profile_edit.impl.presentation.ProfileEditState.SocialLinks
+import ru.yeahub.profile_edit.impl.presentation.ProfileEditViewModel
+import ru.yeahub.profile_edit.impl.presentation.intents.ProfileEditScreenCommand
 import ru.yeahub.profile_edit.impl.presentation.intents.ProfileEditScreenEvent
+import ru.yeahub.profile_edit.impl.presentation.intents.ProfileEditScreenResult
+import ru.yeahub.profile_edit.impl.presentation.profileEditViewModelCreator
 import ru.yeahub.profile_edit.impl.ui.tabs.AboutMeContent
 import ru.yeahub.profile_edit.impl.ui.tabs.PersonalInfoContent
 import ru.yeahub.profile_edit.impl.ui.tabs.SkillsContent
@@ -49,7 +65,7 @@ import ru.yeahub.ui.R
 import ru.yeahub.profile_edit.impl.R as ProfileEditR
 
 @Composable
-fun ProfileEditScreen(
+internal fun ProfileEditScreen(
     state: ProfileEditState,
     onEvent: (ProfileEditScreenEvent) -> Unit,
 ) {
@@ -84,7 +100,6 @@ fun ProfileEditScreen(
                 onEvent = onEvent,
                 paddingValues = paddingValues,
             )
-
             is ProfileEditState.Error -> Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -166,12 +181,10 @@ private fun ProfileEditContent(
                                 state = state.personalInfoState,
                                 onEvent = onEvent,
                             )
-
                             AboutMe -> AboutMeContent(
                                 state = state.aboutMeTabState,
                                 onEvent = onEvent,
                             )
-
                             Skills -> SkillsContent(
                                 state = state.skillsTabState,
                                 onEvent = onEvent,
@@ -188,6 +201,33 @@ private fun ProfileEditContent(
             onLeave = { onEvent(ProfileEditScreenEvent.DiscardChanges) },
             onStay = { onEvent(ProfileEditScreenEvent.UnsavedChangesDialogDismissed) },
         )
+    }
+}
+
+@Composable
+internal fun HandleCommands(
+    commands: SharedFlow<ProfileEditScreenCommand>,
+    onResult: (ProfileEditScreenResult) -> Unit,
+) {
+    LaunchedEffect(Unit) {
+        commands.collect { command ->
+            when (command) {
+                is ProfileEditScreenCommand.NavigateBack ->
+                    onResult(ProfileEditScreenResult.NavigateBack)
+
+                is ProfileEditScreenCommand.NavigateToProfile ->
+                    onResult(ProfileEditScreenResult.NavigateToProfile)
+
+                is ProfileEditScreenCommand.ShowPhotoPicker -> { /* TODO */
+                }
+
+                is ProfileEditScreenCommand.ShowError -> { /* TODO */
+                }
+
+                is ProfileEditScreenCommand.ShowCannotChangeSpecializationToast -> { /* TODO */
+                }
+            }
+        }
     }
 }
 
@@ -210,7 +250,7 @@ fun ProfileEditPreview() {
             location = ProfileEditState.ValidatedField("Санкт-Петербург", null),
             socialLinks = persistentMapOf(
                 Pair(
-                    SocialLinks.Linkedin,
+                    DomainProfileEditSocialLink.Linkedin,
                     ProfileEditState.ValidatedField(
                         "",
                         TextOrResource.Resource(R.string.error_max_length_255),
@@ -221,46 +261,16 @@ fun ProfileEditPreview() {
         aboutMeTabState = ProfileEditState.AboutMeTabState(aboutMeField = ""),
         skillsTabState = ProfileEditState.SkillsTabState(
             listOfSkills = persistentListOf(
-                ProfileEditState.Skill(image = R.drawable.icon_true_button, name = "Kotlin"),
-                ProfileEditState.Skill(
-                    image = R.drawable.icon_true_button,
+                DomainProfileEditSkill(imageRes = R.drawable.icon_true_button, name = "Kotlin"),
+                DomainProfileEditSkill(
+                    imageRes = R.drawable.icon_true_button,
                     name = "Jetpack Compose",
                 ),
-                ProfileEditState.Skill(image = R.drawable.icon_true_button, name = "Coroutines"),
+                DomainProfileEditSkill(imageRes = R.drawable.icon_true_button, name = "Coroutines"),
             ),
             listOfChosenSkills = persistentListOf(
-                ProfileEditState.Skill(
-                    image = R.drawable.icon_true_button,
-                    name = "Kotlin2",
-                ),
-                ProfileEditState.Skill(
-                    image = R.drawable.icon_true_button,
-                    name = "Jetpack Compose",
-                ),
-                ProfileEditState.Skill(
-                    image = R.drawable.icon_true_button,
-                    name = "Coroutines",
-                ),
-                ProfileEditState.Skill(
-                    image = R.drawable.icon_true_button,
-                    name = "Git",
-                ),
-                ProfileEditState.Skill(
-                    image = R.drawable.icon_true_button,
-                    name = "Java",
-                ),
-                ProfileEditState.Skill(
-                    image = R.drawable.icon_true_button,
-                    name = "Gradle",
-                ),
-                ProfileEditState.Skill(
-                    image = R.drawable.icon_true_button,
-                    name = "Kotlin3",
-                ),
-                ProfileEditState.Skill(
-                    image = R.drawable.icon_true_button,
-                    name = "Coroutines",
-                ),
+                DomainProfileEditSkill(imageRes = R.drawable.icon_true_button, name = "Figma"),
+                DomainProfileEditSkill(imageRes = R.drawable.icon_true_button, name = "Wireframe"),
             ),
         ),
         showUnsavedChangesDialog = false,
@@ -272,14 +282,13 @@ fun ProfileEditPreview() {
         state = state,
         onEvent = { event ->
             when (event) {
-                is ProfileEditScreenEvent.SpecializationSelected -> {
+                is ProfileEditScreenEvent.ChooseSpecialization -> {
                     state = state.copy(
                         personalInfoState = state.personalInfoState.copy(
                             specialization = event.specialization,
                         ),
                     )
                 }
-
                 is ProfileEditScreenEvent.AboutMeChanged -> {
                     state =
                         state.copy(aboutMeTabState = state.aboutMeTabState.copy(aboutMeField = event.text))
@@ -335,3 +344,81 @@ fun ProfileEditLoadingPreview() {
         onEvent = {},
     )
 }
+
+@Preview(showBackground = true)
+@Composable
+internal fun ProfileEditScreenDynamicPreview() {
+    val mockGetProfile = object : GetProfileUseCase {
+        override suspend fun invoke(): DomainProfileEditData {
+            delay(DYNAMIC_PREVIEW_LOAD_DELAY)
+            return DomainProfileEditData(
+                email = "johndoe@gmail.com",
+                avatarUrl = null,
+                nickname = "JohnDoe",
+                specialization = null,
+                specializationList = listOf(
+                    "Android разработчик",
+                    "iOS разработчик",
+                    "Backend разработчик",
+                    "Frontend разработчик",
+                ),
+                location = "Санкт-Петербург",
+                socialLinks = mapOf(
+                    DomainProfileEditSocialLink.Linkedin to "linkedin.com/in/johndoe",
+                    DomainProfileEditSocialLink.Telegram to "t.me/johndoe",
+                ),
+                aboutMe = "Android разработчик с фокусом на Compose и архитектуру.",
+                chosenSkills = listOf(
+                    DomainProfileEditSkill(imageRes = R.drawable.icon_true_button, name = "Kotlin"),
+                    DomainProfileEditSkill(
+                        imageRes = R.drawable.icon_true_button,
+                        name = "Jetpack Compose",
+                    ),
+                ),
+                allSkills = listOf(
+                    DomainProfileEditSkill(imageRes = R.drawable.icon_true_button, name = "Kotlin"),
+                    DomainProfileEditSkill(
+                        imageRes = R.drawable.icon_true_button,
+                        name = "Jetpack Compose",
+                    ),
+                    DomainProfileEditSkill(
+                        imageRes = R.drawable.icon_true_button,
+                        name = "Coroutines",
+                    ),
+                    DomainProfileEditSkill(imageRes = R.drawable.icon_true_button, name = "Git"),
+                    DomainProfileEditSkill(imageRes = R.drawable.icon_true_button, name = "Java"),
+                ),
+            )
+        }
+    }
+    val mockSaveProfile = object : SaveProfileUseCase {
+        override suspend fun invoke(profile: DomainProfileEditData) = Unit
+    }
+    val mockUploadAvatar = object : UploadAvatarUseCase {
+        override suspend fun invoke(uri: Uri): String = uri.toString()
+    }
+
+    val mockViewModel: ProfileEditViewModel = profileEditViewModelCreator {
+        ProfileEditViewModel(
+            mapper = ProfileEditScreenMapper(),
+            getProfile = mockGetProfile,
+            saveProfile = mockSaveProfile,
+            uploadAvatar = mockUploadAvatar,
+        )
+    }
+
+    val state by mockViewModel.screenState.collectAsState()
+
+    LaunchedEffect(Unit) {
+        mockViewModel.onEvent(ProfileEditScreenEvent.LoadData)
+    }
+
+    ProvidePreviewCompositionLocals {
+        ProfileEditScreen(
+            state = state,
+            onEvent = mockViewModel::onEvent,
+        )
+    }
+}
+
+private const val DYNAMIC_PREVIEW_LOAD_DELAY = 1_500L
