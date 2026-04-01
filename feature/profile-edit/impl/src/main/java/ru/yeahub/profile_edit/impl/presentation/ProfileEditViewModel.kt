@@ -56,10 +56,10 @@ internal class ProfileEditViewModel(
         is ProfileEditScreenEvent.AvatarSelected -> onAvatarSelected(event.uri)
         is ProfileEditScreenEvent.DeleteAvatar -> updateInput { copy(avatarUrl = null) }
         is ProfileEditScreenEvent.NicknameChanged -> updateInput { copy(nickname = event.nickname) }
-        is ProfileEditScreenEvent.ChooseSpecialization ->
+        is ProfileEditScreenEvent.SpecializationSelected ->
             updateInput { copy(specialization = event.specialization) }
 
-        is ProfileEditScreenEvent.CannotChangeSpecializationToast ->
+        is ProfileEditScreenEvent.ChangeSpecializationClicked ->
             emitCommand(ProfileEditScreenCommand.ShowCannotChangeSpecializationToast)
 
         is ProfileEditScreenEvent.LocationChanged -> updateInput { copy(location = event.location) }
