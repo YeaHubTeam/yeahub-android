@@ -282,7 +282,7 @@ fun ProfileEditPreview() {
         state = state,
         onEvent = { event ->
             when (event) {
-                is ProfileEditScreenEvent.ChooseSpecialization -> {
+                is ProfileEditScreenEvent.SpecializationSelected -> {
                     state = state.copy(
                         personalInfoState = state.personalInfoState.copy(
                             specialization = event.specialization,
