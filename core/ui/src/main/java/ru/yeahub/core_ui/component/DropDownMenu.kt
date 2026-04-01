@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenuItem
@@ -37,11 +38,13 @@ import ru.yeahub.ui.R
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun DropDownMenu(
-    modifier: Modifier = Modifier,
+
     placeholder: String,
     items: List<String>,
     selected: String,
     onSelected: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    textFieldModifier: Modifier = Modifier,
     shape: Shape = RoundedCornerShape(12.dp),
     title: String? = null,
     isExpanded: Boolean = false,
@@ -78,8 +81,11 @@ fun DropDownMenu(
             leadingIcon = leadingIcon,
             shape = shape,
             colors = colors,
+            readOnly = true,
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxWidth(),
+            textFieldModifier = textFieldModifier
+                .height(52.dp)
                 .menuAnchor(MenuAnchorType.PrimaryNotEditable, isEnabled),
         )
 
