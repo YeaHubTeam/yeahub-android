@@ -103,7 +103,7 @@ fun PersonalInfoContent(
                         modifier = Modifier.size(20.dp),
                     )
                 },
-                isEnabled = state.isSpecializationEditable,
+                enabled = state.isSpecializationEditable,
             )
             Spacer(Modifier.height(8.dp))
             Text(
