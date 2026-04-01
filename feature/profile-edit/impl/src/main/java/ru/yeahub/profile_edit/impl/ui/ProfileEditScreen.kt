@@ -229,8 +229,38 @@ fun ProfileEditPreview() {
                 ProfileEditState.Skill(image = R.drawable.icon_true_button, name = "Coroutines"),
             ),
             listOfChosenSkills = persistentListOf(
-                ProfileEditState.Skill(image = R.drawable.icon_true_button, name = "Figma"),
-                ProfileEditState.Skill(image = R.drawable.icon_true_button, name = "Wireframe"),
+                ProfileEditState.Skill(
+                    image = R.drawable.icon_true_button,
+                    name = "Kotlin2",
+                ),
+                ProfileEditState.Skill(
+                    image = R.drawable.icon_true_button,
+                    name = "Jetpack Compose",
+                ),
+                ProfileEditState.Skill(
+                    image = R.drawable.icon_true_button,
+                    name = "Coroutines",
+                ),
+                ProfileEditState.Skill(
+                    image = R.drawable.icon_true_button,
+                    name = "Git",
+                ),
+                ProfileEditState.Skill(
+                    image = R.drawable.icon_true_button,
+                    name = "Java",
+                ),
+                ProfileEditState.Skill(
+                    image = R.drawable.icon_true_button,
+                    name = "Gradle",
+                ),
+                ProfileEditState.Skill(
+                    image = R.drawable.icon_true_button,
+                    name = "Kotlin3",
+                ),
+                ProfileEditState.Skill(
+                    image = R.drawable.icon_true_button,
+                    name = "Coroutines",
+                ),
             ),
         ),
         showUnsavedChangesDialog = false,
@@ -242,12 +272,17 @@ fun ProfileEditPreview() {
         state = state,
         onEvent = { event ->
             when (event) {
-                is ProfileEditScreenEvent.ChooseSpecialization -> {
+                is ProfileEditScreenEvent.SpecializationSelected -> {
                     state = state.copy(
                         personalInfoState = state.personalInfoState.copy(
                             specialization = event.specialization,
                         ),
                     )
+                }
+
+                is ProfileEditScreenEvent.AboutMeChanged -> {
+                    state =
+                        state.copy(aboutMeTabState = state.aboutMeTabState.copy(aboutMeField = event.text))
                 }
                 else -> {}
             }
