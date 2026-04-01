@@ -21,7 +21,7 @@ import ru.yeahub.core_ui.component.SkillButton
 import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.profile_edit.impl.presentation.ProfileEditState
 import ru.yeahub.profile_edit.impl.presentation.intents.ProfileEditScreenEvent
-import ru.yeahub.profile_edit.impl.ui.SECTION_TITLE_BOTTOM_SPACING
+import ru.yeahub.profile_edit.impl.ui.SECTION_DESCRIPTION_ADDITIONAL_BOTTOM_SPACING
 import ru.yeahub.profile_edit.impl.ui.SectionHeader
 import ru.yeahub.profile_edit.impl.ui.TAB_CONTENT_TOP_PADDING
 import ru.yeahub.ui.R
@@ -52,7 +52,7 @@ fun SkillsContent(
                 title = stringResource(R.string.skills_tab),
                 description = stringResource(R.string.skills_tab_label),
             )
-            Spacer(modifier = Modifier.height(SECTION_TITLE_BOTTOM_SPACING))
+            Spacer(modifier = Modifier.height(SECTION_DESCRIPTION_ADDITIONAL_BOTTOM_SPACING))
         }
         item {
             DropDownMenu(
@@ -63,9 +63,8 @@ fun SkillsContent(
                 onSelected = {
                     onEvent(ProfileEditScreenEvent.AddSkill(skillName = it))
                 },
-                modifier = Modifier.fillMaxWidth(),
             )
-            Spacer(modifier = Modifier.height(SECTION_TITLE_BOTTOM_SPACING))
+            Spacer(modifier = Modifier.height(16.dp))
         }
         item {
             Text(

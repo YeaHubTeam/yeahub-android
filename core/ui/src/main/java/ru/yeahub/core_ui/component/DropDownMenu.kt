@@ -4,7 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenuItem
@@ -37,15 +37,16 @@ import ru.yeahub.ui.R
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun DropDownMenu(
-    modifier: Modifier = Modifier,
     placeholder: String,
     items: List<String>,
     selected: String,
     onSelected: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    textFieldModifier: Modifier = Modifier,
     shape: Shape = RoundedCornerShape(12.dp),
     title: String? = null,
-    isExpanded: Boolean = false,
-    isEnabled: Boolean = true,
+    expanded: Boolean = false,
+    enabled: Boolean = true,
     error: TextOrResource? = null,
     colors: YeahubTextFieldColors = YeahubTextFieldDefaults.colors(),
     trailingIcon: @Composable (() -> Unit)? = {
@@ -56,7 +57,7 @@ fun DropDownMenu(
     },
     leadingIcon: @Composable (() -> Unit)? = null,
 ) {
-    var expanded by remember { mutableStateOf(isExpanded) }
+    var expanded by remember { mutableStateOf(expanded) }
 
     val trailingIconRotating: (@Composable (() -> Unit))? = trailingIcon?.let { icon ->
         { Box(Modifier.rotate(if (expanded) 180f else 0f)) { icon() } }
@@ -65,7 +66,7 @@ fun DropDownMenu(
     ExposedDropdownMenuBox(
         modifier = modifier,
         expanded = expanded,
-        onExpandedChange = { if (isEnabled) expanded = it },
+        onExpandedChange = { if (enabled) expanded = it },
     ) {
         CoreTextField(
             value = selected,
@@ -73,14 +74,16 @@ fun DropDownMenu(
             title = title,
             placeholder = placeholder,
             error = error,
-            enabled = isEnabled,
+            enabled = enabled,
             trailingIcon = trailingIconRotating,
             leadingIcon = leadingIcon,
             shape = shape,
             colors = colors,
-            modifier = Modifier
-                .fillMaxWidth()
-                .menuAnchor(MenuAnchorType.PrimaryNotEditable, isEnabled),
+            readOnly = true,
+            modifier = Modifier,
+            textFieldModifier = textFieldModifier
+                .height(52.dp)
+                .menuAnchor(MenuAnchorType.PrimaryNotEditable, enabled),
         )
 
         ExposedDropdownMenu(
@@ -95,7 +98,7 @@ fun DropDownMenu(
                         Text(
                             item,
                             style = Theme.typography.body3,
-                            color = if (isEnabled) colors.unfocusedTextColor else colors.disabledTextColor,
+                            color = if (enabled) colors.unfocusedTextColor else colors.disabledTextColor,
                         )
                     },
                     onClick = {
@@ -172,9 +175,9 @@ fun DropDownMenuPreview(
             items = params.items,
             selected = params.selected,
             onSelected = params.onSelected,
-            isExpanded = params.isExpanded,
+            expanded = params.isExpanded,
             error = params.error,
-            isEnabled = params.isEnabled,
+            enabled = params.isEnabled,
         )
     }
 }
