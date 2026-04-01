@@ -19,15 +19,16 @@ import kotlinx.collections.immutable.persistentListOf
 import ru.yeahub.core_ui.component.DropDownMenu
 import ru.yeahub.core_ui.component.SkillButton
 import ru.yeahub.core_ui.theme.Theme
+import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSkill
 import ru.yeahub.profile_edit.impl.presentation.ProfileEditState
 import ru.yeahub.profile_edit.impl.presentation.intents.ProfileEditScreenEvent
-import ru.yeahub.profile_edit.impl.ui.SECTION_DESCRIPTION_ADDITIONAL_BOTTOM_SPACING
+import ru.yeahub.profile_edit.impl.ui.SECTION_TITLE_BOTTOM_SPACING
 import ru.yeahub.profile_edit.impl.ui.SectionHeader
 import ru.yeahub.profile_edit.impl.ui.TAB_CONTENT_TOP_PADDING
 import ru.yeahub.ui.R
 
 @Composable
-fun SkillsContent(
+internal fun SkillsContent(
     state: ProfileEditState.SkillsTabState,
     onEvent: (ProfileEditScreenEvent) -> Unit,
 ) {
@@ -35,8 +36,8 @@ fun SkillsContent(
         state.listOfSkills.map { it.name }
     }
 
-    val onRemoveSkill: (ProfileEditState.Skill) -> Unit = remember(onEvent) {
-        { skill: ProfileEditState.Skill ->
+    val onRemoveSkill: (DomainProfileEditSkill) -> Unit = remember(onEvent) {
+        { skill: DomainProfileEditSkill ->
             onEvent(ProfileEditScreenEvent.RemoveSkill(skill))
         }
     }
@@ -52,7 +53,7 @@ fun SkillsContent(
                 title = stringResource(R.string.skills_tab),
                 description = stringResource(R.string.skills_tab_label),
             )
-            Spacer(modifier = Modifier.height(SECTION_DESCRIPTION_ADDITIONAL_BOTTOM_SPACING))
+            Spacer(modifier = Modifier.height(SECTION_TITLE_BOTTOM_SPACING))
         }
         item {
             DropDownMenu(
@@ -63,8 +64,9 @@ fun SkillsContent(
                 onSelected = {
                     onEvent(ProfileEditScreenEvent.AddSkill(skillName = it))
                 },
+                modifier = Modifier.fillMaxWidth(),
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(SECTION_TITLE_BOTTOM_SPACING))
         }
         item {
             Text(
@@ -82,7 +84,7 @@ fun SkillsContent(
                         enabled = true,
                         activeButton = true,
                         onClick = { },
-                        imageLeft = skill.image,
+                        imageLeft = skill.imageRes,
                         imageRight = R.drawable.icon_button_close,
                         text = skill.name,
                         onRightIconClick = { onRemoveSkill(skill) },
@@ -101,52 +103,25 @@ fun SkillsContent(
 fun ProfileEditSkillsPreview() {
     val skillsState = ProfileEditState.SkillsTabState(
         listOfSkills = persistentListOf(
-            ProfileEditState.Skill(
-                image = R.drawable.icon_true_button,
-                name = "Kotlin1",
-            ),
-            ProfileEditState.Skill(
-                image = R.drawable.icon_true_button,
+            DomainProfileEditSkill(imageRes = R.drawable.icon_true_button, name = "Kotlin1"),
+            DomainProfileEditSkill(
+                imageRes = R.drawable.icon_true_button,
                 name = "Jetpack Compose",
             ),
-            ProfileEditState.Skill(
-                image = R.drawable.icon_true_button,
-                name = "Coroutines",
-            ),
+            DomainProfileEditSkill(imageRes = R.drawable.icon_true_button, name = "Coroutines"),
         ),
         listOfChosenSkills = persistentListOf(
-            ProfileEditState.Skill(
-                image = R.drawable.icon_true_button,
-                name = "Kotlin2",
-            ),
-            ProfileEditState.Skill(
-                image = R.drawable.icon_true_button,
+            DomainProfileEditSkill(imageRes = R.drawable.icon_true_button, name = "Kotlin2"),
+            DomainProfileEditSkill(
+                imageRes = R.drawable.icon_true_button,
                 name = "Jetpack Compose",
             ),
-            ProfileEditState.Skill(
-                image = R.drawable.icon_true_button,
-                name = "Coroutines",
-            ),
-            ProfileEditState.Skill(
-                image = R.drawable.icon_true_button,
-                name = "Git",
-            ),
-            ProfileEditState.Skill(
-                image = R.drawable.icon_true_button,
-                name = "Java",
-            ),
-            ProfileEditState.Skill(
-                image = R.drawable.icon_true_button,
-                name = "Gradle",
-            ),
-            ProfileEditState.Skill(
-                image = R.drawable.icon_true_button,
-                name = "Kotlin3",
-            ),
-            ProfileEditState.Skill(
-                image = R.drawable.icon_true_button,
-                name = "Coroutines",
-            ),
+            DomainProfileEditSkill(imageRes = R.drawable.icon_true_button, name = "Coroutines"),
+            DomainProfileEditSkill(imageRes = R.drawable.icon_true_button, name = "Git"),
+            DomainProfileEditSkill(imageRes = R.drawable.icon_true_button, name = "Java"),
+            DomainProfileEditSkill(imageRes = R.drawable.icon_true_button, name = "Gradle"),
+            DomainProfileEditSkill(imageRes = R.drawable.icon_true_button, name = "Kotlin3"),
+            DomainProfileEditSkill(imageRes = R.drawable.icon_true_button, name = "Coroutines"),
         ),
     )
 

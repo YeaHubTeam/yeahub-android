@@ -30,8 +30,8 @@ import ru.yeahub.core_ui.component.PrimaryTextField
 import ru.yeahub.core_ui.component.UploadPhotoButton
 import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.core_utils.common.TextOrResource
+import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSocialLink
 import ru.yeahub.profile_edit.impl.presentation.ProfileEditState
-import ru.yeahub.profile_edit.impl.presentation.ProfileEditState.SocialLinks
 import ru.yeahub.profile_edit.impl.presentation.intents.ProfileEditScreenEvent
 import ru.yeahub.profile_edit.impl.ui.SECTION_DESCRIPTION_ADDITIONAL_BOTTOM_SPACING
 import ru.yeahub.profile_edit.impl.ui.SectionHeader
@@ -47,7 +47,7 @@ private val REMOVE_PHOTO_TEXT_HEIGHT = 25.dp
 private val REMOVE_PHOTO_TEXT_PADDING = 8.dp
 
 @Composable
-fun PersonalInfoContent(
+internal fun PersonalInfoContent(
     state: ProfileEditState.PersonalInfoTabState,
     onEvent: (ProfileEditScreenEvent) -> Unit,
 ) {
@@ -140,7 +140,7 @@ fun PersonalInfoContent(
                 description = stringResource(R.string.profile_links_subtitle),
             )
         }
-        SocialLinks.entries.forEach { platform ->
+        DomainProfileEditSocialLink.entries.forEach { platform ->
             item {
                 val socialField = state.socialLinks[platform]
                     ?: ProfileEditState.ValidatedField("", null)
@@ -218,7 +218,7 @@ fun ProfileEditPersonalInfoPreview() {
         location = ProfileEditState.ValidatedField("Санкт-Петербург", null),
         socialLinks = persistentMapOf(
             Pair(
-                SocialLinks.Linkedin,
+                DomainProfileEditSocialLink.Linkedin,
                 ProfileEditState.ValidatedField(
                     "",
                     TextOrResource.Resource(R.string.error_max_length_255),
