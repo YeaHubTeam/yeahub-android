@@ -100,6 +100,7 @@ internal fun ProfileEditScreen(
                 onEvent = onEvent,
                 paddingValues = paddingValues,
             )
+
             is ProfileEditState.Error -> Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -181,10 +182,12 @@ private fun ProfileEditContent(
                                 state = state.personalInfoState,
                                 onEvent = onEvent,
                             )
+
                             AboutMe -> AboutMeContent(
                                 state = state.aboutMeTabState,
                                 onEvent = onEvent,
                             )
+
                             Skills -> SkillsContent(
                                 state = state.skillsTabState,
                                 onEvent = onEvent,
@@ -289,10 +292,12 @@ fun ProfileEditPreview() {
                         ),
                     )
                 }
+
                 is ProfileEditScreenEvent.AboutMeChanged -> {
                     state =
                         state.copy(aboutMeTabState = state.aboutMeTabState.copy(aboutMeField = event.text))
                 }
+
                 else -> {}
             }
         },

@@ -44,6 +44,7 @@ internal class ProfileEditViewModel(
     private val _commands = MutableSharedFlow<ProfileEditScreenCommand>()
     val commands: SharedFlow<ProfileEditScreenCommand> = _commands.asSharedFlow()
 
+    @Suppress("ComplexMethod")
     fun onEvent(event: ProfileEditScreenEvent) = when (event) {
         is ProfileEditScreenEvent.LoadData -> loadData()
         is ProfileEditScreenEvent.SaveProfile -> onSaveProfile()
