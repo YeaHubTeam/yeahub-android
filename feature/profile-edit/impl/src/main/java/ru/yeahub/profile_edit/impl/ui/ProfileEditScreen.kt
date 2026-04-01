@@ -43,7 +43,7 @@ import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.core_utils.common.TextOrResource
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditData
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSkill
-import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSocialLink
+import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSocialPlatform
 import ru.yeahub.profile_edit.impl.domain.usecase.GetProfileUseCase
 import ru.yeahub.profile_edit.impl.domain.usecase.SaveProfileUseCase
 import ru.yeahub.profile_edit.impl.domain.usecase.UploadAvatarUseCase
@@ -253,7 +253,7 @@ fun ProfileEditPreview() {
             location = ProfileEditState.ValidatedField("Санкт-Петербург", null),
             socialLinks = persistentMapOf(
                 Pair(
-                    DomainProfileEditSocialLink.Linkedin,
+                    DomainProfileEditSocialPlatform.LinkedIn,
                     ProfileEditState.ValidatedField(
                         "",
                         TextOrResource.Resource(R.string.error_max_length_255),
@@ -369,11 +369,11 @@ internal fun ProfileEditScreenDynamicPreview() {
                 ),
                 location = "Санкт-Петербург",
                 socialLinks = mapOf(
-                    DomainProfileEditSocialLink.Linkedin to "linkedin.com/in/johndoe",
-                    DomainProfileEditSocialLink.Telegram to "t.me/johndoe",
+                    DomainProfileEditSocialPlatform.LinkedIn to "linkedin.com/in/johndoe",
+                    DomainProfileEditSocialPlatform.Telegram to "t.me/johndoe",
                 ),
                 aboutMe = "Android разработчик с фокусом на Compose и архитектуру.",
-                chosenSkills = listOf(
+                selectedSkills = listOf(
                     DomainProfileEditSkill(imageRes = R.drawable.icon_true_button, name = "Kotlin"),
                     DomainProfileEditSkill(
                         imageRes = R.drawable.icon_true_button,

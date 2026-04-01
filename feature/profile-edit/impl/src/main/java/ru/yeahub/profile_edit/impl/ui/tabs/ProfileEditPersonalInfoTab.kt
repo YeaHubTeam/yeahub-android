@@ -30,7 +30,7 @@ import ru.yeahub.core_ui.component.PrimaryTextField
 import ru.yeahub.core_ui.component.UploadPhotoButton
 import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.core_utils.common.TextOrResource
-import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSocialLink
+import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSocialPlatform
 import ru.yeahub.profile_edit.impl.presentation.ProfileEditState
 import ru.yeahub.profile_edit.impl.presentation.intents.ProfileEditScreenEvent
 import ru.yeahub.profile_edit.impl.ui.SECTION_DESCRIPTION_ADDITIONAL_BOTTOM_SPACING
@@ -39,7 +39,7 @@ import ru.yeahub.profile_edit.impl.ui.TAB_CONTENT_TOP_PADDING
 import ru.yeahub.ui.R
 
 private val REMOVE_BUTTON_BOTTOM_SPACING = 18.dp
-private val UPLOAD_BUTTON_ADN_PERSONAL_INFO_BOTTOM_SPACING = 24.dp
+private val UPLOAD_BUTTON_AND_PERSONAL_INFO_BOTTOM_SPACING = 24.dp
 private val CHANGE_SPECIALIZATION_BOTTOM_SPACING = 12.dp
 private val AVATAR_HEIGHT = 263.dp
 private val AVATAR_WIDTH = 326.dp
@@ -73,7 +73,7 @@ internal fun PersonalInfoContent(
             UploadPhotoButton(
                 onClick = { onEvent(ProfileEditScreenEvent.UploadAvatar) },
             )
-            Spacer(Modifier.height(UPLOAD_BUTTON_ADN_PERSONAL_INFO_BOTTOM_SPACING))
+            Spacer(Modifier.height(UPLOAD_BUTTON_AND_PERSONAL_INFO_BOTTOM_SPACING))
         }
         item {
             SectionHeader(
@@ -134,13 +134,13 @@ internal fun PersonalInfoContent(
                 onValueChange = { onEvent(ProfileEditScreenEvent.LocationChanged(it)) },
                 placeholder = stringResource(R.string.profile_location_placeholder),
             )
-            Spacer(Modifier.height(UPLOAD_BUTTON_ADN_PERSONAL_INFO_BOTTOM_SPACING))
+            Spacer(Modifier.height(UPLOAD_BUTTON_AND_PERSONAL_INFO_BOTTOM_SPACING))
             SectionHeader(
                 title = stringResource(R.string.profile_links_title),
                 description = stringResource(R.string.profile_links_subtitle),
             )
         }
-        DomainProfileEditSocialLink.entries.forEach { platform ->
+        DomainProfileEditSocialPlatform.entries.forEach { platform ->
             item {
                 val socialField = state.socialLinks[platform]
                     ?: ProfileEditState.ValidatedField("", null)
@@ -151,7 +151,7 @@ internal fun PersonalInfoContent(
                     onValueChange = {
                         onEvent(
                             ProfileEditScreenEvent.SocialLinkChanged(
-                                link = platform,
+                                platform = platform,
                                 url = it,
                             ),
                         )
@@ -218,7 +218,7 @@ fun ProfileEditPersonalInfoPreview() {
         location = ProfileEditState.ValidatedField("Санкт-Петербург", null),
         socialLinks = persistentMapOf(
             Pair(
-                DomainProfileEditSocialLink.Linkedin,
+                DomainProfileEditSocialPlatform.LinkedIn,
                 ProfileEditState.ValidatedField(
                     "",
                     TextOrResource.Resource(R.string.error_max_length_255),

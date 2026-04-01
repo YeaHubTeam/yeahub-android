@@ -2,7 +2,7 @@ package ru.yeahub.profile_edit.impl.presentation.intents
 
 import android.net.Uri
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSkill
-import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSocialLink
+import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSocialPlatform
 
 internal sealed interface ProfileEditScreenEvent {
 
@@ -20,7 +20,7 @@ internal sealed interface ProfileEditScreenEvent {
     data object ChangeSpecializationClicked : ProfileEditScreenEvent
     data class LocationChanged(val location: String) : ProfileEditScreenEvent
     data class SocialLinkChanged(
-        val link: DomainProfileEditSocialLink,
+        val platform: DomainProfileEditSocialPlatform,
         val url: String,
     ) : ProfileEditScreenEvent
 

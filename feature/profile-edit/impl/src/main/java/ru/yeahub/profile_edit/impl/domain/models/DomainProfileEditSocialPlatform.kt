@@ -1,12 +1,12 @@
 package ru.yeahub.profile_edit.impl.domain.models
 
-internal enum class DomainProfileEditSocialLink {
+internal enum class DomainProfileEditSocialPlatform {
     Instagram,
-    Linkedin,
+    LinkedIn,
     Twitter,
     GitHub,
     Behance,
-    Whatsapp,
+    WhatsApp,
     Telegram,
     VK,
     Dribble,

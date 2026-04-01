@@ -4,7 +4,7 @@ import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.PersistentMap
 import ru.yeahub.core_utils.common.TextOrResource
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSkill
-import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSocialLink
+import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSocialPlatform
 
 internal sealed interface ProfileEditState {
 
@@ -35,7 +35,7 @@ internal sealed interface ProfileEditState {
         val isSpecializationEditable: Boolean,
         val email: String,
         val location: ValidatedField,
-        val socialLinks: PersistentMap<DomainProfileEditSocialLink, ValidatedField>,
+        val socialLinks: PersistentMap<DomainProfileEditSocialPlatform, ValidatedField>,
     )
 
     data class AboutMeTabState(val aboutMeField: String)

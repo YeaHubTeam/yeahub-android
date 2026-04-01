@@ -8,7 +8,7 @@ import ru.yeahub.ui.R
 
 internal class ProfileEditScreenMapper {
 
-    fun getScreenState(
+    fun map(
         loadResult: Result<ProfileEditUserInput>?,
         staticData: ProfileEditStaticData?,
     ): ProfileEditState = when {
@@ -24,7 +24,7 @@ internal class ProfileEditScreenMapper {
     ): ProfileEditState.Loaded = ProfileEditState.Loaded(
         personalInfoState = mapPersonalInfoState(userInput, staticData),
         aboutMeTabState = mapAboutMeState(userInput.aboutMe),
-        skillsTabState = mapSkillsState(staticData.allSkills, userInput.chosenSkills),
+        skillsTabState = mapSkillsState(staticData.allSkills, userInput.selectedSkills),
         showUnsavedChangesDialog = userInput.showUnsavedChangesDialog,
     )
 
@@ -38,9 +38,9 @@ internal class ProfileEditScreenMapper {
         specialization = userInput.specialization,
         isSpecializationEditable = staticData.isSpecializationEditable,
         email = staticData.email,
-        location = validateLength(userInput.location),
+        location = validateMaxLength(userInput.location),
         socialLinks = userInput.socialLinks.entries.associate { (link, url) ->
-            link to validateLength(url)
+            link to validateMaxLength(url)
         }.toPersistentMap(),
     )
 
@@ -71,7 +71,7 @@ internal class ProfileEditScreenMapper {
         return ProfileEditState.ValidatedField(nickname, error)
     }
 
-    private fun validateLength(value: String): ProfileEditState.ValidatedField {
+    private fun validateMaxLength(value: String): ProfileEditState.ValidatedField {
         val error = if (value.length > MAX_FIELD_LENGTH) {
             TextOrResource.Resource(R.string.error_max_length_255)
         } else {
@@ -80,7 +80,6 @@ internal class ProfileEditScreenMapper {
         return ProfileEditState.ValidatedField(value, error)
     }
 
-    @Suppress("NoMagicNumber")
     private companion object {
         const val MIN_NICKNAME_LENGTH = 2
         const val MAX_NICKNAME_LENGTH = 30

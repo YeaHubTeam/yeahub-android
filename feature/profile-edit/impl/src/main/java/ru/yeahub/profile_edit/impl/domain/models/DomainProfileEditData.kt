@@ -7,8 +7,8 @@ internal data class DomainProfileEditData(
     val specialization: String?,
     val specializationList: List<String>,
     val location: String,
-    val socialLinks: Map<DomainProfileEditSocialLink, String>,
+    val socialLinks: Map<DomainProfileEditSocialPlatform, String>,
     val aboutMe: String,
-    val chosenSkills: List<DomainProfileEditSkill>,
+    val selectedSkills: List<DomainProfileEditSkill>,
     val allSkills: List<DomainProfileEditSkill>,
 )

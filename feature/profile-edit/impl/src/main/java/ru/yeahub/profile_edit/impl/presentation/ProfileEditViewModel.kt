@@ -34,7 +34,7 @@ internal class ProfileEditViewModel(
     private var initialUserInput: ProfileEditUserInput? = null
 
     val screenState: StateFlow<ProfileEditState> = userInputState
-        .map { mapper.getScreenState(it, staticData) }
+        .map { mapper.map(it, staticData) }
         .stateIn(
             scope = viewModelScopeSafe,
             started = SharingStarted.WhileSubscribed(TIME_TO_CLEAN_UP_RESOURCES),
@@ -65,12 +65,12 @@ internal class ProfileEditViewModel(
 
         is ProfileEditScreenEvent.LocationChanged -> updateInput { copy(location = event.location) }
         is ProfileEditScreenEvent.SocialLinkChanged ->
-            updateInput { copy(socialLinks = socialLinks + (event.link to event.url)) }
+            updateInput { copy(socialLinks = socialLinks + (event.platform to event.url)) }
 
         is ProfileEditScreenEvent.AboutMeChanged -> updateInput { copy(aboutMe = event.text) }
         is ProfileEditScreenEvent.AddSkill -> onAddSkill(event.skillName)
         is ProfileEditScreenEvent.RemoveSkill ->
-            updateInput { copy(chosenSkills = chosenSkills.remove(event.skill)) }
+            updateInput { copy(selectedSkills = selectedSkills.remove(event.skill)) }
     }
 
     private fun updateInput(transform: ProfileEditUserInput.() -> ProfileEditUserInput) {
@@ -91,7 +91,7 @@ internal class ProfileEditViewModel(
 
     private fun onAddSkill(skillName: String) {
         val skill = staticData?.allSkills?.find { it.name == skillName } ?: return
-        updateInput { copy(chosenSkills = chosenSkills.add(skill)) }
+        updateInput { copy(selectedSkills = selectedSkills.add(skill)) }
     }
 
     private fun loadData() {
@@ -111,7 +111,7 @@ internal class ProfileEditViewModel(
                     location = domainData.location,
                     socialLinks = domainData.socialLinks,
                     aboutMe = domainData.aboutMe,
-                    chosenSkills = domainData.chosenSkills.toPersistentList(),
+                    selectedSkills = domainData.selectedSkills.toPersistentList(),
                     showUnsavedChangesDialog = false,
                 )
                 initialUserInput = input
@@ -136,7 +136,7 @@ internal class ProfileEditViewModel(
                         location = input.location,
                         socialLinks = input.socialLinks,
                         aboutMe = input.aboutMe,
-                        chosenSkills = input.chosenSkills,
+                        selectedSkills = input.selectedSkills,
                         allSkills = data.allSkills,
                     ),
                 )
