@@ -15,8 +15,8 @@ sealed interface ProfileEditScreenEvent {
     data class AvatarSelected(val uri: Uri) : ProfileEditScreenEvent
     data object DeleteAvatar : ProfileEditScreenEvent
     data class NicknameChanged(val nickname: String) : ProfileEditScreenEvent
-    data class ChooseSpecialization(val specialization: String) : ProfileEditScreenEvent
-    data object CannotChangeSpecializationToast : ProfileEditScreenEvent
+    data class SpecializationSelected(val specialization: String) : ProfileEditScreenEvent
+    data object ChangeSpecializationClicked : ProfileEditScreenEvent
     data class LocationChanged(val location: String) : ProfileEditScreenEvent
     data class SocialLinkChanged(
         val link: ProfileEditState.SocialLinks,
