@@ -15,10 +15,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import ru.yeahub.core_ui.component.DefaultTextField
 import ru.yeahub.core_ui.component.PrimaryButton
+import ru.yeahub.core_ui.component.TextInputColorsDefaults
 import ru.yeahub.core_ui.component.YeahubButtonColors
-import ru.yeahub.core_ui.component.textInput.DefaultTextField
-import ru.yeahub.core_ui.component.textInput.TextInputColorsDefaults
 import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.impl.R
 import ru.yeahub.impl.presentation.intents.ForgotPasswordEvent

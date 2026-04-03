@@ -24,7 +24,7 @@ import ru.yeahub.authentication.impl.login.presentation.model.LoginFieldErrorSta
 import ru.yeahub.authentication.impl.login.presentation.model.LoginState
 import ru.yeahub.core_utils.common.TextOrResource
 
-private const val UiStateStopTimeout = 5000L
+private const val UI_STATE_STOP_TIMEOUT = 5000L
 
 /**
  * ViewModel логина:
@@ -50,7 +50,7 @@ class LoginViewModel(
         }
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(UiStateStopTimeout),
+            started = SharingStarted.WhileSubscribed(UI_STATE_STOP_TIMEOUT),
             initialValue = mapper.getInitialState(),
         )
 
@@ -169,20 +169,6 @@ class LoginViewModel(
 
                 handleLoginException(
                     exception = exception,
-                )
-            } catch (exception: Exception) {
-                rawState.update { currentState ->
-                    currentState.copy(
-                        isLoading = false,
-                    )
-                }
-
-                sendCommand(
-                    command = LoginCommand.ShowSnackbar(
-                        message = TextOrResource.Resource(
-                            R.string.login_unknown_error,
-                        ),
-                    ),
                 )
             }
         }
