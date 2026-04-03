@@ -1,18 +1,38 @@
 package ru.yeahub.profile_edit.impl.ui
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import ru.yeahub.core_ui.component.textInput.DefaultTextField
 import ru.yeahub.core_ui.theme.Theme
-import ru.yeahub.core_utils.common.TextOrResource
-import ru.yeahub.profile_edit.impl.presentation.ProfileEditState
+
+internal val SECTION_TITLE_BOTTOM_SPACING = 6.dp
+internal val SECTION_DESCRIPTION_ADDITIONAL_BOTTOM_SPACING = 4.dp
+internal val TAB_CONTENT_TOP_PADDING = 22.dp
+private val SECTION_DESCRIPTION_BOTTOM_SPACING = 12.dp
+
+@Composable
+internal fun SectionHeader(
+    title: String,
+    description: String,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier = modifier) {
+        SectionTitle(title = title)
+        Spacer(Modifier.height(SECTION_TITLE_BOTTOM_SPACING))
+        Text(
+            text = description,
+            style = Theme.typography.body7Alt,
+            color = Theme.colors.black900,
+            modifier = Modifier.fillMaxWidth(),
+        )
+        Spacer(Modifier.height(SECTION_DESCRIPTION_BOTTOM_SPACING))
+    }
+}
 
 @Composable
 internal fun SectionTitle(
@@ -24,51 +44,5 @@ internal fun SectionTitle(
         style = Theme.typography.head7,
         color = Theme.colors.black900,
         modifier = modifier,
-    )
-}
-
-@Composable
-internal fun FieldLabel(
-    text: String,
-    modifier: Modifier = Modifier,
-) {
-    Text(
-        text = text,
-        style = Theme.typography.body7,
-        color = Theme.colors.black900,
-        modifier = modifier.padding(bottom = 4.dp),
-    )
-}
-
-@Composable
-internal fun ValidatedTextField(
-    field: ProfileEditState.ValidatedField,
-    onValueChange: (String) -> Unit,
-    placeholder: String,
-    modifier: Modifier = Modifier,
-) {
-    DefaultTextField(
-        value = field.value,
-        onValueChange = onValueChange,
-        placeholder = placeholder,
-        modifier = modifier
-            .fillMaxWidth()
-            .height(52.dp),
-        onExpandedChange = {},
-        isError = field.error != null,
-    )
-    Box(modifier = Modifier.height(16.dp)) {
-        if (field.error != null) {
-            ValidationErrorText(error = field.error)
-        }
-    }
-}
-
-@Composable
-private fun ValidationErrorText(error: TextOrResource) {
-    Text(
-        text = error.getString(LocalContext.current),
-        style = Theme.typography.body7Alt,
-        color = Theme.colors.red700,
     )
 }

@@ -1,9 +1,9 @@
 package ru.yeahub.profile_edit.impl.ui
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -29,6 +29,7 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.coroutines.launch
 import ru.yeahub.core_ui.component.CoreTopTabs
+import ru.yeahub.core_ui.component.ErrorScreen
 import ru.yeahub.core_ui.component.PrimaryButton
 import ru.yeahub.core_ui.component.TopAppBarWithBottomBorder
 import ru.yeahub.core_ui.component.UnsavedChangesDialog
@@ -43,23 +44,73 @@ import ru.yeahub.profile_edit.impl.presentation.ProfileEditState.SocialLinks
 import ru.yeahub.profile_edit.impl.presentation.intents.ProfileEditScreenEvent
 import ru.yeahub.profile_edit.impl.ui.tabs.AboutMeContent
 import ru.yeahub.profile_edit.impl.ui.tabs.PersonalInfoContent
+import ru.yeahub.profile_edit.impl.ui.tabs.SkillsContent
 import ru.yeahub.ui.R
+import ru.yeahub.profile_edit.impl.R as ProfileEditR
 
 @Composable
 fun ProfileEditScreen(
-    tabs: List<ProfileEditTabs>,
-    state: ProfileEditState.Loaded,
+    state: ProfileEditState,
     onEvent: (ProfileEditScreenEvent) -> Unit,
-    headerText: TextOrResource,
-    personalInfoContent: @Composable (() -> Unit),
-    aboutMeContent: @Composable (() -> Unit),
-    skillsContent: @Composable (() -> Unit),
 ) {
     BackHandler {
         onEvent(ProfileEditScreenEvent.BackPressed)
     }
-    val tabTitles = remember(tabs) {
-        tabs.map { tab ->
+    Scaffold(
+        containerColor = Theme.colors.black10,
+        topBar = {
+            TopAppBarWithBottomBorder(
+                title = TextOrResource.Resource(ProfileEditR.string.profile_edit_title),
+                onBackClick = { onEvent(ProfileEditScreenEvent.BackPressed) },
+            )
+        },
+        bottomBar = {
+            if (state is ProfileEditState.Loaded) {
+                PrimaryButton(
+                    onClick = { onEvent(ProfileEditScreenEvent.SaveProfile) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                ) {
+                    Text(text = stringResource(R.string.save))
+                }
+            }
+        },
+    ) { paddingValues ->
+        when (state) {
+            is ProfileEditState.Loading -> ProfileEditLoadingScreen(paddingValues)
+            is ProfileEditState.Loaded -> ProfileEditContent(
+                state = state,
+                onEvent = onEvent,
+                paddingValues = paddingValues,
+            )
+
+            is ProfileEditState.Error -> Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+            ) {
+                ErrorScreen(
+                    error = state.throwable.message,
+                    onBack = { onEvent(ProfileEditScreenEvent.BackPressed) },
+                    errorText = TextOrResource.Resource(R.string.error_screen_text),
+                    titleText = TextOrResource.Resource(R.string.error_screen_title_text),
+                    backText = TextOrResource.Resource(R.string.on_back_button_text),
+                    unknownErrorText = TextOrResource.Resource(R.string.unknown_error_screen_text),
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ProfileEditContent(
+    state: ProfileEditState.Loaded,
+    onEvent: (ProfileEditScreenEvent) -> Unit,
+    paddingValues: PaddingValues,
+) {
+    val tabTitles = remember {
+        ProfileEditTabs.entries.map { tab ->
             when (tab) {
                 PersonalInfo -> R.string.profile_personal_information
                 AboutMe -> R.string.profile_about_me
@@ -72,71 +123,59 @@ fun ProfileEditScreen(
     )
     val coroutineScope = rememberCoroutineScope()
 
-    Scaffold(
-        containerColor = Theme.colors.black10,
-        topBar = {
-            TopAppBarWithBottomBorder(
-                title = headerText,
-                onBackClick = { onEvent(ProfileEditScreenEvent.BackPressed) },
-            )
-        },
-        bottomBar = {
-            PrimaryButton(
-                onClick = { onEvent(ProfileEditScreenEvent.SaveProfile) },
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(paddingValues)
+            .padding(horizontal = 16.dp)
+            .padding(top = 16.dp),
+        color = Theme.colors.white900,
+        shape = RoundedCornerShape(16.dp),
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(
+                    horizontal = 16.dp,
+                    vertical = 16.dp,
+                ),
+        ) {
+            CoreTopTabs(
+                selectedIndex = pagerState.currentPage,
+                onSelected = { index ->
+                    coroutineScope.launch { pagerState.animateScrollToPage(index) }
+                },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-            ) {
-                Text(text = stringResource(R.string.save))
-            }
-        },
-    ) { paddingValues ->
+                    .height(32.dp),
+                tabs = tabTitles.map { stringResource(it) },
+                edgePadding = (-16).dp,
+                indicatorHeight = 10.dp,
+            )
 
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(paddingValues)
-                .padding(horizontal = 16.dp)
-                .padding(top = 16.dp)
-                .padding(bottom = 0.dp),
-            color = Theme.colors.white900,
-            shape = RoundedCornerShape(16.dp),
-        ) {
-            Column(
+            HorizontalPager(
+                state = pagerState,
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(
-                        horizontal = 16.dp,
-                        vertical = 16.dp,
-                    ),
-            ) {
-                CoreTopTabs(
-                    selectedIndex = pagerState.currentPage,
-                    onSelected = { index ->
-                        coroutineScope.launch { pagerState.animateScrollToPage(index) }
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(32.dp),
-                    tabs = tabTitles.map { stringResource(it) },
-                    edgePadding = (-16).dp,
-                    indicatorHeight = 10.dp,
-                )
+                    .weight(1f)
+                    .fillMaxWidth(),
+            ) { page ->
+                key(page) {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        when (ProfileEditTabs.entries[page]) {
+                            PersonalInfo -> PersonalInfoContent(
+                                state = state.personalInfoState,
+                                onEvent = onEvent,
+                            )
 
-                HorizontalPager(
-                    state = pagerState,
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth()
-                        .background(Theme.colors.white900),
-                ) { page ->
-                    key(page) {
-                        Box(modifier = Modifier.fillMaxSize()) {
-                            when (ProfileEditTabs.entries[page]) {
-                                PersonalInfo -> personalInfoContent()
-                                AboutMe -> aboutMeContent()
-                                Skills -> skillsContent()
-                            }
+                            AboutMe -> AboutMeContent(
+                                state = state.aboutMeTabState,
+                                onEvent = onEvent,
+                            )
+
+                            Skills -> SkillsContent(
+                                state = state.skillsTabState,
+                                onEvent = onEvent,
+                            )
                         }
                     }
                 }
@@ -158,10 +197,7 @@ fun ProfileEditPreview() {
     val screenState = ProfileEditState.Loaded(
         personalInfoState = ProfileEditState.PersonalInfoTabState(
             avatarUrl = null,
-            nickname = ProfileEditState.ValidatedField(
-                value = "J",
-                error = TextOrResource.Resource(R.string.error_minimal_length_2),
-            ),
+            nickname = ProfileEditState.ValidatedField(value = "Joe", error = null),
             specializationList = persistentListOf(
                 "Android разработчик",
                 "iOS разработчик",
@@ -182,12 +218,50 @@ fun ProfileEditPreview() {
                 ),
             ),
         ),
-        aboutMeTabState = ProfileEditState.AboutMeTabState(
-            aboutMeField = "",
-        ),
+        aboutMeTabState = ProfileEditState.AboutMeTabState(aboutMeField = ""),
         skillsTabState = ProfileEditState.SkillsTabState(
-            listOfSkills = persistentListOf(),
-            listOfChosenSkills = persistentListOf(),
+            listOfSkills = persistentListOf(
+                ProfileEditState.Skill(image = R.drawable.icon_true_button, name = "Kotlin"),
+                ProfileEditState.Skill(
+                    image = R.drawable.icon_true_button,
+                    name = "Jetpack Compose",
+                ),
+                ProfileEditState.Skill(image = R.drawable.icon_true_button, name = "Coroutines"),
+            ),
+            listOfChosenSkills = persistentListOf(
+                ProfileEditState.Skill(
+                    image = R.drawable.icon_true_button,
+                    name = "Kotlin2",
+                ),
+                ProfileEditState.Skill(
+                    image = R.drawable.icon_true_button,
+                    name = "Jetpack Compose",
+                ),
+                ProfileEditState.Skill(
+                    image = R.drawable.icon_true_button,
+                    name = "Coroutines",
+                ),
+                ProfileEditState.Skill(
+                    image = R.drawable.icon_true_button,
+                    name = "Git",
+                ),
+                ProfileEditState.Skill(
+                    image = R.drawable.icon_true_button,
+                    name = "Java",
+                ),
+                ProfileEditState.Skill(
+                    image = R.drawable.icon_true_button,
+                    name = "Gradle",
+                ),
+                ProfileEditState.Skill(
+                    image = R.drawable.icon_true_button,
+                    name = "Kotlin3",
+                ),
+                ProfileEditState.Skill(
+                    image = R.drawable.icon_true_button,
+                    name = "Coroutines",
+                ),
+            ),
         ),
         showUnsavedChangesDialog = false,
     )
@@ -198,37 +272,21 @@ fun ProfileEditPreview() {
         state = state,
         onEvent = { event ->
             when (event) {
-                is ProfileEditScreenEvent.ChooseSpecialization -> {
+                is ProfileEditScreenEvent.SpecializationSelected -> {
                     state = state.copy(
                         personalInfoState = state.personalInfoState.copy(
                             specialization = event.specialization,
                         ),
                     )
                 }
+
+                is ProfileEditScreenEvent.AboutMeChanged -> {
+                    state =
+                        state.copy(aboutMeTabState = state.aboutMeTabState.copy(aboutMeField = event.text))
+                }
                 else -> {}
             }
         },
-        personalInfoContent = {
-            PersonalInfoContent(
-                state = state.personalInfoState,
-                onEvent = { event ->
-                    when (event) {
-                        is ProfileEditScreenEvent.ChooseSpecialization -> {
-                            state = state.copy(
-                                personalInfoState = state.personalInfoState.copy(
-                                    specialization = event.specialization,
-                                ),
-                            )
-                        }
-                        else -> {}
-                    }
-                },
-            )
-        },
-        aboutMeContent = { AboutMeContent(state.aboutMeTabState) },
-        skillsContent = { },
-        tabs = ProfileEditTabs.entries,
-        headerText = TextOrResource.Text("Редактирование профиля"),
     )
 }
 
@@ -246,9 +304,7 @@ fun ProfileEditWithDialogPreview() {
             location = ProfileEditState.ValidatedField("Санкт-Петербург", null),
             socialLinks = persistentMapOf(),
         ),
-        aboutMeTabState = ProfileEditState.AboutMeTabState(
-            aboutMeField = "",
-        ),
+        aboutMeTabState = ProfileEditState.AboutMeTabState(aboutMeField = ""),
         skillsTabState = ProfileEditState.SkillsTabState(
             listOfSkills = persistentListOf(),
             listOfChosenSkills = persistentListOf(),
@@ -256,20 +312,26 @@ fun ProfileEditWithDialogPreview() {
         showUnsavedChangesDialog = true,
     )
 
-    var state by remember { mutableStateOf(screenState) }
-
     ProfileEditScreen(
-        state = state,
-        onEvent = { },
-        tabs = ProfileEditTabs.entries,
-        headerText = TextOrResource.Text("Редактирование профиля"),
-        personalInfoContent = {
-            PersonalInfoContent(
-                state = state.personalInfoState,
-                onEvent = { },
-            )
-        },
-        aboutMeContent = {},
-        skillsContent = {},
+        state = screenState,
+        onEvent = {},
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ProfileEditErrorPreview() {
+    ProfileEditScreen(
+        state = ProfileEditState.Error(Throwable("Не удалось загрузить данные")),
+        onEvent = {},
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ProfileEditLoadingPreview() {
+    ProfileEditScreen(
+        state = ProfileEditState.Loading,
+        onEvent = {},
     )
 }
