@@ -1,5 +1,6 @@
 package ru.yeahub.profile.impl.presentation
 
+import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.PersistentList
 import ru.yeahub.profile.impl.R
 
@@ -20,6 +21,7 @@ sealed interface ProfileScreenState {
     data object UserDeleted : ProfileScreenState
 }
 
+@Immutable
 data class UserData(
     val id: String,
     val username: String,
@@ -31,24 +33,14 @@ data class UserData(
     val roles: PersistentList<String>,
     val skills: PersistentList<String>,
     val specialization: String?,
-    val socialNetworks: PersistentList<SocialNetwork>
+    val socialNetworks: PersistentList<VOSocialNetwork>
 )
 
-data class SocialNetwork(
+@Immutable
+data class VOSocialNetwork(
     val code: String,
     val title: String
 ) {
-    fun getUrlFromCode(username: String? = null): String? {
-        val userIdentifier = username ?: title
-        return when (code.lowercase()) {
-            "instagram" -> "https://instagram.com/$userIdentifier"
-            "linkedin" -> "https://linkedin.com/in/$userIdentifier"
-            "telegram" -> "https://t.me/$userIdentifier"
-            "github" -> "https://github.com/$userIdentifier"
-            else -> null
-        }
-    }
-
     fun getIconRes(): Int {
         return when (code.lowercase()) {
             "instagram" -> R.drawable.ic_instagram

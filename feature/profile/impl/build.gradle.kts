@@ -65,6 +65,9 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+    implementation(libs.retrofit.core)
+    implementation(libs.retrofit.gsonConverter)
+
     testImplementation(libs.junit.jupiter)
     testImplementation(platform(libs.junit.bom))
     testRuntimeOnly(libs.junit.platform.launcher)

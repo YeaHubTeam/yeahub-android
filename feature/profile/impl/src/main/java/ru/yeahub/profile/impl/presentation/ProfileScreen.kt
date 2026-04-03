@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.flow.Flow
 import ru.yeahub.core_ui.component.ErrorScreen
 import ru.yeahub.core_ui.component.SkillButton
 import ru.yeahub.core_ui.component.TagContainer
@@ -53,7 +54,11 @@ import ru.yeahub.core_ui.example.dynamicPreview.ProvidePreviewCompositionLocals
 import ru.yeahub.core_ui.example.staticPreview.StaticPreview
 import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.core_utils.common.TextOrResource
+import ru.yeahub.core_utils.common.observe
 import ru.yeahub.profile.impl.R
+import ru.yeahub.profile.impl.domain.DomainUserProfile
+import ru.yeahub.profile.impl.domain.GetProfileUseCase
+import ru.yeahub.profile.impl.domain.SocialNetwork
 
 private val CARD_CORNER_RADIUS = 12.dp
 private val CARD_SHADOW_ELEVATION = 2.dp
@@ -93,14 +98,16 @@ private const val ROTATION_ANGLE_COLLAPSED = 0f
 
 @Composable
 fun ProfileScreen(
-    state: ProfileScreenState
+    state: ProfileScreenState,
+    onEvent: (ProfileEvent) -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         when (state) {
             is ProfileScreenState.Loading -> ProfileScreenLoading()
 
             is ProfileScreenState.Success -> ProfileContent(
-                userData = state.userData
+                userData = state.userData,
+                onEvent = onEvent
             )
 
             is ProfileScreenState.Error -> ErrorScreen(
@@ -109,7 +116,7 @@ fun ProfileScreen(
                 titleText = TextOrResource.Resource(R.string.error_screen_title_text),
                 backText = TextOrResource.Resource(R.string.on_back_button_text),
                 unknownErrorText = TextOrResource.Resource(R.string.unknown_error_screen_text),
-                onBackClicked = { /* TODO */ }
+                onBackClicked = { onEvent(ProfileEvent.OnBackClick) }
             )
 
             ProfileScreenState.Unauthorized -> ErrorScreen(
@@ -118,7 +125,7 @@ fun ProfileScreen(
                 titleText = TextOrResource.Resource(R.string.error_screen_title_text),
                 backText = TextOrResource.Resource(R.string.on_back_button_text),
                 unknownErrorText = TextOrResource.Resource(R.string.unknown_error_screen_text),
-                onBackClicked = { /* TODO */ }
+                onBackClicked = { onEvent(ProfileEvent.OnBackClick) }
             )
 
             ProfileScreenState.UserDeleted -> ErrorScreen(
@@ -127,7 +134,25 @@ fun ProfileScreen(
                 titleText = TextOrResource.Resource(R.string.error_screen_title_text),
                 backText = TextOrResource.Resource(R.string.on_back_button_text),
                 unknownErrorText = TextOrResource.Resource(R.string.unknown_error_screen_text),
-                onBackClicked = { /* TODO */ }
+                onBackClicked = { onEvent(ProfileEvent.OnBackClick) }
+            )
+        }
+    }
+}
+
+@Composable
+fun HandleCommand(
+    commandFlow: Flow<ProfileCommand>,
+    onResult: (ProfileResult) -> Unit,
+) {
+    commandFlow.observe { command ->
+        when (command) {
+            is ProfileCommand.NavigateBack -> onResult(ProfileResult.NavigateBack)
+            is ProfileCommand.OpenSocialNetwork -> onResult(
+                ProfileResult.OpenSocialNetwork(
+                    code = command.code,
+                    url = command.url
+                )
             )
         }
     }
@@ -136,7 +161,8 @@ fun ProfileScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ProfileContent(
-    userData: UserData
+    userData: UserData,
+    onEvent: (ProfileEvent) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -155,7 +181,7 @@ private fun ProfileContent(
             modifier = Modifier.padding(bottom = PROFILE_TITLE_BOTTOM_PADDING)
         )
 
-        UserAvatarSection(userData)
+        UserAvatarSection(userData, onEvent)
 
         if (userData.aboutMe != null) {
             AboutMeSection(userData.aboutMe)
@@ -166,7 +192,7 @@ private fun ProfileContent(
 }
 
 @Composable
-private fun UserAvatarSection(userData: UserData) {
+private fun UserAvatarSection(userData: UserData, onEvent: (ProfileEvent) -> Unit) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -182,7 +208,7 @@ private fun UserAvatarSection(userData: UserData) {
 
             UserInfoSection(userData)
 
-            SocialNetworksSection(userData)
+            SocialNetworksSection(userData, onEvent)
         }
     }
 }
@@ -218,7 +244,10 @@ private fun UserAvatarImage(userData: UserData) {
 }
 
 @Composable
-private fun SocialNetworksSection(userData: UserData) {
+private fun SocialNetworksSection(
+    userData: UserData,
+    onEvent: (ProfileEvent) -> Unit
+) {
     val socialNetworks = userData.socialNetworks
 
     if (socialNetworks.isNotEmpty()) {
@@ -232,8 +261,12 @@ private fun SocialNetworksSection(userData: UserData) {
                 SocialNetworkIcon(
                     network = network,
                     onClick = {
-                        val url = network.getUrlFromCode()
-                        url?.let {}
+                        onEvent(
+                            ProfileEvent.OnSocialNetworkClicked(
+                                code = network.code,
+                                url = network.title
+                            )
+                        )
                     }
                 )
                 Spacer(modifier = Modifier.width(4.dp))
@@ -244,7 +277,7 @@ private fun SocialNetworksSection(userData: UserData) {
 
 @Composable
 private fun SocialNetworkIcon(
-    network: SocialNetwork,
+    network: VOSocialNetwork,
     onClick: () -> Unit
 ) {
     IconButton(
@@ -504,9 +537,9 @@ class ProfileScreenStateParamProvider : PreviewParameterProvider<ProfileScreenSt
                     city = "Москва",
                     telegramUsername = "john_doe",
                     socialNetworks = persistentListOf(
-                        SocialNetwork("instagram", "john_doe"),
-                        SocialNetwork("linkedin", "john-doe-123"),
-                        SocialNetwork("github", "johndoe")
+                        VOSocialNetwork("instagram", "https://instagram.com/john_doe"),
+                        VOSocialNetwork("linkedin", "https://linkedin.com/in/john-doe-123"),
+                        VOSocialNetwork("github", "https://github.com/johndoe")
                     )
                 )
             ),
@@ -525,9 +558,39 @@ class ProfileScreenStateParamProvider : PreviewParameterProvider<ProfileScreenSt
 )
 @Composable
 fun DynamicPreviewUI() {
+    val mockGetProfileUseCase = object : GetProfileUseCase {
+        override suspend fun invoke(): DomainUserProfile {
+            return DomainUserProfile(
+                id = "1",
+                username = "john_doe",
+                specialization = "Senior Android Developer",
+                aboutMe = "Опытный Android разработчик с 5+ лет опыта. " +
+                        "Специализируюсь на Kotlin, Compose, Clean Architecture. " +
+                        "Участвую в open-source проектах и люблю делиться знаниями.",
+                skills = persistentListOf(
+                    "Kotlin",
+                    "Jetpack Compose",
+                    "Clean Architecture",
+                    "Coroutines"
+                ),
+                avatarUrl = null,
+                roles = persistentListOf("Кандидат", "Участник сообщества", "Ментор"),
+                country = "Россия",
+                city = "Москва",
+                telegramUsername = "john_doe",
+                socialNetworks = persistentListOf(
+                    SocialNetwork("instagram", "https://instagram.com/john_doe"),
+                    SocialNetwork("linkedin", "https://linkedin.com/in/john-doe-123"),
+                    SocialNetwork("github", "https://github.com/johndoe")
+                )
+            )
+        }
+    }
+
     val viewModel = remember {
         ProfileViewModel(
-            screenMapper = ProfileScreenMapper()
+            getProfileUseCase = mockGetProfileUseCase,
+            screenMapper = ProfileScreenMapper
         )
     }
 
@@ -539,7 +602,10 @@ fun DynamicPreviewUI() {
             .background(Theme.colors.black25)
     ) {
         ProvidePreviewCompositionLocals {
-            ProfileScreen(state = state)
+            ProfileScreen(
+                state = state,
+                onEvent = {}
+            )
         }
     }
 }
@@ -550,5 +616,8 @@ fun StaticPreviewUI(
     @PreviewParameter(ProfileScreenStateParamProvider::class)
     state: ProfileScreenState
 ) {
-    ProfileScreen(state = state)
+    ProfileScreen(
+        state = state,
+        onEvent = {}
+    )
 }
