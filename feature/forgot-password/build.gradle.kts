@@ -4,10 +4,8 @@ plugins {
 }
 
 android {
-    namespace = "ru.yeahub.forgot_password"
-    compileSdk {
-        version = release(35)
-    }
+    namespace = "com.example.enter_and_registration"
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 24
@@ -25,10 +23,12 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
     kotlinOptions {
         jvmTarget = "11"
     }
@@ -38,6 +38,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
