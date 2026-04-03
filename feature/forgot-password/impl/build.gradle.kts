@@ -49,6 +49,9 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.timber)
     implementation(project(":core:ui"))
+    implementation(libs.koin.core)
+    implementation(libs.koin.android)
+    implementation(libs.koin.compose)
 
     // Compose Preview dependencies
     implementation(libs.androidx.ui.tooling.preview)
