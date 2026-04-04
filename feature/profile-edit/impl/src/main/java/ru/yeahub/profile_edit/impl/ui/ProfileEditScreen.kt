@@ -120,6 +120,33 @@ internal fun ProfileEditScreen(
 }
 
 @Composable
+internal fun HandleCommands(
+    commands: SharedFlow<ProfileEditScreenCommand>,
+    onResult: (ProfileEditScreenResult) -> Unit,
+) {
+    LaunchedEffect(Unit) {
+        commands.collect { command ->
+            when (command) {
+                is ProfileEditScreenCommand.NavigateBack ->
+                    onResult(ProfileEditScreenResult.NavigateBack)
+
+                is ProfileEditScreenCommand.NavigateToProfile ->
+                    onResult(ProfileEditScreenResult.NavigateToProfile)
+
+                is ProfileEditScreenCommand.ShowPhotoPicker -> { /* TODO */
+                }
+
+                is ProfileEditScreenCommand.ShowError -> { /* TODO */
+                }
+
+                is ProfileEditScreenCommand.ShowCannotChangeSpecializationToast -> { /* TODO */
+                }
+            }
+        }
+    }
+}
+
+@Composable
 private fun ProfileEditContent(
     state: ProfileEditState.Loaded,
     onEvent: (ProfileEditScreenEvent) -> Unit,
@@ -204,33 +231,6 @@ private fun ProfileEditContent(
             onLeave = { onEvent(ProfileEditScreenEvent.DiscardChanges) },
             onStay = { onEvent(ProfileEditScreenEvent.UnsavedChangesDialogDismissed) },
         )
-    }
-}
-
-@Composable
-internal fun HandleCommands(
-    commands: SharedFlow<ProfileEditScreenCommand>,
-    onResult: (ProfileEditScreenResult) -> Unit,
-) {
-    LaunchedEffect(Unit) {
-        commands.collect { command ->
-            when (command) {
-                is ProfileEditScreenCommand.NavigateBack ->
-                    onResult(ProfileEditScreenResult.NavigateBack)
-
-                is ProfileEditScreenCommand.NavigateToProfile ->
-                    onResult(ProfileEditScreenResult.NavigateToProfile)
-
-                is ProfileEditScreenCommand.ShowPhotoPicker -> { /* TODO */
-                }
-
-                is ProfileEditScreenCommand.ShowError -> { /* TODO */
-                }
-
-                is ProfileEditScreenCommand.ShowCannotChangeSpecializationToast -> { /* TODO */
-                }
-            }
-        }
     }
 }
 
