@@ -108,10 +108,10 @@ internal fun ProfileEditScreen(
             ) {
                 ErrorScreen(
                     error = state.throwable.message,
-                    onBack = { onEvent(ProfileEditScreenEvent.BackPressed) },
+                    onBack = { onEvent(ProfileEditScreenEvent.LoadData) },
                     errorText = TextOrResource.Resource(R.string.error_screen_text),
                     titleText = TextOrResource.Resource(R.string.error_screen_title_text),
-                    backText = TextOrResource.Resource(R.string.on_back_button_text),
+                    backText = TextOrResource.Resource(R.string.retry),
                     unknownErrorText = TextOrResource.Resource(R.string.unknown_error_screen_text),
                 )
             }
