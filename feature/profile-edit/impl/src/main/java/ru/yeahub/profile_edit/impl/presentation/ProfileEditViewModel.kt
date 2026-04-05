@@ -43,6 +43,7 @@ internal class ProfileEditViewModel(
     private val userInputState = MutableStateFlow<UserInput?>(null)
     private var staticData: StaticData? = null
     private var initialUserInput: UserInput? = null
+    private var pendingRetry: (() -> Unit)? = null
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val screenState: StateFlow<ProfileEditState> = loadSignal
@@ -66,6 +67,7 @@ internal class ProfileEditViewModel(
                     aboutMe = domainData.aboutMe,
                     selectedSkills = domainData.selectedSkills.toPersistentList(),
                     showUnsavedChangesDialog = false,
+                    showOperationErrorDialog = false,
                 )
                 initialUserInput = input
                 userInputState.value = input
@@ -94,6 +96,12 @@ internal class ProfileEditViewModel(
         is ProfileEditScreenEvent.UnsavedChangesDialogDismissed ->
             updateInput { copy(showUnsavedChangesDialog = false) }
 
+        is ProfileEditScreenEvent.RetryOperation -> onRetryOperation()
+        is ProfileEditScreenEvent.OperationErrorDialogDismissed -> {
+            updateInput { copy(showOperationErrorDialog = false) }
+            pendingRetry = null
+        }
+
         is ProfileEditScreenEvent.UploadAvatar -> emitCommand(ProfileEditScreenCommand.ShowPhotoPicker)
         is ProfileEditScreenEvent.AvatarSelected -> onAvatarSelected(event.uri)
         is ProfileEditScreenEvent.DeleteAvatar -> onDeleteAvatar()
@@ -120,6 +128,12 @@ internal class ProfileEditViewModel(
 
     private fun emitCommand(command: ProfileEditScreenCommand) {
         viewModelScopeSafe.launch { _commands.emit(command) }
+    }
+
+    private fun onRetryOperation() {
+        updateInput { copy(showOperationErrorDialog = false) }
+        pendingRetry?.invoke()
+        pendingRetry = null
     }
 
     private fun loadData() {
@@ -162,7 +176,10 @@ internal class ProfileEditViewModel(
                 )
             }
                 .onSuccess { emitCommand(ProfileEditScreenCommand.NavigateToProfile) }
-                .onFailure { emitCommand(ProfileEditScreenCommand.ShowOperationErrorDialog(::onSaveProfile)) }
+                .onFailure {
+                    pendingRetry = ::onSaveProfile
+                    updateInput { copy(showOperationErrorDialog = true) }
+                }
         }
     }
 
@@ -173,14 +190,13 @@ internal class ProfileEditViewModel(
             runCatching { uploadAvatar(uri) }
                 .onSuccess { newUrl -> updateInput { copy(avatarUrl = newUrl) } }
                 .onFailure {
-                    updateInput { copy(avatarUrl = previousAvatarUrl) }
-                    emitCommand(
-                        ProfileEditScreenCommand.ShowOperationErrorDialog {
-                            onAvatarSelected(
-                                uri,
-                            )
-                        },
-                    )
+                    pendingRetry = { onAvatarSelected(uri) }
+                    updateInput {
+                        copy(
+                            avatarUrl = previousAvatarUrl,
+                            showOperationErrorDialog = true,
+                        )
+                    }
                 }
         }
     }
@@ -191,8 +207,13 @@ internal class ProfileEditViewModel(
         viewModelScopeSafe.launch {
             runCatching { deleteAvatar() }
                 .onFailure {
-                    updateInput { copy(avatarUrl = previousAvatarUrl) }
-                    emitCommand(ProfileEditScreenCommand.ShowOperationErrorDialog(::onDeleteAvatar))
+                    pendingRetry = ::onDeleteAvatar
+                    updateInput {
+                        copy(
+                            avatarUrl = previousAvatarUrl,
+                            showOperationErrorDialog = true,
+                        )
+                    }
                 }
         }
     }
@@ -209,6 +230,7 @@ internal data class UserInput(
     val aboutMe: String,
     val selectedSkills: PersistentList<DomainProfileEditSkill>,
     val showUnsavedChangesDialog: Boolean,
+    val showOperationErrorDialog: Boolean,
 )
 
 internal data class StaticData(

@@ -5,5 +5,4 @@ internal sealed interface ProfileEditScreenCommand {
     data object NavigateBack : ProfileEditScreenCommand
     data object NavigateToProfile : ProfileEditScreenCommand
     data object ShowCannotChangeSpecializationToast : ProfileEditScreenCommand
-    data class ShowOperationErrorDialog(val retry: () -> Unit) : ProfileEditScreenCommand
 }

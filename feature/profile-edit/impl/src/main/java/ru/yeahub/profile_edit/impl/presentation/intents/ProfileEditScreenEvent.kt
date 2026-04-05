@@ -28,4 +28,7 @@ internal sealed interface ProfileEditScreenEvent {
 
     data class AddSkill(val skillName: String) : ProfileEditScreenEvent
     data class RemoveSkill(val skill: DomainProfileEditSkill) : ProfileEditScreenEvent
+
+    data object RetryOperation : ProfileEditScreenEvent
+    data object OperationErrorDialogDismissed : ProfileEditScreenEvent
 }

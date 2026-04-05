@@ -34,6 +34,7 @@ internal class ProfileEditScreenMapper {
             aboutMeTabState = mapAboutMeState(userInput.aboutMe),
             skillsTabState = mapSkillsState(staticData.allSkills, userInput.selectedSkills),
             showUnsavedChangesDialog = userInput.showUnsavedChangesDialog,
+            showOperationErrorDialog = userInput.showOperationErrorDialog,
             hasValidationErrors = validatedFields.any { it.error != null },
         )
     }

@@ -15,6 +15,7 @@ internal sealed interface ProfileEditState {
         val aboutMeTabState: AboutMeTabState,
         val skillsTabState: SkillsTabState,
         val showUnsavedChangesDialog: Boolean,
+        val showOperationErrorDialog: Boolean,
         val hasValidationErrors: Boolean,
     ) : ProfileEditState
 

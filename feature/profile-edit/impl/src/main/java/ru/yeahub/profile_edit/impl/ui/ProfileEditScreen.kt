@@ -146,8 +146,6 @@ internal fun HandleCommands(
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
     ) { uri -> if (uri != null) onEvent(ProfileEditScreenEvent.AvatarSelected(uri)) }
-    var retryAction by remember { mutableStateOf<(() -> Unit)?>(null) }
-
     LaunchedEffect(Unit) {
         commands.collect { command ->
             when (command) {
@@ -166,35 +164,9 @@ internal fun HandleCommands(
                         context.getString(ProfileEditR.string.profile_edit_cannot_change_specialization),
                         Toast.LENGTH_SHORT,
                     ).show()
-
-                is ProfileEditScreenCommand.ShowOperationErrorDialog ->
-                    retryAction = command.retry
             }
         }
     }
-
-    retryAction?.let { retry ->
-        OperationErrorDialog(
-            onRetry = { retry(); retryAction = null },
-            onDismiss = { retryAction = null },
-        )
-    }
-}
-
-@Composable
-private fun OperationErrorDialog(
-    onRetry: () -> Unit,
-    onDismiss: () -> Unit,
-) {
-    YeahubCoreDialog(
-        onDismissRequest = onDismiss,
-        titleText = stringResource(R.string.error_screen_title_text),
-        descriptionText = stringResource(R.string.error_screen_text),
-        leftButtonText = stringResource(R.string.retry),
-        rightButtonText = stringResource(R.string.back),
-        onLeftButtonClick = onRetry,
-        onRightButtonClick = onDismiss,
-    )
 }
 
 @Composable
@@ -288,6 +260,18 @@ private fun ProfileEditContent(
             onRightButtonClick = { onEvent(ProfileEditScreenEvent.UnsavedChangesDialogDismissed) },
         )
     }
+
+    if (state.showOperationErrorDialog) {
+        YeahubCoreDialog(
+            onDismissRequest = { onEvent(ProfileEditScreenEvent.OperationErrorDialogDismissed) },
+            titleText = stringResource(R.string.error_screen_title_text),
+            descriptionText = stringResource(R.string.error_screen_text),
+            leftButtonText = stringResource(R.string.retry),
+            rightButtonText = stringResource(R.string.on_back_button_text),
+            onLeftButtonClick = { onEvent(ProfileEditScreenEvent.RetryOperation) },
+            onRightButtonClick = { onEvent(ProfileEditScreenEvent.OperationErrorDialogDismissed) },
+        )
+    }
 }
 
 @Preview
@@ -333,6 +317,7 @@ fun ProfileEditPreview() {
             ),
         ),
         showUnsavedChangesDialog = false,
+        showOperationErrorDialog = false,
         hasValidationErrors = true,
     )
 
@@ -381,6 +366,7 @@ fun ProfileEditWithDialogPreview() {
             listOfChosenSkills = persistentListOf(),
         ),
         showUnsavedChangesDialog = true,
+        showOperationErrorDialog = false,
         hasValidationErrors = false,
     )
 
