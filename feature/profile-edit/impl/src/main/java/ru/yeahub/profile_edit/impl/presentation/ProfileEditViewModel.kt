@@ -20,7 +20,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.yeahub.core_utils.BaseViewModel
-import ru.yeahub.core_utils.common.TextOrResource
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditData
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSkill
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSocialPlatform
@@ -30,16 +29,14 @@ import ru.yeahub.profile_edit.impl.domain.usecase.SaveProfileUseCase
 import ru.yeahub.profile_edit.impl.domain.usecase.UploadAvatarUseCase
 import ru.yeahub.profile_edit.impl.presentation.intents.ProfileEditScreenCommand
 import ru.yeahub.profile_edit.impl.presentation.intents.ProfileEditScreenEvent
-import ru.yeahub.ui.R
 
 internal class ProfileEditViewModel(
     private val getProfile: GetProfileUseCase,
     private val saveProfile: SaveProfileUseCase,
     private val uploadAvatar: UploadAvatarUseCase,
     private val deleteAvatar: DeleteAvatarUseCase,
+    private val mapper: ProfileEditScreenMapper,
 ) : BaseViewModel() {
-
-    private val mapper = ProfileEditScreenMapper()
 
     private val loadSignal =
         MutableSharedFlow<Unit>(replay = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
@@ -90,7 +87,7 @@ internal class ProfileEditViewModel(
 
     @Suppress("ComplexMethod")
     fun onEvent(event: ProfileEditScreenEvent) = when (event) {
-        is ProfileEditScreenEvent.LoadData -> loadData()
+        is ProfileEditScreenEvent.LoadData -> onLoadData()
         is ProfileEditScreenEvent.SaveProfile -> onSaveProfile()
         is ProfileEditScreenEvent.BackPressed -> onBackPressed()
         is ProfileEditScreenEvent.DiscardChanges -> emitCommand(ProfileEditScreenCommand.NavigateBack)
@@ -125,11 +122,24 @@ internal class ProfileEditViewModel(
         viewModelScopeSafe.launch { _commands.emit(command) }
     }
 
+    private fun onLoadData() {
+        val retryAction = userInputState.value?.retryAction
+        if (retryAction != null) {
+            retryAction()
+        } else {
+            loadData()
+        }
+    }
+
     private fun loadData() {
         loadSignal.tryEmit(Unit)
     }
 
     private fun onBackPressed() {
+        if (userInputState.value?.pendingError != null) {
+            updateInput { copy(pendingError = null, retryAction = null) }
+            return
+        }
         if (userInputState.value != initialUserInput) {
             updateInput { copy(showUnsavedChangesDialog = true) }
         } else {
@@ -145,10 +155,11 @@ internal class ProfileEditViewModel(
     private fun onSaveProfile() {
         val loaded = screenState.value as? ProfileEditState.Loaded ?: return
         if (loaded.hasValidationErrors) return
+        updateInput { copy(pendingError = null, retryAction = null) }
         val input = userInputState.value ?: return
         val data = staticData ?: return
         viewModelScopeSafe.launch {
-            val result = runCatching {
+            runCatching {
                 saveProfile(
                     DomainProfileEditData(
                         email = data.email,
@@ -164,34 +175,49 @@ internal class ProfileEditViewModel(
                     ),
                 )
             }
-            result.onSuccess { emitCommand(ProfileEditScreenCommand.NavigateToProfile) }
-            result.onFailure {
-                emitCommand(ProfileEditScreenCommand.ShowError(TextOrResource.Resource(R.string.error_screen_text)))
-            }
+                .onSuccess { emitCommand(ProfileEditScreenCommand.NavigateToProfile) }
+                .onFailure { e ->
+                    updateInput {
+                        copy(
+                            pendingError = e,
+                            retryAction = ::onSaveProfile,
+                        )
+                    }
+                }
         }
     }
 
     private fun onAvatarSelected(uri: Uri) {
         val previousAvatarUrl = userInputState.value?.avatarUrl
-        updateInput { copy(avatarUrl = uri.toString()) }
+        updateInput { copy(avatarUrl = uri.toString(), pendingError = null, retryAction = null) }
         viewModelScopeSafe.launch {
             runCatching { uploadAvatar(uri) }
                 .onSuccess { newUrl -> updateInput { copy(avatarUrl = newUrl) } }
-                .onFailure {
-                    updateInput { copy(avatarUrl = previousAvatarUrl) }
-                    emitCommand(ProfileEditScreenCommand.ShowError(TextOrResource.Resource(R.string.error_screen_text)))
+                .onFailure { e ->
+                    updateInput {
+                        copy(
+                            avatarUrl = previousAvatarUrl,
+                            pendingError = e,
+                            retryAction = { onAvatarSelected(uri) },
+                        )
+                    }
                 }
         }
     }
 
     private fun onDeleteAvatar() {
         val previousAvatarUrl = userInputState.value?.avatarUrl
-        updateInput { copy(avatarUrl = null) }
+        updateInput { copy(avatarUrl = null, pendingError = null, retryAction = null) }
         viewModelScopeSafe.launch {
             runCatching { deleteAvatar() }
-                .onFailure {
-                    updateInput { copy(avatarUrl = previousAvatarUrl) }
-                    emitCommand(ProfileEditScreenCommand.ShowError(TextOrResource.Resource(R.string.error_screen_text)))
+                .onFailure { e ->
+                    updateInput {
+                        copy(
+                            avatarUrl = previousAvatarUrl,
+                            pendingError = e,
+                            retryAction = ::onDeleteAvatar,
+                        )
+                    }
                 }
         }
     }
@@ -208,6 +234,8 @@ internal data class UserInput(
     val aboutMe: String,
     val selectedSkills: PersistentList<DomainProfileEditSkill>,
     val showUnsavedChangesDialog: Boolean,
+    val pendingError: Throwable? = null,
+    val retryAction: (() -> Unit)? = null,
 )
 
 internal data class StaticData(

@@ -1,7 +1,11 @@
 package ru.yeahub.profile_edit.impl.ui
 
 import android.net.Uri
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -25,6 +29,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -44,6 +49,7 @@ import ru.yeahub.core_utils.common.TextOrResource
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditData
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSkill
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSocialPlatform
+import ru.yeahub.profile_edit.impl.domain.usecase.DeleteAvatarUseCase
 import ru.yeahub.profile_edit.impl.domain.usecase.GetProfileUseCase
 import ru.yeahub.profile_edit.impl.domain.usecase.SaveProfileUseCase
 import ru.yeahub.profile_edit.impl.domain.usecase.UploadAvatarUseCase
@@ -63,6 +69,17 @@ import ru.yeahub.profile_edit.impl.ui.tabs.PersonalInfoContent
 import ru.yeahub.profile_edit.impl.ui.tabs.SkillsContent
 import ru.yeahub.ui.R
 import ru.yeahub.profile_edit.impl.R as ProfileEditR
+
+@Composable
+internal fun ProfileEditScreenHost(
+    state: ProfileEditState,
+    commands: SharedFlow<ProfileEditScreenCommand>,
+    onResult: (ProfileEditScreenResult) -> Unit,
+    onEvent: (ProfileEditScreenEvent) -> Unit,
+) {
+    ProfileEditScreen(state, onEvent)
+    HandleCommands(commands, onResult, onEvent)
+}
 
 @Composable
 internal fun ProfileEditScreen(
@@ -107,7 +124,7 @@ internal fun ProfileEditScreen(
                     .padding(paddingValues),
             ) {
                 ErrorScreen(
-                    error = state.throwable.message,
+                    error = state.throwable.localizedMessage,
                     onBack = { onEvent(ProfileEditScreenEvent.LoadData) },
                     errorText = TextOrResource.Resource(R.string.error_screen_text),
                     titleText = TextOrResource.Resource(R.string.error_screen_title_text),
@@ -123,7 +140,13 @@ internal fun ProfileEditScreen(
 internal fun HandleCommands(
     commands: SharedFlow<ProfileEditScreenCommand>,
     onResult: (ProfileEditScreenResult) -> Unit,
+    onEvent: (ProfileEditScreenEvent) -> Unit,
 ) {
+    val context = LocalContext.current
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+    ) { uri -> if (uri != null) onEvent(ProfileEditScreenEvent.AvatarSelected(uri)) }
+
     LaunchedEffect(Unit) {
         commands.collect { command ->
             when (command) {
@@ -133,14 +156,15 @@ internal fun HandleCommands(
                 is ProfileEditScreenCommand.NavigateToProfile ->
                     onResult(ProfileEditScreenResult.NavigateToProfile)
 
-                is ProfileEditScreenCommand.ShowPhotoPicker -> { /* TODO */
-                }
+                is ProfileEditScreenCommand.ShowPhotoPicker ->
+                    launcher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
 
-                is ProfileEditScreenCommand.ShowError -> { /* TODO */
-                }
-
-                is ProfileEditScreenCommand.ShowCannotChangeSpecializationToast -> { /* TODO */
-                }
+                is ProfileEditScreenCommand.ShowCannotChangeSpecializationToast ->
+                    Toast.makeText(
+                        context,
+                        context.getString(ProfileEditR.string.profile_edit_cannot_change_specialization),
+                        Toast.LENGTH_SHORT,
+                    ).show()
             }
         }
     }
@@ -277,6 +301,7 @@ fun ProfileEditPreview() {
             ),
         ),
         showUnsavedChangesDialog = false,
+        hasValidationErrors = true,
     )
 
     var state by remember { mutableStateOf(screenState) }
@@ -324,6 +349,7 @@ fun ProfileEditWithDialogPreview() {
             listOfChosenSkills = persistentListOf(),
         ),
         showUnsavedChangesDialog = true,
+        hasValidationErrors = false,
     )
 
     ProfileEditScreen(
@@ -354,8 +380,13 @@ fun ProfileEditLoadingPreview() {
 @Composable
 internal fun ProfileEditScreenDynamicPreview() {
     val mockGetProfile = object : GetProfileUseCase {
+        private var firstCall = true
         override suspend fun invoke(): DomainProfileEditData {
             delay(DYNAMIC_PREVIEW_LOAD_DELAY)
+            if (firstCall) {
+                firstCall = false
+                throw RuntimeException("Preview: simulated getProfile error")
+            }
             return DomainProfileEditData(
                 email = "johndoe@gmail.com",
                 avatarUrl = null,
@@ -400,15 +431,32 @@ internal fun ProfileEditScreenDynamicPreview() {
         override suspend fun invoke(profile: DomainProfileEditData) = Unit
     }
     val mockUploadAvatar = object : UploadAvatarUseCase {
-        override suspend fun invoke(uri: Uri): String = uri.toString()
+        private var firstCall = true
+        override suspend fun invoke(uri: Uri): String {
+            if (firstCall) {
+                firstCall = false
+                throw RuntimeException("Preview: simulated uploadAvatar error")
+            }
+            return uri.toString()
+        }
+    }
+    val mockDeleteAvatar = object : DeleteAvatarUseCase {
+        private var firstCall = true
+        override suspend fun invoke() {
+            if (firstCall) {
+                firstCall = false
+                throw RuntimeException("Preview: simulated deleteAvatar error")
+            }
+        }
     }
 
     val mockViewModel: ProfileEditViewModel = profileEditViewModelCreator {
         ProfileEditViewModel(
-            mapper = ProfileEditScreenMapper(),
             getProfile = mockGetProfile,
             saveProfile = mockSaveProfile,
             uploadAvatar = mockUploadAvatar,
+            deleteAvatar = mockDeleteAvatar,
+            mapper = ProfileEditScreenMapper(),
         )
     }
 
@@ -419,8 +467,10 @@ internal fun ProfileEditScreenDynamicPreview() {
     }
 
     ProvidePreviewCompositionLocals {
-        ProfileEditScreen(
+        ProfileEditScreenHost(
             state = state,
+            commands = mockViewModel.commands,
+            onResult = {},
             onEvent = mockViewModel::onEvent,
         )
     }
