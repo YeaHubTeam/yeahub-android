@@ -3,42 +3,50 @@ package ru.yeahub.core_ui.component
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import ru.yeahub.core_ui.example.dynamicPreview.SmallScreenSizePreview
 import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.core_ui.theme.colors
 
 @Composable
-fun UnsavedChangesDialog(
-    onStay: () -> Unit,
-    onLeave: () -> Unit,
+fun YeahubCoreDialog(
+    titleText: String,
+    descriptionText: String,
+    leftButtonText: String,
+    rightButtonText: String,
+    onLeftButtonClick: () -> Unit,
+    onRightButtonClick: () -> Unit,
+    onDismissRequest: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     AlertDialog(
-        onDismissRequest = onStay,
+        modifier = modifier,
+        onDismissRequest = onDismissRequest,
         title = {
             Text(
-                text = "Подтвердить действие",
+                text = titleText,
                 style = Theme.typography.head4,
             )
         },
         text = {
             Text(
-                "У вас есть несохраненные данные.\nВы хотите продолжить?",
+                descriptionText,
                 style = Theme.typography.body3,
             )
         },
         dismissButton = {
-            PrimaryButton(onClick = onLeave) {
-                Text("Да")
+            PrimaryButton(onClick = onLeftButtonClick) {
+                Text(leftButtonText)
             }
         },
         confirmButton = {
             OutlineButton(
-                onClick = onStay,
+                onClick = onRightButtonClick,
                 colors = YeahubButtonDefaults.secondaryOutlinedButtonColors(),
                 border = YeahubButtonDefaults.secondaryOutlineBorderDefaults(),
             ) {
                 Text(
-                    "Нет",
+                    rightButtonText,
                 )
             }
         },
@@ -49,5 +57,13 @@ fun UnsavedChangesDialog(
 @SmallScreenSizePreview
 @Composable
 fun UnsavedChangesDialogPreview() {
-    UnsavedChangesDialog({}, {})
+    YeahubCoreDialog(
+        titleText = "Подтвердить действие",
+        descriptionText = "У вас есть несохранённые данные.\nВы хотите продолжить?",
+        leftButtonText = "Да",
+        rightButtonText = "Нет",
+        onLeftButtonClick = {},
+        onRightButtonClick = {},
+        onDismissRequest = {},
+    )
 }
