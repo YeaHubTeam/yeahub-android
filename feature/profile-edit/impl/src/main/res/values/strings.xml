@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="profile_edit_title">Редактирование профиля</string>
+    <string name="profile_edit_cannot_change_specialization">Смена специализации в текущей версии приложения не поддерживается, вы можете сделать это на сайте.</string>
 </resources>
