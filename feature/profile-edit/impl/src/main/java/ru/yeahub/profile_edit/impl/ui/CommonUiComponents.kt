@@ -10,10 +10,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import ru.yeahub.core_ui.theme.Theme
 
+internal val SECTION_TITLE_BOTTOM_SPACING = 6.dp
 internal val SECTION_DESCRIPTION_ADDITIONAL_BOTTOM_SPACING = 4.dp
 internal val TAB_CONTENT_TOP_PADDING = 22.dp
 private val SECTION_DESCRIPTION_BOTTOM_SPACING = 12.dp
-private val SECTION_TITLE_BOTTOM_SPACING = 6.dp
 
 @Composable
 internal fun SectionHeader(
