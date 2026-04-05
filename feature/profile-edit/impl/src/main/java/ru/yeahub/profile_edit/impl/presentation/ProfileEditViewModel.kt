@@ -87,7 +87,7 @@ internal class ProfileEditViewModel(
 
     @Suppress("ComplexMethod")
     fun onEvent(event: ProfileEditScreenEvent) = when (event) {
-        is ProfileEditScreenEvent.LoadData -> onLoadData()
+        is ProfileEditScreenEvent.LoadData -> loadData()
         is ProfileEditScreenEvent.SaveProfile -> onSaveProfile()
         is ProfileEditScreenEvent.BackPressed -> onBackPressed()
         is ProfileEditScreenEvent.DiscardChanges -> emitCommand(ProfileEditScreenCommand.NavigateBack)
@@ -122,24 +122,11 @@ internal class ProfileEditViewModel(
         viewModelScopeSafe.launch { _commands.emit(command) }
     }
 
-    private fun onLoadData() {
-        val retryAction = userInputState.value?.retryAction
-        if (retryAction != null) {
-            retryAction()
-        } else {
-            loadData()
-        }
-    }
-
     private fun loadData() {
         loadSignal.tryEmit(Unit)
     }
 
     private fun onBackPressed() {
-        if (userInputState.value?.pendingError != null) {
-            updateInput { copy(pendingError = null, retryAction = null) }
-            return
-        }
         if (userInputState.value != initialUserInput) {
             updateInput { copy(showUnsavedChangesDialog = true) }
         } else {
@@ -155,7 +142,6 @@ internal class ProfileEditViewModel(
     private fun onSaveProfile() {
         val loaded = screenState.value as? ProfileEditState.Loaded ?: return
         if (loaded.hasValidationErrors) return
-        updateInput { copy(pendingError = null, retryAction = null) }
         val input = userInputState.value ?: return
         val data = staticData ?: return
         viewModelScopeSafe.launch {
@@ -176,48 +162,37 @@ internal class ProfileEditViewModel(
                 )
             }
                 .onSuccess { emitCommand(ProfileEditScreenCommand.NavigateToProfile) }
-                .onFailure { e ->
-                    updateInput {
-                        copy(
-                            pendingError = e,
-                            retryAction = ::onSaveProfile,
-                        )
-                    }
-                }
+                .onFailure { emitCommand(ProfileEditScreenCommand.ShowOperationErrorDialog(::onSaveProfile)) }
         }
     }
 
     private fun onAvatarSelected(uri: Uri) {
         val previousAvatarUrl = userInputState.value?.avatarUrl
-        updateInput { copy(avatarUrl = uri.toString(), pendingError = null, retryAction = null) }
+        updateInput { copy(avatarUrl = uri.toString()) }
         viewModelScopeSafe.launch {
             runCatching { uploadAvatar(uri) }
                 .onSuccess { newUrl -> updateInput { copy(avatarUrl = newUrl) } }
-                .onFailure { e ->
-                    updateInput {
-                        copy(
-                            avatarUrl = previousAvatarUrl,
-                            pendingError = e,
-                            retryAction = { onAvatarSelected(uri) },
-                        )
-                    }
+                .onFailure {
+                    updateInput { copy(avatarUrl = previousAvatarUrl) }
+                    emitCommand(
+                        ProfileEditScreenCommand.ShowOperationErrorDialog {
+                            onAvatarSelected(
+                                uri,
+                            )
+                        },
+                    )
                 }
         }
     }
 
     private fun onDeleteAvatar() {
         val previousAvatarUrl = userInputState.value?.avatarUrl
-        updateInput { copy(avatarUrl = null, pendingError = null, retryAction = null) }
+        updateInput { copy(avatarUrl = null) }
         viewModelScopeSafe.launch {
             runCatching { deleteAvatar() }
-                .onFailure { e ->
-                    updateInput {
-                        copy(
-                            avatarUrl = previousAvatarUrl,
-                            pendingError = e,
-                            retryAction = ::onDeleteAvatar,
-                        )
-                    }
+                .onFailure {
+                    updateInput { copy(avatarUrl = previousAvatarUrl) }
+                    emitCommand(ProfileEditScreenCommand.ShowOperationErrorDialog(::onDeleteAvatar))
                 }
         }
     }
@@ -234,8 +209,6 @@ internal data class UserInput(
     val aboutMe: String,
     val selectedSkills: PersistentList<DomainProfileEditSkill>,
     val showUnsavedChangesDialog: Boolean,
-    val pendingError: Throwable? = null,
-    val retryAction: (() -> Unit)? = null,
 )
 
 internal data class StaticData(

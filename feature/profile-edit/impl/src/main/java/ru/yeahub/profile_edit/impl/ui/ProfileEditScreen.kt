@@ -42,7 +42,7 @@ import ru.yeahub.core_ui.component.CoreTopTabs
 import ru.yeahub.core_ui.component.ErrorScreen
 import ru.yeahub.core_ui.component.PrimaryButton
 import ru.yeahub.core_ui.component.TopAppBarWithBottomBorder
-import ru.yeahub.core_ui.component.UnsavedChangesDialog
+import ru.yeahub.core_ui.component.YeahubCoreDialog
 import ru.yeahub.core_ui.example.dynamicPreview.ProvidePreviewCompositionLocals
 import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.core_utils.common.TextOrResource
@@ -146,6 +146,7 @@ internal fun HandleCommands(
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
     ) { uri -> if (uri != null) onEvent(ProfileEditScreenEvent.AvatarSelected(uri)) }
+    var retryAction by remember { mutableStateOf<(() -> Unit)?>(null) }
 
     LaunchedEffect(Unit) {
         commands.collect { command ->
@@ -165,9 +166,35 @@ internal fun HandleCommands(
                         context.getString(ProfileEditR.string.profile_edit_cannot_change_specialization),
                         Toast.LENGTH_SHORT,
                     ).show()
+
+                is ProfileEditScreenCommand.ShowOperationErrorDialog ->
+                    retryAction = command.retry
             }
         }
     }
+
+    retryAction?.let { retry ->
+        OperationErrorDialog(
+            onRetry = { retry(); retryAction = null },
+            onDismiss = { retryAction = null },
+        )
+    }
+}
+
+@Composable
+private fun OperationErrorDialog(
+    onRetry: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    YeahubCoreDialog(
+        onDismissRequest = onDismiss,
+        titleText = stringResource(R.string.error_screen_title_text),
+        descriptionText = stringResource(R.string.error_screen_text),
+        leftButtonText = stringResource(R.string.retry),
+        rightButtonText = stringResource(R.string.back),
+        onLeftButtonClick = onRetry,
+        onRightButtonClick = onDismiss,
+    )
 }
 
 @Composable
@@ -251,9 +278,14 @@ private fun ProfileEditContent(
     }
 
     if (state.showUnsavedChangesDialog) {
-        UnsavedChangesDialog(
-            onLeave = { onEvent(ProfileEditScreenEvent.DiscardChanges) },
-            onStay = { onEvent(ProfileEditScreenEvent.UnsavedChangesDialogDismissed) },
+        YeahubCoreDialog(
+            onDismissRequest = { onEvent(ProfileEditScreenEvent.UnsavedChangesDialogDismissed) },
+            titleText = stringResource(R.string.сonfirm_action),
+            descriptionText = stringResource(R.string.unsaved_changes_description),
+            leftButtonText = stringResource(R.string.yes),
+            rightButtonText = stringResource(R.string.no),
+            onLeftButtonClick = { onEvent(ProfileEditScreenEvent.DiscardChanges) },
+            onRightButtonClick = { onEvent(ProfileEditScreenEvent.UnsavedChangesDialogDismissed) },
         )
     }
 }

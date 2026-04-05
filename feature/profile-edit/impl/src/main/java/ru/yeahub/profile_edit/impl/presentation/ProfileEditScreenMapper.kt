@@ -12,7 +12,6 @@ internal class ProfileEditScreenMapper {
         userInput: UserInput,
         staticData: StaticData,
     ): ProfileEditState {
-        if (userInput.pendingError != null) return ProfileEditState.Error(userInput.pendingError)
         val nicknameField = validateNickname(userInput.nickname)
         val locationField = validateMaxLength(userInput.location)
         val socialLinksFields = userInput.socialLinks.entries.associate { (link, url) ->
