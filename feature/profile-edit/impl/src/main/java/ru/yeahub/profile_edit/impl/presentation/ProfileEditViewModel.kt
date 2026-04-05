@@ -1,20 +1,30 @@
 package ru.yeahub.profile_edit.impl.presentation
 
 import android.net.Uri
+import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.yeahub.core_utils.BaseViewModel
 import ru.yeahub.core_utils.common.TextOrResource
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditData
+import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSkill
+import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSocialPlatform
+import ru.yeahub.profile_edit.impl.domain.usecase.DeleteAvatarUseCase
 import ru.yeahub.profile_edit.impl.domain.usecase.GetProfileUseCase
 import ru.yeahub.profile_edit.impl.domain.usecase.SaveProfileUseCase
 import ru.yeahub.profile_edit.impl.domain.usecase.UploadAvatarUseCase
@@ -23,18 +33,52 @@ import ru.yeahub.profile_edit.impl.presentation.intents.ProfileEditScreenEvent
 import ru.yeahub.ui.R
 
 internal class ProfileEditViewModel(
-    private val mapper: ProfileEditScreenMapper,
     private val getProfile: GetProfileUseCase,
     private val saveProfile: SaveProfileUseCase,
     private val uploadAvatar: UploadAvatarUseCase,
+    private val deleteAvatar: DeleteAvatarUseCase,
 ) : BaseViewModel() {
 
-    private val userInputState = MutableStateFlow<Result<ProfileEditUserInput>?>(null)
-    private var staticData: ProfileEditStaticData? = null
-    private var initialUserInput: ProfileEditUserInput? = null
+    private val mapper = ProfileEditScreenMapper()
 
-    val screenState: StateFlow<ProfileEditState> = userInputState
-        .map { mapper.map(it, staticData) }
+    private val loadSignal =
+        MutableSharedFlow<Unit>(replay = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
+    private val userInputState = MutableStateFlow<UserInput?>(null)
+    private var staticData: StaticData? = null
+    private var initialUserInput: UserInput? = null
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val screenState: StateFlow<ProfileEditState> = loadSignal
+        .flatMapLatest {
+            flow {
+                emit(ProfileEditState.Loading)
+                val domainData = getProfile()
+                val data = StaticData(
+                    email = domainData.email,
+                    specializationList = domainData.specializationList.toPersistentList(),
+                    isSpecializationEditable = domainData.specialization == null,
+                    allSkills = domainData.allSkills.toPersistentList(),
+                )
+                staticData = data
+                val input = UserInput(
+                    avatarUrl = domainData.avatarUrl,
+                    nickname = domainData.nickname,
+                    specialization = domainData.specialization.orEmpty(),
+                    location = domainData.location,
+                    socialLinks = domainData.socialLinks,
+                    aboutMe = domainData.aboutMe,
+                    selectedSkills = domainData.selectedSkills.toPersistentList(),
+                    showUnsavedChangesDialog = false,
+                )
+                initialUserInput = input
+                userInputState.value = input
+                emitAll(
+                    userInputState.mapNotNull { ui ->
+                        ui?.let { mapper.getScreenState(it, data) }
+                    },
+                )
+            }.catch { e -> emit(mapper.getScreenState(e)) }
+        }
         .stateIn(
             scope = viewModelScopeSafe,
             started = SharingStarted.WhileSubscribed(TIME_TO_CLEAN_UP_RESOURCES),
@@ -55,7 +99,7 @@ internal class ProfileEditViewModel(
 
         is ProfileEditScreenEvent.UploadAvatar -> emitCommand(ProfileEditScreenCommand.ShowPhotoPicker)
         is ProfileEditScreenEvent.AvatarSelected -> onAvatarSelected(event.uri)
-        is ProfileEditScreenEvent.DeleteAvatar -> updateInput { copy(avatarUrl = null) }
+        is ProfileEditScreenEvent.DeleteAvatar -> onDeleteAvatar()
         is ProfileEditScreenEvent.NicknameChanged -> updateInput { copy(nickname = event.nickname) }
         is ProfileEditScreenEvent.SpecializationSelected ->
             updateInput { copy(specialization = event.specialization) }
@@ -73,16 +117,20 @@ internal class ProfileEditViewModel(
             updateInput { copy(selectedSkills = selectedSkills.remove(event.skill)) }
     }
 
-    private fun updateInput(transform: ProfileEditUserInput.() -> ProfileEditUserInput) {
-        userInputState.update { it?.map { input -> input.transform() } }
+    private fun updateInput(transform: UserInput.() -> UserInput) {
+        userInputState.update { it?.transform() }
     }
 
     private fun emitCommand(command: ProfileEditScreenCommand) {
         viewModelScopeSafe.launch { _commands.emit(command) }
     }
 
+    private fun loadData() {
+        loadSignal.tryEmit(Unit)
+    }
+
     private fun onBackPressed() {
-        if (userInputState.value?.getOrNull() != initialUserInput) {
+        if (userInputState.value != initialUserInput) {
             updateInput { copy(showUnsavedChangesDialog = true) }
         } else {
             emitCommand(ProfileEditScreenCommand.NavigateBack)
@@ -94,35 +142,10 @@ internal class ProfileEditViewModel(
         updateInput { copy(selectedSkills = selectedSkills.add(skill)) }
     }
 
-    private fun loadData() {
-        viewModelScopeSafe.launch {
-            val result = runCatching { getProfile() }
-            result.onSuccess { domainData ->
-                staticData = ProfileEditStaticData(
-                    email = domainData.email,
-                    specializationList = domainData.specializationList.toPersistentList(),
-                    isSpecializationEditable = domainData.specialization == null,
-                    allSkills = domainData.allSkills.toPersistentList(),
-                )
-                val input = ProfileEditUserInput(
-                    avatarUrl = domainData.avatarUrl,
-                    nickname = domainData.nickname,
-                    specialization = domainData.specialization.orEmpty(),
-                    location = domainData.location,
-                    socialLinks = domainData.socialLinks,
-                    aboutMe = domainData.aboutMe,
-                    selectedSkills = domainData.selectedSkills.toPersistentList(),
-                    showUnsavedChangesDialog = false,
-                )
-                initialUserInput = input
-                userInputState.value = Result.success(input)
-            }
-            result.onFailure { userInputState.value = Result.failure(it) }
-        }
-    }
-
     private fun onSaveProfile() {
-        val input = userInputState.value?.getOrNull() ?: return
+        val loaded = screenState.value as? ProfileEditState.Loaded ?: return
+        if (loaded.hasValidationErrors) return
+        val input = userInputState.value ?: return
         val data = staticData ?: return
         viewModelScopeSafe.launch {
             val result = runCatching {
@@ -149,15 +172,47 @@ internal class ProfileEditViewModel(
     }
 
     private fun onAvatarSelected(uri: Uri) {
+        val previousAvatarUrl = userInputState.value?.avatarUrl
         updateInput { copy(avatarUrl = uri.toString()) }
         viewModelScopeSafe.launch {
-            val result = runCatching { uploadAvatar(uri) }
-            result.onSuccess { avatarUrl -> updateInput { copy(avatarUrl = avatarUrl) } }
-            result.onFailure {
-                emitCommand(ProfileEditScreenCommand.ShowError(TextOrResource.Resource(R.string.error_screen_text)))
-            }
+            runCatching { uploadAvatar(uri) }
+                .onSuccess { newUrl -> updateInput { copy(avatarUrl = newUrl) } }
+                .onFailure {
+                    updateInput { copy(avatarUrl = previousAvatarUrl) }
+                    emitCommand(ProfileEditScreenCommand.ShowError(TextOrResource.Resource(R.string.error_screen_text)))
+                }
+        }
+    }
+
+    private fun onDeleteAvatar() {
+        val previousAvatarUrl = userInputState.value?.avatarUrl
+        updateInput { copy(avatarUrl = null) }
+        viewModelScopeSafe.launch {
+            runCatching { deleteAvatar() }
+                .onFailure {
+                    updateInput { copy(avatarUrl = previousAvatarUrl) }
+                    emitCommand(ProfileEditScreenCommand.ShowError(TextOrResource.Resource(R.string.error_screen_text)))
+                }
         }
     }
 }
 
 private const val TIME_TO_CLEAN_UP_RESOURCES = 5_000L
+
+internal data class UserInput(
+    val avatarUrl: String?,
+    val nickname: String,
+    val specialization: String,
+    val location: String,
+    val socialLinks: Map<DomainProfileEditSocialPlatform, String>,
+    val aboutMe: String,
+    val selectedSkills: PersistentList<DomainProfileEditSkill>,
+    val showUnsavedChangesDialog: Boolean,
+)
+
+internal data class StaticData(
+    val email: String,
+    val specializationList: PersistentList<String>,
+    val isSpecializationEditable: Boolean,
+    val allSkills: PersistentList<DomainProfileEditSkill>,
+)
