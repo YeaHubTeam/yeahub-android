@@ -14,8 +14,8 @@ internal class ProfileEditScreenMapper {
     ): ProfileEditState {
         val nicknameField = validateNickname(userInput.nickname)
         val locationField = validateMaxLength(userInput.location)
-        val socialLinksFields = userInput.socialLinks.entries.associate { (link, url) ->
-            link to validateMaxLength(url)
+        val socialLinksFields = userInput.socialLinks.entries.associate { (platform, url) ->
+            platform to validateMaxLength(url)
         }.toPersistentMap()
 
         val validatedFields = listOf(nicknameField, locationField) + socialLinksFields.values
