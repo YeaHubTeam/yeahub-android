@@ -68,6 +68,7 @@ import ru.yeahub.profile_edit.impl.ui.tabs.AboutMeContent
 import ru.yeahub.profile_edit.impl.ui.tabs.PersonalInfoContent
 import ru.yeahub.profile_edit.impl.ui.tabs.SkillsContent
 import ru.yeahub.ui.R
+import java.io.IOException
 import ru.yeahub.profile_edit.impl.R as ProfileEditR
 
 @Composable
@@ -403,7 +404,7 @@ internal fun ProfileEditScreenDynamicPreview() {
             delay(DYNAMIC_PREVIEW_LOAD_DELAY)
             if (firstCall) {
                 firstCall = false
-                throw RuntimeException("Preview: simulated getProfile error")
+                throw IOException("Preview: simulated getProfile error")
             }
             return DomainProfileEditData(
                 email = "johndoe@gmail.com",
@@ -453,7 +454,7 @@ internal fun ProfileEditScreenDynamicPreview() {
         override suspend fun invoke(uri: Uri): String {
             if (firstCall) {
                 firstCall = false
-                throw RuntimeException("Preview: simulated uploadAvatar error")
+                throw IOException("Preview: simulated uploadAvatar error")
             }
             return uri.toString()
         }
@@ -463,7 +464,7 @@ internal fun ProfileEditScreenDynamicPreview() {
         override suspend fun invoke() {
             if (firstCall) {
                 firstCall = false
-                throw RuntimeException("Preview: simulated deleteAvatar error")
+                throw IOException("Preview: simulated deleteAvatar error")
             }
         }
     }
