@@ -15,7 +15,6 @@ internal val TAB_CONTENT_TOP_PADDING = 22.dp
 private val SECTION_DESCRIPTION_BOTTOM_SPACING = 12.dp
 private val SECTION_TITLE_BOTTOM_SPACING = 6.dp
 
-
 @Composable
 internal fun SectionHeader(
     title: String,

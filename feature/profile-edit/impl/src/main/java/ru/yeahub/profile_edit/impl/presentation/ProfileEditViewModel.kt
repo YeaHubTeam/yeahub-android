@@ -154,10 +154,10 @@ internal class ProfileEditViewModel(
     }
 
     private fun onSaveProfile() {
-        val loaded = screenState.value as? ProfileEditState.Loaded ?: return
-        if (loaded.hasValidationErrors) return
-        val input = userInputState.value ?: return
-        val data = staticData ?: return
+        val loaded = screenState.value as? ProfileEditState.Loaded
+        if (loaded!!.hasValidationErrors) return
+        val input = userInputState.value!!
+        val data = staticData!!
         viewModelScopeSafe.launch {
             runCatching {
                 saveProfile(
