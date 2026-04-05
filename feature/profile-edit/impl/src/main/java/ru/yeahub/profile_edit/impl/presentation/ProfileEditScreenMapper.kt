@@ -8,41 +8,37 @@ import ru.yeahub.ui.R
 
 internal class ProfileEditScreenMapper {
 
-    fun map(
-        loadResult: Result<ProfileEditUserInput>?,
-        staticData: ProfileEditStaticData?,
-    ): ProfileEditState = when {
-        loadResult == null -> ProfileEditState.Loading
-        loadResult.isFailure -> ProfileEditState.Error(loadResult.exceptionOrNull()!!)
-        staticData == null -> ProfileEditState.Loading
-        else -> mapToLoaded(loadResult.getOrThrow(), staticData)
+    fun getScreenState(
+        userInput: UserInput,
+        staticData: StaticData,
+    ): ProfileEditState {
+        val nicknameField = validateNickname(userInput.nickname)
+        val locationField = validateMaxLength(userInput.location)
+        val socialLinksFields = userInput.socialLinks.entries.associate { (link, url) ->
+            link to validateMaxLength(url)
+        }.toPersistentMap()
+
+        val validatedFields = listOf(nicknameField, locationField) + socialLinksFields.values
+
+        return ProfileEditState.Loaded(
+            personalInfoState = ProfileEditState.PersonalInfoTabState(
+                avatarUrl = userInput.avatarUrl,
+                nickname = nicknameField,
+                specializationList = staticData.specializationList,
+                specialization = userInput.specialization,
+                isSpecializationEditable = staticData.isSpecializationEditable,
+                email = staticData.email,
+                location = locationField,
+                socialLinks = socialLinksFields,
+            ),
+            aboutMeTabState = mapAboutMeState(userInput.aboutMe),
+            skillsTabState = mapSkillsState(staticData.allSkills, userInput.selectedSkills),
+            showUnsavedChangesDialog = userInput.showUnsavedChangesDialog,
+            hasValidationErrors = validatedFields.any { it.error != null },
+        )
     }
 
-    private fun mapToLoaded(
-        userInput: ProfileEditUserInput,
-        staticData: ProfileEditStaticData,
-    ): ProfileEditState.Loaded = ProfileEditState.Loaded(
-        personalInfoState = mapPersonalInfoState(userInput, staticData),
-        aboutMeTabState = mapAboutMeState(userInput.aboutMe),
-        skillsTabState = mapSkillsState(staticData.allSkills, userInput.selectedSkills),
-        showUnsavedChangesDialog = userInput.showUnsavedChangesDialog,
-    )
-
-    private fun mapPersonalInfoState(
-        userInput: ProfileEditUserInput,
-        staticData: ProfileEditStaticData,
-    ): ProfileEditState.PersonalInfoTabState = ProfileEditState.PersonalInfoTabState(
-        avatarUrl = userInput.avatarUrl,
-        nickname = validateNickname(userInput.nickname),
-        specializationList = staticData.specializationList,
-        specialization = userInput.specialization,
-        isSpecializationEditable = staticData.isSpecializationEditable,
-        email = staticData.email,
-        location = validateMaxLength(userInput.location),
-        socialLinks = userInput.socialLinks.entries.associate { (link, url) ->
-            link to validateMaxLength(url)
-        }.toPersistentMap(),
-    )
+    fun getScreenState(e: Throwable): ProfileEditState = ProfileEditState.Error(e)
 
     private fun mapAboutMeState(
         aboutMe: String,
