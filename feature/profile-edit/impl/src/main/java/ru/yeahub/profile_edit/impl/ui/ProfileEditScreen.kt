@@ -42,7 +42,7 @@ import ru.yeahub.core_ui.component.CoreTopTabs
 import ru.yeahub.core_ui.component.ErrorScreen
 import ru.yeahub.core_ui.component.PrimaryButton
 import ru.yeahub.core_ui.component.TopAppBarWithBottomBorder
-import ru.yeahub.core_ui.component.YeahubCoreDialog
+import ru.yeahub.core_ui.component.YeahubAlertDialog
 import ru.yeahub.core_ui.example.dynamicPreview.ProvidePreviewCompositionLocals
 import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.core_utils.common.TextOrResource
@@ -129,7 +129,7 @@ internal fun ProfileEditScreen(
                     onBack = { onEvent(ProfileEditScreenEvent.LoadData) },
                     errorText = TextOrResource.Resource(R.string.error_screen_text),
                     titleText = TextOrResource.Resource(R.string.error_screen_title_text),
-                    backText = TextOrResource.Resource(R.string.retry),
+                    backText = TextOrResource.Resource(R.string.try_again),
                     unknownErrorText = TextOrResource.Resource(R.string.unknown_error_screen_text),
                 )
             }
@@ -251,7 +251,7 @@ private fun ProfileEditContent(
     }
 
     if (state.showUnsavedChangesDialog) {
-        YeahubCoreDialog(
+        YeahubAlertDialog(
             onDismissRequest = { onEvent(ProfileEditScreenEvent.UnsavedChangesDialogDismissed) },
             titleText = stringResource(R.string.сonfirm_action),
             descriptionText = stringResource(R.string.unsaved_changes_description),
@@ -263,11 +263,11 @@ private fun ProfileEditContent(
     }
 
     if (state.showOperationErrorDialog) {
-        YeahubCoreDialog(
+        YeahubAlertDialog(
             onDismissRequest = { onEvent(ProfileEditScreenEvent.OperationErrorDialogDismissed) },
             titleText = stringResource(R.string.error_screen_title_text),
             descriptionText = stringResource(R.string.error_screen_text),
-            leftButtonText = stringResource(R.string.retry),
+            leftButtonText = stringResource(R.string.repeat),
             rightButtonText = stringResource(R.string.on_back_button_text),
             onLeftButtonClick = { onEvent(ProfileEditScreenEvent.RetryOperation) },
             onRightButtonClick = { onEvent(ProfileEditScreenEvent.OperationErrorDialogDismissed) },

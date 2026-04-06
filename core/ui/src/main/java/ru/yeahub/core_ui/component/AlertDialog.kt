@@ -9,7 +9,7 @@ import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.core_ui.theme.colors
 
 @Composable
-fun YeahubCoreDialog(
+fun YeahubAlertDialog(
     titleText: String,
     descriptionText: String,
     leftButtonText: String,
@@ -57,7 +57,7 @@ fun YeahubCoreDialog(
 @SmallScreenSizePreview
 @Composable
 fun UnsavedChangesDialogPreview() {
-    YeahubCoreDialog(
+    YeahubAlertDialog(
         titleText = "Подтвердить действие",
         descriptionText = "У вас есть несохранённые данные.\nВы хотите продолжить?",
         leftButtonText = "Да",
