@@ -33,6 +33,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.coroutines.delay
@@ -64,7 +67,6 @@ import ru.yeahub.profile_edit.impl.presentation.ProfileEditViewModel
 import ru.yeahub.profile_edit.impl.presentation.intents.ProfileEditScreenCommand
 import ru.yeahub.profile_edit.impl.presentation.intents.ProfileEditScreenEvent
 import ru.yeahub.profile_edit.impl.presentation.intents.ProfileEditScreenResult
-import ru.yeahub.profile_edit.impl.presentation.profileEditViewModelCreator
 import ru.yeahub.profile_edit.impl.ui.tabs.AboutMeContent
 import ru.yeahub.profile_edit.impl.ui.tabs.PersonalInfoContent
 import ru.yeahub.profile_edit.impl.ui.tabs.SkillsContent
@@ -397,6 +399,22 @@ fun ProfileEditLoadingPreview() {
         onEvent = {},
     )
 }
+
+/**
+ * Не финальный вид динамического первью
+ * переделаю когда будет консенсус по динамик превью
+ */
+private class ProfileEditViewModelFactory(
+    private val viewModelCreator: () -> ViewModel? = { null },
+) : ViewModelProvider.Factory {
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel> create(modelClass: Class<T>): T = viewModelCreator() as T
+}
+
+@Composable
+private inline fun <reified VM : ViewModel> profileEditViewModelCreator(noinline creator: () -> ViewModel?): VM =
+    viewModel(factory = remember { ProfileEditViewModelFactory(creator) })
 
 @Preview(showBackground = true)
 @Composable
