@@ -95,7 +95,7 @@ internal class ProfileEditScreenMapper {
         allSkills: PersistentList<DomainProfileEditSkill>,
         chosenSkills: PersistentList<DomainProfileEditSkill>,
     ): ProfileEditState.SkillsTabState = ProfileEditState.SkillsTabState(
-        listOfSkills = allSkills,
+        listOfSkills = allSkills.removeAll(chosenSkills),
         listOfChosenSkills = chosenSkills,
     )
 

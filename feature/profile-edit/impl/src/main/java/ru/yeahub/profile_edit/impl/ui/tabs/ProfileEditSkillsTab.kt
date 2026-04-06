@@ -32,7 +32,7 @@ internal fun SkillsContent(
     state: ProfileEditState.SkillsTabState,
     onEvent: (ProfileEditScreenEvent) -> Unit,
 ) {
-    val skillNames: List<String> = remember {
+    val skillNames: List<String> = remember(state.listOfSkills) {
         state.listOfSkills.map { it.name }
     }
 
