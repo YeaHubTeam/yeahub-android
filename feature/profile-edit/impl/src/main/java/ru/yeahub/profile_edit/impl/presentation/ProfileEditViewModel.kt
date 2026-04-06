@@ -53,7 +53,7 @@ internal class ProfileEditViewModel(
         aboutMe = "",
         selectedSkills = persistentListOf(),
         showUnsavedChangesDialog = false,
-        showOperationErrorDialog = false,
+        throwable = null,
     )
     private val userInputState = MutableStateFlow<UserInput>(initialUserInput)
     private var pendingRetry: (() -> Unit)? = null
@@ -76,7 +76,7 @@ internal class ProfileEditViewModel(
             aboutMe = domainData.aboutMe,
             selectedSkills = domainData.selectedSkills.toPersistentList(),
             showUnsavedChangesDialog = false,
-            showOperationErrorDialog = false,
+            throwable = null,
         )
         initialUserInput = input
         staticData = data
@@ -108,7 +108,7 @@ internal class ProfileEditViewModel(
 
         is ProfileEditScreenEvent.RetryOperation -> onRetryOperation()
         is ProfileEditScreenEvent.OperationErrorDialogDismissed -> {
-            updateInput { copy(showOperationErrorDialog = false) }
+            updateInput { copy(throwable = null) }
             pendingRetry = null
         }
 
@@ -141,7 +141,7 @@ internal class ProfileEditViewModel(
     }
 
     private fun onRetryOperation() {
-        updateInput { copy(showOperationErrorDialog = false) }
+        updateInput { copy(throwable = null) }
         pendingRetry!!.invoke()
         pendingRetry = null
     }
@@ -200,9 +200,9 @@ internal class ProfileEditViewModel(
                 )
             }
                 .onSuccess { emitCommand(ProfileEditScreenCommand.NavigateToProfile) }
-                .onFailure {
+                .onFailure { throwable ->
                     pendingRetry = ::onSaveProfile
-                    updateInput { copy(showOperationErrorDialog = true) }
+                    updateInput { copy(throwable = throwable) }
                 }
         }
     }
@@ -213,12 +213,12 @@ internal class ProfileEditViewModel(
         viewModelScopeSafe.launch {
             runCatching { uploadAvatar(uri) }
                 .onSuccess { newUrl -> updateInput { copy(avatarUrl = newUrl) } }
-                .onFailure {
+                .onFailure { throwable ->
                     pendingRetry = { onAvatarSelected(uri) }
                     updateInput {
                         copy(
                             avatarUrl = previousAvatarUrl,
-                            showOperationErrorDialog = true,
+                            throwable = throwable,
                         )
                     }
                 }
@@ -230,12 +230,12 @@ internal class ProfileEditViewModel(
         updateInput { copy(avatarUrl = null) }
         viewModelScopeSafe.launch {
             runCatching { deleteAvatar() }
-                .onFailure {
+                .onFailure { throwable ->
                     pendingRetry = ::onDeleteAvatar
                     updateInput {
                         copy(
                             avatarUrl = previousAvatarUrl,
-                            showOperationErrorDialog = true,
+                            throwable = throwable,
                         )
                     }
                 }
@@ -254,7 +254,7 @@ internal data class UserInput(
     val aboutMe: String,
     val selectedSkills: PersistentList<DomainProfileEditSkill>,
     val showUnsavedChangesDialog: Boolean,
-    val showOperationErrorDialog: Boolean,
+    val throwable: Throwable?,
 )
 
 internal data class StaticData(

@@ -43,6 +43,7 @@ import ru.yeahub.core_ui.component.ErrorScreen
 import ru.yeahub.core_ui.component.PrimaryButton
 import ru.yeahub.core_ui.component.TopAppBarWithBottomBorder
 import ru.yeahub.core_ui.component.YeahubAlertDialog
+import ru.yeahub.core_ui.component.YeahubSnackbarWithThrowable
 import ru.yeahub.core_ui.example.dynamicPreview.ProvidePreviewCompositionLocals
 import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.core_utils.common.TextOrResource
@@ -108,6 +109,18 @@ internal fun ProfileEditScreen(
                 ) {
                     Text(text = stringResource(R.string.save))
                 }
+            }
+        },
+        snackbarHost = {
+            if (state is ProfileEditState.Loaded && state.throwable != null) {
+                YeahubSnackbarWithThrowable(
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                    throwable = state.throwable,
+                    text = stringResource(R.string.error_screen_text),
+                    actionText = stringResource(R.string.repeat),
+                    onAction = { onEvent(ProfileEditScreenEvent.RetryOperation) },
+                    onDismiss = { onEvent(ProfileEditScreenEvent.OperationErrorDialogDismissed) },
+                )
             }
         },
     ) { paddingValues ->
@@ -261,18 +274,6 @@ private fun ProfileEditContent(
             onRightButtonClick = { onEvent(ProfileEditScreenEvent.UnsavedChangesDialogDismissed) },
         )
     }
-
-    if (state.showOperationErrorDialog) {
-        YeahubAlertDialog(
-            onDismissRequest = { onEvent(ProfileEditScreenEvent.OperationErrorDialogDismissed) },
-            titleText = stringResource(R.string.error_screen_title_text),
-            descriptionText = stringResource(R.string.error_screen_text),
-            leftButtonText = stringResource(R.string.repeat),
-            rightButtonText = stringResource(R.string.on_back_button_text),
-            onLeftButtonClick = { onEvent(ProfileEditScreenEvent.RetryOperation) },
-            onRightButtonClick = { onEvent(ProfileEditScreenEvent.OperationErrorDialogDismissed) },
-        )
-    }
 }
 
 @Preview
@@ -318,8 +319,8 @@ fun ProfileEditPreview() {
             ),
         ),
         showUnsavedChangesDialog = false,
-        showOperationErrorDialog = false,
         hasValidationErrors = true,
+        throwable = null,
     )
 
     var state by remember { mutableStateOf(screenState) }
@@ -367,7 +368,7 @@ fun ProfileEditWithDialogPreview() {
             listOfChosenSkills = persistentListOf(),
         ),
         showUnsavedChangesDialog = true,
-        showOperationErrorDialog = false,
+        throwable = null,
         hasValidationErrors = false,
     )
 
