@@ -456,11 +456,11 @@ private inline fun <reified VM : ViewModel> profileEditViewModelCreator(noinline
 @Composable
 internal fun ProfileEditScreenDynamicPreview() {
     val mockGetProfile = object : GetProfileUseCase {
-        private var firstCall = true
+        private var numberOfCalls: Int = 0
         override suspend fun invoke(): DomainProfileEditData {
             delay(DYNAMIC_PREVIEW_LOAD_DELAY)
-            if (firstCall) {
-                firstCall = false
+            numberOfCalls++
+            if (numberOfCalls < 3) {
                 throw IOException()
             }
             return DomainProfileEditData(
