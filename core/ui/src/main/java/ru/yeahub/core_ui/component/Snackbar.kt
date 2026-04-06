@@ -20,13 +20,13 @@ import ru.yeahub.core_ui.example.dynamicPreview.SmallScreenSizePreview
 import ru.yeahub.core_ui.theme.Theme
 
 @Composable
-fun YeahubSnackbarWithThrowable(
-    text: String,
+fun YeahubSnackbar(
+    title: String,
     buttonText: String,
     onButtonClick: () -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
-    errorMessage: String? = null,
+    description: String,
 ) {
     Surface(
         modifier = modifier.fillMaxWidth(),
@@ -36,14 +36,12 @@ fun YeahubSnackbarWithThrowable(
     ) {
         Box(modifier = Modifier.padding(16.dp)) {
             Column(modifier = Modifier.fillMaxWidth()) {
-                Text(text, style = Theme.typography.body3, color = Theme.colors.white900)
-                if (errorMessage != null) {
-                    Text(
-                        text = errorMessage,
-                        style = Theme.typography.body3,
-                        color = Theme.colors.white900,
-                    )
-                }
+                Text(title, style = Theme.typography.body3, color = Theme.colors.white900)
+                Text(
+                    text = description,
+                    style = Theme.typography.body2,
+                    color = Theme.colors.white900,
+                )
                 SecondaryButton(
                     onClick = onButtonClick,
                     modifier = Modifier.align(Alignment.End),
@@ -64,9 +62,9 @@ fun YeahubSnackbarWithThrowable(
 @SmallScreenSizePreview
 @Composable
 fun YeahubSnackbarPreview() {
-    YeahubSnackbarWithThrowable(
-        text = "Не удалось выполнить операцию",
-        errorMessage = "Ошибка сети",
+    YeahubSnackbar(
+        title = "Не удалось выполнить операцию",
+        description = "Ошибка сети",
         buttonText = "Повторить",
         onButtonClick = {},
         onDismiss = {},

@@ -46,7 +46,7 @@ import ru.yeahub.core_ui.component.ErrorScreen
 import ru.yeahub.core_ui.component.PrimaryButton
 import ru.yeahub.core_ui.component.TopAppBarWithBottomBorder
 import ru.yeahub.core_ui.component.YeahubAlertDialog
-import ru.yeahub.core_ui.component.YeahubSnackbarWithThrowable
+import ru.yeahub.core_ui.component.YeahubSnackbar
 import ru.yeahub.core_ui.example.dynamicPreview.ProvidePreviewCompositionLocals
 import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.core_utils.common.TextOrResource
@@ -117,10 +117,10 @@ internal fun ProfileEditScreen(
             if (state is ProfileEditState.Loaded && state.snackbarState != null) {
                 val context = LocalContext.current
                 val snackbar = state.snackbarState
-                YeahubSnackbarWithThrowable(
+                YeahubSnackbar(
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                    text = snackbar.message.getString(context),
-                    errorMessage = snackbar.throwableMessage,
+                    title = snackbar.message.getString(context),
+                    description = snackbar.throwableMessage,
                     buttonText = stringResource(R.string.repeat),
                     onButtonClick = { onEvent(ProfileEditScreenEvent.SnackbarRetryPressed) },
                     onDismiss = { onEvent(ProfileEditScreenEvent.ErrorSnackbarDismissed) },
