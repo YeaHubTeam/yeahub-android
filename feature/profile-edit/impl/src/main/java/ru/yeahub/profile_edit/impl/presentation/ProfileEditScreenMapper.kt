@@ -9,37 +9,47 @@ import ru.yeahub.ui.R
 internal class ProfileEditScreenMapper {
 
     fun getScreenState(
-        userInput: UserInput,
-        staticData: StaticData,
+        mutableState: ProfileEditMutableState,
+        viewModelStaticData: ViewModelStaticData,
     ): ProfileEditState {
-        val nicknameField = validateNickname(userInput.nickname)
-        val locationField = validateMaxLength(userInput.location)
-        val socialLinksFields = userInput.socialLinks.entries.associate { (platform, url) ->
-            platform to validateMaxLength(url)
-        }.toPersistentMap()
-
+        val nicknameField = validateNickname(mutableState.userInput.nickname)
+        val locationField = validateMaxLength(mutableState.userInput.location)
+        val socialLinksFields =
+            mutableState.userInput.socialLinks.entries.associate { (platform, url) ->
+                platform to validateMaxLength(url)
+            }.toPersistentMap()
         val validatedFields = listOf(nicknameField, locationField) + socialLinksFields.values
-
         return ProfileEditState.Loaded(
             personalInfoState = ProfileEditState.PersonalInfoTabState(
-                avatarUrl = userInput.avatarUrl,
+                avatarUrl = mutableState.userInput.avatarUrl,
                 nickname = nicknameField,
-                specializationList = staticData.specializationList,
-                specialization = userInput.specialization,
-                isSpecializationEditable = staticData.isSpecializationEditable,
-                email = staticData.email,
+                specializationList = viewModelStaticData.staticData.specializationList,
+                specialization = mutableState.userInput.specialization,
+                isSpecializationEditable = viewModelStaticData.staticData.isSpecializationEditable,
+                email = viewModelStaticData.staticData.email,
                 location = locationField,
                 socialLinks = socialLinksFields,
             ),
-            aboutMeTabState = mapAboutMeState(userInput.aboutMe),
-            skillsTabState = mapSkillsState(staticData.allSkills, userInput.selectedSkills),
-            showUnsavedChangesDialog = userInput.showUnsavedChangesDialog,
-            throwable = userInput.throwable,
+            aboutMeTabState = mapAboutMeState(mutableState.userInput.aboutMe),
+            skillsTabState = mapSkillsState(
+                allSkills = viewModelStaticData.staticData.allSkills,
+                chosenSkills = mutableState.userInput.selectedSkills,
+            ),
+            showUnsavedChangesDialog = mutableState.showUnsavedChangesDialog,
+            snackbarState = mapSnackbarState(mutableState.throwable),
             hasValidationErrors = validatedFields.any { it.error != null },
         )
     }
 
     fun getScreenState(e: Throwable): ProfileEditState = ProfileEditState.Error(e)
+
+    private fun mapSnackbarState(throwable: Throwable?): ProfileEditState.SnackbarState? {
+        if (throwable == null) return null
+        return ProfileEditState.SnackbarState(
+            message = TextOrResource.Resource(R.string.error_screen_text),
+            throwableMessage = throwable.localizedMessage ?: throwable.toString(),
+        )
+    }
 
     private fun mapAboutMeState(
         aboutMe: String,
