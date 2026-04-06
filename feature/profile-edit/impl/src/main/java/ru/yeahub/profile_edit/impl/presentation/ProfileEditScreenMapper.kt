@@ -91,5 +91,8 @@ internal class ProfileEditScreenMapper {
         const val MIN_NICKNAME_LENGTH = 2
         const val MAX_NICKNAME_LENGTH = 30
         const val MAX_FIELD_LENGTH = 255
+        const val HTTP_UNAUTHORIZED = 401
+        const val HTTP_FORBIDDEN = 403
+        const val HTTP_NOT_FOUND = 404
     }
 }
