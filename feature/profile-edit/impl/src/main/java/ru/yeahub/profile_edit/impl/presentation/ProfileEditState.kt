@@ -6,7 +6,7 @@ import ru.yeahub.core_utils.common.TextOrResource
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSkill
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSocialPlatform
 
-internal sealed interface ProfileEditState {
+sealed interface ProfileEditState {
 
     data object Loading : ProfileEditState
 

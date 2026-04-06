@@ -4,7 +4,7 @@ import android.net.Uri
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSkill
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSocialPlatform
 
-internal sealed interface ProfileEditScreenEvent {
+sealed interface ProfileEditScreenEvent {
 
     data object RetryPressed : ProfileEditScreenEvent
     data object BackPressed : ProfileEditScreenEvent

@@ -75,7 +75,7 @@ import java.io.IOException
 import ru.yeahub.profile_edit.impl.R as ProfileEditR
 
 @Composable
-internal fun ProfileEditScreenHost(
+fun ProfileEditScreenHost(
     state: ProfileEditState,
     commands: SharedFlow<ProfileEditScreenCommand>,
     onResult: (ProfileEditScreenResult) -> Unit,
