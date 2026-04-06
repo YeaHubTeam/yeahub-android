@@ -112,14 +112,16 @@ internal fun ProfileEditScreen(
             }
         },
         snackbarHost = {
-            if (state is ProfileEditState.Loaded && state.throwable != null) {
+            if (state is ProfileEditState.Loaded && state.snackbarState != null) {
+                val context = LocalContext.current
+                val snackbar = state.snackbarState
                 YeahubSnackbarWithThrowable(
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                    throwable = state.throwable,
-                    text = stringResource(R.string.error_screen_text),
+                    text = snackbar.message.getString(context),
+                    errorMessage = snackbar.throwableMessage,
                     buttonText = stringResource(R.string.repeat),
-                    onButtonClick = { onEvent(ProfileEditScreenEvent.RetryOperation) },
-                    onDismiss = { onEvent(ProfileEditScreenEvent.OperationErrorDialogDismissed) },
+                    onButtonClick = { onEvent(ProfileEditScreenEvent.SnackbarRetryPressed) },
+                    onDismiss = { onEvent(ProfileEditScreenEvent.ErrorSnackbarDismissed) },
                 )
             }
         },
@@ -139,7 +141,7 @@ internal fun ProfileEditScreen(
             ) {
                 ErrorScreen(
                     error = state.throwable.localizedMessage,
-                    onBack = { onEvent(ProfileEditScreenEvent.LoadData) },
+                    onBack = { onEvent(ProfileEditScreenEvent.RetryPressed) },
                     errorText = TextOrResource.Resource(R.string.error_screen_text),
                     titleText = TextOrResource.Resource(R.string.error_screen_title_text),
                     backText = TextOrResource.Resource(R.string.try_again),
@@ -320,7 +322,7 @@ fun ProfileEditPreview() {
         ),
         showUnsavedChangesDialog = false,
         hasValidationErrors = true,
-        throwable = null,
+        snackbarState = null,
     )
 
     var state by remember { mutableStateOf(screenState) }
@@ -368,7 +370,7 @@ fun ProfileEditWithDialogPreview() {
             listOfChosenSkills = persistentListOf(),
         ),
         showUnsavedChangesDialog = true,
-        throwable = null,
+        snackbarState = null,
         hasValidationErrors = false,
     )
 
