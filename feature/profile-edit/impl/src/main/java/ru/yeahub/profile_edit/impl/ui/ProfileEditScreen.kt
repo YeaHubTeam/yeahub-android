@@ -117,8 +117,8 @@ internal fun ProfileEditScreen(
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                     throwable = state.throwable,
                     text = stringResource(R.string.error_screen_text),
-                    actionText = stringResource(R.string.repeat),
-                    onAction = { onEvent(ProfileEditScreenEvent.RetryOperation) },
+                    buttonText = stringResource(R.string.repeat),
+                    onButtonClick = { onEvent(ProfileEditScreenEvent.RetryOperation) },
                     onDismiss = { onEvent(ProfileEditScreenEvent.OperationErrorDialogDismissed) },
                 )
             }
@@ -492,4 +492,4 @@ internal fun ProfileEditScreenDynamicPreview() {
     }
 }
 
-private const val DYNAMIC_PREVIEW_LOAD_DELAY = 1_500L
+private const val DYNAMIC_PREVIEW_LOAD_DELAY = 1L

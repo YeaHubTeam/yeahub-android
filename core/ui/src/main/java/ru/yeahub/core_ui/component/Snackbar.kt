@@ -1,12 +1,19 @@
 package ru.yeahub.core_ui.component
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Snackbar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import ru.yeahub.core_ui.example.dynamicPreview.SmallScreenSizePreview
@@ -15,43 +22,46 @@ import ru.yeahub.core_ui.theme.Theme
 @Composable
 fun YeahubSnackbarWithThrowable(
     text: String,
+    buttonText: String,
+    onButtonClick: () -> Unit,
+    onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
     throwable: Throwable? = null,
-    actionText: String? = null,
-    onAction: (() -> Unit)? = null,
-    onDismiss: () -> Unit,
 ) {
-    Snackbar(
-        modifier = modifier,
-        action = if (actionText != null) {
-            { SecondaryButton(onClick = { onAction?.invoke() }) { Text(actionText) } }
-        } else {
-            null
-        },
-        dismissAction = { onDismiss },
-        actionOnNewLine = throwable != null,
+    Surface(
+        modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
-        containerColor = Theme.colors.black900,
-        contentColor = Theme.colors.white900,
-        actionContentColor = Theme.colors.purple300,
-        dismissActionContentColor = Theme.colors.white900,
+        color = Theme.colors.black900,
+        shadowElevation = 6.dp,
     ) {
-        Column {
-            Text(
-                text = text,
-                style = Theme.typography.body3,
-            )
-            if (throwable != null) {
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = throwable.localizedMessage ?: throwable.toString(),
-                    style = Theme.typography.body2,
-                    color = Theme.colors.white900.copy(alpha = 0.7f),
-                )
+        Box(modifier = Modifier.padding(16.dp)) {
+            Column(modifier = Modifier) {
+                Text(text, style = Theme.typography.body3, color = Theme.colors.white900)
+                if (throwable != null) {
+                    Text(
+                        text = throwable.localizedMessage ?: throwable.toString(),
+                        style = Theme.typography.body3,
+                        color = Theme.colors.white900,
+                    )
+                }
+                SecondaryButton(
+                    onClick = onButtonClick,
+                    Modifier.align(Alignment.End),
+                ) { Text(text = buttonText) }
+
+            }
+            IconButton(
+                onClick = onDismiss,
+                modifier = Modifier
+                    .size(20.dp)
+                    .align(Alignment.TopEnd),
+            ) {
+                Icon(Icons.Default.Close, contentDescription = null, tint = Theme.colors.white900)
             }
         }
     }
 }
+
 
 @SmallScreenSizePreview
 @Composable
@@ -59,8 +69,8 @@ fun YeahubSnackbarPreview() {
     YeahubSnackbarWithThrowable(
         text = "Не удалось выполнить операцию",
         throwable = Throwable("Ошибка сети"),
-        actionText = "Повторить",
-        onAction = {},
+        buttonText = "Повторить",
+        onButtonClick = {},
         onDismiss = {},
     )
 }
