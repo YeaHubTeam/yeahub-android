@@ -6,7 +6,7 @@ import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSocialPlatform
 
 internal sealed interface ProfileEditScreenEvent {
 
-    data object LoadData : ProfileEditScreenEvent
+    data object RetryPressed : ProfileEditScreenEvent
     data object BackPressed : ProfileEditScreenEvent
     data object DiscardChanges : ProfileEditScreenEvent
     data object UnsavedChangesDialogDismissed : ProfileEditScreenEvent
@@ -29,6 +29,6 @@ internal sealed interface ProfileEditScreenEvent {
     data class AddSkill(val skillName: String) : ProfileEditScreenEvent
     data class RemoveSkill(val skill: DomainProfileEditSkill) : ProfileEditScreenEvent
 
-    data object RetryOperation : ProfileEditScreenEvent
-    data object OperationErrorDialogDismissed : ProfileEditScreenEvent
+    data object SnackbarRetryPressed : ProfileEditScreenEvent
+    data object ErrorSnackbarDismissed : ProfileEditScreenEvent
 }
