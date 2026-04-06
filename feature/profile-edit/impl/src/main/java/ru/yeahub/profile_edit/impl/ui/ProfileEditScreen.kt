@@ -382,6 +382,39 @@ fun ProfileEditWithDialogPreview() {
     )
 }
 
+@Preview
+@Composable
+fun ProfileEditWithSnackbarPreview() {
+    val screenState = ProfileEditState.Loaded(
+        personalInfoState = ProfileEditState.PersonalInfoTabState(
+            avatarUrl = null,
+            nickname = ProfileEditState.ValidatedField("John Doe", null),
+            specializationList = persistentListOf(),
+            specialization = "Android Разработчик",
+            isSpecializationEditable = false,
+            email = "johndoe@gmail.com",
+            location = ProfileEditState.ValidatedField("Санкт-Петербург", null),
+            socialLinks = persistentMapOf(),
+        ),
+        aboutMeTabState = ProfileEditState.AboutMeTabState(aboutMeField = ""),
+        skillsTabState = ProfileEditState.SkillsTabState(
+            listOfSkills = persistentListOf(),
+            listOfChosenSkills = persistentListOf(),
+        ),
+        showUnsavedChangesDialog = false,
+        snackbarState = ProfileEditState.SnackbarState(
+            message = TextOrResource.Text("Что то пошло не так"),
+            throwableMessage = "Ошибка сети",
+        ),
+        hasValidationErrors = false,
+    )
+
+    ProfileEditScreen(
+        state = screenState,
+        onEvent = {},
+    )
+}
+
 @Preview(showBackground = true)
 @Composable
 fun ProfileEditErrorPreview() {
