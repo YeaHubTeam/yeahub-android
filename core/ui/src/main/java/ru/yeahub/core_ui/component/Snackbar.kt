@@ -25,7 +25,9 @@ fun YeahubSnackbarWithThrowable(
         modifier = modifier,
         action = if (actionText != null) {
             { SecondaryButton(onClick = { onAction?.invoke() }) { Text(actionText) } }
-        } else null,
+        } else {
+            null
+        },
         dismissAction = { onDismiss },
         actionOnNewLine = throwable != null,
         shape = RoundedCornerShape(12.dp),
