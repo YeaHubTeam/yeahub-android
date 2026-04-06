@@ -4,6 +4,7 @@ import android.net.Uri
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,6 +21,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import ru.yeahub.core_utils.BaseViewModel
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditData
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSkill
@@ -71,7 +73,9 @@ internal class ProfileEditViewModel(
         .flatMapLatest {
             flow {
                 emit(mapper.getScreenState(ProfileEditMapperInput.Loading))
-                val domainData = getProfile()
+                val domainData = withContext(Dispatchers.IO) {
+                    getProfile()
+                }
                 viewModelStaticData = ViewModelStaticData(
                     initialUserInput = UserInput(
                         avatarUrl = domainData.avatarUrl,
@@ -157,7 +161,7 @@ internal class ProfileEditViewModel(
     }
 
     private fun emitCommand(command: ProfileEditScreenCommand) {
-        viewModelScopeSafe.launch { _commands.emit(command) }
+        viewModelScopeSafe.launch(Dispatchers.IO) { _commands.emit(command) }
     }
 
     private fun handleOperationFailure(throwable: Throwable, retry: () -> Unit) {
@@ -172,7 +176,7 @@ internal class ProfileEditViewModel(
     }
 
     private fun onRetry() {
-        viewModelScopeSafe.launch { loadRetryTrigger.emit(Unit) }
+        viewModelScopeSafe.launch(Dispatchers.IO) { loadRetryTrigger.emit(Unit) }
     }
 
     private fun onBackPressed() {
@@ -194,7 +198,7 @@ internal class ProfileEditViewModel(
         if (loaded.hasValidationErrors) return
         val input = mutableState.value.userInput
         val data = viewModelStaticData.staticData
-        viewModelScopeSafe.launch {
+        viewModelScopeSafe.launch(Dispatchers.IO) {
             runCatching {
                 saveProfile(
                     DomainProfileEditData(
@@ -219,7 +223,7 @@ internal class ProfileEditViewModel(
     private fun onAvatarSelected(uri: Uri) {
         val previousAvatarUrl = mutableState.value.userInput.avatarUrl
         updateUserInput { copy(avatarUrl = uri.toString()) }
-        viewModelScopeSafe.launch {
+        viewModelScopeSafe.launch(Dispatchers.IO) {
             runCatching { uploadAvatar(uri) }
                 .onSuccess { newUrl -> updateUserInput { copy(avatarUrl = newUrl) } }
                 .onFailure {
@@ -232,7 +236,7 @@ internal class ProfileEditViewModel(
     private fun onDeleteAvatar() {
         val previousAvatarUrl = mutableState.value.userInput.avatarUrl
         updateUserInput { copy(avatarUrl = null) }
-        viewModelScopeSafe.launch {
+        viewModelScopeSafe.launch(Dispatchers.IO) {
             runCatching { deleteAvatar() }
                 .onFailure {
                     updateUserInput { copy(avatarUrl = previousAvatarUrl) }
