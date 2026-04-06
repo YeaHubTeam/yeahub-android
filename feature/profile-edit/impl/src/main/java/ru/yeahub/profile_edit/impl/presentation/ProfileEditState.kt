@@ -19,7 +19,7 @@ sealed interface ProfileEditState {
         val snackbarState: SnackbarState?,
     ) : ProfileEditState
 
-    data class Error(val throwable: Throwable) : ProfileEditState
+    data class Error(val message: TextOrResource) : ProfileEditState
 
     data class SnackbarState(
         val message: TextOrResource,

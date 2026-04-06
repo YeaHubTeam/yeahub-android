@@ -4,21 +4,22 @@ import android.net.Uri
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.suspendCancellableCoroutine
 import ru.yeahub.core_utils.BaseViewModel
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditData
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSkill
@@ -29,7 +30,6 @@ import ru.yeahub.profile_edit.impl.domain.usecase.SaveProfileUseCase
 import ru.yeahub.profile_edit.impl.domain.usecase.UploadAvatarUseCase
 import ru.yeahub.profile_edit.impl.presentation.intents.ProfileEditScreenCommand
 import ru.yeahub.profile_edit.impl.presentation.intents.ProfileEditScreenEvent
-import kotlin.coroutines.resume
 
 internal class ProfileEditViewModel(
     private val getProfile: GetProfileUseCase,
@@ -63,43 +63,52 @@ internal class ProfileEditViewModel(
             showUnsavedChangesDialog = false,
         ),
     )
-    private var pendingRetry: (() -> Unit)? = null
+    private val loadRetryTrigger = MutableSharedFlow<Unit>(replay = 1).apply { tryEmit(Unit) }
+    private var pendingOperationRetry: (() -> Unit)? = null
 
-    val screenState: StateFlow<ProfileEditState> = flow {
-        emit(ProfileEditState.Loading)
-        val domainData = getProfile()
-        viewModelStaticData = ViewModelStaticData(
-            initialUserInput = UserInput(
-                avatarUrl = domainData.avatarUrl,
-                nickname = domainData.nickname,
-                specialization = domainData.specialization.orEmpty(),
-                location = domainData.location,
-                socialLinks = domainData.socialLinks,
-                aboutMe = domainData.aboutMe,
-                selectedSkills = domainData.selectedSkills.toPersistentList(),
-            ),
-            staticData = StaticDomainData(
-                email = domainData.email,
-                specializationList = domainData.specializationList.toPersistentList(),
-                isSpecializationEditable = domainData.specialization == null,
-                allSkills = domainData.allSkills.toPersistentList(),
-            ),
-        )
-        updateMutableState { copy(userInput = viewModelStaticData.initialUserInput) }
-        emitAll(
-            mutableState.filterNotNull().map { mapper.getScreenState(it, viewModelStaticData) },
-        )
-    }.retryWhen { cause, _ ->
-        emit(mapper.getScreenState(cause))
-        suspendCancellableCoroutine { cont ->
-            pendingRetry = { cont.resume(Unit) }
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val screenState: StateFlow<ProfileEditState> = loadRetryTrigger
+        .flatMapLatest {
+            flow {
+                emit(mapper.getScreenState(ProfileEditMapperInput.Loading))
+                val domainData = getProfile()
+                viewModelStaticData = ViewModelStaticData(
+                    initialUserInput = UserInput(
+                        avatarUrl = domainData.avatarUrl,
+                        nickname = domainData.nickname,
+                        specialization = domainData.specialization.orEmpty(),
+                        location = domainData.location,
+                        socialLinks = domainData.socialLinks,
+                        aboutMe = domainData.aboutMe,
+                        selectedSkills = domainData.selectedSkills.toPersistentList(),
+                    ),
+                    staticData = StaticDomainData(
+                        email = domainData.email,
+                        specializationList = domainData.specializationList.toPersistentList(),
+                        isSpecializationEditable = domainData.specialization == null,
+                        allSkills = domainData.allSkills.toPersistentList(),
+                    ),
+                )
+                updateMutableState { copy(userInput = viewModelStaticData.initialUserInput) }
+                emitAll(
+                    mutableState.filterNotNull().map {
+                        mapper.getScreenState(
+                            ProfileEditMapperInput.Loaded(
+                                it,
+                                viewModelStaticData,
+                            ),
+                        )
+                    },
+                )
+            }.catch { cause ->
+                emit(mapper.getScreenState(ProfileEditMapperInput.Failure(cause)))
+            }
         }
-        true
-    }.stateIn(
-        scope = viewModelScopeSafe,
-        started = SharingStarted.WhileSubscribed(TIME_TO_CLEAN_UP_RESOURCES),
-        initialValue = ProfileEditState.Loading,
-    )
+        .stateIn(
+            scope = viewModelScopeSafe,
+            started = SharingStarted.WhileSubscribed(TIME_TO_CLEAN_UP_RESOURCES),
+            initialValue = ProfileEditState.Loading,
+        )
 
     private val _commands = MutableSharedFlow<ProfileEditScreenCommand>()
     val commands: SharedFlow<ProfileEditScreenCommand> = _commands.asSharedFlow()
@@ -116,7 +125,7 @@ internal class ProfileEditViewModel(
         is ProfileEditScreenEvent.SnackbarRetryPressed -> onRetrySnackbar()
         is ProfileEditScreenEvent.ErrorSnackbarDismissed -> {
             updateMutableState { copy(throwable = null) }
-            pendingRetry = null
+            pendingOperationRetry = null
         }
 
         is ProfileEditScreenEvent.UploadAvatar -> emitCommand(ProfileEditScreenCommand.ShowPhotoPicker)
@@ -152,18 +161,18 @@ internal class ProfileEditViewModel(
     }
 
     private fun handleOperationFailure(throwable: Throwable, retry: () -> Unit) {
-        pendingRetry = retry
+        pendingOperationRetry = retry
         updateMutableState { copy(throwable = throwable) }
     }
 
     private fun onRetrySnackbar() {
         updateMutableState { copy(throwable = null) }
-        onRetry()
+        pendingOperationRetry?.invoke()
+        pendingOperationRetry = null
     }
 
     private fun onRetry() {
-        pendingRetry!!.invoke()
-        pendingRetry = null
+        viewModelScopeSafe.launch { loadRetryTrigger.emit(Unit) }
     }
 
     private fun onBackPressed() {
