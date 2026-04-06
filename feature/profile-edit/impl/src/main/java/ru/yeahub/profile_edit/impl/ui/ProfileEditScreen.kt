@@ -41,6 +41,9 @@ import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
+import okhttp3.ResponseBody.Companion.toResponseBody
+import retrofit2.HttpException
+import retrofit2.Response
 import ru.yeahub.core_ui.component.CoreTopTabs
 import ru.yeahub.core_ui.component.ErrorScreen
 import ru.yeahub.core_ui.component.PrimaryButton
@@ -142,12 +145,12 @@ internal fun ProfileEditScreen(
                     .padding(paddingValues),
             ) {
                 ErrorScreen(
-                    error = state.throwable.localizedMessage,
+                    error = null,
                     onBack = { onEvent(ProfileEditScreenEvent.RetryPressed) },
                     errorText = TextOrResource.Resource(R.string.error_screen_text),
                     titleText = TextOrResource.Resource(R.string.error_screen_title_text),
                     backText = TextOrResource.Resource(R.string.try_again),
-                    unknownErrorText = TextOrResource.Resource(R.string.unknown_error_screen_text),
+                    unknownErrorText = state.message,
                 )
             }
         }
@@ -419,7 +422,7 @@ fun ProfileEditWithSnackbarPreview() {
 @Composable
 fun ProfileEditErrorPreview() {
     ProfileEditScreen(
-        state = ProfileEditState.Error(Throwable("Не удалось загрузить данные")),
+        state = ProfileEditState.Error(TextOrResource.Text("Не удалось загрузить данные")),
         onEvent = {},
     )
 }
@@ -458,7 +461,7 @@ internal fun ProfileEditScreenDynamicPreview() {
             delay(DYNAMIC_PREVIEW_LOAD_DELAY)
             if (firstCall) {
                 firstCall = false
-                throw IOException("Preview: simulated getProfile error")
+                throw IOException()
             }
             return DomainProfileEditData(
                 email = "johndoe@gmail.com",
@@ -508,7 +511,7 @@ internal fun ProfileEditScreenDynamicPreview() {
         override suspend fun invoke(uri: Uri): String {
             if (firstCall) {
                 firstCall = false
-                throw IOException("Preview: simulated uploadAvatar error")
+                throw IOException("Unauthorized")
             }
             return uri.toString()
         }
@@ -518,7 +521,9 @@ internal fun ProfileEditScreenDynamicPreview() {
         override suspend fun invoke() {
             if (firstCall) {
                 firstCall = false
-                throw IOException("Preview: simulated deleteAvatar error")
+                throw HttpException(
+                    Response.error<Any>(401, "".toResponseBody()),
+                )
             }
         }
     }
