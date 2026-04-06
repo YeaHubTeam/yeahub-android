@@ -26,7 +26,7 @@ fun YeahubSnackbarWithThrowable(
     onButtonClick: () -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
-    throwable: Throwable? = null,
+    errorMessage: String? = null,
 ) {
     Surface(
         modifier = modifier.fillMaxWidth(),
@@ -35,20 +35,19 @@ fun YeahubSnackbarWithThrowable(
         shadowElevation = 6.dp,
     ) {
         Box(modifier = Modifier.padding(16.dp)) {
-            Column(modifier = Modifier) {
+            Column(modifier = Modifier.fillMaxWidth()) {
                 Text(text, style = Theme.typography.body3, color = Theme.colors.white900)
-                if (throwable != null) {
+                if (errorMessage != null) {
                     Text(
-                        text = throwable.localizedMessage ?: throwable.toString(),
+                        text = errorMessage,
                         style = Theme.typography.body3,
                         color = Theme.colors.white900,
                     )
                 }
                 SecondaryButton(
                     onClick = onButtonClick,
-                    Modifier.align(Alignment.End),
+                    modifier = Modifier.align(Alignment.End),
                 ) { Text(text = buttonText) }
-
             }
             IconButton(
                 onClick = onDismiss,
@@ -62,13 +61,12 @@ fun YeahubSnackbarWithThrowable(
     }
 }
 
-
 @SmallScreenSizePreview
 @Composable
 fun YeahubSnackbarPreview() {
     YeahubSnackbarWithThrowable(
         text = "Не удалось выполнить операцию",
-        throwable = Throwable("Ошибка сети"),
+        errorMessage = "Ошибка сети",
         buttonText = "Повторить",
         onButtonClick = {},
         onDismiss = {},
