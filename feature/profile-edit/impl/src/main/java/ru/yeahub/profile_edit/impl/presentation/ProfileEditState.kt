@@ -16,10 +16,15 @@ internal sealed interface ProfileEditState {
         val skillsTabState: SkillsTabState,
         val showUnsavedChangesDialog: Boolean,
         val hasValidationErrors: Boolean,
-        val throwable: Throwable?,
+        val snackbarState: SnackbarState?,
     ) : ProfileEditState
 
     data class Error(val throwable: Throwable) : ProfileEditState
+
+    data class SnackbarState(
+        val message: TextOrResource,
+        val throwableMessage: String,
+    )
 
     enum class ProfileEditTabs {
         PersonalInfo,
