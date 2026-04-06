@@ -2,13 +2,32 @@ package ru.yeahub.profile_edit.impl.presentation
 
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentMap
+import retrofit2.HttpException
 import ru.yeahub.core_utils.common.TextOrResource
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSkill
 import ru.yeahub.ui.R
+import java.io.IOException
+import ru.yeahub.profile_edit.impl.R as ProfileEditR
+
+internal sealed interface ProfileEditMapperInput {
+    data object Loading : ProfileEditMapperInput
+    data class Loaded(
+        val mutableState: ProfileEditMutableState,
+        val staticData: ViewModelStaticData,
+    ) : ProfileEditMapperInput
+
+    data class Failure(val throwable: Throwable) : ProfileEditMapperInput
+}
 
 internal class ProfileEditScreenMapper {
 
-    fun getScreenState(
+    fun getScreenState(input: ProfileEditMapperInput): ProfileEditState = when (input) {
+        is ProfileEditMapperInput.Loading -> ProfileEditState.Loading
+        is ProfileEditMapperInput.Loaded -> mapToLoaded(input.mutableState, input.staticData)
+        is ProfileEditMapperInput.Failure -> ProfileEditState.Error(mapThrowableToMessage(input.throwable))
+    }
+
+    private fun mapToLoaded(
         mutableState: ProfileEditMutableState,
         viewModelStaticData: ViewModelStaticData,
     ): ProfileEditState {
@@ -41,12 +60,27 @@ internal class ProfileEditScreenMapper {
         )
     }
 
-    fun getScreenState(e: Throwable): ProfileEditState = ProfileEditState.Error(e)
+    private fun mapThrowableToMessage(throwable: Throwable): TextOrResource = when (throwable) {
+        is IOException -> TextOrResource.Resource(ProfileEditR.string.error_no_internet)
+        is HttpException -> when (throwable.code()) {
+            HTTP_UNAUTHORIZED -> TextOrResource.Resource(ProfileEditR.string.error_session_expired)
+            HTTP_FORBIDDEN -> TextOrResource.Resource(ProfileEditR.string.error_forbidden)
+            HTTP_NOT_FOUND -> TextOrResource.Resource(ProfileEditR.string.error_profile_not_found)
+            HTTP_PAYLOAD_TOO_LARGE -> TextOrResource.Resource(ProfileEditR.string.error_file_too_large)
+            HTTP_BAD_REQUEST, HTTP_UNPROCESSABLE ->
+                TextOrResource.Resource(ProfileEditR.string.error_invalid_data)
+
+            in HTTP_SERVER_ERROR_RANGE -> TextOrResource.Resource(ProfileEditR.string.error_server)
+            else -> TextOrResource.Resource(R.string.error_screen_text)
+        }
+
+        else -> TextOrResource.Resource(R.string.error_screen_text)
+    }
 
     private fun mapSnackbarState(throwable: Throwable?): ProfileEditState.SnackbarState? {
         if (throwable == null) return null
         return ProfileEditState.SnackbarState(
-            message = TextOrResource.Resource(R.string.error_screen_text),
+            message = mapThrowableToMessage(throwable),
             throwableMessage = throwable.localizedMessage ?: throwable.toString(),
         )
     }
@@ -92,7 +126,11 @@ internal class ProfileEditScreenMapper {
         const val MAX_NICKNAME_LENGTH = 30
         const val MAX_FIELD_LENGTH = 255
         const val HTTP_UNAUTHORIZED = 401
+        const val HTTP_BAD_REQUEST = 400
         const val HTTP_FORBIDDEN = 403
         const val HTTP_NOT_FOUND = 404
+        const val HTTP_PAYLOAD_TOO_LARGE = 413
+        const val HTTP_UNPROCESSABLE = 422
+        val HTTP_SERVER_ERROR_RANGE = 500..599
     }
 }
