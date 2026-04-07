@@ -16,7 +16,7 @@ internal sealed interface ProfileEditMapperInput {
         val staticData: ViewModelStaticData,
     ) : ProfileEditMapperInput
 
-    data class Failure(val throwable: Throwable) : ProfileEditMapperInput
+    data class Error(val throwable: Throwable) : ProfileEditMapperInput
 }
 
 internal class ProfileEditScreenMapper {
@@ -24,7 +24,7 @@ internal class ProfileEditScreenMapper {
     fun getScreenState(input: ProfileEditMapperInput): ProfileEditState = when (input) {
         is ProfileEditMapperInput.Loading -> ProfileEditState.Loading
         is ProfileEditMapperInput.Loaded -> mapToLoaded(input.mutableState, input.staticData)
-        is ProfileEditMapperInput.Failure -> ProfileEditState.Error(mapThrowableToMessage(input.throwable))
+        is ProfileEditMapperInput.Error -> ProfileEditState.Error(mapThrowableToMessage(input.throwable))
     }
 
     private fun mapToLoaded(

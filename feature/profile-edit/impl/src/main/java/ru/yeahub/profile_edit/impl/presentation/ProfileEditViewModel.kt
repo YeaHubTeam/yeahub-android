@@ -98,14 +98,14 @@ internal class ProfileEditViewModel(
                     mutableState.filterNotNull().map {
                         mapper.getScreenState(
                             ProfileEditMapperInput.Loaded(
-                                it,
+                                mutableState = it,
                                 viewModelStaticData,
                             ),
                         )
                     },
                 )
             }.catch { cause ->
-                emit(mapper.getScreenState(ProfileEditMapperInput.Failure(cause)))
+                emit(mapper.getScreenState(ProfileEditMapperInput.Error(cause)))
             }
         }
         .stateIn(
