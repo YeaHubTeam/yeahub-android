@@ -539,13 +539,12 @@ internal fun ProfileEditScreenDynamicPreview() {
     }
 
     val state by mockViewModel.screenState.collectAsState()
-    val stableOnEvent = remember { mockViewModel::onEvent }
     ProvidePreviewCompositionLocals {
         ProfileEditScreenHost(
             state = state,
             commands = mockViewModel.commands,
             onResult = {},
-            onEvent = stableOnEvent,
+            onEvent = mockViewModel::onEvent,
         )
     }
 }

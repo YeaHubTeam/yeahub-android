@@ -73,12 +73,16 @@ fun CoreTopTabs(
         divider = { HorizontalDivider(thickness = 0.dp) },
         indicator = { positions ->
             val pos = positions[selectedIndex]
+            val indicatorModifier =
+                remember(pos, indicatorHorizontalPadding, indicatorHeight, colors.indicatorColor) {
+                    Modifier
+                        .tabIndicatorOffset(pos)
+                        .padding(horizontal = indicatorHorizontalPadding)
+                        .height(indicatorHeight)
+                        .background(colors.indicatorColor)
+                }
             TabRowDefaults.SecondaryIndicator(
-                Modifier
-                    .tabIndicatorOffset(pos)
-                    .padding(horizontal = indicatorHorizontalPadding)
-                    .height(indicatorHeight)
-                    .background(colors.indicatorColor),
+                modifier = indicatorModifier,
                 color = colors.indicatorColor,
             )
         },
