@@ -126,7 +126,7 @@ internal fun ProfileEditScreen(
                     description = snackbar.throwableMessage,
                     buttonText = stringResource(R.string.repeat),
                     onButtonClick = { onEvent(ProfileEditScreenEvent.SnackbarRetryPressed) },
-                    onDismiss = { onEvent(ProfileEditScreenEvent.ErrorSnackbarDismissed) },
+                    onDismissIconClick = { onEvent(ProfileEditScreenEvent.ErrorSnackbarDismissed) },
                 )
             }
         },

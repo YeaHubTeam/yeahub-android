@@ -22,11 +22,11 @@ import ru.yeahub.core_ui.theme.Theme
 @Composable
 fun YeahubSnackbar(
     title: String,
+    description: String,
     buttonText: String,
     onButtonClick: () -> Unit,
-    onDismiss: () -> Unit,
+    onDismissIconClick: () -> Unit,
     modifier: Modifier = Modifier,
-    description: String,
 ) {
     Surface(
         modifier = modifier.fillMaxWidth(),
@@ -48,7 +48,7 @@ fun YeahubSnackbar(
                 ) { Text(text = buttonText) }
             }
             IconButton(
-                onClick = onDismiss,
+                onClick = onDismissIconClick,
                 modifier = Modifier
                     .size(20.dp)
                     .align(Alignment.TopEnd),
@@ -67,6 +67,6 @@ fun YeahubSnackbarPreview() {
         description = "Ошибка сети",
         buttonText = "Повторить",
         onButtonClick = {},
-        onDismiss = {},
+        onDismissIconClick = {},
     )
 }
