@@ -2,12 +2,12 @@ package ru.yeahub.profile_edit.impl.ui.tabs
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -42,56 +42,50 @@ internal fun SkillsContent(
         }
     }
 
-    LazyColumn(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Theme.colors.white900),
-        contentPadding = PaddingValues(top = TAB_CONTENT_TOP_PADDING),
+            .background(Theme.colors.white900)
+            .padding(top = TAB_CONTENT_TOP_PADDING),
     ) {
-        item {
-            SectionHeader(
-                title = stringResource(R.string.skills_tab),
-                description = stringResource(R.string.skills_tab_label),
-            )
-            Spacer(modifier = Modifier.height(SECTION_DESCRIPTION_ADDITIONAL_BOTTOM_SPACING))
-        }
-        item {
-            DropDownMenu(
-                title = stringResource(R.string.skills_dropdown_menu_label),
-                placeholder = stringResource(R.string.skills_dropdown_menu_placeholder),
-                items = skillNames,
-                selected = "",
-                onSelected = {
-                    onEvent(ProfileEditScreenEvent.AddSkill(skillName = it))
-                },
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-        }
-        item {
-            Text(
-                text = stringResource(R.string.skills_selected_label),
-                style = Theme.typography.body7,
-                color = Theme.colors.black900,
-            )
-            Spacer(Modifier.height(16.dp))
-            FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                state.listOfChosenSkills.forEach { skill ->
-                    SkillButton(
-                        enabled = true,
-                        activeButton = true,
-                        onClick = { },
-                        imageLeft = skill.imageRes,
-                        imageRight = R.drawable.icon_button_close,
-                        text = skill.name,
-                        onRightIconClick = { onRemoveSkill(skill) },
-                        imageSizeLeftWith = 20.dp,
-                        imageSizeLeftHigh = 20.dp,
-                        modifier = Modifier.height(42.dp),
-                    )
-                }
+        SectionHeader(
+            title = stringResource(R.string.skills_tab),
+            description = stringResource(R.string.skills_tab_label),
+        )
+        Spacer(modifier = Modifier.height(SECTION_DESCRIPTION_ADDITIONAL_BOTTOM_SPACING))
+        DropDownMenu(
+            title = stringResource(R.string.skills_dropdown_menu_label),
+            placeholder = stringResource(R.string.skills_dropdown_menu_placeholder),
+            items = skillNames,
+            selected = "",
+            onSelected = {
+                onEvent(ProfileEditScreenEvent.AddSkill(skillName = it))
+            },
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = stringResource(R.string.skills_selected_label),
+            style = Theme.typography.body7,
+            color = Theme.colors.black900,
+        )
+        Spacer(Modifier.height(16.dp))
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            state.listOfChosenSkills.forEach { skill ->
+                SkillButton(
+                    enabled = true,
+                    activeButton = true,
+                    onClick = { },
+                    imageLeft = skill.imageRes,
+                    imageRight = R.drawable.icon_button_close,
+                    text = skill.name,
+                    onRightIconClick = { onRemoveSkill(skill) },
+                    imageSizeLeftWith = 20.dp,
+                    imageSizeLeftHigh = 20.dp,
+                    modifier = Modifier.height(42.dp),
+                )
             }
         }
     }
