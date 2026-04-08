@@ -15,9 +15,7 @@ enum class LoginErrorSource {
 /**
  * Ошибка поля формы:
  * - message — текст ошибки
- * - source — источник ошибки
  */
 data class LoginFieldErrorState(
     val message: TextOrResource,
-    val source: LoginErrorSource,
 )

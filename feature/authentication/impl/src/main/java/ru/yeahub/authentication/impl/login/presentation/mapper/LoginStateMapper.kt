@@ -15,14 +15,10 @@ import ru.yeahub.core_utils.validation.EmailValidator
  */
 class LoginStateMapper {
 
-    fun getInitialRawState(): LoginRawState = LoginRawState(
+    fun getInitialRawState(): LoginRawState = LoginRawState.Initial(
         email = "",
         password = "",
         isPasswordVisible = false,
-        emailServerError = null,
-        passwordServerError = null,
-        isLoading = false,
-        isValidationEnabled = false,
     )
 
     fun getInitialState(): LoginState = mapToScreenState(
@@ -37,35 +33,71 @@ class LoginStateMapper {
             password = rawState.password,
         )
 
-        val emailError = when {
-            rawState.emailServerError != null -> rawState.emailServerError.message
-            rawState.isValidationEnabled -> localEmailError
-            else -> null
+        val formState = when (rawState) {
+            is LoginRawState.Initial -> createFormState(
+                rawState = rawState,
+                emailError = null,
+                passwordError = null,
+                localEmailError = localEmailError,
+                localPasswordError = localPasswordError,
+            )
+
+            is LoginRawState.Editing -> createFormState(
+                rawState = rawState,
+                emailError = null,
+                passwordError = null,
+                localEmailError = localEmailError,
+                localPasswordError = localPasswordError,
+            )
+
+            is LoginRawState.Validation -> createFormState(
+                rawState = rawState,
+                emailError = localEmailError,
+                passwordError = localPasswordError,
+                localEmailError = localEmailError,
+                localPasswordError = localPasswordError,
+            )
+
+            is LoginRawState.Loading -> createFormState(
+                rawState = rawState,
+                emailError = localEmailError,
+                passwordError = localPasswordError,
+                localEmailError = localEmailError,
+                localPasswordError = localPasswordError,
+            )
+
+            is LoginRawState.ServerError -> createFormState(
+                rawState = rawState,
+                emailError = rawState.emailError?.message,
+                passwordError = rawState.passwordError?.message,
+                localEmailError = localEmailError,
+                localPasswordError = localPasswordError,
+            )
         }
 
-        val passwordError = when {
-            rawState.passwordServerError != null -> rawState.passwordServerError.message
-            rawState.isValidationEnabled -> localPasswordError
-            else -> null
-        }
-
-        val isSubmitEnabled = localEmailError == null && localPasswordError == null
-
-        val formState = LoginFormState(
-            email = rawState.email,
-            password = rawState.password,
-            isPasswordVisible = rawState.isPasswordVisible,
-            emailError = emailError,
-            passwordError = passwordError,
-            isSubmitEnabled = isSubmitEnabled,
-        )
-
-        return if (rawState.isLoading) {
-            LoginState.Loading(formState = formState)
-        } else {
-            LoginState.Content(formState = formState)
+        return when (rawState) {
+            is LoginRawState.Initial -> LoginState.Initial(formState = formState)
+            is LoginRawState.Editing -> LoginState.Editing(formState = formState)
+            is LoginRawState.Validation -> LoginState.Validation(formState = formState)
+            is LoginRawState.Loading -> LoginState.Loading(formState = formState)
+            is LoginRawState.ServerError -> LoginState.ServerError(formState = formState)
         }
     }
+
+    private fun createFormState(
+        rawState: LoginRawState,
+        emailError: TextOrResource?,
+        passwordError: TextOrResource?,
+        localEmailError: TextOrResource?,
+        localPasswordError: TextOrResource?,
+    ): LoginFormState = LoginFormState(
+        email = rawState.email,
+        password = rawState.password,
+        isPasswordVisible = rawState.isPasswordVisible,
+        emailError = emailError,
+        passwordError = passwordError,
+        isSubmitEnabled = localEmailError == null && localPasswordError == null,
+    )
 
     private fun getLocalEmailError(email: String): TextOrResource? {
         if (email.isEmpty()) {

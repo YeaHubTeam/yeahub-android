@@ -21,18 +21,33 @@ data class LoginFormState(
 )
 
 /**
- * Состояние экрана логина:
- * - Content — обычное состояние формы
- * - Loading — состояние загрузки во время авторизации
+ * Состояния экрана логина:
+ * - Initial — начальное состояние
+ * - Editing — редактирование без показа локальных ошибок
+ * - Validation — редактирование с показом локальных ошибок
+ * - Loading — состояние загрузки
+ * - ServerError — состояние с серверными ошибками полей
  */
 sealed interface LoginState {
     val formState: LoginFormState
 
-    data class Content(
+    data class Initial(
+        override val formState: LoginFormState,
+    ) : LoginState
+
+    data class Editing(
+        override val formState: LoginFormState,
+    ) : LoginState
+
+    data class Validation(
         override val formState: LoginFormState,
     ) : LoginState
 
     data class Loading(
+        override val formState: LoginFormState,
+    ) : LoginState
+
+    data class ServerError(
         override val formState: LoginFormState,
     ) : LoginState
 }

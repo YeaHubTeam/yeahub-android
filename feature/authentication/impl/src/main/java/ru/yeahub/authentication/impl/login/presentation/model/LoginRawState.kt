@@ -1,21 +1,47 @@
 package ru.yeahub.authentication.impl.login.presentation.model
 
 /**
- * Внутреннее состояние ViewModel:
- * - email — текущее значение email
- * - password — текущее значение пароля
- * - isPasswordVisible — флаг видимости пароля
- * - emailServerError — серверная ошибка поля email
- * - passwordServerError — серверная ошибка поля пароля
- * - isLoading — флаг выполнения запроса
- * - isValidationEnabled — флаг показа локальных ошибок
+ * Внутренние состояния логина:
+ * - Initial — начальное состояние
+ * - Editing — редактирование без показа локальных ошибок
+ * - Validation — редактирование с показом локальных ошибок
+ * - Loading — состояние загрузки
+ * - ServerError — состояние с серверными ошибками полей
  */
-data class LoginRawState(
-    val email: String,
-    val password: String,
-    val isPasswordVisible: Boolean,
-    val emailServerError: LoginFieldErrorState?,
-    val passwordServerError: LoginFieldErrorState?,
-    val isLoading: Boolean,
-    val isValidationEnabled: Boolean,
-)
+sealed interface LoginRawState {
+    val email: String
+    val password: String
+    val isPasswordVisible: Boolean
+
+    data class Initial(
+        override val email: String,
+        override val password: String,
+        override val isPasswordVisible: Boolean,
+    ) : LoginRawState
+
+    data class Editing(
+        override val email: String,
+        override val password: String,
+        override val isPasswordVisible: Boolean,
+    ) : LoginRawState
+
+    data class Validation(
+        override val email: String,
+        override val password: String,
+        override val isPasswordVisible: Boolean,
+    ) : LoginRawState
+
+    data class Loading(
+        override val email: String,
+        override val password: String,
+        override val isPasswordVisible: Boolean,
+    ) : LoginRawState
+
+    data class ServerError(
+        override val email: String,
+        override val password: String,
+        override val isPasswordVisible: Boolean,
+        val emailError: LoginFieldErrorState?,
+        val passwordError: LoginFieldErrorState?,
+    ) : LoginRawState
+}

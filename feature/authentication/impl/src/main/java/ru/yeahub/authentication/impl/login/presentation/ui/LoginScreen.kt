@@ -33,18 +33,27 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import ru.yeahub.authentication.impl.R
 import ru.yeahub.authentication.impl.login.presentation.model.LoginAction
 import ru.yeahub.authentication.impl.login.presentation.model.LoginCommand
 import ru.yeahub.authentication.impl.login.presentation.model.LoginFormState
 import ru.yeahub.authentication.impl.login.presentation.model.LoginState
+import ru.yeahub.authentication.impl.login.presentation.preview.StandardPreviewHeight
+import ru.yeahub.authentication.impl.login.presentation.preview.StandardPreviewWidth
+import ru.yeahub.authentication.impl.login.presentation.preview.StandardScreenSizePreview
 import ru.yeahub.core_ui.component.PrimaryButton
 import ru.yeahub.core_ui.component.PrimaryTextField
 import ru.yeahub.core_ui.theme.LocalAppTypography
+import ru.yeahub.core_ui.theme.YeaHubTheme
 import ru.yeahub.core_ui.theme.colors
 import ru.yeahub.core_utils.common.TextOrResource
 
@@ -55,8 +64,7 @@ private val BlockSpacing = 14.dp
 /**
  * Корневой экран логина:
  * - показывает UI
- * - слушает команды
- * - обрабатывает Snackbar и navigation callbacks
+ * - подключает обработку команд
  */
 @Composable
 fun LoginScreen(
@@ -68,24 +76,15 @@ fun LoginScreen(
     onNavigateToForgotPassword: () -> Unit,
     modifier: Modifier,
 ) {
-    val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
 
-    LaunchedEffect(commands) {
-        commands.collect { command ->
-            when (command) {
-                LoginCommand.NavigateToMain -> onNavigateToMain()
-                LoginCommand.NavigateToSignUp -> onNavigateToSignUp()
-                LoginCommand.NavigateToForgotPassword -> onNavigateToForgotPassword()
-
-                is LoginCommand.ShowSnackbar -> {
-                    snackbarHostState.showSnackbar(
-                        message = command.message.getString(context),
-                    )
-                }
-            }
-        }
-    }
+    HandleCommands(
+        commands = commands,
+        snackbarHostState = snackbarHostState,
+        onNavigateToMain = onNavigateToMain,
+        onNavigateToSignUp = onNavigateToSignUp,
+        onNavigateToForgotPassword = onNavigateToForgotPassword,
+    )
 
     Scaffold(
         snackbarHost = {
@@ -103,7 +102,37 @@ fun LoginScreen(
 }
 
 /**
- * Переключает UI между обычным состоянием и loading.
+ * Обрабатывает одноразовые команды экрана.
+ */
+@Composable
+private fun HandleCommands(
+    commands: SharedFlow<LoginCommand>,
+    snackbarHostState: SnackbarHostState,
+    onNavigateToMain: () -> Unit,
+    onNavigateToSignUp: () -> Unit,
+    onNavigateToForgotPassword: () -> Unit,
+) {
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        commands.collect { command ->
+            when (command) {
+                LoginCommand.NavigateToMain -> onNavigateToMain()
+                LoginCommand.NavigateToSignUp -> onNavigateToSignUp()
+                LoginCommand.NavigateToForgotPassword -> onNavigateToForgotPassword()
+
+                is LoginCommand.ShowSnackbar -> {
+                    snackbarHostState.showSnackbar(
+                        message = command.message.getString(context),
+                    )
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Переключает UI между состояниями экрана.
  */
 @Composable
 private fun LoginContent(
@@ -112,7 +141,10 @@ private fun LoginContent(
     modifier: Modifier,
 ) {
     when (state) {
-        is LoginState.Content -> {
+        is LoginState.Initial,
+        is LoginState.Editing,
+        is LoginState.Validation,
+        is LoginState.ServerError -> {
             LoginFormContent(
                 formState = state.formState,
                 isLoading = false,
@@ -167,7 +199,9 @@ private fun LoginFormContent(
             title = stringResource(R.string.email_title),
             placeholder = stringResource(R.string.email_placeholder),
             error = formState.emailError,
-            keyboardOptions = KeyboardOptions.Default,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Email,
+            ),
             modifier = Modifier.fillMaxWidth(),
         )
 
@@ -241,6 +275,9 @@ private fun PasswordBlock(
             } else {
                 PasswordVisualTransformation()
             },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password,
+            ),
             trailingIcon = rememberVectorPainter(
                 image = if (isVisible) {
                     Icons.Filled.VisibilityOff
@@ -352,6 +389,286 @@ private fun BottomSignUpRow(
             modifier = Modifier.clickable(
                 onClick = onSignUpClick,
             ),
+        )
+    }
+}
+
+/**
+ * Набор состояний для dynamic preview логина.
+ */
+class LoginStatePreviewProvider : PreviewParameterProvider<LoginState> {
+
+    override val values: Sequence<LoginState> = sequenceOf(
+        LoginState.Initial(
+            formState = LoginFormState(
+                email = "",
+                password = "",
+                isPasswordVisible = false,
+                emailError = null,
+                passwordError = null,
+                isSubmitEnabled = false,
+            ),
+        ),
+        LoginState.Editing(
+            formState = LoginFormState(
+                email = "user@example.com",
+                password = "qwerty",
+                isPasswordVisible = false,
+                emailError = null,
+                passwordError = null,
+                isSubmitEnabled = true,
+            ),
+        ),
+        LoginState.Loading(
+            formState = LoginFormState(
+                email = "user@example.com",
+                password = "qwerty",
+                isPasswordVisible = false,
+                emailError = null,
+                passwordError = null,
+                isSubmitEnabled = true,
+            ),
+        ),
+        LoginState.Validation(
+            formState = LoginFormState(
+                email = "invalid-email",
+                password = "",
+                isPasswordVisible = false,
+                emailError = TextOrResource.Resource(R.string.login_email_invalid),
+                passwordError = TextOrResource.Resource(R.string.login_password_empty),
+                isSubmitEnabled = false,
+            ),
+        ),
+        LoginState.ServerError(
+            formState = LoginFormState(
+                email = "user@example.com",
+                password = "123456",
+                isPasswordVisible = false,
+                emailError = TextOrResource.Resource(R.string.login_invalid_credentials),
+                passwordError = null,
+                isSubmitEnabled = true,
+            ),
+        ),
+    )
+}
+
+/**
+ * Dynamic preview экрана логина.
+ */
+@Preview(
+    name = "Dynamic Login Preview",
+    showBackground = true,
+)
+@Composable
+fun DynamicLoginPreview(
+    @PreviewParameter(LoginStatePreviewProvider::class) state: LoginState,
+) {
+    YeaHubTheme {
+        StandardScreenSizePreview(
+            modifier = Modifier,
+            width = StandardPreviewWidth,
+            height = StandardPreviewHeight,
+            content = {
+                LoginScreen(
+                    state = state,
+                    commands = MutableSharedFlow(),
+                    onAction = {},
+                    onNavigateToMain = {},
+                    onNavigateToSignUp = {},
+                    onNavigateToForgotPassword = {},
+                    modifier = Modifier,
+                )
+            },
+        )
+    }
+}
+
+/**
+ * Static preview пустой формы.
+ */
+@Preview(
+    name = "Login Initial",
+    showBackground = true,
+)
+@Composable
+fun LoginScreenPreviewInitial() {
+    YeaHubTheme {
+        StandardScreenSizePreview(
+            modifier = Modifier,
+            width = StandardPreviewWidth,
+            height = StandardPreviewHeight,
+            content = {
+                LoginScreen(
+                    state = LoginState.Initial(
+                        formState = LoginFormState(
+                            email = "",
+                            password = "",
+                            isPasswordVisible = false,
+                            emailError = null,
+                            passwordError = null,
+                            isSubmitEnabled = false,
+                        ),
+                    ),
+                    commands = MutableSharedFlow(),
+                    onAction = {},
+                    onNavigateToMain = {},
+                    onNavigateToSignUp = {},
+                    onNavigateToForgotPassword = {},
+                    modifier = Modifier,
+                )
+            },
+        )
+    }
+}
+
+/**
+ * Static preview заполненной формы.
+ */
+@Preview(
+    name = "Login Editing",
+    showBackground = true,
+)
+@Composable
+fun LoginScreenPreviewEditing() {
+    YeaHubTheme {
+        StandardScreenSizePreview(
+            modifier = Modifier,
+            width = StandardPreviewWidth,
+            height = StandardPreviewHeight,
+            content = {
+                LoginScreen(
+                    state = LoginState.Editing(
+                        formState = LoginFormState(
+                            email = "admin@mail.ru",
+                            password = "qwerty",
+                            isPasswordVisible = false,
+                            emailError = null,
+                            passwordError = null,
+                            isSubmitEnabled = true,
+                        ),
+                    ),
+                    commands = MutableSharedFlow(),
+                    onAction = {},
+                    onNavigateToMain = {},
+                    onNavigateToSignUp = {},
+                    onNavigateToForgotPassword = {},
+                    modifier = Modifier,
+                )
+            },
+        )
+    }
+}
+
+/**
+ * Static preview состояния загрузки.
+ */
+@Preview(
+    name = "Login Loading",
+    showBackground = true,
+)
+@Composable
+fun LoginScreenPreviewLoading() {
+    YeaHubTheme {
+        StandardScreenSizePreview(
+            modifier = Modifier,
+            width = StandardPreviewWidth,
+            height = StandardPreviewHeight,
+            content = {
+                LoginScreen(
+                    state = LoginState.Loading(
+                        formState = LoginFormState(
+                            email = "admin@mail.ru",
+                            password = "qwerty",
+                            isPasswordVisible = false,
+                            emailError = null,
+                            passwordError = null,
+                            isSubmitEnabled = true,
+                        ),
+                    ),
+                    commands = MutableSharedFlow(),
+                    onAction = {},
+                    onNavigateToMain = {},
+                    onNavigateToSignUp = {},
+                    onNavigateToForgotPassword = {},
+                    modifier = Modifier,
+                )
+            },
+        )
+    }
+}
+
+/**
+ * Static preview локальных ошибок после submit.
+ */
+@Preview(
+    name = "Login Validation",
+    showBackground = true,
+)
+@Composable
+fun LoginScreenPreviewValidation() {
+    YeaHubTheme {
+        StandardScreenSizePreview(
+            modifier = Modifier,
+            width = StandardPreviewWidth,
+            height = StandardPreviewHeight,
+            content = {
+                LoginScreen(
+                    state = LoginState.Validation(
+                        formState = LoginFormState(
+                            email = "admin@",
+                            password = "",
+                            isPasswordVisible = false,
+                            emailError = TextOrResource.Resource(R.string.login_email_invalid),
+                            passwordError = TextOrResource.Resource(R.string.login_password_empty),
+                            isSubmitEnabled = false,
+                        ),
+                    ),
+                    commands = MutableSharedFlow(),
+                    onAction = {},
+                    onNavigateToMain = {},
+                    onNavigateToSignUp = {},
+                    onNavigateToForgotPassword = {},
+                    modifier = Modifier,
+                )
+            },
+        )
+    }
+}
+
+/**
+ * Static preview серверной ошибки логина.
+ */
+@Preview(
+    name = "Login Server Error",
+    showBackground = true,
+)
+@Composable
+fun LoginScreenPreviewServerError() {
+    YeaHubTheme {
+        StandardScreenSizePreview(
+            modifier = Modifier,
+            width = StandardPreviewWidth,
+            height = StandardPreviewHeight,
+            content = {
+                LoginScreen(
+                    state = LoginState.ServerError(
+                        formState = LoginFormState(
+                            email = "user@example.com",
+                            password = "123456",
+                            isPasswordVisible = false,
+                            emailError = TextOrResource.Resource(R.string.login_invalid_credentials),
+                            passwordError = null,
+                            isSubmitEnabled = true,
+                        ),
+                    ),
+                    commands = MutableSharedFlow(),
+                    onAction = {},
+                    onNavigateToMain = {},
+                    onNavigateToSignUp = {},
+                    onNavigateToForgotPassword = {},
+                    modifier = Modifier,
+                )
+            },
         )
     }
 }
