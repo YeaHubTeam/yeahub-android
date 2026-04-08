@@ -5,6 +5,7 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 import ru.yeahub.network_api.ApiService
 import ru.yeahub.network_api.models.GetCollectionsResponse
+import ru.yeahub.network_api.models.GetFeatureFlagsResponse
 import ru.yeahub.network_api.models.GetPublicQuestionResponse
 import ru.yeahub.network_api.models.GetPublicQuestionsResponse
 import ru.yeahub.network_api.models.GetSkillsResponse
@@ -61,4 +62,14 @@ interface RetrofitApiService : ApiService {
         @Query("specializations") specializationsId: Long,
         @Query("isFree") isFree: Boolean
     ): GetCollectionsResponse
+
+    @GET("feature-flags")
+    override suspend fun getFeatureFlags(
+        @Query("page") page: Int,
+        @Query("limit") limit: Int,
+        @Query("search") search: String?,
+        @Query("enabled") enabled: Boolean?,
+        @Query("roleIds") roleIds: List<Long>?,
+        @Query("clientType") clientType: String
+    ): GetFeatureFlagsResponse
 }

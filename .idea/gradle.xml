@@ -13,6 +13,8 @@
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/core" />
             <option value="$PROJECT_DIR$/core/common" />
+            <option value="$PROJECT_DIR$/core/feature-toggle-api" />
+            <option value="$PROJECT_DIR$/core/feature-toggle-impl" />
             <option value="$PROJECT_DIR$/core/navigation-api" />
             <option value="$PROJECT_DIR$/core/navigation-impl" />
             <option value="$PROJECT_DIR$/core/network-api" />
