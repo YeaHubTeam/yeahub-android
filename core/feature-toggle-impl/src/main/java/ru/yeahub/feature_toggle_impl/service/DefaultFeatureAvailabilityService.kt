@@ -52,6 +52,7 @@ internal class DefaultFeatureAvailabilityService(
         }
     }
 
+    //Загрузка флагов на старте приложения
     @Suppress("TooGenericExceptionCaught")
     private suspend fun refreshFeatureFlagsSnapshot(): FeatureFlagsSnapshot? {
         var hasLoggedRefreshFailure = false

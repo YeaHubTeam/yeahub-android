@@ -7,25 +7,31 @@ import ru.yeahub.feature_toggle_api.FeatureKeys
 
 internal class FeatureValueResolver {
 
-    private val bootstrapFallbackAvailabilityByKey =
-        createBootstrapFallbackAvailabilityByKey()
+    private val bootstrapFallbackOverrides = createBootstrapFallbackOverrides()
 
+    //Выбираем значение фичи (бэкенд или fallback)
     fun resolve(
         featureKey: FeatureKey,
         featureFlagsSnapshot: FeatureFlagsSnapshot
     ): FeatureAvailability {
         return featureFlagsSnapshot.getFeatureAvailability(featureKey = featureKey)
-            ?: bootstrapFallbackAvailabilityByKey.getValue(featureKey)
+            ?: bootstrapFallbackOverrides[featureKey]
+            ?: FeatureAvailability.fromBoolean(isAvailable = false)
     }
 
-    private fun createBootstrapFallbackAvailabilityByKey(): Map<FeatureKey, FeatureAvailability> {
-        val featureAvailabilityByKey = mapOf(
-            FeatureKeys.InterviewTrainer to FeatureAvailability.fromBoolean(
-                isAvailable = false
-            )
-        )
+    private fun createBootstrapFallbackOverrides(): Map<FeatureKey, FeatureAvailability> {
+        /**
+         * Можно добавить кастомные значения флагов
+         * в случае, если не получаем их с бэкенда
+         *
+         * Пример:
+         * FeatureKeys.InterviewTrainer to FeatureAvailability.fromBoolean(
+         *     isAvailable = true
+         * )
+         */
+        val featureAvailabilityByKey: Map<FeatureKey, FeatureAvailability> = emptyMap()
 
-        check(featureAvailabilityByKey.keys == FeatureKeys.all)
+        check(FeatureKeys.all.containsAll(featureAvailabilityByKey.keys))
 
         return featureAvailabilityByKey
     }
