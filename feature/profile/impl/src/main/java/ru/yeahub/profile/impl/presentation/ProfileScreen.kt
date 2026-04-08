@@ -590,7 +590,7 @@ fun DynamicPreviewUI() {
     val viewModel = remember {
         ProfileViewModel(
             getProfileUseCase = mockGetProfileUseCase,
-            screenMapper = ProfileScreenMapper
+            screenMapper = ProfileScreenMapper()
         )
     }
 
