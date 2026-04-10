@@ -25,7 +25,7 @@
     <string name="error_screen_title_text">УПС!</string>
     <string name="on_back_button_text">Назад</string>
     <string name="unknown_error_screen_text">Не удалось загрузить данные</string>
-    <string name="сonfirm_action">Подтвердить действие</string>
+    <string name="confirm_action">Подтвердить действие</string>
     <string name="unsaved_changes_description">У вас есть несохранённые данные.\nВы хотите продолжить?</string>
     <string name="yes">Да</string>
     <string name="no">Нет</string>
