@@ -273,7 +273,7 @@ private fun ProfileEditContent(
     if (state.showUnsavedChangesDialog) {
         YeahubAlertDialog(
             onDismissRequest = { onEvent(ProfileEditScreenEvent.UnsavedChangesDialogDismissed) },
-            titleText = stringResource(R.string.сonfirm_action),
+            titleText = stringResource(R.string.confirm_action),
             descriptionText = stringResource(R.string.unsaved_changes_description),
             leftButtonText = stringResource(R.string.yes),
             rightButtonText = stringResource(R.string.no),
