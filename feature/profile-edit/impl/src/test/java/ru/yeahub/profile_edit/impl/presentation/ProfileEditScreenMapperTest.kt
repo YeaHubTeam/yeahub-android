@@ -5,45 +5,25 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
 import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertSame
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtensionContext
 import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.Arguments
-import org.junit.jupiter.params.provider.ArgumentsProvider
 import org.junit.jupiter.params.provider.ArgumentsSource
 import retrofit2.HttpException
 import retrofit2.Response
 import ru.yeahub.core_utils.common.TextOrResource
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSkill
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSocialPlatform
+import ru.yeahub.test.TestArgumentsProvider
 import ru.yeahub.ui.R
 import java.io.IOException
-import java.util.stream.Stream
 import ru.yeahub.profile_edit.impl.R as ProfileEditR
 
-abstract class TestProfileEditArgumentsProvider<T> : ArgumentsProvider {
-    abstract fun testCases(): List<T>
-    override fun provideArguments(context: ExtensionContext?): Stream<out Arguments> =
-        testCases().map { Arguments.of(it) }.stream()
-}
+private object ProfileEditMapperTestFixtures {
 
-class ProfileEditScreenMapperTest {
+    val skillKotlin = DomainProfileEditSkill(imageRes = 1, name = "Kotlin")
+    val skillJava = DomainProfileEditSkill(imageRes = 2, name = "Java")
+    val skillAndroid = DomainProfileEditSkill(imageRes = 3, name = "Android")
 
-    private val mapper = ProfileEditScreenMapper()
-
-    companion object {
-        private val skillKotlin = DomainProfileEditSkill(imageRes = 1, name = "Kotlin")
-        private val skillJava = DomainProfileEditSkill(imageRes = 2, name = "Java")
-        private val skillAndroid = DomainProfileEditSkill(imageRes = 3, name = "Android")
-
-        private fun createHttpException(code: Int): HttpException {
-            val response = Response.error<Any>(code, "".toResponseBody(null))
-            return HttpException(response)
-        }
-    }
-
-    private fun createUserInput(
+    fun createUserInput(
         avatarUrl: String? = "https://example.com/avatar.jpg",
         nickname: String = "validNick",
         specialization: String = "Android",
@@ -61,7 +41,7 @@ class ProfileEditScreenMapperTest {
         selectedSkills = selectedSkills,
     )
 
-    private fun createStaticData(
+    fun createStaticData(
         email: String = "user@example.com",
         specializationList: PersistentList<String> = persistentListOf("Android", "iOS", "Backend"),
         isSpecializationEditable: Boolean = true,
@@ -77,7 +57,7 @@ class ProfileEditScreenMapperTest {
         allSkills = allSkills,
     )
 
-    private fun createViewModelStaticData(
+    fun createViewModelStaticData(
         initialUserInput: UserInput = createUserInput(),
         staticData: StaticDomainData = createStaticData(),
     ): ViewModelStaticData = ViewModelStaticData(
@@ -85,7 +65,7 @@ class ProfileEditScreenMapperTest {
         staticData = staticData,
     )
 
-    private fun createMutableState(
+    fun createMutableState(
         userInput: UserInput = createUserInput(),
         throwable: Throwable? = null,
         showUnsavedChangesDialog: Boolean = false,
@@ -95,7 +75,7 @@ class ProfileEditScreenMapperTest {
         showUnsavedChangesDialog = showUnsavedChangesDialog,
     )
 
-    private fun createLoadedInput(
+    fun createLoadedInput(
         mutableState: ProfileEditMutableState = createMutableState(),
         staticData: ViewModelStaticData = createViewModelStaticData(),
     ): ProfileEditMapperInput.Loaded = ProfileEditMapperInput.Loaded(
@@ -103,115 +83,90 @@ class ProfileEditScreenMapperTest {
         staticData = staticData,
     )
 
-
-    @Test
-    fun `getScreenState should return Loading when input is Loading`() {
-        val input = ProfileEditMapperInput.Loading
-        val result = mapper.getScreenState(input)
-        assertSame(ProfileEditState.Loading, result)
+    fun createHttpException(code: Int): HttpException {
+        val response = Response.error<Any>(code, "".toResponseBody(null))
+        return HttpException(response)
     }
+}
 
-    @Test
-    fun `getScreenState should return Loaded with correct content when input is Loaded`() {
-        val input = createLoadedInput()
-        val result = mapper.getScreenState(input)
-        val loaded = result as ProfileEditState.Loaded
-        assertEquals("https://example.com/avatar.jpg", loaded.personalInfoState.avatarUrl)
-        assertEquals(
-            ProfileEditState.ValidatedField("validNick", null),
-            loaded.personalInfoState.nickname,
-        )
-        assertEquals(
-            persistentListOf("Android", "iOS", "Backend"),
-            loaded.personalInfoState.specializationList,
-        )
-        assertEquals("Android", loaded.personalInfoState.specialization)
-        assertEquals(true, loaded.personalInfoState.isSpecializationEditable)
-        assertEquals("user@example.com", loaded.personalInfoState.email)
-        assertEquals(
-            ProfileEditState.ValidatedField("Moscow", null),
-            loaded.personalInfoState.location,
-        )
-        assertEquals(
-            persistentMapOf<DomainProfileEditSocialPlatform, ProfileEditState.ValidatedField>(),
-            loaded.personalInfoState.socialLinks,
-        )
-        assertEquals(ProfileEditState.AboutMeTabState("About me text"), loaded.aboutMeTabState)
-        assertEquals(persistentListOf(skillJava, skillAndroid), loaded.skillsTabState.listOfSkills)
-        assertEquals(persistentListOf(skillKotlin), loaded.skillsTabState.listOfChosenSkills)
-        assertEquals(false, loaded.showUnsavedChangesDialog)
-        assertEquals(false, loaded.hasValidationErrors)
-        assertEquals(null, loaded.snackbarState)
-    }
+internal class ProfileEditScreenMapperStateTransitionTest {
 
-    @Test
-    fun `getScreenState should return Error with mapped message when input is Error`() {
-        val input = ProfileEditMapperInput.Error(IOException("no network"))
-        val result = mapper.getScreenState(input)
-        val error = result as ProfileEditState.Error
-        assertEquals(TextOrResource.Resource(ProfileEditR.string.error_no_internet), error.message)
-    }
-
-    data class NicknameValidationTestCase(
-        val nickname: String,
-        val expectedError: TextOrResource?,
-        val expectedHasValidationErrors: Boolean,
-    )
-
-    class NicknameValidationArgumentsProvider :
-        TestProfileEditArgumentsProvider<NicknameValidationTestCase>() {
-        override fun testCases() = listOf(
-            NicknameValidationTestCase(
-                nickname = "",
-                expectedError = TextOrResource.Resource(R.string.error_minimal_length_2),
-                expectedHasValidationErrors = true,
-            ),
-            NicknameValidationTestCase(
-                nickname = "a",
-                expectedError = TextOrResource.Resource(R.string.error_minimal_length_2),
-                expectedHasValidationErrors = true,
-            ),
-            NicknameValidationTestCase(
-                nickname = "ab",
-                expectedError = null,
-                expectedHasValidationErrors = false,
-            ),
-            NicknameValidationTestCase(
-                nickname = "abc",
-                expectedError = null,
-                expectedHasValidationErrors = false,
-            ),
-            NicknameValidationTestCase(
-                nickname = "a".repeat(29),
-                expectedError = null,
-                expectedHasValidationErrors = false,
-            ),
-            NicknameValidationTestCase(
-                nickname = "a".repeat(30),
-                expectedError = null,
-                expectedHasValidationErrors = false,
-            ),
-            NicknameValidationTestCase(
-                nickname = "a".repeat(31),
-                expectedError = TextOrResource.Resource(R.string.error_max_length_30),
-                expectedHasValidationErrors = true,
-            ),
-            NicknameValidationTestCase(
-                nickname = "a".repeat(100),
-                expectedError = TextOrResource.Resource(R.string.error_max_length_30),
-                expectedHasValidationErrors = true,
-            ),
-        )
-    }
+    private val mapper = ProfileEditScreenMapper()
 
     @ParameterizedTest
-    @ArgumentsSource(NicknameValidationArgumentsProvider::class)
-    fun `getScreenState should validate nickname length boundaries`(
-        testCase: NicknameValidationTestCase,
+    @ArgumentsSource(ProfileEditScreenMapperStateTransitionArgumentsProvider::class)
+    fun `should return correct state type and content for each input type`(
+        testCase: ProfileEditScreenMapperStateTransitionTestCase,
     ) {
-        val input = createLoadedInput(
-            mutableState = createMutableState(
-                userInput = createUserInput(nickname = testCase.nickname),
+        val input = testCase.input
+        val result = mapper.getScreenState(input)
+        assertEquals(testCase.expectedResult, result)
+    }
+
+    internal data class ProfileEditScreenMapperStateTransitionTestCase(
+        val input: ProfileEditMapperInput,
+        val expectedResult: ProfileEditState,
+    )
+
+    internal class ProfileEditScreenMapperStateTransitionArgumentsProvider :
+        TestArgumentsProvider<ProfileEditScreenMapperStateTransitionTestCase>() {
+        override fun testCases() = listOf(
+            ProfileEditScreenMapperStateTransitionTestCase(
+                input = ProfileEditMapperInput.Loading,
+                expectedResult = ProfileEditState.Loading,
+            ),
+            ProfileEditScreenMapperStateTransitionTestCase(
+                input = ProfileEditMapperInput.Error(IOException("no network")),
+                expectedResult = ProfileEditState.Error(
+                    message = TextOrResource.Resource(ProfileEditR.string.error_no_internet),
+                ),
+            ),
+            ProfileEditScreenMapperStateTransitionTestCase(
+                input = ProfileEditMapperTestFixtures.createLoadedInput(),
+                expectedResult = ProfileEditState.Loaded(
+                    personalInfoState = ProfileEditState.PersonalInfoTabState(
+                        avatarUrl = "https://example.com/avatar.jpg",
+                        nickname = ProfileEditState.ValidatedField("validNick", null),
+                        specializationList = persistentListOf("Android", "iOS", "Backend"),
+                        specialization = "Android",
+                        isSpecializationEditable = true,
+                        email = "user@example.com",
+                        location = ProfileEditState.ValidatedField("Moscow", null),
+                        socialLinks = persistentMapOf(),
+                    ),
+                    aboutMeTabState = ProfileEditState.AboutMeTabState("About me text"),
+                    skillsTabState = ProfileEditState.SkillsTabState(
+                        listOfSkills = persistentListOf(
+                            ProfileEditMapperTestFixtures.skillJava,
+                            ProfileEditMapperTestFixtures.skillAndroid,
+                        ),
+                        listOfChosenSkills = persistentListOf(
+                            ProfileEditMapperTestFixtures.skillKotlin,
+                        ),
+                    ),
+                    showUnsavedChangesDialog = false,
+                    hasValidationErrors = false,
+                    snackbarState = null,
+                ),
+            ),
+        )
+    }
+}
+
+class ProfileEditScreenMapperNicknameValidationTest {
+
+    private val mapper = ProfileEditScreenMapper()
+
+    @ParameterizedTest
+    @ArgumentsSource(ProfileEditScreenMapperNicknameValidationArgumentsProvider::class)
+    fun `should validate nickname length boundaries`(
+        testCase: ProfileEditScreenMapperNicknameValidationTestCase,
+    ) {
+        val input = ProfileEditMapperTestFixtures.createLoadedInput(
+            mutableState = ProfileEditMapperTestFixtures.createMutableState(
+                userInput = ProfileEditMapperTestFixtures.createUserInput(
+                    nickname = testCase.nickname,
+                ),
             ),
         )
         val result = mapper.getScreenState(input)
@@ -221,51 +176,73 @@ class ProfileEditScreenMapperTest {
         assertEquals(testCase.expectedHasValidationErrors, loaded.hasValidationErrors)
     }
 
-    data class LocationValidationTestCase(
-        val location: String,
+    data class ProfileEditScreenMapperNicknameValidationTestCase(
+        val nickname: String,
         val expectedError: TextOrResource?,
         val expectedHasValidationErrors: Boolean,
     )
 
-    class LocationValidationArgumentsProvider :
-        TestProfileEditArgumentsProvider<LocationValidationTestCase>() {
+    class ProfileEditScreenMapperNicknameValidationArgumentsProvider :
+        TestArgumentsProvider<ProfileEditScreenMapperNicknameValidationTestCase>() {
         override fun testCases() = listOf(
-            LocationValidationTestCase(
-                location = "",
-                expectedError = null,
-                expectedHasValidationErrors = false,
-            ),
-            LocationValidationTestCase(
-                location = "a".repeat(254),
-                expectedError = null,
-                expectedHasValidationErrors = false,
-            ),
-            LocationValidationTestCase(
-                location = "a".repeat(255),
-                expectedError = null,
-                expectedHasValidationErrors = false,
-            ),
-            LocationValidationTestCase(
-                location = "a".repeat(256),
-                expectedError = TextOrResource.Resource(R.string.error_max_length_255),
+            ProfileEditScreenMapperNicknameValidationTestCase(
+                nickname = "",
+                expectedError = TextOrResource.Resource(R.string.error_minimal_length_2),
                 expectedHasValidationErrors = true,
             ),
-            LocationValidationTestCase(
-                location = "a".repeat(500),
-                expectedError = TextOrResource.Resource(R.string.error_max_length_255),
+            ProfileEditScreenMapperNicknameValidationTestCase(
+                nickname = "a",
+                expectedError = TextOrResource.Resource(R.string.error_minimal_length_2),
+                expectedHasValidationErrors = true,
+            ),
+            ProfileEditScreenMapperNicknameValidationTestCase(
+                nickname = "ab",
+                expectedError = null,
+                expectedHasValidationErrors = false,
+            ),
+            ProfileEditScreenMapperNicknameValidationTestCase(
+                nickname = "abc",
+                expectedError = null,
+                expectedHasValidationErrors = false,
+            ),
+            ProfileEditScreenMapperNicknameValidationTestCase(
+                nickname = "a".repeat(29),
+                expectedError = null,
+                expectedHasValidationErrors = false,
+            ),
+            ProfileEditScreenMapperNicknameValidationTestCase(
+                nickname = "a".repeat(30),
+                expectedError = null,
+                expectedHasValidationErrors = false,
+            ),
+            ProfileEditScreenMapperNicknameValidationTestCase(
+                nickname = "a".repeat(31),
+                expectedError = TextOrResource.Resource(R.string.error_max_length_30),
+                expectedHasValidationErrors = true,
+            ),
+            ProfileEditScreenMapperNicknameValidationTestCase(
+                nickname = "a".repeat(100),
+                expectedError = TextOrResource.Resource(R.string.error_max_length_30),
                 expectedHasValidationErrors = true,
             ),
         )
     }
+}
+
+class ProfileEditScreenMapperLocationValidationTest {
+
+    private val mapper = ProfileEditScreenMapper()
 
     @ParameterizedTest
-    @ArgumentsSource(LocationValidationArgumentsProvider::class)
-    fun `getScreenState should validate location max length`(
-        testCase: LocationValidationTestCase,
+    @ArgumentsSource(ProfileEditScreenMapperLocationValidationArgumentsProvider::class)
+    fun `should validate location max length`(
+        testCase: ProfileEditScreenMapperLocationValidationTestCase,
     ) {
-        val input = createLoadedInput(
-            mutableState = createMutableState(
-                userInput = createUserInput(location = testCase.location),
+        val input = ProfileEditMapperTestFixtures.createLoadedInput(
+            mutableState = ProfileEditMapperTestFixtures.createMutableState(
+                userInput = ProfileEditMapperTestFixtures.createUserInput(
+                    location = testCase.location,
+                ),
             ),
         )
         val result = mapper.getScreenState(input)
@@ -275,17 +252,81 @@ class ProfileEditScreenMapperTest {
         assertEquals(testCase.expectedHasValidationErrors, loaded.hasValidationErrors)
     }
 
+    data class ProfileEditScreenMapperLocationValidationTestCase(
+        val location: String,
+        val expectedError: TextOrResource?,
+        val expectedHasValidationErrors: Boolean,
+    )
 
-    data class SocialLinksValidationTestCase(
+    class ProfileEditScreenMapperLocationValidationArgumentsProvider :
+        TestArgumentsProvider<ProfileEditScreenMapperLocationValidationTestCase>() {
+        override fun testCases() = listOf(
+            ProfileEditScreenMapperLocationValidationTestCase(
+                location = "",
+                expectedError = null,
+                expectedHasValidationErrors = false,
+            ),
+            ProfileEditScreenMapperLocationValidationTestCase(
+                location = "a".repeat(254),
+                expectedError = null,
+                expectedHasValidationErrors = false,
+            ),
+            ProfileEditScreenMapperLocationValidationTestCase(
+                location = "a".repeat(255),
+                expectedError = null,
+                expectedHasValidationErrors = false,
+            ),
+            ProfileEditScreenMapperLocationValidationTestCase(
+                location = "a".repeat(256),
+                expectedError = TextOrResource.Resource(R.string.error_max_length_255),
+                expectedHasValidationErrors = true,
+            ),
+            ProfileEditScreenMapperLocationValidationTestCase(
+                location = "a".repeat(500),
+                expectedError = TextOrResource.Resource(R.string.error_max_length_255),
+                expectedHasValidationErrors = true,
+            ),
+        )
+    }
+}
+
+class ProfileEditScreenMapperSocialLinksValidationTest {
+
+    private val mapper = ProfileEditScreenMapper()
+
+    @ParameterizedTest
+    @ArgumentsSource(ProfileEditScreenMapperSocialLinksValidationArgumentsProvider::class)
+    fun `should validate social links max length`(
+        testCase: ProfileEditScreenMapperSocialLinksValidationTestCase,
+    ) {
+        val input = ProfileEditMapperTestFixtures.createLoadedInput(
+            mutableState = ProfileEditMapperTestFixtures.createMutableState(
+                userInput = ProfileEditMapperTestFixtures.createUserInput(
+                    socialLinks = testCase.socialLinks,
+                ),
+            ),
+        )
+        val result = mapper.getScreenState(input)
+        val loaded = result as ProfileEditState.Loaded
+        assertEquals(testCase.socialLinks.size, loaded.personalInfoState.socialLinks.size)
+        testCase.socialLinks.forEach { (platform, url) ->
+            val validatedField = loaded.personalInfoState.socialLinks[platform]
+            assertEquals(url, validatedField?.value)
+            assertEquals(testCase.expectedErrors[platform], validatedField?.error)
+        }
+        assertEquals(testCase.expectedHasValidationErrors, loaded.hasValidationErrors)
+    }
+
+    data class ProfileEditScreenMapperSocialLinksValidationTestCase(
         val socialLinks: Map<DomainProfileEditSocialPlatform, String>,
         val expectedErrors: Map<DomainProfileEditSocialPlatform, TextOrResource?>,
         val expectedHasValidationErrors: Boolean,
     )
 
-    class SocialLinksValidationArgumentsProvider :
-        TestProfileEditArgumentsProvider<SocialLinksValidationTestCase>() {
+    class ProfileEditScreenMapperSocialLinksValidationArgumentsProvider :
+        TestArgumentsProvider<ProfileEditScreenMapperSocialLinksValidationTestCase>() {
         override fun testCases() = listOf(
-            SocialLinksValidationTestCase(
+            ProfileEditScreenMapperSocialLinksValidationTestCase(
                 socialLinks = mapOf(
                     DomainProfileEditSocialPlatform.GitHub to "https://github.com/test",
                     DomainProfileEditSocialPlatform.Telegram to "https://t.me/test",
@@ -296,7 +337,7 @@ class ProfileEditScreenMapperTest {
                 ),
                 expectedHasValidationErrors = false,
             ),
-            SocialLinksValidationTestCase(
+            ProfileEditScreenMapperSocialLinksValidationTestCase(
                 socialLinks = mapOf(
                     DomainProfileEditSocialPlatform.GitHub to "a".repeat(255),
                 ),
@@ -305,7 +346,7 @@ class ProfileEditScreenMapperTest {
                 ),
                 expectedHasValidationErrors = false,
             ),
-            SocialLinksValidationTestCase(
+            ProfileEditScreenMapperSocialLinksValidationTestCase(
                 socialLinks = mapOf(
                     DomainProfileEditSocialPlatform.GitHub to "a".repeat(256),
                 ),
@@ -316,7 +357,7 @@ class ProfileEditScreenMapperTest {
                 ),
                 expectedHasValidationErrors = true,
             ),
-            SocialLinksValidationTestCase(
+            ProfileEditScreenMapperSocialLinksValidationTestCase(
                 socialLinks = mapOf(
                     DomainProfileEditSocialPlatform.GitHub to "a".repeat(256),
                     DomainProfileEditSocialPlatform.Telegram to "a".repeat(300),
@@ -331,112 +372,23 @@ class ProfileEditScreenMapperTest {
                 ),
                 expectedHasValidationErrors = true,
             ),
-            SocialLinksValidationTestCase(
+            ProfileEditScreenMapperSocialLinksValidationTestCase(
                 socialLinks = emptyMap(),
                 expectedErrors = emptyMap(),
                 expectedHasValidationErrors = false,
             ),
         )
     }
+}
+
+class ProfileEditScreenMapperErrorThrowableMappingTest {
+
+    private val mapper = ProfileEditScreenMapper()
 
     @ParameterizedTest
-    @ArgumentsSource(SocialLinksValidationArgumentsProvider::class)
-    fun `getScreenState should validate social links max length`(
-        testCase: SocialLinksValidationTestCase,
-    ) {
-        val input = createLoadedInput(
-            mutableState = createMutableState(
-                userInput = createUserInput(socialLinks = testCase.socialLinks),
-            ),
-        )
-        val result = mapper.getScreenState(input)
-        val loaded = result as ProfileEditState.Loaded
-        assertEquals(testCase.socialLinks.size, loaded.personalInfoState.socialLinks.size)
-        testCase.socialLinks.forEach { (platform, url) ->
-            val validatedField = loaded.personalInfoState.socialLinks[platform]
-            assertEquals(url, validatedField?.value)
-            assertEquals(testCase.expectedErrors[platform], validatedField?.error)
-        }
-        assertEquals(testCase.expectedHasValidationErrors, loaded.hasValidationErrors)
-    }
-
-    data class ErrorThrowableTestCase(
-        val throwable: Throwable,
-        val expectedMessage: TextOrResource,
-    )
-
-    class ErrorThrowableArgumentsProvider :
-        TestProfileEditArgumentsProvider<ErrorThrowableTestCase>() {
-        override fun testCases() = listOf(
-            ErrorThrowableTestCase(
-                throwable = IOException("no network"),
-                expectedMessage = TextOrResource.Resource(ProfileEditR.string.error_no_internet),
-            ),
-            ErrorThrowableTestCase(
-                throwable = createHttpException(401),
-                expectedMessage = TextOrResource.Resource(
-                    ProfileEditR.string.error_session_expired,
-                ),
-            ),
-            ErrorThrowableTestCase(
-                throwable = createHttpException(403),
-                expectedMessage = TextOrResource.Resource(ProfileEditR.string.error_forbidden),
-            ),
-            ErrorThrowableTestCase(
-                throwable = createHttpException(404),
-                expectedMessage = TextOrResource.Resource(
-                    ProfileEditR.string.error_profile_not_found,
-                ),
-            ),
-            ErrorThrowableTestCase(
-                throwable = createHttpException(413),
-                expectedMessage = TextOrResource.Resource(
-                    ProfileEditR.string.error_file_too_large,
-                ),
-            ),
-            ErrorThrowableTestCase(
-                throwable = createHttpException(400),
-                expectedMessage = TextOrResource.Resource(ProfileEditR.string.error_invalid_data),
-            ),
-            ErrorThrowableTestCase(
-                throwable = createHttpException(422),
-                expectedMessage = TextOrResource.Resource(ProfileEditR.string.error_invalid_data),
-            ),
-            ErrorThrowableTestCase(
-                throwable = createHttpException(500),
-                expectedMessage = TextOrResource.Resource(ProfileEditR.string.error_server),
-            ),
-            ErrorThrowableTestCase(
-                throwable = createHttpException(503),
-                expectedMessage = TextOrResource.Resource(ProfileEditR.string.error_server),
-            ),
-            ErrorThrowableTestCase(
-                throwable = createHttpException(599),
-                expectedMessage = TextOrResource.Resource(ProfileEditR.string.error_server),
-            ),
-            ErrorThrowableTestCase(
-                throwable = createHttpException(402),
-                expectedMessage = TextOrResource.Resource(R.string.error_screen_text),
-            ),
-            ErrorThrowableTestCase(
-                throwable = createHttpException(418),
-                expectedMessage = TextOrResource.Resource(R.string.error_screen_text),
-            ),
-            ErrorThrowableTestCase(
-                throwable = RuntimeException("unknown"),
-                expectedMessage = TextOrResource.Resource(R.string.error_screen_text),
-            ),
-            ErrorThrowableTestCase(
-                throwable = IllegalStateException("bug"),
-                expectedMessage = TextOrResource.Resource(R.string.error_screen_text),
-            ),
-        )
-    }
-
-    @ParameterizedTest
-    @ArgumentsSource(ErrorThrowableArgumentsProvider::class)
-    fun `getScreenState should map throwable to correct error message`(
-        testCase: ErrorThrowableTestCase,
+    @ArgumentsSource(ProfileEditScreenMapperErrorThrowableMappingArgumentsProvider::class)
+    fun `should map throwable to correct error message`(
+        testCase: ProfileEditScreenMapperErrorThrowableMappingTestCase,
     ) {
         val input = ProfileEditMapperInput.Error(testCase.throwable)
         val result = mapper.getScreenState(input)
@@ -444,66 +396,91 @@ class ProfileEditScreenMapperTest {
         assertEquals(testCase.expectedMessage, error.message)
     }
 
-    data class SnackbarAndDialogTestCase(
-        val throwable: Throwable?,
-        val showUnsavedChangesDialog: Boolean,
-        val expectedSnackbarMessage: TextOrResource?,
-        val expectedThrowableMessage: String?,
+    data class ProfileEditScreenMapperErrorThrowableMappingTestCase(
+        val throwable: Throwable,
+        val expectedMessage: TextOrResource,
     )
 
-    class SnackbarAndDialogArgumentsProvider :
-        TestProfileEditArgumentsProvider<SnackbarAndDialogTestCase>() {
+    class ProfileEditScreenMapperErrorThrowableMappingArgumentsProvider :
+        TestArgumentsProvider<ProfileEditScreenMapperErrorThrowableMappingTestCase>() {
         override fun testCases() = listOf(
-            SnackbarAndDialogTestCase(
-                throwable = null,
-                showUnsavedChangesDialog = false,
-                expectedSnackbarMessage = null,
-                expectedThrowableMessage = null,
+            ProfileEditScreenMapperErrorThrowableMappingTestCase(
+                throwable = IOException("no network"),
+                expectedMessage = TextOrResource.Resource(ProfileEditR.string.error_no_internet),
             ),
-            SnackbarAndDialogTestCase(
-                throwable = null,
-                showUnsavedChangesDialog = true,
-                expectedSnackbarMessage = null,
-                expectedThrowableMessage = null,
-            ),
-            SnackbarAndDialogTestCase(
-                throwable = IOException("net err"),
-                showUnsavedChangesDialog = false,
-                expectedSnackbarMessage = TextOrResource.Resource(
-                    ProfileEditR.string.error_no_internet,
+            ProfileEditScreenMapperErrorThrowableMappingTestCase(
+                throwable = ProfileEditMapperTestFixtures.createHttpException(401),
+                expectedMessage = TextOrResource.Resource(
+                    ProfileEditR.string.error_session_expired,
                 ),
-                expectedThrowableMessage = "net err",
             ),
-            SnackbarAndDialogTestCase(
-                throwable = IOException("net err"),
-                showUnsavedChangesDialog = true,
-                expectedSnackbarMessage = TextOrResource.Resource(
-                    ProfileEditR.string.error_no_internet,
+            ProfileEditScreenMapperErrorThrowableMappingTestCase(
+                throwable = ProfileEditMapperTestFixtures.createHttpException(403),
+                expectedMessage = TextOrResource.Resource(ProfileEditR.string.error_forbidden),
+            ),
+            ProfileEditScreenMapperErrorThrowableMappingTestCase(
+                throwable = ProfileEditMapperTestFixtures.createHttpException(404),
+                expectedMessage = TextOrResource.Resource(
+                    ProfileEditR.string.error_profile_not_found,
                 ),
-                expectedThrowableMessage = "net err",
             ),
-            SnackbarAndDialogTestCase(
-                throwable = RuntimeException("oops"),
-                showUnsavedChangesDialog = false,
-                expectedSnackbarMessage = TextOrResource.Resource(R.string.error_screen_text),
-                expectedThrowableMessage = "oops",
+            ProfileEditScreenMapperErrorThrowableMappingTestCase(
+                throwable = ProfileEditMapperTestFixtures.createHttpException(413),
+                expectedMessage = TextOrResource.Resource(
+                    ProfileEditR.string.error_file_too_large,
+                ),
             ),
-            SnackbarAndDialogTestCase(
-                throwable = Exception(),
-                showUnsavedChangesDialog = false,
-                expectedSnackbarMessage = TextOrResource.Resource(R.string.error_screen_text),
-                expectedThrowableMessage = Exception().toString(),
+            ProfileEditScreenMapperErrorThrowableMappingTestCase(
+                throwable = ProfileEditMapperTestFixtures.createHttpException(400),
+                expectedMessage = TextOrResource.Resource(ProfileEditR.string.error_invalid_data),
+            ),
+            ProfileEditScreenMapperErrorThrowableMappingTestCase(
+                throwable = ProfileEditMapperTestFixtures.createHttpException(422),
+                expectedMessage = TextOrResource.Resource(ProfileEditR.string.error_invalid_data),
+            ),
+            ProfileEditScreenMapperErrorThrowableMappingTestCase(
+                throwable = ProfileEditMapperTestFixtures.createHttpException(500),
+                expectedMessage = TextOrResource.Resource(ProfileEditR.string.error_server),
+            ),
+            ProfileEditScreenMapperErrorThrowableMappingTestCase(
+                throwable = ProfileEditMapperTestFixtures.createHttpException(503),
+                expectedMessage = TextOrResource.Resource(ProfileEditR.string.error_server),
+            ),
+            ProfileEditScreenMapperErrorThrowableMappingTestCase(
+                throwable = ProfileEditMapperTestFixtures.createHttpException(599),
+                expectedMessage = TextOrResource.Resource(ProfileEditR.string.error_server),
+            ),
+            ProfileEditScreenMapperErrorThrowableMappingTestCase(
+                throwable = ProfileEditMapperTestFixtures.createHttpException(402),
+                expectedMessage = TextOrResource.Resource(R.string.error_screen_text),
+            ),
+            ProfileEditScreenMapperErrorThrowableMappingTestCase(
+                throwable = ProfileEditMapperTestFixtures.createHttpException(418),
+                expectedMessage = TextOrResource.Resource(R.string.error_screen_text),
+            ),
+            ProfileEditScreenMapperErrorThrowableMappingTestCase(
+                throwable = RuntimeException("unknown"),
+                expectedMessage = TextOrResource.Resource(R.string.error_screen_text),
+            ),
+            ProfileEditScreenMapperErrorThrowableMappingTestCase(
+                throwable = IllegalStateException("bug"),
+                expectedMessage = TextOrResource.Resource(R.string.error_screen_text),
             ),
         )
     }
+}
+
+class ProfileEditScreenMapperSnackbarAndDialogTest {
+
+    private val mapper = ProfileEditScreenMapper()
 
     @ParameterizedTest
-    @ArgumentsSource(SnackbarAndDialogArgumentsProvider::class)
-    fun `getScreenState should pass through dialog flag and map snackbar state`(
-        testCase: SnackbarAndDialogTestCase,
+    @ArgumentsSource(ProfileEditScreenMapperSnackbarAndDialogArgumentsProvider::class)
+    fun `should pass through dialog flag and map snackbar state`(
+        testCase: ProfileEditScreenMapperSnackbarAndDialogTestCase,
     ) {
-        val input = createLoadedInput(
-            mutableState = createMutableState(
+        val input = ProfileEditMapperTestFixtures.createLoadedInput(
+            mutableState = ProfileEditMapperTestFixtures.createMutableState(
                 throwable = testCase.throwable,
                 showUnsavedChangesDialog = testCase.showUnsavedChangesDialog,
             ),
@@ -520,65 +497,161 @@ class ProfileEditScreenMapperTest {
         }
     }
 
-    data class SkillsMappingTestCase(
-        val allSkills: PersistentList<DomainProfileEditSkill>,
-        val chosenSkills: PersistentList<DomainProfileEditSkill>,
-        val expectedAvailableSkills: PersistentList<DomainProfileEditSkill>,
-        val expectedChosenSkills: PersistentList<DomainProfileEditSkill>,
+    data class ProfileEditScreenMapperSnackbarAndDialogTestCase(
+        val throwable: Throwable?,
+        val showUnsavedChangesDialog: Boolean,
+        val expectedSnackbarMessage: TextOrResource?,
+        val expectedThrowableMessage: String?,
     )
 
-    class SkillsMappingArgumentsProvider :
-        TestProfileEditArgumentsProvider<SkillsMappingTestCase>() {
+    class ProfileEditScreenMapperSnackbarAndDialogArgumentsProvider :
+        TestArgumentsProvider<ProfileEditScreenMapperSnackbarAndDialogTestCase>() {
         override fun testCases() = listOf(
-            SkillsMappingTestCase(
-                allSkills = persistentListOf(skillKotlin, skillJava, skillAndroid),
-                chosenSkills = persistentListOf(),
-                expectedAvailableSkills = persistentListOf(skillKotlin, skillJava, skillAndroid),
-                expectedChosenSkills = persistentListOf(),
+            ProfileEditScreenMapperSnackbarAndDialogTestCase(
+                throwable = null,
+                showUnsavedChangesDialog = false,
+                expectedSnackbarMessage = null,
+                expectedThrowableMessage = null,
             ),
-            SkillsMappingTestCase(
-                allSkills = persistentListOf(skillKotlin, skillJava, skillAndroid),
-                chosenSkills = persistentListOf(skillKotlin),
-                expectedAvailableSkills = persistentListOf(skillJava, skillAndroid),
-                expectedChosenSkills = persistentListOf(skillKotlin),
+            ProfileEditScreenMapperSnackbarAndDialogTestCase(
+                throwable = null,
+                showUnsavedChangesDialog = true,
+                expectedSnackbarMessage = null,
+                expectedThrowableMessage = null,
             ),
-            SkillsMappingTestCase(
-                allSkills = persistentListOf(skillKotlin, skillJava, skillAndroid),
-                chosenSkills = persistentListOf(skillKotlin, skillJava, skillAndroid),
-                expectedAvailableSkills = persistentListOf(),
-                expectedChosenSkills = persistentListOf(skillKotlin, skillJava, skillAndroid),
+            ProfileEditScreenMapperSnackbarAndDialogTestCase(
+                throwable = IOException("net err"),
+                showUnsavedChangesDialog = false,
+                expectedSnackbarMessage = TextOrResource.Resource(
+                    ProfileEditR.string.error_no_internet,
+                ),
+                expectedThrowableMessage = "net err",
             ),
-            SkillsMappingTestCase(
-                allSkills = persistentListOf(skillKotlin, skillJava, skillAndroid),
-                chosenSkills = persistentListOf(skillJava),
-                expectedAvailableSkills = persistentListOf(skillKotlin, skillAndroid),
-                expectedChosenSkills = persistentListOf(skillJava),
+            ProfileEditScreenMapperSnackbarAndDialogTestCase(
+                throwable = IOException("net err"),
+                showUnsavedChangesDialog = true,
+                expectedSnackbarMessage = TextOrResource.Resource(
+                    ProfileEditR.string.error_no_internet,
+                ),
+                expectedThrowableMessage = "net err",
             ),
-            SkillsMappingTestCase(
-                allSkills = persistentListOf(),
-                chosenSkills = persistentListOf(),
-                expectedAvailableSkills = persistentListOf(),
-                expectedChosenSkills = persistentListOf(),
+            ProfileEditScreenMapperSnackbarAndDialogTestCase(
+                throwable = RuntimeException("oops"),
+                showUnsavedChangesDialog = false,
+                expectedSnackbarMessage = TextOrResource.Resource(R.string.error_screen_text),
+                expectedThrowableMessage = "oops",
+            ),
+            ProfileEditScreenMapperSnackbarAndDialogTestCase(
+                throwable = Exception(),
+                showUnsavedChangesDialog = false,
+                expectedSnackbarMessage = TextOrResource.Resource(R.string.error_screen_text),
+                expectedThrowableMessage = Exception().toString(),
             ),
         )
     }
+}
+
+class ProfileEditScreenMapperSkillsMappingTest {
+
+    private val mapper = ProfileEditScreenMapper()
 
     @ParameterizedTest
-    @ArgumentsSource(SkillsMappingArgumentsProvider::class)
-    fun `getScreenState should correctly partition skills between available and chosen`(
-        testCase: SkillsMappingTestCase,
+    @ArgumentsSource(ProfileEditScreenMapperSkillsMappingArgumentsProvider::class)
+    fun `should correctly partition skills between available and chosen`(
+        testCase: ProfileEditScreenMapperSkillsMappingTestCase,
     ) {
-        val input = createLoadedInput(
-            mutableState = createMutableState(
-                userInput = createUserInput(selectedSkills = testCase.chosenSkills),
+        val input = ProfileEditMapperTestFixtures.createLoadedInput(
+            mutableState = ProfileEditMapperTestFixtures.createMutableState(
+                userInput = ProfileEditMapperTestFixtures.createUserInput(
+                    selectedSkills = testCase.chosenSkills,
+                ),
             ),
-            staticData = createViewModelStaticData(
-                staticData = createStaticData(allSkills = testCase.allSkills),
+            staticData = ProfileEditMapperTestFixtures.createViewModelStaticData(
+                staticData = ProfileEditMapperTestFixtures.createStaticData(
+                    allSkills = testCase.allSkills,
+                ),
             ),
         )
         val result = mapper.getScreenState(input)
         val loaded = result as ProfileEditState.Loaded
         assertEquals(testCase.expectedAvailableSkills, loaded.skillsTabState.listOfSkills)
         assertEquals(testCase.expectedChosenSkills, loaded.skillsTabState.listOfChosenSkills)
+    }
+
+    data class ProfileEditScreenMapperSkillsMappingTestCase(
+        val allSkills: PersistentList<DomainProfileEditSkill>,
+        val chosenSkills: PersistentList<DomainProfileEditSkill>,
+        val expectedAvailableSkills: PersistentList<DomainProfileEditSkill>,
+        val expectedChosenSkills: PersistentList<DomainProfileEditSkill>,
+    )
+
+    class ProfileEditScreenMapperSkillsMappingArgumentsProvider :
+        TestArgumentsProvider<ProfileEditScreenMapperSkillsMappingTestCase>() {
+        override fun testCases() = listOf(
+            ProfileEditScreenMapperSkillsMappingTestCase(
+                allSkills = persistentListOf(
+                    ProfileEditMapperTestFixtures.skillKotlin,
+                    ProfileEditMapperTestFixtures.skillJava,
+                    ProfileEditMapperTestFixtures.skillAndroid,
+                ),
+                chosenSkills = persistentListOf(),
+                expectedAvailableSkills = persistentListOf(
+                    ProfileEditMapperTestFixtures.skillKotlin,
+                    ProfileEditMapperTestFixtures.skillJava,
+                    ProfileEditMapperTestFixtures.skillAndroid,
+                ),
+                expectedChosenSkills = persistentListOf(),
+            ),
+            ProfileEditScreenMapperSkillsMappingTestCase(
+                allSkills = persistentListOf(
+                    ProfileEditMapperTestFixtures.skillKotlin,
+                    ProfileEditMapperTestFixtures.skillJava,
+                    ProfileEditMapperTestFixtures.skillAndroid,
+                ),
+                chosenSkills = persistentListOf(ProfileEditMapperTestFixtures.skillKotlin),
+                expectedAvailableSkills = persistentListOf(
+                    ProfileEditMapperTestFixtures.skillJava,
+                    ProfileEditMapperTestFixtures.skillAndroid,
+                ),
+                expectedChosenSkills = persistentListOf(ProfileEditMapperTestFixtures.skillKotlin),
+            ),
+            ProfileEditScreenMapperSkillsMappingTestCase(
+                allSkills = persistentListOf(
+                    ProfileEditMapperTestFixtures.skillKotlin,
+                    ProfileEditMapperTestFixtures.skillJava,
+                    ProfileEditMapperTestFixtures.skillAndroid,
+                ),
+                chosenSkills = persistentListOf(
+                    ProfileEditMapperTestFixtures.skillKotlin,
+                    ProfileEditMapperTestFixtures.skillJava,
+                    ProfileEditMapperTestFixtures.skillAndroid,
+                ),
+                expectedAvailableSkills = persistentListOf(),
+                expectedChosenSkills = persistentListOf(
+                    ProfileEditMapperTestFixtures.skillKotlin,
+                    ProfileEditMapperTestFixtures.skillJava,
+                    ProfileEditMapperTestFixtures.skillAndroid,
+                ),
+            ),
+            ProfileEditScreenMapperSkillsMappingTestCase(
+                allSkills = persistentListOf(
+                    ProfileEditMapperTestFixtures.skillKotlin,
+                    ProfileEditMapperTestFixtures.skillJava,
+                    ProfileEditMapperTestFixtures.skillAndroid,
+                ),
+                chosenSkills = persistentListOf(ProfileEditMapperTestFixtures.skillJava),
+                expectedAvailableSkills = persistentListOf(
+                    ProfileEditMapperTestFixtures.skillKotlin,
+                    ProfileEditMapperTestFixtures.skillAndroid,
+                ),
+                expectedChosenSkills = persistentListOf(ProfileEditMapperTestFixtures.skillJava),
+            ),
+            ProfileEditScreenMapperSkillsMappingTestCase(
+                allSkills = persistentListOf(),
+                chosenSkills = persistentListOf(),
+                expectedAvailableSkills = persistentListOf(),
+                expectedChosenSkills = persistentListOf(),
+            ),
+        )
     }
 }

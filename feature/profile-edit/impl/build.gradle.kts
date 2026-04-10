@@ -71,6 +71,7 @@ dependencies {
     testRuntimeOnly(libs.junit.platform.launcher)
     implementation(libs.androidx.junit.ktx)
     testImplementation(libs.mockk)
+    testImplementation(project(":core:test"))
 }
 
 tasks.withType<Test> {
