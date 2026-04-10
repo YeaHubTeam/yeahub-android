@@ -56,7 +56,7 @@ fun YeahubAlertDialog(
 
 @SmallScreenSizePreview
 @Composable
-fun UnsavedChangesDialogPreview() {
+fun YeahubAlertDialogPreview() {
     YeahubAlertDialog(
         titleText = "Подтвердить действие",
         descriptionText = "У вас есть несохранённые данные.\nВы хотите продолжить?",
