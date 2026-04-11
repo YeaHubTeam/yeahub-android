@@ -89,6 +89,12 @@ private object ProfileEditMapperTestFixtures {
     }
 }
 
+/**
+ * Проверяет, что getScreenState() возвращает корректный тип состояния и его содержимое
+ * для каждого из трёх возможных входных типов: Loading, Error, Loaded.
+ * Для Loaded сверяет весь объект целиком — все поля PersonalInfoTabState, AboutMeTabState,
+ * SkillsTabState, showUnsavedChangesDialog, hasValidationErrors, snackbarState.
+ */
 internal class ProfileEditScreenMapperStateTransitionTest {
 
     private val mapper = ProfileEditScreenMapper()
@@ -153,6 +159,12 @@ internal class ProfileEditScreenMapperStateTransitionTest {
     }
 }
 
+/**
+ * Проверяет граничные значения валидации никнейма:
+ * MIN_NICKNAME_LENGTH=2 (0, 1 → ошибка; 2, 3 → ok)
+ * MAX_NICKNAME_LENGTH=30 (29, 30 → ok; 31, 100 → ошибка).
+ * Для каждого кейса сверяет значение поля, конкретный TextOrResource в error и hasValidationErrors.
+ */
 class ProfileEditScreenMapperNicknameValidationTest {
 
     private val mapper = ProfileEditScreenMapper()
@@ -229,6 +241,11 @@ class ProfileEditScreenMapperNicknameValidationTest {
     }
 }
 
+/**
+ * Проверяет граничные значения валидации location через validateMaxLength():
+ * MAX_FIELD_LENGTH=255 (0, 254, 255 → ok; 256, 500 → ошибка).
+ * Location не имеет нижней границы — пустая строка валидна.
+ */
 class ProfileEditScreenMapperLocationValidationTest {
 
     private val mapper = ProfileEditScreenMapper()
@@ -290,6 +307,11 @@ class ProfileEditScreenMapperLocationValidationTest {
     }
 }
 
+/**
+ * Проверяет, что validateMaxLength() применяется к каждой записи в socialLinks независимо:
+ * одна ссылка в норме, одна превышает, обе превышают, пустой map.
+ * Сверяет error для каждой платформы отдельно и итоговый hasValidationErrors.
+ */
 class ProfileEditScreenMapperSocialLinksValidationTest {
 
     private val mapper = ProfileEditScreenMapper()
@@ -381,6 +403,12 @@ class ProfileEditScreenMapperSocialLinksValidationTest {
     }
 }
 
+/**
+ * Проверяет маппинг всех типов Throwable на TextOrResource в mapThrowableToMessage():
+ * IOException, все именованные HTTP-коды (401/403/404/413/400/422),
+ * диапазон 500..599 (граничные значения 500/599 и середина 503),
+ * else-ветка HttpException (402, 418) и else-ветка общая (RuntimeException, IllegalStateException).
+ */
 class ProfileEditScreenMapperErrorThrowableMappingTest {
 
     private val mapper = ProfileEditScreenMapper()
@@ -470,6 +498,12 @@ class ProfileEditScreenMapperErrorThrowableMappingTest {
     }
 }
 
+/**
+ * Проверяет два независимых поведения при маппинге Loaded:
+ * 1. showUnsavedChangesDialog передаётся в состояние без изменений (true/false).
+ * 2. snackbarState — null при throwable=null, содержит корректный message и throwableMessage иначе.
+ * Кейсы с throwable!=null дополнительно проверяют, что диалог и snackbar независимы друг от друга.
+ */
 class ProfileEditScreenMapperSnackbarAndDialogTest {
 
     private val mapper = ProfileEditScreenMapper()
@@ -551,6 +585,11 @@ class ProfileEditScreenMapperSnackbarAndDialogTest {
     }
 }
 
+/**
+ * Проверяет, что mapSkillsState() корректно разделяет навыки:
+ * listOfSkills = allSkills минус chosenSkills, listOfChosenSkills = chosenSkills.
+ * Кейсы: все доступны, один выбран (первый/средний), все выбраны, оба списка пустые.
+ */
 class ProfileEditScreenMapperSkillsMappingTest {
 
     private val mapper = ProfileEditScreenMapper()
