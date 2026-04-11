@@ -7,6 +7,8 @@ import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ArgumentsSource
+import org.junit.platform.suite.api.SelectClasses
+import org.junit.platform.suite.api.Suite
 import retrofit2.HttpException
 import retrofit2.Response
 import ru.yeahub.core_utils.common.TextOrResource
@@ -16,6 +18,18 @@ import ru.yeahub.test.TestArgumentsProvider
 import ru.yeahub.ui.R
 import java.io.IOException
 import ru.yeahub.profile_edit.impl.R as ProfileEditR
+
+@Suite
+@SelectClasses(
+    ProfileEditScreenMapperStateTransitionTest::class,
+    ProfileEditScreenMapperNicknameValidationTest::class,
+    ProfileEditScreenMapperLocationValidationTest::class,
+    ProfileEditScreenMapperSocialLinksValidationTest::class,
+    ProfileEditScreenMapperErrorThrowableMappingTest::class,
+    ProfileEditScreenMapperSnackbarAndDialogTest::class,
+    ProfileEditScreenMapperSkillsMappingTest::class,
+)
+class ProfileEditScreenMapperTest
 
 private object TestFixtures {
 
