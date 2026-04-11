@@ -1,10 +1,12 @@
 package ru.yeahub.profile_edit.impl.presentation
 
 import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.PersistentMap
 import kotlinx.collections.immutable.toPersistentMap
 import retrofit2.HttpException
 import ru.yeahub.core_utils.common.TextOrResource
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSkill
+import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSocialPlatform
 import ru.yeahub.ui.R
 import java.io.IOException
 import ru.yeahub.profile_edit.impl.R as ProfileEditR
@@ -39,7 +41,7 @@ internal class ProfileEditScreenMapper {
             }.toPersistentMap()
         val validatedFields = listOf(nicknameField, locationField) + socialLinksFields.values
         return ProfileEditState.Loaded(
-            personalInfoState = ProfileEditState.PersonalInfoTabState(
+            personalInfoState = mapPersonalInfoState(
                 avatarUrl = mutableState.userInput.avatarUrl,
                 nickname = nicknameField,
                 specializationList = viewModelStaticData.staticData.specializationList,
@@ -84,6 +86,26 @@ internal class ProfileEditScreenMapper {
             throwableMessage = throwable.localizedMessage ?: throwable.toString(),
         )
     }
+
+    private fun mapPersonalInfoState(
+        avatarUrl: String?,
+        nickname: ProfileEditState.ValidatedField,
+        specializationList: PersistentList<String>,
+        specialization: String,
+        isSpecializationEditable: Boolean,
+        email: String,
+        location: ProfileEditState.ValidatedField,
+        socialLinks: PersistentMap<DomainProfileEditSocialPlatform, ProfileEditState.ValidatedField>,
+    ): ProfileEditState.PersonalInfoTabState = ProfileEditState.PersonalInfoTabState(
+        avatarUrl = avatarUrl,
+        nickname = nickname,
+        specializationList = specializationList,
+        specialization = specialization,
+        isSpecializationEditable = isSpecializationEditable,
+        email = email,
+        location = location,
+        socialLinks = socialLinks,
+    )
 
     private fun mapAboutMeState(
         aboutMe: String,
