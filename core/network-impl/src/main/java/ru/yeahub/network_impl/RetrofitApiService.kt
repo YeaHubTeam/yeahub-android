@@ -1,15 +1,22 @@
 package ru.yeahub.network_impl
 
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.PATCH
+import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
 import ru.yeahub.network_api.ApiService
+import ru.yeahub.network_api.models.GetAdvancedUserResponse
 import ru.yeahub.network_api.models.GetCollectionsResponse
 import ru.yeahub.network_api.models.GetPublicQuestionResponse
 import ru.yeahub.network_api.models.GetPublicQuestionsResponse
 import ru.yeahub.network_api.models.GetSkillsResponse
 import ru.yeahub.network_api.models.GetSpecializationResponse
 import ru.yeahub.network_api.models.GetSpecializationsResponse
+import ru.yeahub.network_api.models.UpdateProfileRequest
+import ru.yeahub.network_api.models.UpdatePublicUserResponse
+import ru.yeahub.network_api.models.UpdateUserRequest
 
 interface RetrofitApiService : ApiService {
 
@@ -61,4 +68,19 @@ interface RetrofitApiService : ApiService {
         @Query("specializations") specializationsId: Long,
         @Query("isFree") isFree: Boolean
     ): GetCollectionsResponse
+
+    @GET("auth/profile")
+    override suspend fun getAuthProfile(): GetAdvancedUserResponse
+
+    @PUT("profiles/{id}")
+    override suspend fun updateProfile(
+        @Path("id") id: String,
+        @Body body: UpdateProfileRequest,
+    ): Any
+
+    @PATCH("users/{id}")
+    override suspend fun updateUser(
+        @Path("id") id: String,
+        @Body body: UpdateUserRequest,
+    ): UpdatePublicUserResponse
 }
