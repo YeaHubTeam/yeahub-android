@@ -15,6 +15,8 @@ import javax.net.ssl.X509TrustManager
 var a: String? = null
 var b: String? = null
 
+private const val HARDCODED_TOKEN = "TODO"
+
 val networkModule = module {
     single<Retrofit> {
         Retrofit.Builder()
@@ -62,5 +64,11 @@ fun getUnsafeOkHttpClient(): OkHttpClient {
     return OkHttpClient.Builder()
         .sslSocketFactory(sslContext.socketFactory, trustAllCerts[0] as X509TrustManager)
         .hostnameVerifier { _, _ -> true }
+        .addInterceptor { chain ->
+            val request = chain.request().newBuilder()
+                .addHeader("Authorization", "Bearer $HARDCODED_TOKEN")
+                .build()
+            chain.proceed(request)
+        }
         .build()
 }
