@@ -1,4 +1,4 @@
-package ru.yeahub.profile_edit.impl.presentation.profile_edit_mapper_tests
+package ru.yeahub.profile_edit.impl.presentation.profile_edit_screen_mapper_tests
 
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf

@@ -1,4 +1,4 @@
-package ru.yeahub.profile_edit.impl.presentation.profile_edit_mapper_tests
+package ru.yeahub.profile_edit.impl.presentation.profile_edit_screen_mapper_tests
 
 import kotlinx.collections.immutable.persistentListOf
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -16,27 +16,26 @@ import ru.yeahub.test.TestArgumentsProvider
 import ru.yeahub.ui.R
 
 /**
- * Проверяет граничные значения валидации никнейма:
- * MIN_NICKNAME_LENGTH=2 (0, 1 → ошибка; 2, 3 → ok)
- * MAX_NICKNAME_LENGTH=30 (29, 30 → ok; 31, 100 → ошибка).
- * Для каждого кейса сверяет значение поля, конкретный TextOrResource в error и hasValidationErrors.
+ * Проверяет граничные значения валидации location через validateMaxLength():
+ * MAX_FIELD_LENGTH=255 (0, 254, 255 → ok; 256, 500 → ошибка).
+ * Location не имеет нижней границы — пустая строка валидна.
  */
-class ProfileEditScreenMapperNicknameValidationTest {
+class ProfileEditScreenMapperLocationValidationTest {
 
     private val mapper = ProfileEditScreenMapper()
 
     @ParameterizedTest
-    @ArgumentsSource(ProfileEditScreenMapperNicknameValidationArgumentsProvider::class)
-    fun `should validate nickname length boundaries`(
-        testCase: ProfileEditScreenMapperNicknameValidationTestCase,
+    @ArgumentsSource(ProfileEditScreenMapperLocationValidationArgumentsProvider::class)
+    fun `should validate location max length`(
+        testCase: ProfileEditScreenMapperLocationValidationTestCase,
     ) {
         val input = ProfileEditMapperInput.Loaded(
             mutableState = ProfileEditMutableState(
                 userInput = UserInput(
                     avatarUrl = null,
-                    nickname = testCase.nickname,
+                    nickname = "validNick",
                     specialization = "",
-                    location = "",
+                    location = testCase.location,
                     socialLinks = emptyMap(),
                     aboutMe = "",
                     selectedSkills = persistentListOf(),
@@ -64,58 +63,43 @@ class ProfileEditScreenMapperNicknameValidationTest {
         )
         val result = mapper.getScreenState(input)
         val loaded = result as ProfileEditState.Loaded
-        assertEquals(testCase.nickname, loaded.personalInfoState.nickname.value)
-        assertEquals(testCase.expectedError, loaded.personalInfoState.nickname.error)
+        assertEquals(testCase.location, loaded.personalInfoState.location.value)
+        assertEquals(testCase.expectedError, loaded.personalInfoState.location.error)
         assertEquals(testCase.expectedHasValidationErrors, loaded.hasValidationErrors)
     }
 
-    data class ProfileEditScreenMapperNicknameValidationTestCase(
-        val nickname: String,
+    data class ProfileEditScreenMapperLocationValidationTestCase(
+        val location: String,
         val expectedError: TextOrResource?,
         val expectedHasValidationErrors: Boolean,
     )
 
-    class ProfileEditScreenMapperNicknameValidationArgumentsProvider :
-        TestArgumentsProvider<ProfileEditScreenMapperNicknameValidationTestCase>() {
+    class ProfileEditScreenMapperLocationValidationArgumentsProvider :
+        TestArgumentsProvider<ProfileEditScreenMapperLocationValidationTestCase>() {
         override fun testCases() = listOf(
-            ProfileEditScreenMapperNicknameValidationTestCase(
-                nickname = "",
-                expectedError = TextOrResource.Resource(R.string.error_minimal_length_2),
+            ProfileEditScreenMapperLocationValidationTestCase(
+                location = "",
+                expectedError = null,
+                expectedHasValidationErrors = false,
+            ),
+            ProfileEditScreenMapperLocationValidationTestCase(
+                location = "a".repeat(254),
+                expectedError = null,
+                expectedHasValidationErrors = false,
+            ),
+            ProfileEditScreenMapperLocationValidationTestCase(
+                location = "a".repeat(255),
+                expectedError = null,
+                expectedHasValidationErrors = false,
+            ),
+            ProfileEditScreenMapperLocationValidationTestCase(
+                location = "a".repeat(256),
+                expectedError = TextOrResource.Resource(R.string.error_max_length_255),
                 expectedHasValidationErrors = true,
             ),
-            ProfileEditScreenMapperNicknameValidationTestCase(
-                nickname = "a",
-                expectedError = TextOrResource.Resource(R.string.error_minimal_length_2),
-                expectedHasValidationErrors = true,
-            ),
-            ProfileEditScreenMapperNicknameValidationTestCase(
-                nickname = "ab",
-                expectedError = null,
-                expectedHasValidationErrors = false,
-            ),
-            ProfileEditScreenMapperNicknameValidationTestCase(
-                nickname = "abc",
-                expectedError = null,
-                expectedHasValidationErrors = false,
-            ),
-            ProfileEditScreenMapperNicknameValidationTestCase(
-                nickname = "a".repeat(29),
-                expectedError = null,
-                expectedHasValidationErrors = false,
-            ),
-            ProfileEditScreenMapperNicknameValidationTestCase(
-                nickname = "a".repeat(30),
-                expectedError = null,
-                expectedHasValidationErrors = false,
-            ),
-            ProfileEditScreenMapperNicknameValidationTestCase(
-                nickname = "a".repeat(31),
-                expectedError = TextOrResource.Resource(R.string.error_max_length_30),
-                expectedHasValidationErrors = true,
-            ),
-            ProfileEditScreenMapperNicknameValidationTestCase(
-                nickname = "a".repeat(100),
-                expectedError = TextOrResource.Resource(R.string.error_max_length_30),
+            ProfileEditScreenMapperLocationValidationTestCase(
+                location = "a".repeat(500),
+                expectedError = TextOrResource.Resource(R.string.error_max_length_255),
                 expectedHasValidationErrors = true,
             ),
         )
