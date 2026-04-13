@@ -69,7 +69,6 @@ dependencies {
     testImplementation(libs.junit.jupiter)
     testImplementation(platform(libs.junit.bom))
     testRuntimeOnly(libs.junit.platform.launcher)
-    testImplementation(libs.junit.platform.suite)
     implementation(libs.androidx.junit.ktx)
     testImplementation(libs.mockk)
     testImplementation(project(":core:test"))
