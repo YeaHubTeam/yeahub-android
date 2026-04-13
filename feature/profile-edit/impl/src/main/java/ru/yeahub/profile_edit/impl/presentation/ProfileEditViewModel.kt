@@ -43,7 +43,7 @@ internal class ProfileEditViewModel(
 
     private var viewModelStaticData: ViewModelStaticData = ViewModelStaticData(
         initialUserInput = UserInput(
-            avatarUrl = null,
+            avatarUrl = "",
             nickname = "",
             specialization = "",
             location = "",
@@ -235,7 +235,7 @@ internal class ProfileEditViewModel(
 
     private fun onDeleteAvatar() {
         val previousAvatarUrl = mutableState.value.userInput.avatarUrl
-        updateUserInput { copy(avatarUrl = null) }
+        updateUserInput { copy(avatarUrl = "") }
         viewModelScopeSafe.launch(Dispatchers.IO) {
             runCatching { deleteAvatar() }
                 .onFailure {
@@ -260,7 +260,7 @@ internal data class ViewModelStaticData(
 )
 
 internal data class UserInput(
-    val avatarUrl: String?,
+    val avatarUrl: String,
     val nickname: String,
     val specialization: String,
     val location: String,
@@ -270,7 +270,7 @@ internal data class UserInput(
 )
 
 internal data class StaticDomainData(
-    val email: String,
+    val email: String?,
     val specializationList: PersistentList<String>,
     val isSpecializationEditable: Boolean,
     val allSkills: PersistentList<DomainProfileEditSkill>,

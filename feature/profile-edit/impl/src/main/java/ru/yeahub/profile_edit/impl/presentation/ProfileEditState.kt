@@ -35,12 +35,12 @@ sealed interface ProfileEditState {
     data class ValidatedField(val value: String, val error: TextOrResource?)
 
     data class PersonalInfoTabState(
-        val avatarUrl: String?,
+        val avatarUrl: String,
         val nickname: ValidatedField,
         val specializationList: PersistentList<String>,
         val specialization: String,
         val isSpecializationEditable: Boolean,
-        val email: String,
+        val email: String?,
         val location: ValidatedField,
         val socialLinks: PersistentMap<DomainProfileEditSocialPlatform, ValidatedField>,
     )

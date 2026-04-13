@@ -10,7 +10,7 @@ data class GetAdvancedUserResponse(
     val city: String?,
     val birthday: String?,
     val address: String?,
-    val avatarUrl: String?,
+    val avatarUrl: String,
     val createdAt: String?,
     val updatedAt: String?,
     val isVerified: Boolean?,
@@ -26,7 +26,7 @@ data class GetProfileForUserResponse(
     val markingWeight: Int?,
     val description: String?,
     val socialNetwork: List<SocialNetworkDto>?,
-    val image_src: String?,
+    val imageSrc: String?,
     val isActive: Boolean?,
     val profileSkills: List<GetSkillResponse>,
 )

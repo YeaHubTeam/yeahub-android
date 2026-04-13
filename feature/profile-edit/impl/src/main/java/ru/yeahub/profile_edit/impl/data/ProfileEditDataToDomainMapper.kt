@@ -63,7 +63,7 @@ internal class ProfileEditDataToDomainMapper {
             markingWeight = cachedProfile.markingWeight,
             description = wrapInHtmlPTags(profile.aboutMe),
             socialNetwork = mapSocialLinksToDto(profile.socialLinks),
-            image_src = cachedProfile.image_src,
+            imageSrc = cachedProfile.imageSrc,
             isActive = cachedProfile.isActive,
             profileSkills = skillIds,
             user = cachedUser,
@@ -82,7 +82,7 @@ internal class ProfileEditDataToDomainMapper {
             city = profile.location,
             birthday = cachedUser.birthday,
             address = cachedUser.address,
-            avatarUrl = if (avatarDeleted) null else cachedUser.avatarUrl,
+            avatarUrl = if (avatarDeleted) "" else cachedUser.avatarUrl,
             avatarImage = avatarBase64,
         )
     }

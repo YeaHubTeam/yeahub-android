@@ -288,7 +288,7 @@ private fun ProfileEditContent(
 fun ProfileEditPreview() {
     val screenState = ProfileEditState.Loaded(
         personalInfoState = ProfileEditState.PersonalInfoTabState(
-            avatarUrl = null,
+            avatarUrl = "",
             nickname = ProfileEditState.ValidatedField(value = "Joe", error = null),
             specializationList = persistentListOf(
                 "Android разработчик",
@@ -360,7 +360,7 @@ fun ProfileEditPreview() {
 fun ProfileEditWithDialogPreview() {
     val screenState = ProfileEditState.Loaded(
         personalInfoState = ProfileEditState.PersonalInfoTabState(
-            avatarUrl = null,
+            avatarUrl = "",
             nickname = ProfileEditState.ValidatedField("John Doe", null),
             specializationList = persistentListOf(),
             specialization = "Android Разработчик",
@@ -390,7 +390,7 @@ fun ProfileEditWithDialogPreview() {
 fun ProfileEditWithSnackbarPreview() {
     val screenState = ProfileEditState.Loaded(
         personalInfoState = ProfileEditState.PersonalInfoTabState(
-            avatarUrl = null,
+            avatarUrl = "",
             nickname = ProfileEditState.ValidatedField("John Doe", null),
             specializationList = persistentListOf(),
             specialization = "Android Разработчик",
@@ -465,7 +465,7 @@ internal fun ProfileEditScreenDynamicPreview() {
             }
             return DomainProfileEditData(
                 email = "johndoe@gmail.com",
-                avatarUrl = null,
+                avatarUrl = "",
                 nickname = "JohnDoe",
                 specialization = null,
                 specializationList = listOf(

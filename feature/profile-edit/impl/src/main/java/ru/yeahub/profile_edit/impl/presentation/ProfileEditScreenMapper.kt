@@ -88,12 +88,12 @@ internal class ProfileEditScreenMapper {
     }
 
     private fun mapPersonalInfoState(
-        avatarUrl: String?,
+        avatarUrl: String,
         nickname: ProfileEditState.ValidatedField,
         specializationList: PersistentList<String>,
         specialization: String,
         isSpecializationEditable: Boolean,
-        email: String,
+        email: String?,
         location: ProfileEditState.ValidatedField,
         socialLinks: PersistentMap<DomainProfileEditSocialPlatform, ProfileEditState.ValidatedField>,
     ): ProfileEditState.PersonalInfoTabState = ProfileEditState.PersonalInfoTabState(

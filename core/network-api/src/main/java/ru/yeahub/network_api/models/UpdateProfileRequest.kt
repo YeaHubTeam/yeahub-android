@@ -6,7 +6,7 @@ data class UpdateProfileRequest(
     val markingWeight: Int?,
     val description: String?,
     val socialNetwork: List<SocialNetworkDto>?,
-    val image_src: String?,
+    val imageSrc: String?,
     val isActive: Boolean?,
     val profileSkills: List<Long>,
     val user: GetAdvancedUserResponse,

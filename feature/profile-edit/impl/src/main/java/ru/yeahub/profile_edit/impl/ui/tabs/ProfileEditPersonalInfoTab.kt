@@ -120,9 +120,9 @@ internal fun PersonalInfoContent(
         item {
             PrimaryTextField(
                 title = stringResource(R.string.profile_email_label),
-                value = state.email,
+                value = state.email ?: "",
                 onValueChange = {},
-                placeholder = stringResource(R.string.profile_nickname_placeholder),
+                placeholder = "",
                 enabled = false,
             )
             Spacer(Modifier.height(8.dp))
@@ -179,7 +179,7 @@ private fun ProfileAvatarSection(
             .height(AVATAR_HEIGHT)
             .width(AVATAR_WIDTH)
 
-        if (avatarUrl != null) {
+        if (avatarUrl != "") {
             AsyncImage(
                 model = avatarUrl,
                 contentDescription = stringResource(R.string.profile_photo),
@@ -210,7 +210,7 @@ private fun ProfileAvatarSection(
 @Composable
 fun ProfileEditPersonalInfoPreview() {
     val personalInfoState = ProfileEditState.PersonalInfoTabState(
-        avatarUrl = null,
+        avatarUrl = "",
         nickname = ProfileEditState.ValidatedField("John Doe", null),
         specializationList = persistentListOf(),
         specialization = "Android Разработчик",
