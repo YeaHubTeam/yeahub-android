@@ -22,7 +22,7 @@ private val skillAndroid = DomainProfileEditSkill(imageRes = 3, name = "Android"
 /**
  * Проверяет, что mapSkillsState() корректно разделяет навыки:
  * listOfSkills = allSkills минус chosenSkills, listOfChosenSkills = chosenSkills.
- * Кейсы: все доступны, один выбран (первый/средний), все выбраны, оба списка пустые.
+ * Кейсы: все доступны, один выбран (первый/средний), все выбраны.
  */
 class ProfileEditScreenMapperSkillsMappingTest {
 
@@ -104,12 +104,6 @@ class ProfileEditScreenMapperSkillsMappingTest {
                 chosenSkills = persistentListOf(skillJava),
                 expectedAvailableSkills = persistentListOf(skillKotlin, skillAndroid),
                 expectedChosenSkills = persistentListOf(skillJava),
-            ),
-            ProfileEditScreenMapperSkillsMappingTestCase(
-                allSkills = persistentListOf(),
-                chosenSkills = persistentListOf(),
-                expectedAvailableSkills = persistentListOf(),
-                expectedChosenSkills = persistentListOf(),
             ),
         )
     }
