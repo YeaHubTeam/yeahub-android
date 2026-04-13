@@ -9,6 +9,7 @@ import ru.yeahub.network_api.models.UpdateUserRequest
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditData
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSkill
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSocialPlatform
+import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSpecialization
 import ru.yeahub.ui.R
 
 internal class ProfileEditDataToDomainMapper {
@@ -17,7 +18,7 @@ internal class ProfileEditDataToDomainMapper {
         user: GetAdvancedUserResponse,
         activeProfile: GetProfileForUserResponse,
         allSkills: List<DomainProfileEditSkill>,
-        specializations: List<String>,
+        specializations: List<DomainProfileEditSpecialization>,
     ): DomainProfileEditData {
         return DomainProfileEditData(
             email = user.email,
@@ -27,7 +28,7 @@ internal class ProfileEditDataToDomainMapper {
                 activeProfile.specializationId,
                 specializations,
             ),
-            specializationList = specializations,
+            specializationList = specializations.map { it.title },
             location = user.city.orEmpty(),
             socialLinks = mapSocialNetworkToDomain(activeProfile.socialNetwork),
             aboutMe = stripHtmlPTags(activeProfile.description.orEmpty()),
@@ -41,7 +42,7 @@ internal class ProfileEditDataToDomainMapper {
         cachedProfile: GetProfileForUserResponse,
         cachedUser: GetAdvancedUserResponse,
         cachedAllSkills: List<GetSkillResponse>,
-        allSpecializations: List<String>,
+        allSpecializations: List<DomainProfileEditSpecialization>,
     ): UpdateProfileRequest {
         val skillIds = profile.selectedSkills.mapNotNull { skill ->
             cachedAllSkills.find { it.title == skill.name }?.id
@@ -51,7 +52,6 @@ internal class ProfileEditDataToDomainMapper {
             resolveSpecializationId(
                 profile.specialization,
                 allSpecializations,
-                cachedProfile.specializationId,
             )
         } else {
             cachedProfile.specializationId
@@ -89,19 +89,18 @@ internal class ProfileEditDataToDomainMapper {
 
     private fun resolveSpecializationName(
         specializationId: Long?,
-        specializations: List<String>,
+        specializations: List<DomainProfileEditSpecialization>,
     ): String? {
         if (specializationId == null || specializationId == 0L) return null
-        return specializations.getOrNull((specializationId - 1).toInt())
+        return specializations.find { it.id == specializationId }!!.title
     }
 
     private fun resolveSpecializationId(
         specName: String,
-        allSpecializations: List<String>,
-        fallbackId: Long?,
-    ): Long? {
-        val index = allSpecializations.indexOf(specName)
-        return if (index >= 0) (index + 1).toLong() else fallbackId
+        allSpecializations: List<DomainProfileEditSpecialization>,
+    ): Long {
+        val id = allSpecializations.find { it.title == specName }!!.id
+        return id
     }
 
     private fun mapSocialNetworkToDomain(

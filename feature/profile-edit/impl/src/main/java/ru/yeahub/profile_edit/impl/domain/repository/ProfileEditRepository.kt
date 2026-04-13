@@ -3,17 +3,18 @@ package ru.yeahub.profile_edit.impl.domain.repository
 import android.net.Uri
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditData
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSkill
+import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSpecialization
 
 internal interface ProfileEditRepository {
 
     suspend fun getProfileData(
         skills: List<DomainProfileEditSkill>,
-        specializations: List<String>,
+        specializations: List<DomainProfileEditSpecialization>,
     ): DomainProfileEditData
 
     suspend fun getAllSkills(): List<DomainProfileEditSkill>
 
-    suspend fun getSpecializations(): List<String>
+    suspend fun getSpecializations(): List<DomainProfileEditSpecialization>
 
     suspend fun saveProfile(profile: DomainProfileEditData)
 

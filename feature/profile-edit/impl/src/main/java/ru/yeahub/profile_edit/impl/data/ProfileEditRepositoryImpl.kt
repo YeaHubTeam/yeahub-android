@@ -9,6 +9,7 @@ import ru.yeahub.network_api.models.GetProfileForUserResponse
 import ru.yeahub.network_api.models.GetSkillResponse
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditData
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSkill
+import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSpecialization
 import ru.yeahub.profile_edit.impl.domain.repository.ProfileEditRepository
 
 internal class ProfileEditRepositoryImpl(
@@ -20,19 +21,18 @@ internal class ProfileEditRepositoryImpl(
     private var cachedUser: GetAdvancedUserResponse? = null
     private var cachedProfile: GetProfileForUserResponse? = null
     private var cachedAllSkillResponses: List<GetSkillResponse> = emptyList()
-    private var cachedSpecializations: List<String> = emptyList()
+    private var cachedAllSpecializations: List<DomainProfileEditSpecialization> = emptyList()
     private var avatarBase64: String? = null
     private var avatarDeleted: Boolean = false
 
     override suspend fun getProfileData(
         skills: List<DomainProfileEditSkill>,
-        specializations: List<String>,
+        specializations: List<DomainProfileEditSpecialization>,
     ): DomainProfileEditData {
         val user = apiService.getAuthProfile()
         cachedUser = user
         val activeProfile = user.profiles.find { it.isActive == true } ?: user.profiles.first()
         cachedProfile = activeProfile
-        cachedSpecializations = specializations
         return mapper.mapProfileToDomain(user, activeProfile, skills, specializations)
     }
 
@@ -42,10 +42,15 @@ internal class ProfileEditRepositoryImpl(
         return response.data.map { mapper.mapSkillToDomain(it) }
     }
 
-    override suspend fun getSpecializations(): List<String> {
+    override suspend fun getSpecializations(): List<DomainProfileEditSpecialization> {
         val response = apiService.getSpecializations(page = 1, limit = 1000)
-        val specializations = response.data.map { it.title }
-        cachedSpecializations = specializations
+        val specializations = response.data.map {
+            DomainProfileEditSpecialization(
+                id = it.id,
+                title = it.title,
+            )
+        }
+        cachedAllSpecializations = specializations
         return specializations
     }
 
@@ -58,7 +63,7 @@ internal class ProfileEditRepositoryImpl(
             cachedProfile = activeProfile,
             cachedUser = user,
             cachedAllSkills = cachedAllSkillResponses,
-            allSpecializations = cachedSpecializations,
+            allSpecializations = cachedAllSpecializations,
         )
         apiService.updateProfile(activeProfile.id, updateProfileRequest)
 
