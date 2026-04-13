@@ -118,7 +118,7 @@ internal class ProfileEditDataToDomainMapper {
     ): List<SocialNetworkDto> {
         return socialLinks.map { (platform, url) ->
             SocialNetworkDto(
-                code = platformToCode(platform),
+                code = platform.name,
                 title = url,
             )
         }
@@ -154,17 +154,4 @@ internal class ProfileEditDataToDomainMapper {
         "dribble" -> DomainProfileEditSocialPlatform.Dribble
         else -> null
     }
-
-    private fun platformToCode(platform: DomainProfileEditSocialPlatform): String =
-        when (platform) {
-            DomainProfileEditSocialPlatform.Instagram -> "instagram"
-            DomainProfileEditSocialPlatform.LinkedIn -> "linkedin"
-            DomainProfileEditSocialPlatform.Twitter -> "twitter"
-            DomainProfileEditSocialPlatform.GitHub -> "github"
-            DomainProfileEditSocialPlatform.Behance -> "behance"
-            DomainProfileEditSocialPlatform.WhatsApp -> "whatsapp"
-            DomainProfileEditSocialPlatform.Telegram -> "telegram"
-            DomainProfileEditSocialPlatform.VK -> "vk"
-            DomainProfileEditSocialPlatform.Dribble -> "dribble"
-        }
 }
