@@ -3,6 +3,8 @@ package ru.yeahub.profile_edit.impl.presentation
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.PersistentMap
 import ru.yeahub.core_utils.common.TextOrResource
+import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSkill
+import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSocialPlatform
 
 sealed interface ProfileEditState {
 
@@ -13,26 +15,21 @@ sealed interface ProfileEditState {
         val aboutMeTabState: AboutMeTabState,
         val skillsTabState: SkillsTabState,
         val showUnsavedChangesDialog: Boolean,
+        val hasValidationErrors: Boolean,
+        val snackbarState: SnackbarState?,
     ) : ProfileEditState
 
-    data class Error(val throwable: Throwable) : ProfileEditState
+    data class Error(val message: TextOrResource) : ProfileEditState
+
+    data class SnackbarState(
+        val message: TextOrResource,
+        val throwableMessage: String,
+    )
 
     enum class ProfileEditTabs {
         PersonalInfo,
         AboutMe,
         Skills,
-    }
-
-    enum class SocialLinks {
-        Instagram,
-        Linkedin,
-        Twitter,
-        GitHub,
-        Behance,
-        Whatsapp,
-        Telegram,
-        VK,
-        Dribble,
     }
 
     data class ValidatedField(val value: String, val error: TextOrResource?)
@@ -45,18 +42,13 @@ sealed interface ProfileEditState {
         val isSpecializationEditable: Boolean,
         val email: String,
         val location: ValidatedField,
-        val socialLinks: PersistentMap<SocialLinks, ValidatedField>,
+        val socialLinks: PersistentMap<DomainProfileEditSocialPlatform, ValidatedField>,
     )
 
     data class AboutMeTabState(val aboutMeField: String)
 
     data class SkillsTabState(
-        val listOfSkills: PersistentList<Skill>,
-        val listOfChosenSkills: PersistentList<Skill>,
-    )
-
-    data class Skill(
-        val image: Int,
-        val name: String,
+        val listOfSkills: PersistentList<DomainProfileEditSkill>,
+        val listOfChosenSkills: PersistentList<DomainProfileEditSkill>,
     )
 }

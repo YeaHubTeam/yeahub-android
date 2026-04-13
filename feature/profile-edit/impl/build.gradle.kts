@@ -52,6 +52,8 @@ dependencies {
     implementation(libs.compose.shimmer)
     implementation(libs.immutable.collections)
 
+    implementation(libs.retrofit.core)
+    implementation(libs.retrofit.gsonConverter)
     //KOIN
     implementation(libs.koin.core)
     implementation(libs.koin.android)
@@ -69,6 +71,7 @@ dependencies {
     testRuntimeOnly(libs.junit.platform.launcher)
     implementation(libs.androidx.junit.ktx)
     testImplementation(libs.mockk)
+    testImplementation(project(":core:test"))
 }
 
 tasks.withType<Test> {

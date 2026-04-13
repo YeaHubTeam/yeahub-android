@@ -1,11 +1,12 @@
 package ru.yeahub.profile_edit.impl.presentation.intents
 
 import android.net.Uri
-import ru.yeahub.profile_edit.impl.presentation.ProfileEditState
+import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSkill
+import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSocialPlatform
 
 sealed interface ProfileEditScreenEvent {
 
-    data object LoadData : ProfileEditScreenEvent
+    data object RetryPressed : ProfileEditScreenEvent
     data object BackPressed : ProfileEditScreenEvent
     data object DiscardChanges : ProfileEditScreenEvent
     data object UnsavedChangesDialogDismissed : ProfileEditScreenEvent
@@ -19,12 +20,15 @@ sealed interface ProfileEditScreenEvent {
     data object ChangeSpecializationClicked : ProfileEditScreenEvent
     data class LocationChanged(val location: String) : ProfileEditScreenEvent
     data class SocialLinkChanged(
-        val link: ProfileEditState.SocialLinks,
+        val platform: DomainProfileEditSocialPlatform,
         val url: String,
     ) : ProfileEditScreenEvent
 
     data class AboutMeChanged(val text: String) : ProfileEditScreenEvent
 
     data class AddSkill(val skillName: String) : ProfileEditScreenEvent
-    data class RemoveSkill(val skill: ProfileEditState.Skill) : ProfileEditScreenEvent
+    data class RemoveSkill(val skill: DomainProfileEditSkill) : ProfileEditScreenEvent
+
+    data object SnackbarRetryPressed : ProfileEditScreenEvent
+    data object ErrorSnackbarDismissed : ProfileEditScreenEvent
 }

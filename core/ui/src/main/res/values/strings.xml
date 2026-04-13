@@ -25,6 +25,11 @@
     <string name="error_screen_title_text">УПС!</string>
     <string name="on_back_button_text">Назад</string>
     <string name="unknown_error_screen_text">Не удалось загрузить данные</string>
+    <string name="confirm_action">Подтвердить действие</string>
+    <string name="unsaved_changes_description">У вас есть несохранённые данные.\nВы хотите продолжить?</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+    <string name="try_again">Повторить попытку</string>
     <string name="profile_photo">Фото профиля</string>
     <string name="profile_photo_description">Ваше фото будет видно всем членам
 сообщества Yeahub</string>

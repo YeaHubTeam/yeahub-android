@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="profile_edit_title">Редактирование профиля</string>
+    <string name="profile_edit_cannot_change_specialization">Вы можете сменить специализацию на сайте.</string>
+    <string name="error_no_internet">Нет подключения к интернету</string>
+    <string name="error_session_expired">Сессия истекла. Войдите снова</string>
+    <string name="error_forbidden">Нет прав для выполнения операции</string>
+    <string name="error_profile_not_found">Профиль не найден</string>
+    <string name="error_file_too_large">Файл слишком большой</string>
+    <string name="error_invalid_data">Данные не прошли проверку</string>
+    <string name="error_server">Ошибка сервера. Попробуйте позже</string>
 </resources>

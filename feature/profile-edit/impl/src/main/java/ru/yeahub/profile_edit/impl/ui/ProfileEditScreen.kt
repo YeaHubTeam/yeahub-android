@@ -1,6 +1,11 @@
 package ru.yeahub.profile_edit.impl.ui
 
+import android.net.Uri
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -15,6 +20,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
@@ -22,34 +29,67 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
+import okhttp3.ResponseBody.Companion.toResponseBody
+import retrofit2.HttpException
+import retrofit2.Response
 import ru.yeahub.core_ui.component.CoreTopTabs
 import ru.yeahub.core_ui.component.ErrorScreen
 import ru.yeahub.core_ui.component.PrimaryButton
 import ru.yeahub.core_ui.component.TopAppBarWithBottomBorder
-import ru.yeahub.core_ui.component.UnsavedChangesDialog
+import ru.yeahub.core_ui.component.YeahubAlertDialog
+import ru.yeahub.core_ui.component.YeahubSnackbar
+import ru.yeahub.core_ui.example.dynamicPreview.ProvidePreviewCompositionLocals
 import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.core_utils.common.TextOrResource
+import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditData
+import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSkill
+import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSocialPlatform
+import ru.yeahub.profile_edit.impl.domain.usecase.DeleteAvatarUseCase
+import ru.yeahub.profile_edit.impl.domain.usecase.GetProfileUseCase
+import ru.yeahub.profile_edit.impl.domain.usecase.SaveProfileUseCase
+import ru.yeahub.profile_edit.impl.domain.usecase.UploadAvatarUseCase
+import ru.yeahub.profile_edit.impl.presentation.ProfileEditScreenMapper
 import ru.yeahub.profile_edit.impl.presentation.ProfileEditState
 import ru.yeahub.profile_edit.impl.presentation.ProfileEditState.ProfileEditTabs
 import ru.yeahub.profile_edit.impl.presentation.ProfileEditState.ProfileEditTabs.AboutMe
 import ru.yeahub.profile_edit.impl.presentation.ProfileEditState.ProfileEditTabs.PersonalInfo
 import ru.yeahub.profile_edit.impl.presentation.ProfileEditState.ProfileEditTabs.Skills
-import ru.yeahub.profile_edit.impl.presentation.ProfileEditState.SocialLinks
+import ru.yeahub.profile_edit.impl.presentation.ProfileEditViewModel
+import ru.yeahub.profile_edit.impl.presentation.intents.ProfileEditScreenCommand
 import ru.yeahub.profile_edit.impl.presentation.intents.ProfileEditScreenEvent
+import ru.yeahub.profile_edit.impl.presentation.intents.ProfileEditScreenResult
 import ru.yeahub.profile_edit.impl.ui.tabs.AboutMeContent
 import ru.yeahub.profile_edit.impl.ui.tabs.PersonalInfoContent
 import ru.yeahub.profile_edit.impl.ui.tabs.SkillsContent
 import ru.yeahub.ui.R
+import java.io.IOException
 import ru.yeahub.profile_edit.impl.R as ProfileEditR
 
 @Composable
-fun ProfileEditScreen(
+fun ProfileEditScreenHost(
+    state: ProfileEditState,
+    commands: SharedFlow<ProfileEditScreenCommand>,
+    onResult: (ProfileEditScreenResult) -> Unit,
+    onEvent: (ProfileEditScreenEvent) -> Unit,
+) {
+    ProfileEditScreen(state, onEvent)
+    HandleCommands(commands, onResult, onEvent)
+}
+
+@Composable
+internal fun ProfileEditScreen(
     state: ProfileEditState,
     onEvent: (ProfileEditScreenEvent) -> Unit,
 ) {
@@ -76,6 +116,20 @@ fun ProfileEditScreen(
                 }
             }
         },
+        snackbarHost = {
+            if (state is ProfileEditState.Loaded && state.snackbarState != null) {
+                val context = LocalContext.current
+                val snackbar = state.snackbarState
+                YeahubSnackbar(
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                    title = snackbar.message.getString(context),
+                    description = snackbar.throwableMessage,
+                    buttonText = stringResource(R.string.repeat),
+                    onButtonClick = { onEvent(ProfileEditScreenEvent.SnackbarRetryPressed) },
+                    onDismissIconClick = { onEvent(ProfileEditScreenEvent.ErrorSnackbarDismissed) },
+                )
+            }
+        },
     ) { paddingValues ->
         when (state) {
             is ProfileEditState.Loading -> ProfileEditLoadingScreen(paddingValues)
@@ -91,13 +145,46 @@ fun ProfileEditScreen(
                     .padding(paddingValues),
             ) {
                 ErrorScreen(
-                    error = state.throwable.message,
-                    onBack = { onEvent(ProfileEditScreenEvent.BackPressed) },
+                    error = null,
+                    onBack = { onEvent(ProfileEditScreenEvent.RetryPressed) },
                     errorText = TextOrResource.Resource(R.string.error_screen_text),
                     titleText = TextOrResource.Resource(R.string.error_screen_title_text),
-                    backText = TextOrResource.Resource(R.string.on_back_button_text),
-                    unknownErrorText = TextOrResource.Resource(R.string.unknown_error_screen_text),
+                    backText = TextOrResource.Resource(R.string.try_again),
+                    unknownErrorText = state.message,
                 )
+            }
+        }
+    }
+}
+
+@Composable
+internal fun HandleCommands(
+    commands: SharedFlow<ProfileEditScreenCommand>,
+    onResult: (ProfileEditScreenResult) -> Unit,
+    onEvent: (ProfileEditScreenEvent) -> Unit,
+) {
+    val context = LocalContext.current
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+    ) { uri -> if (uri != null) onEvent(ProfileEditScreenEvent.AvatarSelected(uri)) }
+    LaunchedEffect(Unit) {
+        commands.collect { command ->
+            when (command) {
+                is ProfileEditScreenCommand.NavigateBack ->
+                    onResult(ProfileEditScreenResult.NavigateBack)
+
+                is ProfileEditScreenCommand.NavigateToProfile ->
+                    onResult(ProfileEditScreenResult.NavigateToProfile)
+
+                is ProfileEditScreenCommand.ShowPhotoPicker ->
+                    launcher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+
+                is ProfileEditScreenCommand.ShowCannotChangeSpecializationToast ->
+                    Toast.makeText(
+                        context,
+                        context.getString(ProfileEditR.string.profile_edit_cannot_change_specialization),
+                        Toast.LENGTH_SHORT,
+                    ).show()
             }
         }
     }
@@ -184,9 +271,14 @@ private fun ProfileEditContent(
     }
 
     if (state.showUnsavedChangesDialog) {
-        UnsavedChangesDialog(
-            onLeave = { onEvent(ProfileEditScreenEvent.DiscardChanges) },
-            onStay = { onEvent(ProfileEditScreenEvent.UnsavedChangesDialogDismissed) },
+        YeahubAlertDialog(
+            onDismissRequest = { onEvent(ProfileEditScreenEvent.UnsavedChangesDialogDismissed) },
+            titleText = stringResource(R.string.confirm_action),
+            descriptionText = stringResource(R.string.unsaved_changes_description),
+            leftButtonText = stringResource(R.string.yes),
+            rightButtonText = stringResource(R.string.no),
+            onLeftButtonClick = { onEvent(ProfileEditScreenEvent.DiscardChanges) },
+            onRightButtonClick = { onEvent(ProfileEditScreenEvent.UnsavedChangesDialogDismissed) },
         )
     }
 }
@@ -210,7 +302,7 @@ fun ProfileEditPreview() {
             location = ProfileEditState.ValidatedField("Санкт-Петербург", null),
             socialLinks = persistentMapOf(
                 Pair(
-                    SocialLinks.Linkedin,
+                    DomainProfileEditSocialPlatform.LinkedIn,
                     ProfileEditState.ValidatedField(
                         "",
                         TextOrResource.Resource(R.string.error_max_length_255),
@@ -221,49 +313,21 @@ fun ProfileEditPreview() {
         aboutMeTabState = ProfileEditState.AboutMeTabState(aboutMeField = ""),
         skillsTabState = ProfileEditState.SkillsTabState(
             listOfSkills = persistentListOf(
-                ProfileEditState.Skill(image = R.drawable.icon_true_button, name = "Kotlin"),
-                ProfileEditState.Skill(
-                    image = R.drawable.icon_true_button,
+                DomainProfileEditSkill(imageRes = R.drawable.icon_true_button, name = "Kotlin"),
+                DomainProfileEditSkill(
+                    imageRes = R.drawable.icon_true_button,
                     name = "Jetpack Compose",
                 ),
-                ProfileEditState.Skill(image = R.drawable.icon_true_button, name = "Coroutines"),
+                DomainProfileEditSkill(imageRes = R.drawable.icon_true_button, name = "Coroutines"),
             ),
             listOfChosenSkills = persistentListOf(
-                ProfileEditState.Skill(
-                    image = R.drawable.icon_true_button,
-                    name = "Kotlin2",
-                ),
-                ProfileEditState.Skill(
-                    image = R.drawable.icon_true_button,
-                    name = "Jetpack Compose",
-                ),
-                ProfileEditState.Skill(
-                    image = R.drawable.icon_true_button,
-                    name = "Coroutines",
-                ),
-                ProfileEditState.Skill(
-                    image = R.drawable.icon_true_button,
-                    name = "Git",
-                ),
-                ProfileEditState.Skill(
-                    image = R.drawable.icon_true_button,
-                    name = "Java",
-                ),
-                ProfileEditState.Skill(
-                    image = R.drawable.icon_true_button,
-                    name = "Gradle",
-                ),
-                ProfileEditState.Skill(
-                    image = R.drawable.icon_true_button,
-                    name = "Kotlin3",
-                ),
-                ProfileEditState.Skill(
-                    image = R.drawable.icon_true_button,
-                    name = "Coroutines",
-                ),
+                DomainProfileEditSkill(imageRes = R.drawable.icon_true_button, name = "Figma"),
+                DomainProfileEditSkill(imageRes = R.drawable.icon_true_button, name = "Wireframe"),
             ),
         ),
         showUnsavedChangesDialog = false,
+        hasValidationErrors = true,
+        snackbarState = null,
     )
 
     var state by remember { mutableStateOf(screenState) }
@@ -284,6 +348,7 @@ fun ProfileEditPreview() {
                     state =
                         state.copy(aboutMeTabState = state.aboutMeTabState.copy(aboutMeField = event.text))
                 }
+
                 else -> {}
             }
         },
@@ -310,6 +375,41 @@ fun ProfileEditWithDialogPreview() {
             listOfChosenSkills = persistentListOf(),
         ),
         showUnsavedChangesDialog = true,
+        snackbarState = null,
+        hasValidationErrors = false,
+    )
+
+    ProfileEditScreen(
+        state = screenState,
+        onEvent = {},
+    )
+}
+
+@Preview
+@Composable
+fun ProfileEditWithSnackbarPreview() {
+    val screenState = ProfileEditState.Loaded(
+        personalInfoState = ProfileEditState.PersonalInfoTabState(
+            avatarUrl = null,
+            nickname = ProfileEditState.ValidatedField("John Doe", null),
+            specializationList = persistentListOf(),
+            specialization = "Android Разработчик",
+            isSpecializationEditable = false,
+            email = "johndoe@gmail.com",
+            location = ProfileEditState.ValidatedField("Санкт-Петербург", null),
+            socialLinks = persistentMapOf(),
+        ),
+        aboutMeTabState = ProfileEditState.AboutMeTabState(aboutMeField = ""),
+        skillsTabState = ProfileEditState.SkillsTabState(
+            listOfSkills = persistentListOf(),
+            listOfChosenSkills = persistentListOf(),
+        ),
+        showUnsavedChangesDialog = false,
+        snackbarState = ProfileEditState.SnackbarState(
+            message = TextOrResource.Text("Что то пошло не так"),
+            throwableMessage = "Ошибка сети",
+        ),
+        hasValidationErrors = false,
     )
 
     ProfileEditScreen(
@@ -322,7 +422,7 @@ fun ProfileEditWithDialogPreview() {
 @Composable
 fun ProfileEditErrorPreview() {
     ProfileEditScreen(
-        state = ProfileEditState.Error(Throwable("Не удалось загрузить данные")),
+        state = ProfileEditState.Error(TextOrResource.Text("Не удалось загрузить данные")),
         onEvent = {},
     )
 }
@@ -335,3 +435,118 @@ fun ProfileEditLoadingPreview() {
         onEvent = {},
     )
 }
+
+/**
+ * Не финальный вид динамического первью
+ * переделаю когда будет консенсус по динамик превью
+ */
+private class ProfileEditViewModelFactory(
+    private val viewModelCreator: () -> ViewModel? = { null },
+) : ViewModelProvider.Factory {
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel> create(modelClass: Class<T>): T = viewModelCreator() as T
+}
+
+@Composable
+private inline fun <reified VM : ViewModel> profileEditViewModelCreator(noinline creator: () -> ViewModel?): VM =
+    viewModel(factory = remember { ProfileEditViewModelFactory(creator) })
+
+@Preview(showBackground = true)
+@Composable
+internal fun ProfileEditScreenDynamicPreview() {
+    val mockGetProfile = object : GetProfileUseCase {
+        private var numberOfCalls: Int = 0
+        override suspend fun invoke(): DomainProfileEditData {
+            delay(DYNAMIC_PREVIEW_LOAD_DELAY)
+            numberOfCalls++
+            if (numberOfCalls < 3) {
+                throw IOException()
+            }
+            return DomainProfileEditData(
+                email = "johndoe@gmail.com",
+                avatarUrl = null,
+                nickname = "JohnDoe",
+                specialization = null,
+                specializationList = listOf(
+                    "Android разработчик",
+                    "iOS разработчик",
+                    "Backend разработчик",
+                    "Frontend разработчик",
+                ),
+                location = "Санкт-Петербург",
+                socialLinks = mapOf(
+                    DomainProfileEditSocialPlatform.LinkedIn to "linkedin.com/in/johndoe",
+                    DomainProfileEditSocialPlatform.Telegram to "t.me/johndoe",
+                ),
+                aboutMe = "Android разработчик с фокусом на Compose и архитектуру.",
+                selectedSkills = listOf(
+                    DomainProfileEditSkill(imageRes = R.drawable.icon_true_button, name = "Kotlin"),
+                    DomainProfileEditSkill(
+                        imageRes = R.drawable.icon_true_button,
+                        name = "Jetpack Compose",
+                    ),
+                ),
+                allSkills = listOf(
+                    DomainProfileEditSkill(imageRes = R.drawable.icon_true_button, name = "Kotlin"),
+                    DomainProfileEditSkill(
+                        imageRes = R.drawable.icon_true_button,
+                        name = "Jetpack Compose",
+                    ),
+                    DomainProfileEditSkill(
+                        imageRes = R.drawable.icon_true_button,
+                        name = "Coroutines",
+                    ),
+                    DomainProfileEditSkill(imageRes = R.drawable.icon_true_button, name = "Git"),
+                    DomainProfileEditSkill(imageRes = R.drawable.icon_true_button, name = "Java"),
+                ),
+            )
+        }
+    }
+    val mockSaveProfile = object : SaveProfileUseCase {
+        override suspend fun invoke(profile: DomainProfileEditData) = Unit
+    }
+    val mockUploadAvatar = object : UploadAvatarUseCase {
+        private var firstCall = true
+        override suspend fun invoke(uri: Uri): String {
+            if (firstCall) {
+                firstCall = false
+                throw IOException("Unauthorized")
+            }
+            return uri.toString()
+        }
+    }
+    val mockDeleteAvatar = object : DeleteAvatarUseCase {
+        private var firstCall = true
+        override suspend fun invoke() {
+            if (firstCall) {
+                firstCall = false
+                throw HttpException(
+                    Response.error<Any>(401, "".toResponseBody()),
+                )
+            }
+        }
+    }
+
+    val mockViewModel: ProfileEditViewModel = profileEditViewModelCreator {
+        ProfileEditViewModel(
+            getProfile = mockGetProfile,
+            saveProfile = mockSaveProfile,
+            uploadAvatar = mockUploadAvatar,
+            deleteAvatar = mockDeleteAvatar,
+            mapper = ProfileEditScreenMapper(),
+        )
+    }
+
+    val state by mockViewModel.screenState.collectAsState()
+    ProvidePreviewCompositionLocals {
+        ProfileEditScreenHost(
+            state = state,
+            commands = mockViewModel.commands,
+            onResult = {},
+            onEvent = mockViewModel::onEvent,
+        )
+    }
+}
+
+private const val DYNAMIC_PREVIEW_LOAD_DELAY = 1L
