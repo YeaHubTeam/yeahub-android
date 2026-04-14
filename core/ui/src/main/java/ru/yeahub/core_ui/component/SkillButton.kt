@@ -5,6 +5,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -20,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -127,6 +129,8 @@ fun CoreSkillButton(
         null
     }
 
+    val interactionSource = remember { MutableInteractionSource() }
+
     Surface(
         onClick = onClick,
         modifier = modifier,
@@ -136,6 +140,7 @@ fun CoreSkillButton(
         contentColor = contentColor,
         border = border,
         shadowElevation = elevation,
+        interactionSource = interactionSource,
     ) {
         CompositionLocalProvider(LocalContentColor provides contentColor) {
             Row(
@@ -181,7 +186,10 @@ fun CoreSkillButton(
                         modifier = Modifier
                             .height(20.dp)
                             .width(20.dp)
-                            .clickable { onTrailingIconClick?.invoke() },
+                            .clickable(
+                                indication = null,
+                                interactionSource = interactionSource,
+                            ) { onTrailingIconClick?.invoke() },
                     )
                 }
             }
