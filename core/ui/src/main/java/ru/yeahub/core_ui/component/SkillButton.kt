@@ -38,6 +38,25 @@ import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.core_ui.theme.YeaHubTheme
 import ru.yeahub.ui.R
 
+private val contentPaddingDefault = PaddingValues(
+    start = 12.dp,
+    end = 12.dp,
+    top = 6.dp,
+    bottom = 6.dp,
+)
+private val contentPaddingLendingDefault = PaddingValues(
+    start = 6.dp,
+    end = 6.dp,
+    top = 6.dp,
+    bottom = 6.dp,
+)
+private val contentPadding_Default = PaddingValues(
+    start = 0.dp,
+    end = 1.dp,
+    top = 0.dp,
+    bottom = 0.dp,
+)
+
 @Immutable
 data class CoreSkillButtonColors(
     val activeContainerColor: Color,
