@@ -170,21 +170,19 @@ internal fun HandleCommands(
     LaunchedEffect(Unit) {
         commands.collect { command ->
             when (command) {
-                is ProfileEditScreenCommand.NavigateBack ->
-                    onResult(ProfileEditScreenResult.NavigateBack)
+                is ProfileEditScreenCommand.NavigateBack -> onResult(ProfileEditScreenResult.NavigateBack)
 
-                is ProfileEditScreenCommand.NavigateToProfile ->
-                    onResult(ProfileEditScreenResult.NavigateToProfile)
+                is ProfileEditScreenCommand.NavigateToProfile -> onResult(ProfileEditScreenResult.NavigateToProfile)
 
-                is ProfileEditScreenCommand.ShowPhotoPicker ->
-                    launcher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                is ProfileEditScreenCommand.ShowPhotoPicker -> launcher.launch(
+                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly),
+                )
 
-                is ProfileEditScreenCommand.ShowCannotChangeSpecializationToast ->
-                    Toast.makeText(
-                        context,
-                        context.getString(ProfileEditR.string.profile_edit_cannot_change_specialization),
-                        Toast.LENGTH_SHORT,
-                    ).show()
+                is ProfileEditScreenCommand.ShowCannotChangeSpecializationToast -> Toast.makeText(
+                    context,
+                    context.getString(ProfileEditR.string.profile_edit_cannot_change_specialization),
+                    Toast.LENGTH_SHORT,
+                ).show()
             }
         }
     }
@@ -313,16 +311,22 @@ fun ProfileEditPreview() {
         aboutMeTabState = ProfileEditState.AboutMeTabState(aboutMeField = ""),
         skillsTabState = ProfileEditState.SkillsTabState(
             listOfSkills = persistentListOf(
-                DomainProfileEditSkill(imageRes = R.drawable.icon_true_button, name = "Kotlin"),
+                DomainProfileEditSkill(imageUrl = " R.drawable.icon_true_button", name = "Kotlin"),
                 DomainProfileEditSkill(
-                    imageRes = R.drawable.icon_true_button,
+                    imageUrl = "R.drawable.icon_true_button",
                     name = "Jetpack Compose",
                 ),
-                DomainProfileEditSkill(imageRes = R.drawable.icon_true_button, name = "Coroutines"),
+                DomainProfileEditSkill(
+                    imageUrl = " R.drawable.icon_true_button",
+                    name = "Coroutines",
+                ),
             ),
             listOfChosenSkills = persistentListOf(
-                DomainProfileEditSkill(imageRes = R.drawable.icon_true_button, name = "Figma"),
-                DomainProfileEditSkill(imageRes = R.drawable.icon_true_button, name = "Wireframe"),
+                DomainProfileEditSkill(imageUrl = " R.drawable.icon_true_button", name = "Figma"),
+                DomainProfileEditSkill(
+                    imageUrl = " R.drawable.icon_true_button",
+                    name = "Wireframe",
+                ),
             ),
         ),
         showUnsavedChangesDialog = false,
@@ -481,24 +485,33 @@ internal fun ProfileEditScreenDynamicPreview() {
                 ),
                 aboutMe = "Android разработчик с фокусом на Compose и архитектуру.",
                 selectedSkills = listOf(
-                    DomainProfileEditSkill(imageRes = R.drawable.icon_true_button, name = "Kotlin"),
                     DomainProfileEditSkill(
-                        imageRes = R.drawable.icon_true_button,
+                        imageUrl = " R.drawable.icon_true_button",
+                        name = "Kotlin",
+                    ),
+                    DomainProfileEditSkill(
+                        imageUrl = "1",
                         name = "Jetpack Compose",
                     ),
                 ),
                 allSkills = listOf(
-                    DomainProfileEditSkill(imageRes = R.drawable.icon_true_button, name = "Kotlin"),
                     DomainProfileEditSkill(
-                        imageRes = R.drawable.icon_true_button,
+                        imageUrl = " R.drawable.icon_true_button",
+                        name = "Kotlin",
+                    ),
+                    DomainProfileEditSkill(
+                        imageUrl = " R.drawable.icon_true_button",
                         name = "Jetpack Compose",
                     ),
                     DomainProfileEditSkill(
-                        imageRes = R.drawable.icon_true_button,
+                        imageUrl = " R.drawable.icon_true_button",
                         name = "Coroutines",
                     ),
-                    DomainProfileEditSkill(imageRes = R.drawable.icon_true_button, name = "Git"),
-                    DomainProfileEditSkill(imageRes = R.drawable.icon_true_button, name = "Java"),
+                    DomainProfileEditSkill(imageUrl = " R.drawable.icon_true_button", name = "Git"),
+                    DomainProfileEditSkill(
+                        imageUrl = " R.drawable.icon_true_button",
+                        name = "Java",
+                    ),
                 ),
             )
         }

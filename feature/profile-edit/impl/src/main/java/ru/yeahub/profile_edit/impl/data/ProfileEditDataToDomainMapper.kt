@@ -10,7 +10,6 @@ import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditData
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSkill
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSocialPlatform
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSpecialization
-import ru.yeahub.ui.R
 
 internal class ProfileEditDataToDomainMapper {
 
@@ -126,7 +125,7 @@ internal class ProfileEditDataToDomainMapper {
 
     fun mapSkillToDomain(skill: GetSkillResponse): DomainProfileEditSkill {
         return DomainProfileEditSkill(
-            imageRes = R.drawable.icon_true_button,
+            imageUrl = skill.imageSrc,
             name = skill.title,
         )
     }

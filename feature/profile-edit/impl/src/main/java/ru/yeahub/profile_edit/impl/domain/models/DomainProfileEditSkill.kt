@@ -1,6 +1,6 @@
 package ru.yeahub.profile_edit.impl.domain.models
 
 data class DomainProfileEditSkill(
-    val imageRes: Int,
+    val imageUrl: String?,
     val name: String,
 )
