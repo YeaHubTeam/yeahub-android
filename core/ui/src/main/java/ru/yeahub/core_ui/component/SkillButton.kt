@@ -249,7 +249,7 @@ fun SkillButton(
  * @param enabled кликабельность тела кнопки. Не влияет на визуальное отображение.
  * @param leadingIconRes drawable-ресурс иконки слева. Приоритет над [leadingIconUrl].
  * @param leadingIconUrl URL иконки слева (Coil). Используется если [leadingIconRes] равен null.
- * @param iconSize размер левой иконки.
+ * @param leftIconSize размер левой иконки.
  * @param contentPadding внутренние отступы.
  * @param colors цвета. Используйте [CoreSkillButtonDefaults.colors] для переопределения.
  */
@@ -262,7 +262,7 @@ fun SkillButtonWithBorder(
     enabled: Boolean = true,
     @DrawableRes leadingIconRes: Int? = null,
     leadingIconUrl: String? = null,
-    iconSize: DpSize = DpSize(20.dp, 20.dp),
+    leftIconSize: DpSize = DpSize(30.dp, 30.dp),
     contentPadding: PaddingValues = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
     colors: CoreSkillButtonColors = CoreSkillButtonDefaults.colors(),
 ) {
@@ -276,7 +276,7 @@ fun SkillButtonWithBorder(
         text = text,
         leadingIconRes = leadingIconRes,
         leadingIconUrl = leadingIconUrl,
-        leftIconSize = iconSize,
+        leftIconSize = leftIconSize,
         colors = colors,
         contentPadding = contentPadding,
     )
@@ -295,7 +295,7 @@ fun SkillButtonWithBorder(
  *   По умолчанию false — тело некликабельно, нет ripple-эффекта.
  * @param leadingIconRes drawable-ресурс иконки слева. Приоритет над [leadingIconUrl].
  * @param leadingIconUrl URL иконки слева (Coil). Используется если [leadingIconRes] равен null.
- * @param iconSize размер левой иконки.
+ * @param leftIconSize размер левой иконки.
  * @param contentPadding внутренние отступы.
  * @param colors цвета. Используйте [CoreSkillButtonDefaults.colors] для переопределения.
  */
@@ -307,7 +307,8 @@ fun SkillButtonWithDeleteButton(
     enabled: Boolean = false,
     @DrawableRes leadingIconRes: Int? = null,
     leadingIconUrl: String? = null,
-    iconSize: DpSize = DpSize(20.dp, 20.dp),
+    leftIconSize: DpSize = DpSize(30.dp, 30.dp),
+    @DrawableRes trailingIcon: Int = R.drawable.icon_button_close,
     contentPadding: PaddingValues = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
     colors: CoreSkillButtonColors = CoreSkillButtonDefaults.colors(),
 ) {
@@ -321,9 +322,9 @@ fun SkillButtonWithDeleteButton(
         text = text,
         leadingIconRes = leadingIconRes,
         leadingIconUrl = leadingIconUrl,
-        trailingIcon = R.drawable.icon_button_close,
+        trailingIcon = trailingIcon,
         onTrailingIconClick = onDeleteClick,
-        leftIconSize = iconSize,
+        leftIconSize = leftIconSize,
         colors = colors,
         contentPadding = contentPadding,
     )
@@ -430,7 +431,7 @@ internal fun SkillButtonWithBorderPreview(
                 text = "Figma",
                 selected = state.selected,
                 leadingIconRes = if (state.hasIcon) R.drawable.icon_true_button else null,
-                iconSize = DpSize(20.dp, 20.dp),
+                leftIconSize = DpSize(20.dp, 20.dp),
                 onClick = {},
             )
         }
@@ -464,7 +465,7 @@ internal fun SkillButtonWithDeleteButtonPreview(
             SkillButtonWithDeleteButton(
                 text = "Figma",
                 leadingIconRes = if (state.hasIcon) R.drawable.icon_true_button else null,
-                iconSize = DpSize(20.dp, 20.dp),
+                leftIconSize = DpSize(20.dp, 20.dp),
                 onDeleteClick = {},
             )
         }
