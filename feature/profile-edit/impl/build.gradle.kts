@@ -73,6 +73,8 @@ dependencies {
     implementation(libs.androidx.junit.ktx)
     testImplementation(libs.mockk)
     testImplementation(project(":core:test"))
+
+    implementation(libs.yalantis.ucrop)
 }
 
 tasks.withType<Test> {
