@@ -1,5 +1,6 @@
 package ru.yeahub.profile_edit.impl.data
 
+import android.text.Html
 import ru.yeahub.network_api.models.GetAdvancedUserResponse
 import ru.yeahub.network_api.models.GetProfileForUserResponse
 import ru.yeahub.network_api.models.GetSkillResponse
@@ -30,7 +31,7 @@ internal class ProfileEditDataToDomainMapper {
             specializationList = specializations.map { it.title },
             location = user.city.orEmpty(),
             socialLinks = mapSocialNetworkToDomain(activeProfile.socialNetwork),
-            aboutMe = stripHtmlPTags(activeProfile.description.orEmpty()),
+            aboutMe = stripHtmlTags(activeProfile.description.orEmpty()),
             selectedSkills = activeProfile.profileSkills.map { mapSkillToDomain(it) },
             allSkills = allSkills,
         )
@@ -130,15 +131,31 @@ internal class ProfileEditDataToDomainMapper {
         )
     }
 
-    private fun stripHtmlPTags(html: String): String {
-        return html
-            .replace("<p>", "")
-            .replace("</p>", "\n")
-            .trimEnd('\n')
+    private fun stripHtmlTags(html: String): String {
+        if (html.isBlank()) return ""
+
+        val spanned = Html.fromHtml(html, Html.FROM_HTML_MODE_COMPACT)
+
+        return spanned.toString()
+            .trimEnd()
+            .replace("\u00A0", " ")
     }
 
     private fun wrapInHtmlPTags(text: String): String {
-        return text.split("\n").joinToString("") { "<p>$it</p>" }
+        if (text.isBlank()) return ""
+
+        return text.lines().joinToString(separator = "") { line ->
+            "<p>${line.escapeHtml()}</p>"
+        }
+    }
+
+    private fun String.escapeHtml(): String {
+        return this
+            .replace("&", "&amp;")
+            .replace("<", "&lt;")
+            .replace(">", "&gt;")
+            .replace("\"", "&quot;")
+            .replace("'", "&#39;")
     }
 
     private fun codeToPlatform(code: String): DomainProfileEditSocialPlatform? = when (code) {
