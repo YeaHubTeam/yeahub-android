@@ -259,7 +259,7 @@ fun SkillButtonWithBorder(
     selected: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    enabled: Boolean = true,
+    enabled: Boolean = false,
     @DrawableRes leadingIconRes: Int? = null,
     leadingIconUrl: String? = null,
     leftIconSize: DpSize = DpSize(20.dp, 20.dp),
