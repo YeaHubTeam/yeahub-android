@@ -9,4 +9,8 @@
     <string name="error_file_too_large">Файл слишком большой</string>
     <string name="error_invalid_data">Данные не прошли проверку</string>
     <string name="error_server">Ошибка сервера. Попробуйте позже</string>
+    <string name="profile_edit_crop_title">Выберите область для фотографий профиля</string>
+    <string name="profile_edit_crop_description">Выбранная миниатюра будет использоваться в статьях, личных сообщениях и комментариях.</string>
+    <string name="profile_edit_crop_save">Сохранить изменения</string>
+    <string name="profile_edit_crop_change_photo">Измените фото</string>
 </resources>
