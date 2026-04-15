@@ -32,6 +32,7 @@ import ru.yeahub.profile_edit.impl.domain.usecase.SaveProfileUseCase
 import ru.yeahub.profile_edit.impl.domain.usecase.UploadAvatarUseCase
 import ru.yeahub.profile_edit.impl.presentation.intents.ProfileEditScreenCommand
 import ru.yeahub.profile_edit.impl.presentation.intents.ProfileEditScreenEvent
+import ru.yeahub.profile_edit.impl.ui.cropper.ImageValidationException
 
 internal class ProfileEditViewModel(
     private val getProfile: GetProfileUseCase,
@@ -134,6 +135,10 @@ internal class ProfileEditViewModel(
 
         is ProfileEditScreenEvent.UploadAvatar -> emitCommand(ProfileEditScreenCommand.ShowPhotoPicker)
         is ProfileEditScreenEvent.AvatarSelected -> onAvatarSelected(event.uri)
+        is ProfileEditScreenEvent.ImageValidationFailed ->
+            handleOperationFailure(
+                ImageValidationException(event.error),
+            ) { emitCommand(ProfileEditScreenCommand.ShowPhotoPicker) }
         is ProfileEditScreenEvent.DeleteAvatar -> onDeleteAvatar()
         is ProfileEditScreenEvent.NicknameChanged -> updateUserInput { copy(nickname = event.nickname) }
         is ProfileEditScreenEvent.SpecializationSelected ->
