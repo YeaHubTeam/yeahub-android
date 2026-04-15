@@ -32,7 +32,7 @@ class ProfileEditScreenMapperSnackbarAndDialogTest {
 
     @ParameterizedTest
     @ArgumentsSource(ProfileEditScreenMapperSnackbarAndDialogArgumentsProvider::class)
-    private fun `should pass through dialog flag and map snackbar state`(
+    fun `should pass through dialog flag and map snackbar state`(
         testCase: ProfileEditScreenMapperSnackbarAndDialogTestCase,
     ) {
         val input = ProfileEditMapperInput.Loaded(
@@ -79,7 +79,7 @@ class ProfileEditScreenMapperSnackbarAndDialogTest {
         }
     }
 
-    internal data class ProfileEditScreenMapperSnackbarAndDialogTestCase(
+    data class ProfileEditScreenMapperSnackbarAndDialogTestCase(
         val operationError: OperationError?,
         val showUnsavedChangesDialog: Boolean,
         val expectedActionMessage: TextOrResource?,
