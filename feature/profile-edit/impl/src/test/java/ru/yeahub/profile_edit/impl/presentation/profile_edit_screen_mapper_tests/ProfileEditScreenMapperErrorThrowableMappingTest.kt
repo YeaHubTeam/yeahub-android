@@ -10,6 +10,8 @@ import ru.yeahub.core_utils.common.TextOrResource
 import ru.yeahub.profile_edit.impl.presentation.ProfileEditMapperInput
 import ru.yeahub.profile_edit.impl.presentation.ProfileEditScreenMapper
 import ru.yeahub.profile_edit.impl.presentation.ProfileEditState
+import ru.yeahub.profile_edit.impl.ui.cropper.ImageValidationError
+import ru.yeahub.profile_edit.impl.ui.cropper.ImageValidationException
 import ru.yeahub.test.TestArgumentsProvider
 import ru.yeahub.ui.R
 import java.io.IOException
@@ -110,6 +112,18 @@ class ProfileEditScreenMapperErrorThrowableMappingTest {
             ProfileEditScreenMapperErrorThrowableMappingTestCase(
                 throwable = IllegalStateException("bug"),
                 expectedMessage = TextOrResource.Resource(R.string.error_screen_text),
+            ),
+            ProfileEditScreenMapperErrorThrowableMappingTestCase(
+                throwable = ImageValidationException(ImageValidationError.CannotRead),
+                expectedMessage = TextOrResource.Resource(ProfileEditR.string.error_cannot_read_file),
+            ),
+            ProfileEditScreenMapperErrorThrowableMappingTestCase(
+                throwable = ImageValidationException(ImageValidationError.FileTooLarge),
+                expectedMessage = TextOrResource.Resource(ProfileEditR.string.error_file_too_large),
+            ),
+            ProfileEditScreenMapperErrorThrowableMappingTestCase(
+                throwable = ImageValidationException(ImageValidationError.CropFailed),
+                expectedMessage = TextOrResource.Resource(ProfileEditR.string.error_crop_failed),
             ),
         )
     }
