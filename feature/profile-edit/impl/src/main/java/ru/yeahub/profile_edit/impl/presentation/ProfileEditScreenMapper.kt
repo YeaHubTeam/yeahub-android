@@ -7,6 +7,7 @@ import retrofit2.HttpException
 import ru.yeahub.core_utils.common.TextOrResource
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSkill
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSocialPlatform
+import ru.yeahub.profile_edit.impl.ui.cropper.ImageValidationException
 import ru.yeahub.ui.R
 import java.io.IOException
 import ru.yeahub.profile_edit.impl.R as ProfileEditR
@@ -76,15 +77,24 @@ internal class ProfileEditScreenMapper {
             else -> TextOrResource.Resource(R.string.error_screen_text)
         }
 
+        is ImageValidationException -> TextOrResource.Text(throwable.message)
+
         else -> TextOrResource.Resource(R.string.error_screen_text)
     }
 
     private fun mapSnackbarState(throwable: Throwable?): ProfileEditState.SnackbarState? {
-        if (throwable == null) return null
-        return ProfileEditState.SnackbarState(
-            message = mapThrowableToMessage(throwable),
-            throwableMessage = throwable.localizedMessage ?: throwable.toString(),
-        )
+        return when (throwable) {
+            null -> null
+            is ImageValidationException -> ProfileEditState.SnackbarState(
+                message = mapThrowableToMessage(throwable),
+                throwableMessage = throwable.localizedMessage ?: throwable.toString(),
+            )
+
+            else -> ProfileEditState.SnackbarState(
+                message = mapThrowableToMessage(throwable),
+                throwableMessage = throwable.localizedMessage ?: throwable.toString(),
+            )
+        }
     }
 
     private fun mapPersonalInfoState(

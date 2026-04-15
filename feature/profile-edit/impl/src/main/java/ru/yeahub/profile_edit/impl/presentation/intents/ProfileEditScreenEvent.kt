@@ -29,6 +29,8 @@ sealed interface ProfileEditScreenEvent {
     data class AddSkill(val skillName: String) : ProfileEditScreenEvent
     data class RemoveSkill(val skill: DomainProfileEditSkill) : ProfileEditScreenEvent
 
+    data class ImageValidationFailed(val error: String) : ProfileEditScreenEvent
+
     data object SnackbarRetryPressed : ProfileEditScreenEvent
     data object ErrorSnackbarDismissed : ProfileEditScreenEvent
 }

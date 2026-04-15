@@ -70,6 +70,8 @@ import ru.yeahub.profile_edit.impl.presentation.ProfileEditViewModel
 import ru.yeahub.profile_edit.impl.presentation.intents.ProfileEditScreenCommand
 import ru.yeahub.profile_edit.impl.presentation.intents.ProfileEditScreenEvent
 import ru.yeahub.profile_edit.impl.presentation.intents.ProfileEditScreenResult
+import ru.yeahub.profile_edit.impl.ui.cropper.CropBottomSheet
+import ru.yeahub.profile_edit.impl.ui.cropper.validateImage
 import ru.yeahub.profile_edit.impl.ui.tabs.AboutMeContent
 import ru.yeahub.profile_edit.impl.ui.tabs.PersonalInfoContent
 import ru.yeahub.profile_edit.impl.ui.tabs.SkillsContent
@@ -164,9 +166,37 @@ internal fun HandleCommands(
     onEvent: (ProfileEditScreenEvent) -> Unit,
 ) {
     val context = LocalContext.current
-    val launcher = rememberLauncherForActivityResult(
+    var cropSheetUri by remember { mutableStateOf<Uri?>(null) }
+
+    val pickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
-    ) { uri -> if (uri != null) onEvent(ProfileEditScreenEvent.AvatarSelected(uri)) }
+    ) { uri ->
+        if (uri != null) {
+            cropSheetUri = uri
+        }
+    }
+
+    if (cropSheetUri != null) {
+        CropBottomSheet(
+            sourceUri = cropSheetUri!!,
+            onCropped = { croppedUri ->
+                cropSheetUri = null
+                val validation = validateImage(croppedUri, context)
+                val error = validation.error
+                if (!validation.isValid && error != null) {
+                    onEvent(ProfileEditScreenEvent.ImageValidationFailed(error))
+                } else {
+                    onEvent(ProfileEditScreenEvent.AvatarSelected(croppedUri))
+                }
+            },
+            onChangePhoto = {
+                cropSheetUri = null
+                onEvent(ProfileEditScreenEvent.UploadAvatar)
+            },
+            onDismiss = { cropSheetUri = null },
+        )
+    }
+
     LaunchedEffect(Unit) {
         commands.collect { command ->
             when (command) {
@@ -174,7 +204,7 @@ internal fun HandleCommands(
 
                 is ProfileEditScreenCommand.NavigateToProfile -> onResult(ProfileEditScreenResult.NavigateToProfile)
 
-                is ProfileEditScreenCommand.ShowPhotoPicker -> launcher.launch(
+                is ProfileEditScreenCommand.ShowPhotoPicker -> pickerLauncher.launch(
                     PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly),
                 )
 

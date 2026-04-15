@@ -12,8 +12,6 @@ data class ImageValidationResult(
 )
 
 private const val MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024L
-private const val MAX_RESOLUTION_HEIGHT = 2048
-private const val MAX_RESOLUTION_WEIGHT = 2048
 
 fun validateImage(uri: Uri, context: Context): ImageValidationResult {
     val fileSize =
@@ -25,20 +23,12 @@ fun validateImage(uri: Uri, context: Context): ImageValidationResult {
             BitmapFactory.decodeStream(it, null, options)
         }
     }
-
-    val width = options.outWidth
-    val height = options.outHeight
-
     val error = when {
         fileSize == null -> "Не удалось прочитать файл"
         fileSize > MAX_FILE_SIZE_BYTES -> {
             val sizeMb = fileSize / (1024.0 * 1024.0)
             "Файл слишком большой (%.1f МБ). Максимум — 5 МБ".format(sizeMb)
         }
-
-        width > MAX_RESOLUTION_WEIGHT || height > MAX_RESOLUTION_HEIGHT ->
-            "Разрешение ${width}x$height превышает максимум ${MAX_RESOLUTION_WEIGHT}x${MAX_RESOLUTION_HEIGHT}"
-
         else -> null
     }
 
