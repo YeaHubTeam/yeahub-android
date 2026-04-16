@@ -1,5 +1,6 @@
 package ru.yeahub.profile_edit.impl.ui.cropper
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -7,9 +8,11 @@ import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.RectF
 import android.view.View
+import androidx.core.graphics.createBitmap
+import androidx.core.graphics.withClip
+import androidx.core.graphics.withScale
 
 private const val BORDER_WIDTH_DP = 1f
-private const val BORDER_COLOR = 0XFF6A0BFF.toInt()
 private const val PREVIEW_BITMAP_MAX_SIZE = 512
 
 internal class CropPreviewState {
@@ -42,11 +45,10 @@ internal class CropPreviewState {
         val c = bitmapCanvas ?: return
 
         b.eraseColor(0)
-        c.save()
-        c.scale(b.width.toFloat() / rect.width(), b.height.toFloat() / rect.height())
-        c.translate(-rect.left, -rect.top)
-        source.draw(c)
-        c.restore()
+        c.withScale(b.width.toFloat() / rect.width(), b.height.toFloat() / rect.height()) {
+            translate(-rect.left, -rect.top)
+            source.draw(this)
+        }
     }
 
     private fun ensureBitmap(rect: RectF) {
@@ -65,7 +67,7 @@ internal class CropPreviewState {
         if (existing != null && existing.width == w && existing.height == h) return
 
         existing?.recycle()
-        bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+        bitmap = createBitmap(w, h)
         bitmapCanvas = Canvas(bitmap!!)
     }
 
@@ -78,7 +80,8 @@ internal class CropPreviewState {
     }
 }
 
-internal class CircleCropPreview(context: Context) : View(context) {
+@SuppressLint("ViewConstructor")
+internal class CircleCropPreview(context: Context, previewBorderColor: Int) : View(context) {
 
     private var previewState: CropPreviewState? = null
     private val clipPath = Path()
@@ -87,7 +90,7 @@ internal class CircleCropPreview(context: Context) : View(context) {
     private val borderPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
         strokeWidth = BORDER_WIDTH_DP * density
-        color = BORDER_COLOR
+        color = previewBorderColor
     }
 
     fun attach(state: CropPreviewState) {
@@ -105,17 +108,13 @@ internal class CircleCropPreview(context: Context) : View(context) {
         val bmp = previewState?.getOrCapture()
 
         if (bmp != null && width > 0 && height > 0) {
-            canvas.save()
-            canvas.clipPath(clipPath)
-
-            val scale = maxOf(width.toFloat() / bmp.width, height.toFloat() / bmp.height)
-            canvas.translate(width / 2f, height / 2f)
-            canvas.scale(scale, scale)
-            canvas.translate(-bmp.width / 2f, -bmp.height / 2f)
-            canvas.drawBitmap(bmp, 0f, 0f, null)
-
-            canvas.restore()
-
+            canvas.withClip(clipPath) {
+                val scale = maxOf(width.toFloat() / bmp.width, height.toFloat() / bmp.height)
+                translate(width / 2f, height / 2f)
+                scale(scale, scale)
+                translate(-bmp.width / 2f, -bmp.height / 2f)
+                drawBitmap(bmp, 0f, 0f, null)
+            }
             val radius = minOf(width, height) / 2f
             canvas.drawCircle(
                 width / 2f,

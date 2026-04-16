@@ -31,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -59,6 +60,7 @@ private const val SHEET_HEIGHT_FRACTION = 0.95f
 internal fun CropBottomSheet(
     sourceUri: Uri,
     onCropped: (Uri) -> Unit,
+    onCropFailure: () -> Unit,
     onChangePhoto: () -> Unit,
     onDismiss: () -> Unit,
 ) {
@@ -152,7 +154,7 @@ internal fun CropBottomSheet(
                                     onCropped(resultUri)
                                 }
 
-                                override fun onCropFailure(t: Throwable) = Unit
+                                override fun onCropFailure(t: Throwable) = onCropFailure()
                             },
                         )
                     },
@@ -247,6 +249,7 @@ private fun CropPreviewRow(
     previewState: CropPreviewState,
     modifier: Modifier = Modifier,
 ) {
+    val previewBorderColor = Theme.colors.purple700
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Center,
@@ -254,8 +257,11 @@ private fun CropPreviewRow(
     ) {
         Spacer(Modifier.weight(1f))
         AndroidView(
-            factory = { ctx ->
-                CircleCropPreview(ctx).apply { attach(previewState) }
+            factory = { context ->
+                CircleCropPreview(
+                    context,
+                    previewBorderColor = previewBorderColor.toArgb(),
+                ).apply { attach(previewState) }
             },
             modifier = Modifier
                 .weight(4f)
@@ -263,8 +269,11 @@ private fun CropPreviewRow(
         )
         Spacer(Modifier.weight(1f))
         AndroidView(
-            factory = { ctx ->
-                CircleCropPreview(ctx).apply { attach(previewState) }
+            factory = { context ->
+                CircleCropPreview(
+                    context,
+                    previewBorderColor = previewBorderColor.toArgb(),
+                ).apply { attach(previewState) }
             },
             modifier = Modifier
                 .weight(2f)
