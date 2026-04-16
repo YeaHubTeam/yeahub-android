@@ -74,7 +74,7 @@ internal fun CropBottomSheet(
     val previewState = remember { CropPreviewState() }
 
     DisposableEffect(Unit) {
-        onDispose { previewState.recycle() }
+        onDispose { previewState.onDispose() }
     }
 
     val sheetState = rememberModalBottomSheetState(
