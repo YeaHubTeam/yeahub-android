@@ -1,6 +1,6 @@
 package ru.yeahub.network_api.models
 
-data class GetAdvancedUserResponse(
+data class GetUserProfileResponse(
     val id: String,
     val username: String,
     val email: String,

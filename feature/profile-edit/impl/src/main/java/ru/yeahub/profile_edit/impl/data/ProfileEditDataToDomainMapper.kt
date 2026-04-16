@@ -1,9 +1,9 @@
 package ru.yeahub.profile_edit.impl.data
 
 import android.text.Html
-import ru.yeahub.network_api.models.GetAdvancedUserResponse
 import ru.yeahub.network_api.models.GetProfileForUserResponse
 import ru.yeahub.network_api.models.GetSkillResponse
+import ru.yeahub.network_api.models.GetUserProfileResponse
 import ru.yeahub.network_api.models.SocialNetworkDto
 import ru.yeahub.network_api.models.UpdateProfileRequest
 import ru.yeahub.network_api.models.UpdateUserRequest
@@ -15,7 +15,7 @@ import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSpecialization
 internal class ProfileEditDataToDomainMapper {
 
     fun mapProfileToDomain(
-        user: GetAdvancedUserResponse,
+        user: GetUserProfileResponse,
         activeProfile: GetProfileForUserResponse,
         allSkills: List<DomainProfileEditSkill>,
         specializations: List<DomainProfileEditSpecialization>,
@@ -40,7 +40,7 @@ internal class ProfileEditDataToDomainMapper {
     fun mapToUpdateProfileRequest(
         profile: DomainProfileEditData,
         cachedProfile: GetProfileForUserResponse,
-        cachedUser: GetAdvancedUserResponse,
+        cachedUser: GetUserProfileResponse,
         cachedAllSkills: List<GetSkillResponse>,
         allSpecializations: List<DomainProfileEditSpecialization>,
     ): UpdateProfileRequest {
@@ -72,7 +72,7 @@ internal class ProfileEditDataToDomainMapper {
 
     fun mapToUpdateUserRequest(
         profile: DomainProfileEditData,
-        cachedUser: GetAdvancedUserResponse,
+        cachedUser: GetUserProfileResponse,
         avatarBase64: String?,
         avatarDeleted: Boolean,
     ): UpdateUserRequest {

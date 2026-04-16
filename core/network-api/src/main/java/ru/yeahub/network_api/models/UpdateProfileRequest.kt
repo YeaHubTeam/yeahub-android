@@ -9,5 +9,5 @@ data class UpdateProfileRequest(
     val imageSrc: String?,
     val isActive: Boolean?,
     val profileSkills: List<Long>,
-    val user: GetAdvancedUserResponse,
+    val user: GetUserProfileResponse,
 )

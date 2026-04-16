@@ -7,13 +7,13 @@ import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
 import ru.yeahub.network_api.ApiService
-import ru.yeahub.network_api.models.GetAdvancedUserResponse
 import ru.yeahub.network_api.models.GetCollectionsResponse
 import ru.yeahub.network_api.models.GetPublicQuestionResponse
 import ru.yeahub.network_api.models.GetPublicQuestionsResponse
 import ru.yeahub.network_api.models.GetSkillsResponse
 import ru.yeahub.network_api.models.GetSpecializationResponse
 import ru.yeahub.network_api.models.GetSpecializationsResponse
+import ru.yeahub.network_api.models.GetUserProfileResponse
 import ru.yeahub.network_api.models.UpdateProfileRequest
 import ru.yeahub.network_api.models.UpdatePublicUserResponse
 import ru.yeahub.network_api.models.UpdateUserRequest
@@ -70,7 +70,7 @@ interface RetrofitApiService : ApiService {
     ): GetCollectionsResponse
 
     @GET("auth/profile")
-    override suspend fun getAuthProfile(): GetAdvancedUserResponse
+    override suspend fun getProfile(): GetUserProfileResponse
 
     @PUT("profiles/{id}")
     override suspend fun updateProfile(

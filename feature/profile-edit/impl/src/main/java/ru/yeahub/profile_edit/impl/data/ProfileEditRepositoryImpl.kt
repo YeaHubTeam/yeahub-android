@@ -4,9 +4,9 @@ import android.content.Context
 import android.net.Uri
 import android.util.Base64
 import ru.yeahub.network_api.ApiService
-import ru.yeahub.network_api.models.GetAdvancedUserResponse
 import ru.yeahub.network_api.models.GetProfileForUserResponse
 import ru.yeahub.network_api.models.GetSkillResponse
+import ru.yeahub.network_api.models.GetUserProfileResponse
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditData
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSkill
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSpecialization
@@ -18,7 +18,7 @@ internal class ProfileEditRepositoryImpl(
     private val context: Context,
 ) : ProfileEditRepository {
 
-    private var cachedUser: GetAdvancedUserResponse? = null
+    private var cachedUser: GetUserProfileResponse? = null
     private var cachedProfile: GetProfileForUserResponse? = null
     private var cachedAllSkillResponses: List<GetSkillResponse> = emptyList()
     private var cachedAllSpecializations: List<DomainProfileEditSpecialization> = emptyList()
@@ -29,7 +29,7 @@ internal class ProfileEditRepositoryImpl(
         skills: List<DomainProfileEditSkill>,
         specializations: List<DomainProfileEditSpecialization>,
     ): DomainProfileEditData {
-        val user = apiService.getAuthProfile()
+        val user = apiService.getProfile()
         cachedUser = user
         val activeProfile = user.profiles.find { it.isActive == true } ?: user.profiles.first()
         cachedProfile = activeProfile

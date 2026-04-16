@@ -1,12 +1,12 @@
 package ru.yeahub.network_api
 
-import ru.yeahub.network_api.models.GetAdvancedUserResponse
 import ru.yeahub.network_api.models.GetCollectionsResponse
 import ru.yeahub.network_api.models.GetPublicQuestionResponse
 import ru.yeahub.network_api.models.GetPublicQuestionsResponse
 import ru.yeahub.network_api.models.GetSkillsResponse
 import ru.yeahub.network_api.models.GetSpecializationResponse
 import ru.yeahub.network_api.models.GetSpecializationsResponse
+import ru.yeahub.network_api.models.GetUserProfileResponse
 import ru.yeahub.network_api.models.UpdateProfileRequest
 import ru.yeahub.network_api.models.UpdatePublicUserResponse
 import ru.yeahub.network_api.models.UpdateUserRequest
@@ -56,7 +56,7 @@ interface ApiService {
         isFree: Boolean
     ): GetCollectionsResponse
 
-    suspend fun getAuthProfile(): GetAdvancedUserResponse
+    suspend fun getProfile(): GetUserProfileResponse
 
     suspend fun updateProfile(
         id: String,
