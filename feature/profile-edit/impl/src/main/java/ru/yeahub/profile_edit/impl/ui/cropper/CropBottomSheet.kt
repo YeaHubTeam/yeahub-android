@@ -35,7 +35,6 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -54,7 +53,6 @@ private const val CROP_ASPECT_RATIO = 326f / 263f
 private const val CROP_QUALITY = 90
 private const val CROP_MAX_WIDTH = 2048
 private const val CROP_MAX_HEIGHT = 2048
-private const val COMPACT_HEIGHT_DP = 480
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -65,7 +63,6 @@ internal fun CropBottomSheet(
     onChangePhoto: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val isCompact = LocalConfiguration.current.screenHeightDp < COMPACT_HEIGHT_DP
     val context = LocalContext.current
     val destinationUri = remember {
         Uri.fromFile(File(context.cacheDir, "cropped_avatar_${System.currentTimeMillis()}.jpg"))
@@ -116,15 +113,13 @@ internal fun CropBottomSheet(
                     style = Theme.typography.head5,
                     color = Theme.colors.black900,
                 )
-                if (!isCompact) {
-                    Spacer(Modifier.height(8.dp))
-                    Text(
-                        text = stringResource(ProfileEditR.string.profile_edit_crop_description),
-                        style = Theme.typography.body7Alt,
-                        color = Theme.colors.black900,
-                    )
-                    Spacer(Modifier.height(16.dp))
-                }
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    text = stringResource(ProfileEditR.string.profile_edit_crop_description),
+                    style = Theme.typography.body7Alt,
+                    color = Theme.colors.black900,
+                )
+                Spacer(Modifier.height(16.dp))
                 CropViewSection(
                     sourceUri = sourceUri,
                     destinationUri = destinationUri,
@@ -135,12 +130,8 @@ internal fun CropBottomSheet(
                         .fillMaxWidth()
                         .weight(1f),
                 )
-
-                if (!isCompact) {
-                    Spacer(Modifier.height(8.dp))
-                    CropCirclesPreviewRow(previewState = previewState)
-                }
-
+                Spacer(Modifier.height(8.dp))
+                CropCirclesPreviewRow(previewState = previewState)
                 Spacer(Modifier.height(8.dp))
 
                 PrimaryButton(
