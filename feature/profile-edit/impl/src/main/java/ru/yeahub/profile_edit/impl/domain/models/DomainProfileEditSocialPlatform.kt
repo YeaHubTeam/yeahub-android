@@ -4,10 +4,10 @@ enum class DomainProfileEditSocialPlatform {
     Instagram,
     LinkedIn,
     Twitter,
+    Facebook,
     GitHub,
     Behance,
     WhatsApp,
     Telegram,
-    VK,
-    Dribble,
+    YouTube,
 }

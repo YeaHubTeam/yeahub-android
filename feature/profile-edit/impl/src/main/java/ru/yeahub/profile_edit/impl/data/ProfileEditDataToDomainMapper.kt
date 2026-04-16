@@ -76,8 +76,8 @@ internal class ProfileEditDataToDomainMapper {
         "behance" -> DomainProfileEditSocialPlatform.Behance
         "whatsapp" -> DomainProfileEditSocialPlatform.WhatsApp
         "telegram" -> DomainProfileEditSocialPlatform.Telegram
-        "vk" -> DomainProfileEditSocialPlatform.VK
-        "dribble" -> DomainProfileEditSocialPlatform.Dribble
+        "facebook" -> DomainProfileEditSocialPlatform.Facebook
+        "youtube" -> DomainProfileEditSocialPlatform.YouTube
         else -> null
     }
 }

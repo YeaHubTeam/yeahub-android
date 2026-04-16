@@ -67,24 +67,11 @@ class ProfileEditDomainToDataMapper {
     ): List<SocialNetworkDto> {
         return socialLinks.map { (platform, url) ->
             SocialNetworkDto(
-                code = platformToCode(platform),
+                code = platform.name.lowercase(),
                 title = url,
             )
         }
     }
-
-    private fun platformToCode(platform: DomainProfileEditSocialPlatform): String =
-        when (platform) {
-            DomainProfileEditSocialPlatform.Instagram -> "instagram"
-            DomainProfileEditSocialPlatform.LinkedIn -> "linkedin"
-            DomainProfileEditSocialPlatform.Twitter -> "twitter"
-            DomainProfileEditSocialPlatform.GitHub -> "github"
-            DomainProfileEditSocialPlatform.Behance -> "behance"
-            DomainProfileEditSocialPlatform.WhatsApp -> "whatsapp"
-            DomainProfileEditSocialPlatform.Telegram -> "telegram"
-            DomainProfileEditSocialPlatform.VK -> "vk"
-            DomainProfileEditSocialPlatform.Dribble -> "dribble"
-        }
 
     private fun wrapInHtmlPTags(text: String): String {
         if (text.isBlank()) return ""
