@@ -1,36 +1,25 @@
 package ru.yeahub.profile_edit.impl.ui.cropper
 
 import android.content.Context
-import android.graphics.BitmapFactory
 import android.net.Uri
 
-class ImageValidationException(override val message: String) : Exception(message)
+sealed class ImageValidationError {
+    data object CannotRead : ImageValidationError()
+    data object FileTooLarge : ImageValidationError()
+    data object CropFailed : ImageValidationError()
+}
 
-data class ImageValidationResult(
-    val isValid: Boolean,
-    val error: String? = null,
-)
+class ImageValidationException(val error: ImageValidationError) : Exception()
 
 private const val MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024L
 
-fun validateImage(uri: Uri, context: Context): ImageValidationResult {
+internal fun validateImage(uri: Uri, context: Context): ImageValidationError? {
     val fileSize =
         context.contentResolver.openInputStream(uri)?.use { it.readBytes().size.toLong() }
 
-    val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
-    if (fileSize != null) {
-        context.contentResolver.openInputStream(uri)?.use {
-            BitmapFactory.decodeStream(it, null, options)
-        }
-    }
-    val error = when {
-        fileSize == null -> "Не удалось прочитать файл"
-        fileSize > MAX_FILE_SIZE_BYTES -> {
-            val sizeMb = fileSize / (1024.0 * 1024.0)
-            "Файл слишком большой (%.1f МБ). Максимум — 5 МБ".format(sizeMb)
-        }
+    return when {
+        fileSize == null -> ImageValidationError.CannotRead
+        fileSize > MAX_FILE_SIZE_BYTES -> ImageValidationError.FileTooLarge
         else -> null
     }
-
-    return ImageValidationResult(isValid = error == null, error = error)
 }

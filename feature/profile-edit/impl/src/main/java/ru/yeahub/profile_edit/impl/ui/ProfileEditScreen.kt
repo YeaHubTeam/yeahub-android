@@ -71,6 +71,7 @@ import ru.yeahub.profile_edit.impl.presentation.intents.ProfileEditScreenCommand
 import ru.yeahub.profile_edit.impl.presentation.intents.ProfileEditScreenEvent
 import ru.yeahub.profile_edit.impl.presentation.intents.ProfileEditScreenResult
 import ru.yeahub.profile_edit.impl.ui.cropper.CropBottomSheet
+import ru.yeahub.profile_edit.impl.ui.cropper.ImageValidationError
 import ru.yeahub.profile_edit.impl.ui.cropper.validateImage
 import ru.yeahub.profile_edit.impl.ui.tabs.AboutMeContent
 import ru.yeahub.profile_edit.impl.ui.tabs.PersonalInfoContent
@@ -124,8 +125,8 @@ internal fun ProfileEditScreen(
                 val snackbar = state.snackbarState
                 YeahubSnackbar(
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                    title = snackbar.message.getString(context),
-                    description = snackbar.throwableMessage,
+                    title = snackbar.actionMessage.getString(context),
+                    description = snackbar.errorMessage.getString(context),
                     buttonText = stringResource(R.string.repeat),
                     onButtonClick = { onEvent(ProfileEditScreenEvent.SnackbarRetryPressed) },
                     onDismissIconClick = { onEvent(ProfileEditScreenEvent.ErrorSnackbarDismissed) },
@@ -181,13 +182,16 @@ internal fun HandleCommands(
             sourceUri = cropSheetUri!!,
             onCropped = { croppedUri ->
                 cropSheetUri = null
-                val validation = validateImage(croppedUri, context)
-                val error = validation.error
-                if (!validation.isValid && error != null) {
+                val error = validateImage(croppedUri, context)
+                if (error != null) {
                     onEvent(ProfileEditScreenEvent.ImageValidationFailed(error))
                 } else {
                     onEvent(ProfileEditScreenEvent.AvatarSelected(croppedUri))
                 }
+            },
+            onCropFailure = {
+                cropSheetUri = null
+                onEvent(ProfileEditScreenEvent.ImageValidationFailed(ImageValidationError.CropFailed))
             },
             onChangePhoto = {
                 cropSheetUri = null
@@ -440,8 +444,8 @@ fun ProfileEditWithSnackbarPreview() {
         ),
         showUnsavedChangesDialog = false,
         snackbarState = ProfileEditState.SnackbarState(
-            message = TextOrResource.Text("Что то пошло не так"),
-            throwableMessage = "Ошибка сети",
+            actionMessage = TextOrResource.Text("При сохранении профиля произошла ошибка"),
+            errorMessage = TextOrResource.Text("Нет интернета"),
         ),
         hasValidationErrors = false,
     )
@@ -547,7 +551,14 @@ internal fun ProfileEditScreenDynamicPreview() {
         }
     }
     val mockSaveProfile = object : SaveProfileUseCase {
-        override suspend fun invoke(profile: DomainProfileEditData) = Unit
+        private fun createHttpException(code: Int): HttpException {
+            val response = Response.error<Any>(code, "".toResponseBody(null))
+            return HttpException(response)
+        }
+
+        override suspend fun invoke(profile: DomainProfileEditData) {
+            throw createHttpException(484)
+        }
     }
     val mockUploadAvatar = object : UploadAvatarUseCase {
         private var firstCall = true

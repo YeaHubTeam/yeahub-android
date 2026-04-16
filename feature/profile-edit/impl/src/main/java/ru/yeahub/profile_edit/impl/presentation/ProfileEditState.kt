@@ -22,8 +22,8 @@ sealed interface ProfileEditState {
     data class Error(val message: TextOrResource) : ProfileEditState
 
     data class SnackbarState(
-        val message: TextOrResource,
-        val throwableMessage: String,
+        val actionMessage: TextOrResource,
+        val errorMessage: TextOrResource,
     )
 
     enum class ProfileEditTabs {

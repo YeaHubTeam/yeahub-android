@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.yeahub.core_utils.BaseViewModel
+import ru.yeahub.core_utils.common.TextOrResource
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditData
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSkill
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSocialPlatform
@@ -33,6 +34,7 @@ import ru.yeahub.profile_edit.impl.domain.usecase.UploadAvatarUseCase
 import ru.yeahub.profile_edit.impl.presentation.intents.ProfileEditScreenCommand
 import ru.yeahub.profile_edit.impl.presentation.intents.ProfileEditScreenEvent
 import ru.yeahub.profile_edit.impl.ui.cropper.ImageValidationException
+import ru.yeahub.profile_edit.impl.R as ProfileEditR
 
 internal class ProfileEditViewModel(
     private val getProfile: GetProfileUseCase,
@@ -62,7 +64,7 @@ internal class ProfileEditViewModel(
     private val mutableState = MutableStateFlow<ProfileEditMutableState>(
         value = ProfileEditMutableState(
             userInput = viewModelStaticData.initialUserInput,
-            throwable = null,
+            operationError = null,
             showUnsavedChangesDialog = false,
         ),
     )
@@ -108,8 +110,7 @@ internal class ProfileEditViewModel(
             }.catch { cause ->
                 emit(mapper.getScreenState(ProfileEditMapperInput.Error(cause)))
             }
-        }
-        .stateIn(
+        }.stateIn(
             scope = viewModelScopeSafe,
             started = SharingStarted.WhileSubscribed(TIME_TO_CLEAN_UP_RESOURCES),
             initialValue = ProfileEditState.Loading,
@@ -129,16 +130,17 @@ internal class ProfileEditViewModel(
 
         is ProfileEditScreenEvent.SnackbarRetryPressed -> onRetrySnackbar()
         is ProfileEditScreenEvent.ErrorSnackbarDismissed -> {
-            updateMutableState { copy(throwable = null) }
+            updateMutableState { copy(operationError = null) }
             pendingOperationRetry = null
         }
 
         is ProfileEditScreenEvent.UploadAvatar -> emitCommand(ProfileEditScreenCommand.ShowPhotoPicker)
         is ProfileEditScreenEvent.AvatarSelected -> onAvatarSelected(event.uri)
-        is ProfileEditScreenEvent.ImageValidationFailed ->
-            handleOperationFailure(
-                ImageValidationException(event.error),
-            ) { emitCommand(ProfileEditScreenCommand.ShowPhotoPicker) }
+        is ProfileEditScreenEvent.ImageValidationFailed -> handleOperationFailure(
+            ImageValidationException(event.error),
+            TextOrResource.Resource(ProfileEditR.string.error_action_image_validation),
+        ) { emitCommand(ProfileEditScreenCommand.ShowPhotoPicker) }
+
         is ProfileEditScreenEvent.DeleteAvatar -> onDeleteAvatar()
         is ProfileEditScreenEvent.NicknameChanged -> updateUserInput { copy(nickname = event.nickname) }
         is ProfileEditScreenEvent.SpecializationSelected ->
@@ -169,13 +171,24 @@ internal class ProfileEditViewModel(
         viewModelScopeSafe.launch(Dispatchers.IO) { _commands.emit(command) }
     }
 
-    private fun handleOperationFailure(throwable: Throwable, retry: () -> Unit) {
+    private fun handleOperationFailure(
+        throwable: Throwable,
+        failedOperationMessage: TextOrResource,
+        retry: () -> Unit,
+    ) {
         pendingOperationRetry = retry
-        updateMutableState { copy(throwable = throwable) }
+        updateMutableState {
+            copy(
+                operationError = OperationError(
+                    throwable,
+                    failedOperationMessage,
+                ),
+            )
+        }
     }
 
     private fun onRetrySnackbar() {
-        updateMutableState { copy(throwable = null) }
+        updateMutableState { copy(operationError = null) }
         pendingOperationRetry?.invoke()
         pendingOperationRetry = null
     }
@@ -219,9 +232,13 @@ internal class ProfileEditViewModel(
                         allSkills = data.allSkills,
                     ),
                 )
+            }.onSuccess { emitCommand(ProfileEditScreenCommand.NavigateToProfile) }.onFailure {
+                handleOperationFailure(
+                    it,
+                    TextOrResource.Resource(ProfileEditR.string.error_action_save_profile),
+                    ::onSaveProfile,
+                )
             }
-                .onSuccess { emitCommand(ProfileEditScreenCommand.NavigateToProfile) }
-                .onFailure { handleOperationFailure(it, ::onSaveProfile) }
         }
     }
 
@@ -229,11 +246,13 @@ internal class ProfileEditViewModel(
         val previousAvatarUrl = mutableState.value.userInput.avatarUrl
         updateUserInput { copy(avatarUrl = uri.toString()) }
         viewModelScopeSafe.launch(Dispatchers.IO) {
-            runCatching { uploadAvatar(uri) }
-                .onSuccess { newUrl -> updateUserInput { copy(avatarUrl = newUrl) } }
+            runCatching { uploadAvatar(uri) }.onSuccess { newUrl -> updateUserInput { copy(avatarUrl = newUrl) } }
                 .onFailure {
                     updateUserInput { copy(avatarUrl = previousAvatarUrl) }
-                    handleOperationFailure(it) { onAvatarSelected(uri) }
+                    handleOperationFailure(
+                        it,
+                        TextOrResource.Resource(ProfileEditR.string.error_action_upload_avatar),
+                    ) { onAvatarSelected(uri) }
                 }
         }
     }
@@ -242,20 +261,28 @@ internal class ProfileEditViewModel(
         val previousAvatarUrl = mutableState.value.userInput.avatarUrl
         updateUserInput { copy(avatarUrl = "") }
         viewModelScopeSafe.launch(Dispatchers.IO) {
-            runCatching { deleteAvatar() }
-                .onFailure {
-                    updateUserInput { copy(avatarUrl = previousAvatarUrl) }
-                    handleOperationFailure(it, ::onDeleteAvatar)
-                }
+            runCatching { deleteAvatar() }.onFailure {
+                updateUserInput { copy(avatarUrl = previousAvatarUrl) }
+                handleOperationFailure(
+                    it,
+                    TextOrResource.Resource(ProfileEditR.string.error_action_delete_avatar),
+                    ::onDeleteAvatar,
+                )
+            }
         }
     }
 }
 
 private const val TIME_TO_CLEAN_UP_RESOURCES = 5_000L
 
+internal data class OperationError(
+    val throwable: Throwable,
+    val failedOperationMessage: TextOrResource,
+)
+
 internal data class ProfileEditMutableState(
     val userInput: UserInput,
-    val throwable: Throwable?,
+    val operationError: OperationError?,
     val showUnsavedChangesDialog: Boolean,
 )
 
