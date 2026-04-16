@@ -1,5 +1,6 @@
 package ru.yeahub.profile_edit.impl.ui.cropper
 
+import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.net.Uri
 import android.view.MotionEvent
@@ -9,7 +10,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -35,6 +35,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -53,7 +54,7 @@ private const val CROP_ASPECT_RATIO = 326f / 263f
 private const val CROP_QUALITY = 90
 private const val CROP_MAX_WIDTH = 2048
 private const val CROP_MAX_HEIGHT = 2048
-private const val SHEET_HEIGHT_FRACTION = 0.95f
+private const val COMPACT_HEIGHT_DP = 480
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -64,6 +65,7 @@ internal fun CropBottomSheet(
     onChangePhoto: () -> Unit,
     onDismiss: () -> Unit,
 ) {
+    val isCompact = LocalConfiguration.current.screenHeightDp < COMPACT_HEIGHT_DP
     val context = LocalContext.current
     val destinationUri = remember {
         Uri.fromFile(File(context.cacheDir, "cropped_avatar_${System.currentTimeMillis()}.jpg"))
@@ -96,8 +98,7 @@ internal fun CropBottomSheet(
     ) {
         Surface(
             modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(SHEET_HEIGHT_FRACTION)
+                .fillMaxSize()
                 .navigationBarsPadding()
                 .padding(16.dp),
             shape = RoundedCornerShape(16.dp),
@@ -115,26 +116,30 @@ internal fun CropBottomSheet(
                     style = Theme.typography.head5,
                     color = Theme.colors.black900,
                 )
-                Spacer(Modifier.height(8.dp))
-                Text(
-                    text = stringResource(ProfileEditR.string.profile_edit_crop_description),
-                    style = Theme.typography.body7Alt,
-                    color = Theme.colors.black900,
-                )
-                Spacer(Modifier.height(16.dp))
+                if (!isCompact) {
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        text = stringResource(ProfileEditR.string.profile_edit_crop_description),
+                        style = Theme.typography.body7Alt,
+                        color = Theme.colors.black900,
+                    )
+                    Spacer(Modifier.height(16.dp))
+                }
                 CropViewSection(
                     sourceUri = sourceUri,
                     destinationUri = destinationUri,
                     ucropViewRef = ucropViewRef,
                     previewState = previewState,
+                    onCropFailure = onCropFailure,
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f),
                 )
 
-                Spacer(Modifier.height(8.dp))
-
-                CropPreviewRow(previewState = previewState)
+                if (!isCompact) {
+                    Spacer(Modifier.height(8.dp))
+                    CropCirclesPreviewRow(previewState = previewState)
+                }
 
                 Spacer(Modifier.height(8.dp))
 
@@ -176,14 +181,17 @@ internal fun CropBottomSheet(
     }
 }
 
+@SuppressLint("ClickableViewAccessibility")
 @Composable
 private fun CropViewSection(
     sourceUri: Uri,
     destinationUri: Uri,
     ucropViewRef: MutableState<UCropView?>,
     previewState: CropPreviewState,
+    onCropFailure: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val borderColor = Theme.colors.purple700.toArgb()
     AndroidView(
         factory = { ctx ->
             UCropView(ctx, null).apply {
@@ -195,7 +203,7 @@ private fun CropViewSection(
                 overlayView.setShowCropFrame(true)
                 overlayView.setShowCropGrid(false)
 
-                val squareGuide = SquareGuideOverlay(ctx)
+                val squareGuide = SquareGuideOverlay(ctx, borderColor)
                 addView(
                     squareGuide,
                     ViewGroup.LayoutParams.MATCH_PARENT,
@@ -218,7 +226,7 @@ private fun CropViewSection(
                             previewState.markDirty()
                         }
 
-                        override fun onLoadFailure(e: Exception) = Unit
+                        override fun onLoadFailure(e: Exception) = onCropFailure()
                         override fun onRotate(currentAngle: Float) {
                             previewState.markDirty()
                         }
@@ -245,7 +253,7 @@ private fun CropViewSection(
 }
 
 @Composable
-private fun CropPreviewRow(
+private fun CropCirclesPreviewRow(
     previewState: CropPreviewState,
     modifier: Modifier = Modifier,
 ) {
@@ -279,6 +287,6 @@ private fun CropPreviewRow(
                 .weight(2f)
                 .aspectRatio(1f),
         )
-        Spacer(Modifier.weight(2f))
+        Spacer(Modifier.weight(1f))
     }
 }
