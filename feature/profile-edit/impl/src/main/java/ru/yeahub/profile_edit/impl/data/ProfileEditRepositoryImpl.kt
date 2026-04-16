@@ -19,7 +19,8 @@ import ru.yeahub.profile_edit.impl.domain.repository.ProfileEditRepository
 
 internal class ProfileEditRepositoryImpl(
     private val apiService: ApiService,
-    private val mapper: ProfileEditDataToDomainMapper,
+    private val mapperDataToDomain: ProfileEditDataToDomainMapper,
+    private val mapperDomainToData: ProfileEditDomainToDataMapper,
     private val context: Context,
 ) : ProfileEditRepository {
 
@@ -44,14 +45,14 @@ internal class ProfileEditRepositoryImpl(
             val activeProfile = user.profiles.find { it.isActive == true } ?: user.profiles.first()
             cachedProfile = activeProfile
 
-            mapper.mapProfileToDomain(user, activeProfile, skills, specializations)
+            mapperDataToDomain.mapProfileToDomain(user, activeProfile, skills, specializations)
         }
     }
 
     private suspend fun getAllSkills(): List<DomainProfileEditSkill> {
         val response = apiService.getSkills(page = 1, limit = 200)
         cachedAllSkillResponses = response.data
-        return response.data.map { mapper.mapSkillToDomain(it) }
+        return response.data.map { mapperDataToDomain.mapSkillToDomain(it) }
     }
 
     private suspend fun getAllSpecializations(): List<DomainProfileEditSpecialization> {
@@ -70,7 +71,7 @@ internal class ProfileEditRepositoryImpl(
         val user = cachedUser ?: error("Profile not loaded")
         val activeProfile = cachedProfile ?: error("Profile not loaded")
 
-        val updateProfileRequest = mapper.mapToUpdateProfileRequest(
+        val updateProfileRequest = mapperDomainToData.mapToUpdateProfileRequest(
             profile = profile,
             cachedProfile = activeProfile,
             cachedUser = user,
@@ -78,7 +79,7 @@ internal class ProfileEditRepositoryImpl(
             allSpecializations = cachedAllSpecializations,
         )
 
-        val updateUserRequest = mapper.mapToUpdateUserRequest(
+        val updateUserRequest = mapperDomainToData.mapToUpdateUserRequest(
             profile = profile,
             cachedUser = user,
             avatarBase64 = avatarBase64,
