@@ -12,7 +12,7 @@ import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSpecialization
 
 class ProfileEditDomainToDataMapper {
 
-    internal fun mapToUpdateProfileRequest(
+    fun mapToUpdateProfileRequest(
         profile: DomainProfileEditData,
         cachedProfile: GetProfileForUserResponse,
         cachedUser: GetUserProfileResponse,

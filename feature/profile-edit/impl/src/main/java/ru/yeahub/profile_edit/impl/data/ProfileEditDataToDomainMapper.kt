@@ -35,6 +35,13 @@ internal class ProfileEditDataToDomainMapper {
         )
     }
 
+    fun mapSkillToDomain(skill: GetSkillResponse): DomainProfileEditSkill {
+        return DomainProfileEditSkill(
+            imageUrl = skill.imageSrc,
+            name = skill.title,
+        )
+    }
+
     private fun resolveSpecializationName(
         specializationId: Long?,
         specializations: List<DomainProfileEditSpecialization>,
@@ -51,13 +58,6 @@ internal class ProfileEditDataToDomainMapper {
             val platform = codeToPlatform(dto.code) ?: return@mapNotNull null
             platform to dto.title
         }.toMap()
-    }
-
-    fun mapSkillToDomain(skill: GetSkillResponse): DomainProfileEditSkill {
-        return DomainProfileEditSkill(
-            imageUrl = skill.imageSrc,
-            name = skill.title,
-        )
     }
 
     private fun stripHtmlTags(html: String): String {
