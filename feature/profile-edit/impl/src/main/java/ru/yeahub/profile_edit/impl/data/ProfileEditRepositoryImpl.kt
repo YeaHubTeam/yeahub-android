@@ -3,6 +3,11 @@ package ru.yeahub.profile_edit.impl.data
 import android.content.Context
 import android.net.Uri
 import android.util.Base64
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.withContext
 import ru.yeahub.network_api.ApiService
 import ru.yeahub.network_api.models.GetProfileForUserResponse
 import ru.yeahub.network_api.models.GetSkillResponse
@@ -25,25 +30,32 @@ internal class ProfileEditRepositoryImpl(
     private var avatarBase64: String? = null
     private var avatarDeleted: Boolean = false
 
-    override suspend fun getProfileData(
-        skills: List<DomainProfileEditSkill>,
-        specializations: List<DomainProfileEditSpecialization>,
-    ): DomainProfileEditData {
-        val user = apiService.getProfile()
-        cachedUser = user
-        val activeProfile = user.profiles.find { it.isActive == true } ?: user.profiles.first()
-        cachedProfile = activeProfile
-        return mapper.mapProfileToDomain(user, activeProfile, skills, specializations)
+    override suspend fun getProfileData(): DomainProfileEditData {
+        return coroutineScope {
+            val skillsDeferred = async(Dispatchers.IO) { getAllSkills() }
+            val specsDeferred = async(Dispatchers.IO) { getAllSpecializations() }
+            val userDeferred = async(Dispatchers.IO) { apiService.getProfile() }
+
+            val skills = skillsDeferred.await()
+            val specializations = specsDeferred.await()
+            val user = userDeferred.await()
+
+            cachedUser = user
+            val activeProfile = user.profiles.find { it.isActive == true } ?: user.profiles.first()
+            cachedProfile = activeProfile
+
+            mapper.mapProfileToDomain(user, activeProfile, skills, specializations)
+        }
     }
 
-    override suspend fun getAllSkills(): List<DomainProfileEditSkill> {
-        val response = apiService.getSkills(page = 1, limit = 1000)
+    private suspend fun getAllSkills(): List<DomainProfileEditSkill> {
+        val response = apiService.getSkills(page = 1, limit = 200)
         cachedAllSkillResponses = response.data
         return response.data.map { mapper.mapSkillToDomain(it) }
     }
 
-    override suspend fun getSpecializations(): List<DomainProfileEditSpecialization> {
-        val response = apiService.getSpecializations(page = 1, limit = 1000)
+    private suspend fun getAllSpecializations(): List<DomainProfileEditSpecialization> {
+        val response = apiService.getSpecializations(page = 1, limit = 200)
         val specializations = response.data.map {
             DomainProfileEditSpecialization(
                 id = it.id,
@@ -65,7 +77,6 @@ internal class ProfileEditRepositoryImpl(
             cachedAllSkills = cachedAllSkillResponses,
             allSpecializations = cachedAllSpecializations,
         )
-        apiService.updateProfile(activeProfile.id, updateProfileRequest)
 
         val updateUserRequest = mapper.mapToUpdateUserRequest(
             profile = profile,
@@ -73,10 +84,15 @@ internal class ProfileEditRepositoryImpl(
             avatarBase64 = avatarBase64,
             avatarDeleted = avatarDeleted,
         )
-        apiService.updateUser(user.id, updateUserRequest)
-
-        avatarBase64 = null
-        avatarDeleted = false
+        withContext(Dispatchers.IO) {
+            val updateProfile = async {
+                apiService.updateProfile(activeProfile.id, updateProfileRequest)
+            }
+            val updateUser = async {
+                apiService.updateUser(user.id, updateUserRequest)
+            }
+            awaitAll(updateProfile, updateUser)
+        }
     }
 
     override suspend fun cacheAvatar(uri: Uri): String {
