@@ -15,7 +15,7 @@
     <string name="profile_edit_crop_change_photo">Измените фото</string>
     <string name="error_cannot_read_file">Не удалось прочитать файл</string>
     <string name="error_crop_failed">Не удалось обрезать изображение</string>
-    <string name="error_action_save_profile">При сохранении профиля произошла ошибка</string>
+    <string name="error_action_save_profile">При сохранении произошла ошибка</string>
     <string name="error_action_upload_avatar">При загрузке аватара произошла ошибка</string>
     <string name="error_action_delete_avatar">При удалении аватара произошла ошибка</string>
     <string name="error_action_image_validation">Не удалось обработать изображение</string>
