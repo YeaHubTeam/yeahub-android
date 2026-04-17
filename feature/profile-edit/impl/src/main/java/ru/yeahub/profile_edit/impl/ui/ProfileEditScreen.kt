@@ -31,17 +31,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 import okhttp3.ResponseBody.Companion.toResponseBody
+import org.koin.androidx.compose.koinViewModel
+import org.koin.androidx.viewmodel.dsl.viewModel
 import retrofit2.HttpException
 import retrofit2.Response
 import ru.yeahub.core_ui.component.CoreTopTabs
@@ -50,7 +50,9 @@ import ru.yeahub.core_ui.component.PrimaryButton
 import ru.yeahub.core_ui.component.TopAppBarWithBottomBorder
 import ru.yeahub.core_ui.component.YeahubAlertDialog
 import ru.yeahub.core_ui.component.YeahubSnackbar
-import ru.yeahub.core_ui.example.dynamicPreview.ProvidePreviewCompositionLocals
+import ru.yeahub.core_ui.example.dynamicPreview.DynamicPreview
+import ru.yeahub.core_ui.example.dynamicPreview.ProvideDynamicPreview
+import ru.yeahub.core_ui.example.staticPreview.StaticPreview
 import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.core_utils.common.TextOrResource
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditData
@@ -315,292 +317,200 @@ private fun ProfileEditContent(
     }
 }
 
-@Preview
-@Composable
-fun ProfileEditPreview() {
-    val screenState = ProfileEditState.Loaded(
-        personalInfoState = ProfileEditState.PersonalInfoTabState(
-            avatarUrl = "",
-            nickname = ProfileEditState.ValidatedField(value = "Joe", error = null),
-            specializationList = persistentListOf(
-                "Android разработчик",
-                "iOS разработчик",
-                "Backend разработчик",
-                "Frontend разработчик",
-            ),
-            specialization = "",
-            isSpecializationEditable = true,
-            email = "johndoe@gmail.com",
-            location = ProfileEditState.ValidatedField("Санкт-Петербург", null),
-            socialLinks = persistentMapOf(
-                Pair(
-                    DomainProfileEditSocialPlatform.LinkedIn,
-                    ProfileEditState.ValidatedField(
-                        "",
-                        TextOrResource.Resource(R.string.error_max_length_255),
-                    ),
-                ),
-            ),
-        ),
-        aboutMeTabState = ProfileEditState.AboutMeTabState(aboutMeField = ""),
-        skillsTabState = ProfileEditState.SkillsTabState(
-            listOfSkills = persistentListOf(
-                DomainProfileEditSkill(imageUrl = " R.drawable.icon_true_button", name = "Kotlin"),
-                DomainProfileEditSkill(
-                    imageUrl = "R.drawable.icon_true_button",
-                    name = "Jetpack Compose",
-                ),
-                DomainProfileEditSkill(
-                    imageUrl = " R.drawable.icon_true_button",
-                    name = "Coroutines",
-                ),
-            ),
-            listOfChosenSkills = persistentListOf(
-                DomainProfileEditSkill(imageUrl = " R.drawable.icon_true_button", name = "Figma"),
-                DomainProfileEditSkill(
-                    imageUrl = " R.drawable.icon_true_button",
-                    name = "Wireframe",
-                ),
-            ),
-        ),
-        showUnsavedChangesDialog = false,
-        hasValidationErrors = true,
-        snackbarState = null,
-    )
-
-    var state by remember { mutableStateOf(screenState) }
-
-    ProfileEditScreen(
-        state = state,
-        onEvent = { event ->
-            when (event) {
-                is ProfileEditScreenEvent.SpecializationSelected -> {
-                    state = state.copy(
-                        personalInfoState = state.personalInfoState.copy(
-                            specialization = event.specialization,
-                        ),
-                    )
-                }
-
-                is ProfileEditScreenEvent.AboutMeChanged -> {
-                    state =
-                        state.copy(aboutMeTabState = state.aboutMeTabState.copy(aboutMeField = event.text))
-                }
-
-                else -> {}
-            }
-        },
-    )
-}
-
-@Preview
-@Composable
-fun ProfileEditWithDialogPreview() {
-    val screenState = ProfileEditState.Loaded(
-        personalInfoState = ProfileEditState.PersonalInfoTabState(
-            avatarUrl = "",
-            nickname = ProfileEditState.ValidatedField("John Doe", null),
-            specializationList = persistentListOf(),
-            specialization = "Android Разработчик",
-            isSpecializationEditable = false,
-            email = "johndoe@gmail.com",
-            location = ProfileEditState.ValidatedField("Санкт-Петербург", null),
-            socialLinks = persistentMapOf(),
-        ),
-        aboutMeTabState = ProfileEditState.AboutMeTabState(aboutMeField = ""),
-        skillsTabState = ProfileEditState.SkillsTabState(
-            listOfSkills = persistentListOf(),
-            listOfChosenSkills = persistentListOf(),
-        ),
-        showUnsavedChangesDialog = true,
-        snackbarState = null,
-        hasValidationErrors = false,
-    )
-
-    ProfileEditScreen(
-        state = screenState,
-        onEvent = {},
-    )
-}
-
-@Preview
-@Composable
-fun ProfileEditWithSnackbarPreview() {
-    val screenState = ProfileEditState.Loaded(
-        personalInfoState = ProfileEditState.PersonalInfoTabState(
-            avatarUrl = "",
-            nickname = ProfileEditState.ValidatedField("John Doe", null),
-            specializationList = persistentListOf(),
-            specialization = "Android Разработчик",
-            isSpecializationEditable = false,
-            email = "johndoe@gmail.com",
-            location = ProfileEditState.ValidatedField("Санкт-Петербург", null),
-            socialLinks = persistentMapOf(),
-        ),
-        aboutMeTabState = ProfileEditState.AboutMeTabState(aboutMeField = ""),
-        skillsTabState = ProfileEditState.SkillsTabState(
-            listOfSkills = persistentListOf(),
-            listOfChosenSkills = persistentListOf(),
-        ),
-        showUnsavedChangesDialog = false,
-        snackbarState = ProfileEditState.SnackbarState(
-            actionMessage = TextOrResource.Text("При сохранении профиля произошла ошибка"),
-            errorMessage = TextOrResource.Text("Нет интернета"),
-        ),
-        hasValidationErrors = false,
-    )
-
-    ProfileEditScreen(
-        state = screenState,
-        onEvent = {},
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ProfileEditErrorPreview() {
-    ProfileEditScreen(
-        state = ProfileEditState.Error(TextOrResource.Text("Не удалось загрузить данные")),
-        onEvent = {},
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ProfileEditLoadingPreview() {
-    ProfileEditScreen(
-        state = ProfileEditState.Loading,
-        onEvent = {},
-    )
-}
-
-/**
- * Не финальный вид динамического первью
- * переделаю когда будет консенсус по динамик превью
- */
-private class ProfileEditViewModelFactory(
-    private val viewModelCreator: () -> ViewModel? = { null },
-) : ViewModelProvider.Factory {
-
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel> create(modelClass: Class<T>): T = viewModelCreator() as T
-}
-
-@Composable
-private inline fun <reified VM : ViewModel> profileEditViewModelCreator(noinline creator: () -> ViewModel?): VM =
-    viewModel(factory = remember { ProfileEditViewModelFactory(creator) })
-
-@Preview(showBackground = true)
-@Composable
-internal fun ProfileEditScreenDynamicPreview() {
-    val mockGetProfile = object : GetProfileUseCase {
-        private var numberOfCalls: Int = 0
-        override suspend fun invoke(): DomainProfileEditData {
-            delay(DYNAMIC_PREVIEW_LOAD_DELAY)
-            numberOfCalls++
-            if (numberOfCalls < 3) {
-                throw IOException()
-            }
-            return DomainProfileEditData(
-                email = "johndoe@gmail.com",
+private class ProfileEditScreenPreviewProvider : PreviewParameterProvider<ProfileEditState> {
+    override val values = sequenceOf(
+        ProfileEditState.Loaded(
+            personalInfoState = ProfileEditState.PersonalInfoTabState(
                 avatarUrl = "",
-                nickname = "JohnDoe",
-                specialization = null,
-                specializationList = listOf(
+                nickname = ProfileEditState.ValidatedField(value = "Joe", error = null),
+                specializationList = persistentListOf(
                     "Android разработчик",
                     "iOS разработчик",
                     "Backend разработчик",
                     "Frontend разработчик",
                 ),
-                location = "Санкт-Петербург",
-                socialLinks = mapOf(
-                    DomainProfileEditSocialPlatform.LinkedIn to "linkedin.com/in/johndoe",
-                    DomainProfileEditSocialPlatform.Telegram to "t.me/johndoe",
-                ),
-                aboutMe = "Android разработчик с фокусом на Compose и архитектуру.",
-                selectedSkills = listOf(
-                    DomainProfileEditSkill(
-                        imageUrl = " R.drawable.icon_true_button",
-                        name = "Kotlin",
-                    ),
-                    DomainProfileEditSkill(
-                        imageUrl = "1",
-                        name = "Jetpack Compose",
+                specialization = "",
+                isSpecializationEditable = true,
+                email = "johndoe@gmail.com",
+                location = ProfileEditState.ValidatedField("Санкт-Петербург", null),
+                socialLinks = persistentMapOf(
+                    DomainProfileEditSocialPlatform.LinkedIn to ProfileEditState.ValidatedField(
+                        value = "",
+                        error = TextOrResource.Resource(R.string.error_max_length_255),
                     ),
                 ),
-                allSkills = listOf(
-                    DomainProfileEditSkill(
-                        imageUrl = " R.drawable.icon_true_button",
-                        name = "Kotlin",
-                    ),
-                    DomainProfileEditSkill(
-                        imageUrl = " R.drawable.icon_true_button",
-                        name = "Jetpack Compose",
-                    ),
-                    DomainProfileEditSkill(
-                        imageUrl = " R.drawable.icon_true_button",
-                        name = "Coroutines",
-                    ),
-                    DomainProfileEditSkill(imageUrl = " R.drawable.icon_true_button", name = "Git"),
-                    DomainProfileEditSkill(
-                        imageUrl = " R.drawable.icon_true_button",
-                        name = "Java",
-                    ),
+            ),
+            aboutMeTabState = ProfileEditState.AboutMeTabState(aboutMeField = ""),
+            skillsTabState = ProfileEditState.SkillsTabState(
+                listOfSkills = persistentListOf(
+                    DomainProfileEditSkill(imageUrl = "", name = "Kotlin"),
+                    DomainProfileEditSkill(imageUrl = "", name = "Jetpack Compose"),
+                    DomainProfileEditSkill(imageUrl = "", name = "Coroutines"),
                 ),
-            )
-        }
-    }
-    val mockSaveProfile = object : SaveProfileUseCase {
-        private fun createHttpException(code: Int): HttpException {
-            val response = Response.error<Any>(code, "".toResponseBody(null))
-            return HttpException(response)
-        }
+                listOfChosenSkills = persistentListOf(
+                    DomainProfileEditSkill(imageUrl = "", name = "Figma"),
+                    DomainProfileEditSkill(imageUrl = "", name = "Wireframe"),
+                ),
+            ),
+            showUnsavedChangesDialog = false,
+            hasValidationErrors = true,
+            snackbarState = null,
+        ),
+        ProfileEditState.Loaded(
+            personalInfoState = ProfileEditState.PersonalInfoTabState(
+                avatarUrl = "",
+                nickname = ProfileEditState.ValidatedField("John Doe", null),
+                specializationList = persistentListOf(),
+                specialization = "Android Разработчик",
+                isSpecializationEditable = false,
+                email = "johndoe@gmail.com",
+                location = ProfileEditState.ValidatedField("Санкт-Петербург", null),
+                socialLinks = persistentMapOf(),
+            ),
+            aboutMeTabState = ProfileEditState.AboutMeTabState(aboutMeField = ""),
+            skillsTabState = ProfileEditState.SkillsTabState(
+                listOfSkills = persistentListOf(),
+                listOfChosenSkills = persistentListOf(),
+            ),
+            showUnsavedChangesDialog = true,
+            snackbarState = null,
+            hasValidationErrors = false,
+        ),
+        ProfileEditState.Loaded(
+            personalInfoState = ProfileEditState.PersonalInfoTabState(
+                avatarUrl = "",
+                nickname = ProfileEditState.ValidatedField("John Doe", null),
+                specializationList = persistentListOf(),
+                specialization = "Android Разработчик",
+                isSpecializationEditable = false,
+                email = "johndoe@gmail.com",
+                location = ProfileEditState.ValidatedField("Санкт-Петербург", null),
+                socialLinks = persistentMapOf(),
+            ),
+            aboutMeTabState = ProfileEditState.AboutMeTabState(aboutMeField = ""),
+            skillsTabState = ProfileEditState.SkillsTabState(
+                listOfSkills = persistentListOf(),
+                listOfChosenSkills = persistentListOf(),
+            ),
+            showUnsavedChangesDialog = false,
+            snackbarState = ProfileEditState.SnackbarState(
+                actionMessage = TextOrResource.Text("При сохранении произошла ошибка"),
+                errorMessage = TextOrResource.Text("Нет интернета"),
+            ),
+            hasValidationErrors = false,
+        ),
+        ProfileEditState.Error(TextOrResource.Text("Не удалось загрузить данные")),
+        ProfileEditState.Loading,
+    )
+}
 
-        override suspend fun invoke(profile: DomainProfileEditData) {
-            throw createHttpException(484)
-        }
-    }
-    val mockUploadAvatar = object : UploadAvatarUseCase {
-        private var firstCall = true
-        override suspend fun invoke(uri: Uri): String {
-            if (firstCall) {
-                firstCall = false
-                throw IOException("Unauthorized")
+@StaticPreview
+@Composable
+internal fun ProfileEditScreenPreview(
+    @PreviewParameter(ProfileEditScreenPreviewProvider::class) state: ProfileEditState,
+) {
+    ProfileEditScreen(
+        state = state,
+        onEvent = {},
+    )
+}
+
+@DynamicPreview
+@Composable
+internal fun ProfileEditScreenDynamicPreview() {
+    ProvideDynamicPreview(
+        moduleDeclaration = {
+            single<GetProfileUseCase> {
+                object : GetProfileUseCase {
+                    private var numberOfCalls = 0
+                    override suspend fun invoke(): DomainProfileEditData {
+                        delay(DYNAMIC_PREVIEW_LOAD_DELAY)
+                        numberOfCalls++
+                        if (numberOfCalls < 2) throw IOException()
+                        return DomainProfileEditData(
+                            email = "johndoe@gmail.com",
+                            avatarUrl = "",
+                            nickname = "JohnDoe",
+                            specialization = null,
+                            specializationList = listOf(
+                                "Android разработчик",
+                                "iOS разработчик",
+                                "Backend разработчик",
+                                "Frontend разработчик",
+                            ),
+                            location = "Санкт-Петербург",
+                            socialLinks = mapOf(
+                                DomainProfileEditSocialPlatform.LinkedIn to "linkedin.com/in/johndoe",
+                                DomainProfileEditSocialPlatform.Telegram to "t.me/johndoe",
+                            ),
+                            aboutMe = "Android разработчик с фокусом на Compose и архитектуру.",
+                            selectedSkills = listOf(
+                                DomainProfileEditSkill(imageUrl = "", name = "Kotlin"),
+                                DomainProfileEditSkill(imageUrl = "", name = "Jetpack Compose"),
+                            ),
+                            allSkills = listOf(
+                                DomainProfileEditSkill(imageUrl = "", name = "Kotlin"),
+                                DomainProfileEditSkill(imageUrl = "", name = "Jetpack Compose"),
+                                DomainProfileEditSkill(imageUrl = "", name = "Coroutines"),
+                                DomainProfileEditSkill(imageUrl = "", name = "Git"),
+                                DomainProfileEditSkill(imageUrl = "", name = "Java"),
+                            ),
+                        )
+                    }
+                }
             }
-            return uri.toString()
-        }
-    }
-    val mockDeleteAvatar = object : DeleteAvatarUseCase {
-        private var firstCall = true
-        override suspend fun invoke() {
-            if (firstCall) {
-                firstCall = false
-                throw HttpException(
-                    Response.error<Any>(401, "".toResponseBody()),
+            single<SaveProfileUseCase> {
+                object : SaveProfileUseCase {
+                    override suspend fun invoke(profile: DomainProfileEditData) {
+                        throw HttpException(Response.error<Any>(484, "".toResponseBody(null)))
+                    }
+                }
+            }
+            single<UploadAvatarUseCase> {
+                object : UploadAvatarUseCase {
+                    private var firstCall = true
+                    override suspend fun invoke(uri: Uri): String {
+                        if (firstCall) {
+                            firstCall = false
+                            throw IOException("Unauthorized")
+                        }
+                        return uri.toString()
+                    }
+                }
+            }
+            single<DeleteAvatarUseCase> {
+                object : DeleteAvatarUseCase {
+                    private var firstCall = true
+                    override suspend fun invoke() {
+                        if (firstCall) {
+                            firstCall = false
+                            throw HttpException(Response.error<Any>(401, "".toResponseBody()))
+                        }
+                    }
+                }
+            }
+            single { ProfileEditScreenMapper() }
+            viewModel {
+                ProfileEditViewModel(
+                    getProfile = get(),
+                    saveProfile = get(),
+                    uploadAvatar = get(),
+                    deleteAvatar = get(),
+                    mapper = get(),
                 )
             }
-        }
-    }
-
-    val mockViewModel: ProfileEditViewModel = profileEditViewModelCreator {
-        ProfileEditViewModel(
-            getProfile = mockGetProfile,
-            saveProfile = mockSaveProfile,
-            uploadAvatar = mockUploadAvatar,
-            deleteAvatar = mockDeleteAvatar,
-            mapper = ProfileEditScreenMapper(),
-        )
-    }
-
-    val state by mockViewModel.screenState.collectAsState()
-    ProvidePreviewCompositionLocals {
-        ProfileEditScreenHost(
-            state = state,
-            commands = mockViewModel.commands,
-            onResult = {},
-            onEvent = mockViewModel::onEvent,
-        )
-    }
+        },
+        content = {
+            val vm = koinViewModel<ProfileEditViewModel>()
+            val state by vm.screenState.collectAsState()
+            ProfileEditScreenHost(
+                state = state,
+                commands = vm.commands,
+                onResult = {},
+                onEvent = vm::onEvent,
+            )
+        },
+    )
 }
 
 private const val DYNAMIC_PREVIEW_LOAD_DELAY = 1L
