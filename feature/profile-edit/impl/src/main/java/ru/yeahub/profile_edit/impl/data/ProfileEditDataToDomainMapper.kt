@@ -3,20 +3,20 @@ package ru.yeahub.profile_edit.impl.data
 import android.text.Html
 import ru.yeahub.network_api.models.GetProfileForUserResponse
 import ru.yeahub.network_api.models.GetSkillResponse
+import ru.yeahub.network_api.models.GetSpecializationResponse
 import ru.yeahub.network_api.models.GetUserProfileResponse
 import ru.yeahub.network_api.models.SocialNetworkDto
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditData
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSkill
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSocialPlatform
-import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSpecialization
 
 internal class ProfileEditDataToDomainMapper {
 
     fun mapProfileToDomain(
         user: GetUserProfileResponse,
         activeProfile: GetProfileForUserResponse,
-        allSkills: List<DomainProfileEditSkill>,
-        specializations: List<DomainProfileEditSpecialization>,
+        allSkills: List<GetSkillResponse>,
+        specializations: List<GetSpecializationResponse>,
     ): DomainProfileEditData {
         return DomainProfileEditData(
             email = user.email,
@@ -31,11 +31,11 @@ internal class ProfileEditDataToDomainMapper {
             socialLinks = mapSocialNetworkToDomain(activeProfile.socialNetwork),
             aboutMe = stripHtmlTags(activeProfile.description.orEmpty()),
             selectedSkills = activeProfile.profileSkills.map { mapSkillToDomain(it) },
-            allSkills = allSkills,
+            allSkills = allSkills.map { mapSkillToDomain(it) },
         )
     }
 
-    fun mapSkillToDomain(skill: GetSkillResponse): DomainProfileEditSkill {
+    private fun mapSkillToDomain(skill: GetSkillResponse): DomainProfileEditSkill {
         return DomainProfileEditSkill(
             imageUrl = skill.imageSrc,
             name = skill.title,
@@ -44,7 +44,7 @@ internal class ProfileEditDataToDomainMapper {
 
     private fun resolveSpecializationName(
         specializationId: Long?,
-        specializations: List<DomainProfileEditSpecialization>,
+        specializations: List<GetSpecializationResponse>,
     ): String? {
         if (specializationId == null || specializationId == 0L) return null
         return specializations.find { it.id == specializationId }!!.title

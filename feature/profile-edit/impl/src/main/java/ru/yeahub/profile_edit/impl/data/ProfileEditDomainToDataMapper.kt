@@ -2,13 +2,13 @@ package ru.yeahub.profile_edit.impl.data
 
 import ru.yeahub.network_api.models.GetProfileForUserResponse
 import ru.yeahub.network_api.models.GetSkillResponse
+import ru.yeahub.network_api.models.GetSpecializationResponse
 import ru.yeahub.network_api.models.GetUserProfileResponse
 import ru.yeahub.network_api.models.SocialNetworkDto
 import ru.yeahub.network_api.models.UpdateProfileRequest
 import ru.yeahub.network_api.models.UpdateUserRequest
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditData
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSocialPlatform
-import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSpecialization
 
 class ProfileEditDomainToDataMapper {
 
@@ -17,7 +17,7 @@ class ProfileEditDomainToDataMapper {
         cachedProfile: GetProfileForUserResponse,
         cachedUser: GetUserProfileResponse,
         cachedAllSkills: List<GetSkillResponse>,
-        allSpecializations: List<DomainProfileEditSpecialization>,
+        allSpecializations: List<GetSpecializationResponse>,
     ): UpdateProfileRequest {
         val skillIds = profile.selectedSkills.mapNotNull { skill ->
             cachedAllSkills.find { it.title == skill.name }?.id
@@ -88,9 +88,8 @@ class ProfileEditDomainToDataMapper {
 
     private fun resolveSpecializationId(
         specName: String,
-        allSpecializations: List<DomainProfileEditSpecialization>,
+        allSpecializations: List<GetSpecializationResponse>,
     ): Long {
-        val id = allSpecializations.find { it.title == specName }!!.id
-        return id
+        return allSpecializations.find { it.title == specName }!!.id
     }
 }

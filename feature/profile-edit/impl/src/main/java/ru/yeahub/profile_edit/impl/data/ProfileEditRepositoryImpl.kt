@@ -11,10 +11,9 @@ import kotlinx.coroutines.withContext
 import ru.yeahub.network_api.ApiService
 import ru.yeahub.network_api.models.GetProfileForUserResponse
 import ru.yeahub.network_api.models.GetSkillResponse
+import ru.yeahub.network_api.models.GetSpecializationResponse
 import ru.yeahub.network_api.models.GetUserProfileResponse
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditData
-import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSkill
-import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSpecialization
 import ru.yeahub.profile_edit.impl.domain.repository.ProfileEditRepository
 
 internal class ProfileEditRepositoryImpl(
@@ -27,7 +26,7 @@ internal class ProfileEditRepositoryImpl(
     private var cachedUser: GetUserProfileResponse? = null
     private var cachedProfile: GetProfileForUserResponse? = null
     private var cachedAllSkillResponses: List<GetSkillResponse> = emptyList()
-    private var cachedAllSpecializations: List<DomainProfileEditSpecialization> = emptyList()
+    private var cachedAllSpecializations: List<GetSpecializationResponse> = emptyList()
     private var avatarBase64: String? = null
     private var avatarDeleted: Boolean = false
 
@@ -49,22 +48,16 @@ internal class ProfileEditRepositoryImpl(
         }
     }
 
-    private suspend fun getAllSkills(): List<DomainProfileEditSkill> {
+    private suspend fun getAllSkills(): List<GetSkillResponse> {
         val response = apiService.getSkills(page = 1, limit = 200)
         cachedAllSkillResponses = response.data
-        return response.data.map { mapperDataToDomain.mapSkillToDomain(it) }
+        return response.data
     }
 
-    private suspend fun getAllSpecializations(): List<DomainProfileEditSpecialization> {
+    private suspend fun getAllSpecializations(): List<GetSpecializationResponse> {
         val response = apiService.getSpecializations(page = 1, limit = 200)
-        val specializations = response.data.map {
-            DomainProfileEditSpecialization(
-                id = it.id,
-                title = it.title,
-            )
-        }
-        cachedAllSpecializations = specializations
-        return specializations
+        cachedAllSpecializations = response.data
+        return response.data
     }
 
     override suspend fun saveProfile(profile: DomainProfileEditData) {
