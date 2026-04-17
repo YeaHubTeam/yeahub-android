@@ -51,6 +51,9 @@ dependencies {
     implementation(libs.androidx.runtime.android)
     implementation(libs.androidx.icons)
 
+    implementation(libs.koin.core)
+    implementation(libs.koin.compose)
+
     implementation(libs.coil.compose)
     implementation(libs.jsoup)
     implementation(libs.compose.markdown)
