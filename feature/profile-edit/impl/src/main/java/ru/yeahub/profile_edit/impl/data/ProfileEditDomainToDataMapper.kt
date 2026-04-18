@@ -14,6 +14,7 @@ class ProfileEditDomainToDataMapper {
 
     fun mapToUpdateProfileRequest(
         profile: DomainProfileEditData,
+        description: String,
         cachedProfile: GetProfileForUserResponse,
         cachedUser: GetUserProfileResponse,
         cachedAllSkills: List<GetSkillResponse>,
@@ -36,13 +37,27 @@ class ProfileEditDomainToDataMapper {
             profileType = cachedProfile.profileType,
             specializationId = specializationId,
             markingWeight = cachedProfile.markingWeight,
-            description = wrapInHtmlPTags(profile.aboutMe),
+            description = description,
             socialNetwork = mapSocialLinksToDto(profile.socialLinks),
             imageSrc = cachedProfile.imageSrc,
             isActive = cachedProfile.isActive,
             profileSkills = skillIds,
             user = cachedUser,
         )
+    }
+
+    internal fun mapAboutMeToHtml(aboutMe: String): String {
+        val normalizedAboutMe = normalizePlainText(aboutMe)
+        val html = if (normalizedAboutMe.isBlank()) {
+            ""
+        } else {
+            normalizedAboutMe.split(PARAGRAPH_SEPARATOR_REGEX)
+                .joinToString(separator = "") { paragraph ->
+                    "<p>${escapeHtml(paragraph).replace("\n", "<br>")}</p>"
+                }
+        }
+
+        return html
     }
 
     fun mapToUpdateUserRequest(
@@ -73,23 +88,34 @@ class ProfileEditDomainToDataMapper {
         }
     }
 
-    private fun wrapInHtmlPTags(text: String): String {
-        if (text.isBlank()) return ""
-
-        return text.lines().joinToString(separator = "") { line ->
-            "<p>${escapeHtml(line)}</p>"
-        }
-    }
-
-    private fun escapeHtml(input: String): String {
-        return input.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
-            .replace("\"", "&quot;").replace("'", "&#39;")
-    }
-
     private fun resolveSpecializationId(
         specName: String,
         allSpecializations: List<GetSpecializationResponse>,
     ): Long {
         return allSpecializations.find { it.title == specName }!!.id
     }
+
+    private fun normalizePlainText(text: String): String {
+        return text.replace("\r\n", "\n")
+            .replace("\r", "\n")
+            .replace(NON_BREAKING_SPACE, REGULAR_SPACE)
+            .lines()
+            .joinToString(separator = "\n") { line -> line.trimEnd() }
+            .replace(MULTIPLE_LINE_BREAKS_REGEX, "\n\n")
+            .trim()
+    }
+
+    private fun escapeHtml(input: String): String {
+        return input.replace("&", "&amp;")
+            .replace("<", "&lt;")
+            .replace(">", "&gt;")
+            .replace("\"", "&quot;")
+            .replace("'", "&#39;")
+    }
 }
+
+private const val NON_BREAKING_SPACE = '\u00A0'
+private const val REGULAR_SPACE = ' '
+
+private val MULTIPLE_LINE_BREAKS_REGEX = Regex("\n{3,}")
+private val PARAGRAPH_SEPARATOR_REGEX = Regex("\n{2,}")

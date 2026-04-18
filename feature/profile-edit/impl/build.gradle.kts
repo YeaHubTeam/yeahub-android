@@ -51,6 +51,7 @@ dependencies {
     implementation(libs.androidx.runtime.android)
     implementation(libs.compose.shimmer)
     implementation(libs.immutable.collections)
+    implementation(libs.jsoup)
 
     implementation(libs.retrofit.core)
     implementation(libs.retrofit.gsonConverter)

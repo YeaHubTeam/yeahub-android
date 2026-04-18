@@ -63,9 +63,18 @@ internal class ProfileEditRepositoryImpl(
     override suspend fun saveProfile(profile: DomainProfileEditData) {
         val user = cachedUser ?: error("Profile not loaded")
         val activeProfile = cachedProfile ?: error("Profile not loaded")
+        val cachedDescription = activeProfile.description.orEmpty()
+        val normalizedCachedDescription =
+            mapperDataToDomain.mapDescriptionToPlainText(cachedDescription)
+        val description = if (profile.aboutMe == normalizedCachedDescription) {
+            cachedDescription
+        } else {
+            mapperDomainToData.mapAboutMeToHtml(profile.aboutMe)
+        }
 
         val updateProfileRequest = mapperDomainToData.mapToUpdateProfileRequest(
             profile = profile,
+            description = description,
             cachedProfile = activeProfile,
             cachedUser = user,
             cachedAllSkills = cachedAllSkillResponses,

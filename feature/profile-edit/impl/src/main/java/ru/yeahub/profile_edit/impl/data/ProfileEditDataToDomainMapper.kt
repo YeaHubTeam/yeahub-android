@@ -1,6 +1,6 @@
 package ru.yeahub.profile_edit.impl.data
 
-import android.text.Html
+import org.jsoup.Jsoup
 import ru.yeahub.network_api.models.GetProfileForUserResponse
 import ru.yeahub.network_api.models.GetSkillResponse
 import ru.yeahub.network_api.models.GetSpecializationResponse
@@ -29,10 +29,24 @@ internal class ProfileEditDataToDomainMapper {
             specializationList = specializations.map { it.title },
             location = user.city.orEmpty(),
             socialLinks = mapSocialNetworkToDomain(activeProfile.socialNetwork),
-            aboutMe = stripHtmlTags(activeProfile.description.orEmpty()),
+            aboutMe = mapDescriptionToPlainText(activeProfile.description.orEmpty()),
             selectedSkills = activeProfile.profileSkills.map { mapSkillToDomain(it) },
             allSkills = allSkills.map { mapSkillToDomain(it) },
         )
+    }
+
+    internal fun mapDescriptionToPlainText(description: String): String {
+        val plainText = if (description.isBlank()) {
+            ""
+        } else {
+            val parsedText = Jsoup.parseBodyFragment(
+                description.replace(HTML_LINE_BREAK_REGEX, "\n")
+                    .replace(HTML_BLOCK_END_REGEX, "\n\n"),
+            ).body().wholeText()
+            normalizePlainText(parsedText)
+        }
+
+        return plainText
     }
 
     private fun mapSkillToDomain(skill: GetSkillResponse): DomainProfileEditSkill {
@@ -60,14 +74,6 @@ internal class ProfileEditDataToDomainMapper {
         }.toMap()
     }
 
-    private fun stripHtmlTags(html: String): String {
-        if (html.isBlank()) return ""
-
-        val spanned = Html.fromHtml(html, Html.FROM_HTML_MODE_COMPACT)
-
-        return spanned.toString().trimEnd().replace("\u00A0", " ")
-    }
-
     private fun codeToPlatform(code: String): DomainProfileEditSocialPlatform? = when (code) {
         "instagram" -> DomainProfileEditSocialPlatform.Instagram
         "linkedin" -> DomainProfileEditSocialPlatform.LinkedIn
@@ -80,4 +86,21 @@ internal class ProfileEditDataToDomainMapper {
         "youtube" -> DomainProfileEditSocialPlatform.YouTube
         else -> null
     }
+
+    private fun normalizePlainText(text: String): String {
+        return text.replace("\r\n", "\n")
+            .replace("\r", "\n")
+            .replace(NON_BREAKING_SPACE, REGULAR_SPACE)
+            .lines()
+            .joinToString(separator = "\n") { line -> line.trimEnd() }
+            .replace(MULTIPLE_LINE_BREAKS_REGEX, "\n\n")
+            .trim()
+    }
 }
+
+private const val NON_BREAKING_SPACE = '\u00A0'
+private const val REGULAR_SPACE = ' '
+
+private val HTML_LINE_BREAK_REGEX = Regex("(?i)<br\\s*/?>")
+private val HTML_BLOCK_END_REGEX = Regex("(?i)</(p|div|blockquote|pre|li|h[1-6])>")
+private val MULTIPLE_LINE_BREAKS_REGEX = Regex("\n{3,}")
