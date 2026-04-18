@@ -76,6 +76,7 @@ fun inTaskMsg(hasFail: Boolean, source: String, reportPath: String): String {
 }
 
 tasks.register("HERE_DETEKT_REPORT_LINK") {
+    notCompatibleWithConfigurationCache("Открывает HTML-отчёт, использует состояние задачи detekt")
     doLast {
         val reportPath = "${projectDir}/build/reports/detekt/detekt-report.html"
         val hasFail = tasks.named("detekt").get().state.failure != null
@@ -106,6 +107,8 @@ var ktlintConsolidateReportPath = "no_path"
 apply(plugin = libs.plugins.jvm.get().pluginId)
 
 tasks.register("consolidateKtlintReports") {
+    notCompatibleWithConfigurationCache("Обращается к subprojects/allprojects/layout")
+
     group = "verification"
     description = "Consolidates all KTLint HTML reports into a single report"
 
@@ -150,6 +153,7 @@ tasks.register("consolidateKtlintReports") {
 }
 
 tasks.register("HERE_KTLINT_REPORT_LINK") {
+    notCompatibleWithConfigurationCache("Открывает HTML-отчёт, использует результат consolidateKtlintReports")
     doLast {
         println("In, short " + if (!isKtlintAccepted) "there are failure ktlint findings" else "ktlint check accepted")
         if (!isKtlintAccepted) {
