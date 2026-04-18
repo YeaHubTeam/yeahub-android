@@ -187,6 +187,7 @@ tasks.withType<Test> {
 }
 
 tasks.register("openTestReportOnFailure") {
+    notCompatibleWithConfigurationCache("Открывает HTML-отчёт")
     onlyIf {
         tasks.withType<Test>().any { it.state.failure != null }
     }
