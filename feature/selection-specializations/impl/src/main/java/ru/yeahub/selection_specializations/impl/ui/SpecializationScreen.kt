@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -42,7 +43,6 @@ import ru.yeahub.core_ui.component.ErrorScreen
 import ru.yeahub.core_ui.component.PrimaryButton
 import ru.yeahub.core_ui.component.SpecializationButton
 import ru.yeahub.core_ui.component.TopAppBarWithBottomBorder
-import ru.yeahub.core_ui.example.dynamicPreview.ProvidePreviewCompositionLocals
 import ru.yeahub.core_ui.example.staticPreview.StaticPreview
 import ru.yeahub.core_ui.theme.LocalAppTypography
 import ru.yeahub.core_ui.theme.colors
@@ -368,7 +368,7 @@ fun SpecializationDynamicPreview() {
         mockSpecializationViewModel.onEvent(SpecializationScreenEvent.LoadNextPage)
     }
 
-    ProvidePreviewCompositionLocals {
+    CompositionLocalProvider {
         ScreenUI(
             headerText = headerText,
             screenState = mockState,
