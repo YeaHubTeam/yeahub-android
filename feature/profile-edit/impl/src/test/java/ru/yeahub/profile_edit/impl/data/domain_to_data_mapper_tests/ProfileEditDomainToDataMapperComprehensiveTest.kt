@@ -10,6 +10,7 @@ import ru.yeahub.network_api.models.GetUserProfileResponse
 import ru.yeahub.network_api.models.SocialNetworkDto
 import ru.yeahub.network_api.models.UpdateProfileRequest
 import ru.yeahub.network_api.models.UpdateUserRequest
+import ru.yeahub.profile_edit.impl.data.PendingAvatarChange
 import ru.yeahub.profile_edit.impl.data.ProfileEditDomainToDataMapper
 import ru.yeahub.profile_edit.impl.data.minimalProfile
 import ru.yeahub.profile_edit.impl.data.minimalUser
@@ -26,7 +27,7 @@ class ProfileEditDomainToDataMapperComprehensiveTest {
 
     @ParameterizedTest
     @ArgumentsSource(ProfileEditDomainToDataMapperComprehensiveArgumentsProvider::class)
-    fun `should map profile edit domain data to update requests with all fields`(
+    internal fun `should map profile edit domain data to update requests with all fields`(
         testCase: ProfileEditDomainToDataMapperComprehensiveTestCase,
     ) {
         val description = mapper.mapAboutMeToHtml(testCase.profile.aboutMe)
@@ -41,27 +42,25 @@ class ProfileEditDomainToDataMapperComprehensiveTest {
         val updateUserRequest = mapper.mapToUpdateUserRequest(
             profile = testCase.profile,
             cachedUser = testCase.cachedUser,
-            avatarBase64 = testCase.avatarBase64,
-            avatarDeleted = testCase.avatarDeleted,
+            pendingAvatarChange = testCase.pendingAvatarChange,
         )
 
         assertEquals(testCase.expectedProfileRequest, updateProfileRequest)
         assertEquals(testCase.expectedUserRequest, updateUserRequest)
     }
 
-    data class ProfileEditDomainToDataMapperComprehensiveTestCase(
+    internal data class ProfileEditDomainToDataMapperComprehensiveTestCase(
         val profile: DomainProfileEditData,
         val cachedProfile: GetProfileForUserResponse,
         val cachedUser: GetUserProfileResponse,
         val cachedAllSkills: List<GetSkillResponse>,
         val allSpecializations: List<GetSpecializationResponse>,
-        val avatarBase64: String?,
-        val avatarDeleted: Boolean,
+        val pendingAvatarChange: PendingAvatarChange,
         val expectedProfileRequest: UpdateProfileRequest,
         val expectedUserRequest: UpdateUserRequest,
     )
 
-    class ProfileEditDomainToDataMapperComprehensiveArgumentsProvider :
+    internal class ProfileEditDomainToDataMapperComprehensiveArgumentsProvider :
         TestArgumentsProvider<ProfileEditDomainToDataMapperComprehensiveTestCase>() {
         override fun testCases() = listOf(
             ProfileEditDomainToDataMapperComprehensiveTestCase(
@@ -114,8 +113,7 @@ class ProfileEditDomainToDataMapperComprehensiveTest {
                     specializationResponse(id = 5L, title = "Android"),
                     specializationResponse(id = 7L, title = "iOS"),
                 ),
-                avatarBase64 = "base64-avatar",
-                avatarDeleted = false,
+                pendingAvatarChange = PendingAvatarChange.Upload(avatarBase64 = "base64-avatar"),
                 expectedProfileRequest = UpdateProfileRequest(
                     profileType = 2,
                     specializationId = 5L,

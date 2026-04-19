@@ -76,7 +76,7 @@ internal class ProfileEditDomainToDataMapper {
                 is PendingAvatarChange.None, is PendingAvatarChange.Upload -> cachedUser.avatarUrl
             },
             avatarImage = when (pendingAvatarChange) {
-                is PendingAvatarChange.Upload -> pendingAvatarChange.base64
+                is PendingAvatarChange.Upload -> pendingAvatarChange.avatarBase64
                 is PendingAvatarChange.None, is PendingAvatarChange.Delete -> null
             },
         )

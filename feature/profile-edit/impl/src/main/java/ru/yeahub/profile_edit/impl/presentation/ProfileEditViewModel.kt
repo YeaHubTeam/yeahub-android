@@ -1,6 +1,5 @@
 package ru.yeahub.profile_edit.impl.presentation
 
-import android.net.Uri
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
@@ -135,7 +134,11 @@ internal class ProfileEditViewModel(
         }
 
         is ProfileEditScreenEvent.UploadAvatar -> emitCommand(ProfileEditScreenCommand.ShowPhotoPicker)
-        is ProfileEditScreenEvent.AvatarSelected -> onAvatarSelected(event.uri)
+        is ProfileEditScreenEvent.AvatarSelected -> onAvatarSelected(
+            previewUrl = event.previewUrl,
+            avatarBytes = event.avatarBytes,
+        )
+
         is ProfileEditScreenEvent.ImageValidationFailed -> handleOperationFailure(
             ImageValidationException(event.error),
             TextOrResource.Resource(ProfileEditR.string.error_action_image_validation),
@@ -242,17 +245,26 @@ internal class ProfileEditViewModel(
         }
     }
 
-    private fun onAvatarSelected(uri: Uri) {
+    private fun onAvatarSelected(
+        previewUrl: String,
+        avatarBytes: ByteArray,
+    ) {
         val previousAvatarUrl = mutableState.value.userInput.avatarUrl
-        updateUserInput { copy(avatarUrl = uri.toString()) }
+        updateUserInput { copy(avatarUrl = previewUrl) }
         viewModelScopeSafe.launch(Dispatchers.IO) {
-            runCatching { uploadAvatar(uri) }.onSuccess { newUrl -> updateUserInput { copy(avatarUrl = newUrl) } }
+            runCatching { uploadAvatar(avatarBytes) }
+                .onSuccess { updateUserInput { copy(avatarUrl = previewUrl) } }
                 .onFailure {
                     updateUserInput { copy(avatarUrl = previousAvatarUrl) }
                     handleOperationFailure(
                         it,
                         TextOrResource.Resource(ProfileEditR.string.error_action_upload_avatar),
-                    ) { onAvatarSelected(uri) }
+                    ) {
+                        onAvatarSelected(
+                            previewUrl = previewUrl,
+                            avatarBytes = avatarBytes,
+                        )
+                    }
                 }
         }
     }

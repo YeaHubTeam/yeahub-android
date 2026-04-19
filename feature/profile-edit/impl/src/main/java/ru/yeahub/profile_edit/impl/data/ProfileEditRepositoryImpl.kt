@@ -1,7 +1,5 @@
 package ru.yeahub.profile_edit.impl.data
 
-import android.content.Context
-import android.net.Uri
 import android.util.Base64
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -20,7 +18,6 @@ internal class ProfileEditRepositoryImpl(
     private val apiService: ApiService,
     private val mapperDataToDomain: ProfileEditDataToDomainMapper,
     private val mapperDomainToData: ProfileEditDomainToDataMapper,
-    private val context: Context,
 ) : ProfileEditRepository {
 
     private var cachedUser: GetUserProfileResponse? = null
@@ -97,15 +94,10 @@ internal class ProfileEditRepositoryImpl(
         }
     }
 
-    override suspend fun cacheAvatar(uri: Uri): String {
-        val bytes = context.contentResolver.openInputStream(uri)?.use { it.readBytes() }
-            ?: error("Cannot read avatar from uri: $uri")
-
+    override suspend fun cacheAvatar(avatarBytes: ByteArray) {
         pendingAvatarChange = PendingAvatarChange.Upload(
-            base64 = Base64.encodeToString(bytes, Base64.NO_WRAP),
+            avatarBase64 = Base64.encodeToString(avatarBytes, Base64.NO_WRAP),
         )
-
-        return uri.toString()
     }
 
     override suspend fun markAvatarDeleted() {
@@ -115,6 +107,6 @@ internal class ProfileEditRepositoryImpl(
 
 internal sealed interface PendingAvatarChange {
     data object None : PendingAvatarChange
-    data class Upload(val base64: String) : PendingAvatarChange
+    data class Upload(val avatarBase64: String) : PendingAvatarChange
     data object Delete : PendingAvatarChange
 }

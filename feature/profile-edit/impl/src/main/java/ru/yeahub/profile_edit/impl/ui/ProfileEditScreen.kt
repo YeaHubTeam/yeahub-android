@@ -73,8 +73,9 @@ import ru.yeahub.profile_edit.impl.presentation.intents.ProfileEditScreenCommand
 import ru.yeahub.profile_edit.impl.presentation.intents.ProfileEditScreenEvent
 import ru.yeahub.profile_edit.impl.presentation.intents.ProfileEditScreenResult
 import ru.yeahub.profile_edit.impl.ui.cropper.CropBottomSheet
+import ru.yeahub.profile_edit.impl.ui.cropper.ImageReadResult
 import ru.yeahub.profile_edit.impl.ui.cropper.ImageValidationError
-import ru.yeahub.profile_edit.impl.ui.cropper.validateImage
+import ru.yeahub.profile_edit.impl.ui.cropper.readImageBytesAndValidate
 import ru.yeahub.profile_edit.impl.ui.tabs.AboutMeContent
 import ru.yeahub.profile_edit.impl.ui.tabs.PersonalInfoContent
 import ru.yeahub.profile_edit.impl.ui.tabs.SkillsContent
@@ -184,11 +185,20 @@ internal fun HandleCommands(
             sourceUri = cropSheetUri!!,
             onCropped = { croppedUri ->
                 cropSheetUri = null
-                val error = validateImage(croppedUri, context)
-                if (error != null) {
-                    onEvent(ProfileEditScreenEvent.ImageValidationFailed(error))
-                } else {
-                    onEvent(ProfileEditScreenEvent.AvatarSelected(croppedUri))
+
+                when (val result = croppedUri.readImageBytesAndValidate(context)) {
+                    is ImageReadResult.Success -> {
+                        onEvent(
+                            ProfileEditScreenEvent.AvatarSelected(
+                                previewUrl = croppedUri.toString(),
+                                avatarBytes = result.avatarBytes,
+                            ),
+                        )
+                    }
+
+                    is ImageReadResult.Error -> {
+                        onEvent(ProfileEditScreenEvent.ImageValidationFailed(result.error))
+                    }
                 }
             },
             onCropFailure = {
@@ -469,12 +479,11 @@ internal fun ProfileEditScreenDynamicPreview() {
             single<UploadAvatarUseCase> {
                 object : UploadAvatarUseCase {
                     private var firstCall = true
-                    override suspend fun invoke(uri: Uri): String {
+                    override suspend fun invoke(avatarBytes: ByteArray) {
                         if (firstCall) {
                             firstCall = false
                             throw IOException("Unauthorized")
                         }
-                        return uri.toString()
                     }
                 }
             }
