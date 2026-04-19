@@ -27,8 +27,8 @@ internal class ProfileEditRepositoryImpl(
     private var cachedProfile: GetProfileForUserResponse? = null
     private var cachedAllSkillResponses: List<GetSkillResponse> = emptyList()
     private var cachedAllSpecializations: List<GetSpecializationResponse> = emptyList()
-    private var avatarBase64: String? = null
-    private var avatarDeleted: Boolean = false
+
+    private var pendingAvatarChange: PendingAvatarChange = PendingAvatarChange.None
 
     override suspend fun getProfileData(): DomainProfileEditData {
         return coroutineScope {
@@ -84,8 +84,7 @@ internal class ProfileEditRepositoryImpl(
         val updateUserRequest = mapperDomainToData.mapToUpdateUserRequest(
             profile = profile,
             cachedUser = user,
-            avatarBase64 = avatarBase64,
-            avatarDeleted = avatarDeleted,
+            pendingAvatarChange = pendingAvatarChange,
         )
         withContext(Dispatchers.IO) {
             val updateProfile = async {
@@ -101,13 +100,21 @@ internal class ProfileEditRepositoryImpl(
     override suspend fun cacheAvatar(uri: Uri): String {
         val bytes = context.contentResolver.openInputStream(uri)?.use { it.readBytes() }
             ?: error("Cannot read avatar from uri: $uri")
-        avatarBase64 = Base64.encodeToString(bytes, Base64.NO_WRAP)
-        avatarDeleted = false
+
+        pendingAvatarChange = PendingAvatarChange.Upload(
+            base64 = Base64.encodeToString(bytes, Base64.NO_WRAP),
+        )
+
         return uri.toString()
     }
 
     override suspend fun markAvatarDeleted() {
-        avatarBase64 = null
-        avatarDeleted = true
+        pendingAvatarChange = PendingAvatarChange.Delete
     }
+}
+
+internal sealed interface PendingAvatarChange {
+    data object None : PendingAvatarChange
+    data class Upload(val base64: String) : PendingAvatarChange
+    data object Delete : PendingAvatarChange
 }

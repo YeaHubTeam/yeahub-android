@@ -10,7 +10,7 @@ import ru.yeahub.network_api.models.UpdateUserRequest
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditData
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSocialPlatform
 
-class ProfileEditDomainToDataMapper {
+internal class ProfileEditDomainToDataMapper {
 
     fun mapToUpdateProfileRequest(
         profile: DomainProfileEditData,
@@ -63,8 +63,7 @@ class ProfileEditDomainToDataMapper {
     fun mapToUpdateUserRequest(
         profile: DomainProfileEditData,
         cachedUser: GetUserProfileResponse,
-        avatarBase64: String?,
-        avatarDeleted: Boolean,
+        pendingAvatarChange: PendingAvatarChange,
     ): UpdateUserRequest {
         return UpdateUserRequest(
             username = profile.nickname,
@@ -72,8 +71,14 @@ class ProfileEditDomainToDataMapper {
             city = profile.location,
             birthday = cachedUser.birthday,
             address = cachedUser.address,
-            avatarUrl = if (avatarDeleted) "" else cachedUser.avatarUrl,
-            avatarImage = avatarBase64,
+            avatarUrl = when (pendingAvatarChange) {
+                is PendingAvatarChange.Delete -> ""
+                is PendingAvatarChange.None, is PendingAvatarChange.Upload -> cachedUser.avatarUrl
+            },
+            avatarImage = when (pendingAvatarChange) {
+                is PendingAvatarChange.Upload -> pendingAvatarChange.base64
+                is PendingAvatarChange.None, is PendingAvatarChange.Delete -> null
+            },
         )
     }
 
