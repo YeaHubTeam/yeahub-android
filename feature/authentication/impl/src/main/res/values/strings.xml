@@ -20,4 +20,13 @@
     <string name="forgot_password">Забыли пароль?</string>
     <string name="no_account">Нет аккаунта?</string>
     <string name="sign_up">Зарегистрироваться</string>
+    <string name="login_email_invalid">Неверный email</string>
+    <string name="login_password_empty">Введите пароль</string>
+    <string name="login_invalid_credentials">Неверные данные</string>
+    <string name="login_user_not_found">Пользователь не найден</string>
+    <string name="login_network_error">Проблемы с сетью. Проверьте подключение.</string>
+    <string name="login_server_error">Ошибка сервера. Повторите позже.</string>
+    <string name="login_unknown_error">Произошла непредвиденная ошибка</string>
+    <string name="login_password_visibility_show">Показать пароль</string>
+    <string name="login_password_visibility_hide">Скрыть пароль</string>
 </resources>
