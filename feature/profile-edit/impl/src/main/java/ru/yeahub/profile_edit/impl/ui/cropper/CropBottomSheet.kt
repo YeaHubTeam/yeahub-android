@@ -53,6 +53,8 @@ private const val CROP_ASPECT_RATIO = 326f / 263f
 private const val CROP_QUALITY = 90
 private const val CROP_MAX_WIDTH = 2048
 private const val CROP_MAX_HEIGHT = 2048
+private const val CROP_WRAP_BOUNDS_ANIMATION_DURATION_MS = 300L
+private const val PREVIEW_REFRESH_EXTRA_DELAY_MS = 32L
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -191,6 +193,9 @@ private fun CropViewSection(
                 cropImageView.setTargetAspectRatio(CROP_ASPECT_RATIO)
                 cropImageView.setMaxResultImageSizeX(CROP_MAX_WIDTH)
                 cropImageView.setMaxResultImageSizeY(CROP_MAX_HEIGHT)
+                cropImageView.setImageToWrapCropBoundsAnimDuration(
+                    CROP_WRAP_BOUNDS_ANIMATION_DURATION_MS,
+                )
                 overlayView.setShowCropFrame(true)
                 overlayView.setShowCropGrid(false)
 
@@ -233,6 +238,19 @@ private fun CropViewSection(
                         v.parent.requestDisallowInterceptTouchEvent(true)
                     }
                     previewState.markDirty()
+                    if (
+                        event.action == MotionEvent.ACTION_UP ||
+                        event.action == MotionEvent.ACTION_CANCEL
+                    ) {
+                        v.postDelayed(
+                            {
+                                if (v.isAttachedToWindow) {
+                                    previewState.markDirty()
+                                }
+                            },
+                            CROP_WRAP_BOUNDS_ANIMATION_DURATION_MS + PREVIEW_REFRESH_EXTRA_DELAY_MS,
+                        )
+                    }
                     false
                 }
 
@@ -243,6 +261,7 @@ private fun CropViewSection(
     )
 }
 
+@Suppress("COMPOSE_APPLIER_CALL_MISMATCH")
 @Composable
 private fun CropCirclesPreviewRow(
     previewState: CropPreviewState,
