@@ -20,8 +20,8 @@ internal class ProfileEditDataToDomainMapper {
     ): DomainProfileEditData {
         return DomainProfileEditData(
             email = user.email,
-            avatarUrl = user.avatarUrl,
-            nickname = user.username,
+            avatarUrl = user.avatarUrl.orEmpty(),
+            nickname = user.username.orEmpty(),
             specialization = resolveSpecializationName(
                 activeProfile.specializationId,
                 specializations,
@@ -30,7 +30,8 @@ internal class ProfileEditDataToDomainMapper {
             location = user.city.orEmpty(),
             socialLinks = mapSocialNetworkToDomain(activeProfile.socialNetwork),
             aboutMe = mapDescriptionToPlainText(activeProfile.description.orEmpty()),
-            selectedSkills = activeProfile.profileSkills.map { mapSkillToDomain(it) },
+            selectedSkills = activeProfile.profileSkills?.map { mapSkillToDomain(it) }
+                ?: emptyList(),
             allSkills = allSkills.map { mapSkillToDomain(it) },
         )
     }

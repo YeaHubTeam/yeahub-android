@@ -2,15 +2,15 @@ package ru.yeahub.network_api.models
 
 data class GetUserProfileResponse(
     val id: String,
-    val username: String,
-    val email: String,
+    val username: String?,
+    val email: String?,
     val telegramUsername: String?,
     val phone: String?,
     val country: String?,
     val city: String?,
     val birthday: String?,
     val address: String?,
-    val avatarUrl: String,
+    val avatarUrl: String?,
     val createdAt: String?,
     val updatedAt: String?,
     val isVerified: Boolean?,
@@ -28,7 +28,7 @@ data class GetProfileForUserResponse(
     val socialNetwork: List<SocialNetworkDto>?,
     val imageSrc: String?,
     val isActive: Boolean?,
-    val profileSkills: List<GetSkillResponse>,
+    val profileSkills: List<GetSkillResponse>?,
 )
 
 data class SocialNetworkDto(

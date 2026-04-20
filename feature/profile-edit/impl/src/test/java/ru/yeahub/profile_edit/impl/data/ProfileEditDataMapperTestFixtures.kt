@@ -10,9 +10,9 @@ import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSkill
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSocialPlatform
 
 internal fun minimalUser(
-    username: String = "",
+    username: String? = "",
     email: String? = null,
-    avatarUrl: String = "",
+    avatarUrl: String? = "",
     city: String? = null,
     country: String? = null,
     birthday: String? = null,
@@ -20,7 +20,7 @@ internal fun minimalUser(
 ) = GetUserProfileResponse(
     id = "user-1",
     username = username,
-    email = email.orEmpty(),
+    email = email,
     telegramUsername = null,
     phone = null,
     country = country,
@@ -40,7 +40,7 @@ internal fun minimalProfile(
     specializationId: Long? = null,
     socialNetwork: List<SocialNetworkDto>? = null,
     description: String? = null,
-    profileSkills: List<GetSkillResponse> = emptyList(),
+    profileSkills: List<GetSkillResponse>? = emptyList(),
 ) = GetProfileForUserResponse(
     id = "profile-1",
     profileType = null,
