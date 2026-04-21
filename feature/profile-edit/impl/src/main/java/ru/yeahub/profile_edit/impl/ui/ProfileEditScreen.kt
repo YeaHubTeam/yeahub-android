@@ -84,18 +84,18 @@ import java.io.IOException
 import ru.yeahub.profile_edit.impl.R as ProfileEditR
 
 @Composable
-fun ProfileEditScreenHost(
+fun ProfileEditScreen(
     state: ProfileEditState,
     commands: SharedFlow<ProfileEditScreenCommand>,
     onResult: (ProfileEditScreenResult) -> Unit,
     onEvent: (ProfileEditScreenEvent) -> Unit,
 ) {
-    ProfileEditScreen(state, onEvent)
+    ProfileEditScreenUI(state, onEvent)
     HandleCommands(commands, onResult, onEvent)
 }
 
 @Composable
-internal fun ProfileEditScreen(
+internal fun ProfileEditScreenUI(
     state: ProfileEditState,
     onEvent: (ProfileEditScreenEvent) -> Unit,
 ) {
@@ -416,10 +416,10 @@ private class ProfileEditScreenPreviewProvider : PreviewParameterProvider<Profil
 
 @StaticPreview
 @Composable
-internal fun ProfileEditScreenPreview(
+internal fun ProfileEditScreenUIPreview(
     @PreviewParameter(ProfileEditScreenPreviewProvider::class) state: ProfileEditState,
 ) {
-    ProfileEditScreen(
+    ProfileEditScreenUI(
         state = state,
         onEvent = {},
     )
@@ -512,7 +512,7 @@ internal fun ProfileEditScreenDynamicPreview() {
         content = {
             val vm = koinViewModel<ProfileEditViewModel>()
             val state by vm.screenState.collectAsState()
-            ProfileEditScreenHost(
+            ProfileEditScreen(
                 state = state,
                 commands = vm.commands,
                 onResult = {},
