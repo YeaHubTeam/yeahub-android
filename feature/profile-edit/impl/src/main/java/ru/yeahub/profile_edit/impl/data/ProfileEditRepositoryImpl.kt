@@ -28,6 +28,7 @@ internal class ProfileEditRepositoryImpl(
     private var pendingAvatarChange: PendingAvatarChange = PendingAvatarChange.None
 
     override suspend fun getProfileData(): DomainProfileEditData {
+        pendingAvatarChange = PendingAvatarChange.None
         return coroutineScope {
             val skillsDeferred = async(Dispatchers.IO) { getAllSkills() }
             val specsDeferred = async(Dispatchers.IO) { getAllSpecializations() }
