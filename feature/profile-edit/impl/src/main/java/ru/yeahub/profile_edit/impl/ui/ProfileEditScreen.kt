@@ -213,7 +213,7 @@ internal fun HandleCommands(
         )
     }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(commands) {
         commands.collect { command ->
             when (command) {
                 is ProfileEditScreenCommand.NavigateBack -> onResult(ProfileEditScreenResult.NavigateBack)
