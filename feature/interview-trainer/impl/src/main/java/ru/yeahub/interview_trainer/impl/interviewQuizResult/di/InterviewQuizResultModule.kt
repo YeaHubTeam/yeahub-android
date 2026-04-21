@@ -7,7 +7,7 @@ import ru.yeahub.interview_trainer.impl.interviewQuizResult.presentation.Intervi
 
 val interviewQuizResultModule = module {
 
-    factory {
+    single {
         InterviewQuizResultScreenMapper()
     }
 
