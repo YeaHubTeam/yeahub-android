@@ -46,6 +46,8 @@ import ru.yeahub.core_ui.component.OutlineButton
 import ru.yeahub.core_ui.component.PrimaryButton
 import ru.yeahub.core_ui.component.YeahubButtonDefaults
 import ru.yeahub.core_ui.theme.Theme
+import ru.yeahub.profile_edit.impl.ui.cropper.circle_preview.CircleCropPreview
+import ru.yeahub.profile_edit.impl.ui.cropper.circle_preview.CircleCropPreviewController
 import java.io.File
 import ru.yeahub.profile_edit.impl.R as ProfileEditR
 
@@ -70,10 +72,10 @@ internal fun CropBottomSheet(
         Uri.fromFile(File(context.cacheDir, "cropped_avatar_${System.currentTimeMillis()}.jpg"))
     }
     val ucropViewRef = remember { mutableStateOf<UCropView?>(null) }
-    val previewState = remember { CropPreviewState() }
+    val circlePreviewController = remember { CircleCropPreviewController() }
 
     DisposableEffect(Unit) {
-        onDispose { previewState.onDispose() }
+        onDispose { circlePreviewController.onDispose() }
     }
 
     val sheetState = rememberModalBottomSheetState(
@@ -126,14 +128,14 @@ internal fun CropBottomSheet(
                     sourceUri = sourceUri,
                     destinationUri = destinationUri,
                     ucropViewRef = ucropViewRef,
-                    previewState = previewState,
+                    circlePreviewController = circlePreviewController,
                     onCropFailure = onCropFailure,
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f),
                 )
                 Spacer(Modifier.height(8.dp))
-                CropCirclesPreviewRow(previewState = previewState)
+                CropCirclesPreviewRow(circlePreviewController = circlePreviewController)
                 Spacer(Modifier.height(8.dp))
 
                 PrimaryButton(
@@ -180,7 +182,7 @@ private fun CropViewSection(
     sourceUri: Uri,
     destinationUri: Uri,
     ucropViewRef: MutableState<UCropView?>,
-    previewState: CropPreviewState,
+    circlePreviewController: CircleCropPreviewController,
     onCropFailure: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -206,8 +208,10 @@ private fun CropViewSection(
                     ViewGroup.LayoutParams.MATCH_PARENT,
                 )
 
-                previewState.sourceView = cropImageView
-                previewState.cropRectProvider = { overlayView.cropViewRect }
+                circlePreviewController.attachSource(
+                    sourceView = cropImageView,
+                    cropRectProvider = { overlayView.cropViewRect },
+                )
 
                 val ucropView = this
                 cropImageView.setTransformImageListener(
@@ -219,16 +223,16 @@ private fun CropViewSection(
                             if (rect.width() > 0 && rect.height() > 0) {
                                 squareGuide.updateCropRect(rect)
                             }
-                            previewState.markDirty()
+                            circlePreviewController.markDirty()
                         }
 
                         override fun onLoadFailure(e: Exception) = onCropFailure()
                         override fun onRotate(currentAngle: Float) {
-                            previewState.markDirty()
+                            circlePreviewController.markDirty()
                         }
 
                         override fun onScale(currentScale: Float) {
-                            previewState.markDirty()
+                            circlePreviewController.markDirty()
                         }
                     },
                 )
@@ -237,7 +241,7 @@ private fun CropViewSection(
                     if (event.action == MotionEvent.ACTION_DOWN) {
                         v.parent.requestDisallowInterceptTouchEvent(true)
                     }
-                    previewState.markDirty()
+                    circlePreviewController.markDirty()
                     if (
                         event.action == MotionEvent.ACTION_UP ||
                         event.action == MotionEvent.ACTION_CANCEL
@@ -245,7 +249,7 @@ private fun CropViewSection(
                         v.postDelayed(
                             {
                                 if (v.isAttachedToWindow) {
-                                    previewState.markDirty()
+                                    circlePreviewController.markDirty()
                                 }
                             },
                             CROP_WRAP_BOUNDS_ANIMATION_DURATION_MS + PREVIEW_REFRESH_EXTRA_DELAY_MS,
@@ -264,7 +268,7 @@ private fun CropViewSection(
 @Suppress("COMPOSE_APPLIER_CALL_MISMATCH")
 @Composable
 private fun CropCirclesPreviewRow(
-    previewState: CropPreviewState,
+    circlePreviewController: CircleCropPreviewController,
     modifier: Modifier = Modifier,
 ) {
     val previewBorderColor = Theme.colors.purple700
@@ -279,7 +283,7 @@ private fun CropCirclesPreviewRow(
                 CircleCropPreview(
                     context,
                     previewBorderColor = previewBorderColor.toArgb(),
-                ).apply { attach(previewState) }
+                ).apply { attach(circlePreviewController) }
             },
             modifier = Modifier
                 .weight(4f)
@@ -291,7 +295,7 @@ private fun CropCirclesPreviewRow(
                 CircleCropPreview(
                     context,
                     previewBorderColor = previewBorderColor.toArgb(),
-                ).apply { attach(previewState) }
+                ).apply { attach(circlePreviewController) }
             },
             modifier = Modifier
                 .weight(2f)

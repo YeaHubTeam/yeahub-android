@@ -1,4 +1,4 @@
-package ru.yeahub.profile_edit.impl.ui.cropper
+package ru.yeahub.profile_edit.impl.ui.cropper.circle_preview
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -13,7 +13,7 @@ private const val BORDER_WIDTH_DP = 1f
 @SuppressLint("ViewConstructor")
 internal class CircleCropPreview(context: Context, previewBorderColor: Int) : View(context) {
 
-    private var previewState: CropPreviewState? = null
+    private var previewController: CircleCropPreviewController? = null
     private val clipPath = Path()
     private val density = resources.displayMetrics.density
 
@@ -23,8 +23,8 @@ internal class CircleCropPreview(context: Context, previewBorderColor: Int) : Vi
         color = previewBorderColor
     }
 
-    fun attach(state: CropPreviewState) {
-        previewState = state
+    fun attach(controller: CircleCropPreviewController) {
+        previewController = controller
         postInvalidateOnAnimation()
     }
 
@@ -35,15 +35,15 @@ internal class CircleCropPreview(context: Context, previewBorderColor: Int) : Vi
     }
 
     override fun onDraw(canvas: Canvas) {
-        val bmp = previewState?.getOrCapture()
+        val bitmap = previewController?.getOrCapture()
 
-        if (bmp != null && width > 0 && height > 0) {
+        if (bitmap != null && width > 0 && height > 0) {
             canvas.withClip(clipPath) {
-                val scale = maxOf(width.toFloat() / bmp.width, height.toFloat() / bmp.height)
+                val scale = maxOf(width.toFloat() / bitmap.width, height.toFloat() / bitmap.height)
                 translate(width / 2f, height / 2f)
                 scale(scale, scale)
-                translate(-bmp.width / 2f, -bmp.height / 2f)
-                drawBitmap(bmp, 0f, 0f, null)
+                translate(-bitmap.width / 2f, -bitmap.height / 2f)
+                drawBitmap(bitmap, 0f, 0f, null)
             }
             val radius = minOf(width, height) / 2f
             canvas.drawCircle(
@@ -54,13 +54,13 @@ internal class CircleCropPreview(context: Context, previewBorderColor: Int) : Vi
             )
         }
 
-        if (previewState != null) {
+        if (previewController != null) {
             postInvalidateOnAnimation()
         }
     }
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        previewState = null
+        previewController = null
     }
 }
