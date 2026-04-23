@@ -17,7 +17,7 @@ class InterviewQuizResultScreenMapper {
         val correct = questions.count { it.userAnswer == QuizAnswerResult.KNOWN }
 
         return InterviewQuizResultState.Loaded(
-            titleTopAppBar = TextOrResource.Resource(R.string.interview_quiz_result_result),
+            titleTopAppBar = TextOrResource.Resource(R.string.create_quiz_top_bar_header_text),
             overallPercentage = if (total == 0) 0f else correct.toFloat() / total,
             totalQuestions = total,
             newQuestions = 0,
