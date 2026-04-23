@@ -45,7 +45,7 @@ dependencies {
     implementation(project(":core:ui"))
 
     // Feature APIs
-    implementation(project(":feature:example-profile:api"))
+    implementation(project(":feature:profile:api"))
     implementation(project(":feature:example-home:api"))
     implementation(project(":feature:example-questions:api"))
     implementation(project(":feature:example-details:api"))

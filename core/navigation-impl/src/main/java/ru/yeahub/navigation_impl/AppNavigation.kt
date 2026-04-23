@@ -139,7 +139,6 @@ fun AppNavigation(
                         },
                         alwaysShowLabel = false
                     )
-                    Timber.d("NavSelected", "$currentRoute")
                 }
             }
         }

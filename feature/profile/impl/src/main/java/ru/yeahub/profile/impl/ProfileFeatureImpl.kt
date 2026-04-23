@@ -1,18 +1,21 @@
 package ru.yeahub.profile.impl
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.composable
 import ru.yeahub.navigation_api.FeatureApi
+import ru.yeahub.navigation_api.FeatureRoute
 import ru.yeahub.navigation_api.NavigationPathManager
-
-private const val TITLE_TOP_APP_BAR = "title"
-private const val NOT_FOUND_NUMBER = 404
+import ru.yeahub.profile.impl.presentation.ProfileResult
+import ru.yeahub.profile.impl.presentation.ProfileScreen
+import timber.log.Timber
 
 class ProfileFeatureImpl : FeatureApi {
-    override fun getFeatureName(): String {
-        TODO("Not yet implemented")
-    }
+    override fun getFeatureName(): String = FeatureRoute.ProfileFeature.PROFILE_SCREEN_NAME
 
     override fun registerGraph(
         navGraphBuilder: NavGraphBuilder,
@@ -20,6 +23,32 @@ class ProfileFeatureImpl : FeatureApi {
         pathManager: NavigationPathManager,
         modifier: Modifier
     ) {
-        TODO("Not yet implemented")
+        android.util.Log.d("ProfileFeature", "✅ registerGraph CALLED!")
+
+        pathManager.registerFeaturePath(featureName = getFeatureName(), basePath = getFeatureName())
+
+        val profileRoute = "${FeatureRoute.ProfileFeature.PROFILE_SCREEN_NAME}"
+
+        Timber.d("ProfileFeatureImpl registerGraph: currentPath: $profileRoute")
+
+        navGraphBuilder.composable(
+            route = profileRoute
+        ) {
+            val context = LocalContext.current
+
+            val onResult: (ProfileResult) -> Unit = { result ->
+                when (result) {
+                    is ProfileResult.OpenSocialNetwork -> {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(result.url))
+                        context.startActivity(intent)
+                    }
+                    is ProfileResult.NavigateBack -> {
+                        navController.popBackStack()
+                    }
+                }
+            }
+
+            ProfileScreen(onResult = onResult)
+        }
     }
 }
