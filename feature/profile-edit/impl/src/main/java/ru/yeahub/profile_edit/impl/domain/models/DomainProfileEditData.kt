@@ -1,8 +1,8 @@
 package ru.yeahub.profile_edit.impl.domain.models
 
-internal data class DomainProfileEditData(
-    val email: String,
-    val avatarUrl: String?,
+data class DomainProfileEditData(
+    val email: String?,
+    val avatarUrl: String,
     val nickname: String,
     val specialization: String?,
     val specializationList: List<String>,

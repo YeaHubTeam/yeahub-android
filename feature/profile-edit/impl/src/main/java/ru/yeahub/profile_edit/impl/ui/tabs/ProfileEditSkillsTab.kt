@@ -15,11 +15,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.persistentListOf
 import ru.yeahub.core_ui.component.DropDownMenu
-import ru.yeahub.core_ui.component.SkillButton
+import ru.yeahub.core_ui.component.SkillButtonWithDeleteButton
+import ru.yeahub.core_ui.example.staticPreview.StaticPreview
 import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSkill
 import ru.yeahub.profile_edit.impl.presentation.ProfileEditState
@@ -77,16 +79,10 @@ internal fun SkillsContent(
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             state.listOfChosenSkills.forEach { skill ->
-                SkillButton(
-                    enabled = true,
-                    activeButton = true,
-                    onClick = { },
-                    imageLeft = skill.imageRes,
-                    imageRight = R.drawable.icon_button_close,
+                SkillButtonWithDeleteButton(
+                    leadingIconUrl = skill.imageUrl,
                     text = skill.name,
-                    onRightIconClick = { onRemoveSkill(skill) },
-                    imageSizeLeftWith = 20.dp,
-                    imageSizeLeftHigh = 20.dp,
+                    onDeleteClick = { onRemoveSkill(skill) },
                     modifier = Modifier.height(42.dp),
                 )
             }
@@ -94,35 +90,37 @@ internal fun SkillsContent(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun ProfileEditSkillsPreview() {
-    val skillsState = ProfileEditState.SkillsTabState(
-        listOfSkills = persistentListOf(
-            DomainProfileEditSkill(imageRes = R.drawable.icon_true_button, name = "Kotlin1"),
-            DomainProfileEditSkill(
-                imageRes = R.drawable.icon_true_button,
-                name = "Jetpack Compose",
+private class SkillsTabPreviewProvider : PreviewParameterProvider<ProfileEditState.SkillsTabState> {
+    override val values = sequenceOf(
+        ProfileEditState.SkillsTabState(
+            listOfSkills = persistentListOf(
+                DomainProfileEditSkill(imageUrl = "", name = "Kotlin"),
+                DomainProfileEditSkill(imageUrl = "", name = "Jetpack Compose"),
+                DomainProfileEditSkill(imageUrl = "", name = "Coroutines"),
             ),
-            DomainProfileEditSkill(imageRes = R.drawable.icon_true_button, name = "Coroutines"),
+            listOfChosenSkills = persistentListOf(
+                DomainProfileEditSkill(imageUrl = "", name = "Kotlin"),
+                DomainProfileEditSkill(imageUrl = "", name = "Jetpack Compose"),
+                DomainProfileEditSkill(imageUrl = "", name = "Coroutines"),
+                DomainProfileEditSkill(imageUrl = "", name = "Git"),
+                DomainProfileEditSkill(imageUrl = "", name = "Java"),
+                DomainProfileEditSkill(imageUrl = "", name = "Gradle"),
+            ),
         ),
-        listOfChosenSkills = persistentListOf(
-            DomainProfileEditSkill(imageRes = R.drawable.icon_true_button, name = "Kotlin2"),
-            DomainProfileEditSkill(
-                imageRes = R.drawable.icon_true_button,
-                name = "Jetpack Compose",
-            ),
-            DomainProfileEditSkill(imageRes = R.drawable.icon_true_button, name = "Coroutines"),
-            DomainProfileEditSkill(imageRes = R.drawable.icon_true_button, name = "Git"),
-            DomainProfileEditSkill(imageRes = R.drawable.icon_true_button, name = "Java"),
-            DomainProfileEditSkill(imageRes = R.drawable.icon_true_button, name = "Gradle"),
-            DomainProfileEditSkill(imageRes = R.drawable.icon_true_button, name = "Kotlin3"),
-            DomainProfileEditSkill(imageRes = R.drawable.icon_true_button, name = "Coroutines"),
+        ProfileEditState.SkillsTabState(
+            listOfSkills = persistentListOf(),
+            listOfChosenSkills = persistentListOf(),
         ),
     )
+}
 
+@StaticPreview
+@Composable
+internal fun ProfileEditSkillsPreview(
+    @PreviewParameter(SkillsTabPreviewProvider::class) state: ProfileEditState.SkillsTabState,
+) {
     SkillsContent(
-        state = skillsState,
+        state = state,
         onEvent = {},
     )
 }

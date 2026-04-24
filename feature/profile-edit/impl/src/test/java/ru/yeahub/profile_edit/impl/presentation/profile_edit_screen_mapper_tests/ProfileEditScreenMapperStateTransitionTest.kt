@@ -18,9 +18,9 @@ import ru.yeahub.test.TestArgumentsProvider
 import java.io.IOException
 import ru.yeahub.profile_edit.impl.R as ProfileEditR
 
-private val skillKotlin = DomainProfileEditSkill(imageRes = 1, name = "Kotlin")
-private val skillJava = DomainProfileEditSkill(imageRes = 2, name = "Java")
-private val skillAndroid = DomainProfileEditSkill(imageRes = 3, name = "Android")
+private val skillKotlin = DomainProfileEditSkill(imageUrl = "1", name = "Kotlin")
+private val skillJava = DomainProfileEditSkill(imageUrl = "2", name = "Java")
+private val skillAndroid = DomainProfileEditSkill(imageUrl = "3", name = "Android")
 
 /**
  * Проверяет, что getScreenState() возвращает корректный тип состояния и его содержимое
@@ -72,12 +72,12 @@ internal class ProfileEditScreenMapperStateTransitionTest {
                             aboutMe = "About me text",
                             selectedSkills = persistentListOf(skillKotlin),
                         ),
-                        throwable = null,
+                        operationError = null,
                         showUnsavedChangesDialog = false,
                     ),
                     staticData = ViewModelStaticData(
                         initialUserInput = UserInput(
-                            avatarUrl = null,
+                            avatarUrl = "",
                             nickname = "validNick",
                             specialization = "Android",
                             location = "",

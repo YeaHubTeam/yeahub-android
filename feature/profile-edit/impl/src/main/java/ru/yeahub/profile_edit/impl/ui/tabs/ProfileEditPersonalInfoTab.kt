@@ -21,7 +21,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import kotlinx.collections.immutable.persistentListOf
@@ -29,6 +30,7 @@ import kotlinx.collections.immutable.persistentMapOf
 import ru.yeahub.core_ui.component.DropDownMenu
 import ru.yeahub.core_ui.component.PrimaryTextField
 import ru.yeahub.core_ui.component.UploadPhotoButton
+import ru.yeahub.core_ui.example.staticPreview.StaticPreview
 import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.core_utils.common.TextOrResource
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSocialPlatform
@@ -120,9 +122,9 @@ internal fun PersonalInfoContent(
         item {
             PrimaryTextField(
                 title = stringResource(R.string.profile_email_label),
-                value = state.email,
+                value = state.email ?: "",
                 onValueChange = {},
-                placeholder = stringResource(R.string.profile_nickname_placeholder),
+                placeholder = "",
                 enabled = false,
             )
             Spacer(Modifier.height(8.dp))
@@ -179,7 +181,7 @@ private fun ProfileAvatarSection(
             .height(AVATAR_HEIGHT)
             .width(AVATAR_WIDTH)
 
-        if (avatarUrl != null) {
+        if (avatarUrl != "") {
             AsyncImage(
                 model = avatarUrl,
                 contentDescription = stringResource(R.string.profile_photo),
@@ -206,26 +208,43 @@ private fun ProfileAvatarSection(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun ProfileEditPersonalInfoPreview() {
-    val personalInfoState = ProfileEditState.PersonalInfoTabState(
-        avatarUrl = null,
-        nickname = ProfileEditState.ValidatedField("John Doe", null),
-        specializationList = persistentListOf(),
-        specialization = "Android Разработчик",
-        isSpecializationEditable = false,
-        email = "johndoe@gmail.com",
-        location = ProfileEditState.ValidatedField("Санкт-Петербург", null),
-        socialLinks = persistentMapOf(
-            Pair(
-                DomainProfileEditSocialPlatform.LinkedIn,
-                ProfileEditState.ValidatedField(
-                    "",
-                    TextOrResource.Resource(R.string.error_max_length_255),
-                ),
+private class PersonalInfoTabPreviewProvider :
+    PreviewParameterProvider<ProfileEditState.PersonalInfoTabState> {
+    override val values = sequenceOf(
+        ProfileEditState.PersonalInfoTabState(
+            avatarUrl = "",
+            nickname = ProfileEditState.ValidatedField(
+                value = "A",
+                error = TextOrResource.Resource(R.string.error_minimal_length_2),
             ),
+            specializationList = persistentListOf(),
+            specialization = "Android Разработчик",
+            isSpecializationEditable = false,
+            email = "johndoe@gmail.com",
+            location = ProfileEditState.ValidatedField("Санкт-Петербург", null),
+            socialLinks = persistentMapOf(),
+        ),
+        ProfileEditState.PersonalInfoTabState(
+            avatarUrl = "",
+            nickname = ProfileEditState.ValidatedField("Joe", null),
+            specializationList = persistentListOf(
+                "Android разработчик",
+                "iOS разработчик",
+                "Backend разработчик",
+            ),
+            specialization = "",
+            isSpecializationEditable = true,
+            email = "joe@gmail.com",
+            location = ProfileEditState.ValidatedField("", null),
+            socialLinks = persistentMapOf(),
         ),
     )
-    PersonalInfoContent(state = personalInfoState, onEvent = {})
+}
+
+@StaticPreview
+@Composable
+internal fun ProfileEditPersonalInfoPreview(
+    @PreviewParameter(PersonalInfoTabPreviewProvider::class) state: ProfileEditState.PersonalInfoTabState,
+) {
+    PersonalInfoContent(state = state, onEvent = {})
 }

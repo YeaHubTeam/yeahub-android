@@ -1,8 +1,8 @@
 package ru.yeahub.profile_edit.impl.presentation.intents
 
-import android.net.Uri
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSkill
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSocialPlatform
+import ru.yeahub.profile_edit.impl.ui.cropper.ImageValidationError
 
 sealed interface ProfileEditScreenEvent {
 
@@ -13,7 +13,11 @@ sealed interface ProfileEditScreenEvent {
     data object SaveProfile : ProfileEditScreenEvent
 
     data object UploadAvatar : ProfileEditScreenEvent
-    data class AvatarSelected(val uri: Uri) : ProfileEditScreenEvent
+    class AvatarSelected(
+        val previewUrl: String,
+        val avatarBytes: ByteArray,
+    ) : ProfileEditScreenEvent
+
     data object DeleteAvatar : ProfileEditScreenEvent
     data class NicknameChanged(val nickname: String) : ProfileEditScreenEvent
     data class SpecializationSelected(val specialization: String) : ProfileEditScreenEvent
@@ -28,6 +32,8 @@ sealed interface ProfileEditScreenEvent {
 
     data class AddSkill(val skillName: String) : ProfileEditScreenEvent
     data class RemoveSkill(val skill: DomainProfileEditSkill) : ProfileEditScreenEvent
+
+    data class ImageValidationFailed(val error: ImageValidationError) : ProfileEditScreenEvent
 
     data object SnackbarRetryPressed : ProfileEditScreenEvent
     data object ErrorSnackbarDismissed : ProfileEditScreenEvent

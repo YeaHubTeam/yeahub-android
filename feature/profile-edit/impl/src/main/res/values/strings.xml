@@ -9,4 +9,14 @@
     <string name="error_file_too_large">Файл слишком большой</string>
     <string name="error_invalid_data">Данные не прошли проверку</string>
     <string name="error_server">Ошибка сервера. Попробуйте позже</string>
+    <string name="profile_edit_crop_title">Выберите область для фотографий профиля</string>
+    <string name="profile_edit_crop_description">Выбранная миниатюра будет использоваться в статьях, личных сообщениях и комментариях.</string>
+    <string name="profile_edit_crop_save">Сохранить изменения</string>
+    <string name="profile_edit_crop_change_photo">Изменить фото</string>
+    <string name="error_cannot_read_file">Не удалось прочитать файл</string>
+    <string name="error_crop_failed">Не удалось обрезать изображение</string>
+    <string name="error_action_save_profile">При сохранении произошла ошибка</string>
+    <string name="error_action_upload_avatar">При загрузке аватара произошла ошибка</string>
+    <string name="error_action_delete_avatar">При удалении аватара произошла ошибка</string>
+    <string name="error_action_image_validation">Не удалось обработать изображение</string>
 </resources>

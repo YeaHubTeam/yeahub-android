@@ -6,6 +6,10 @@ import ru.yeahub.network_api.models.GetPublicQuestionsResponse
 import ru.yeahub.network_api.models.GetSkillsResponse
 import ru.yeahub.network_api.models.GetSpecializationResponse
 import ru.yeahub.network_api.models.GetSpecializationsResponse
+import ru.yeahub.network_api.models.GetUserProfileResponse
+import ru.yeahub.network_api.models.UpdateProfileRequest
+import ru.yeahub.network_api.models.UpdatePublicUserResponse
+import ru.yeahub.network_api.models.UpdateUserRequest
 
 interface ApiService {
 
@@ -51,4 +55,16 @@ interface ApiService {
         specializationsId: Long,
         isFree: Boolean
     ): GetCollectionsResponse
+
+    suspend fun getProfile(): GetUserProfileResponse
+
+    suspend fun updateProfile(
+        id: String,
+        body: UpdateProfileRequest,
+    ): Any
+
+    suspend fun updateUser(
+        id: String,
+        body: UpdateUserRequest,
+    ): UpdatePublicUserResponse
 }

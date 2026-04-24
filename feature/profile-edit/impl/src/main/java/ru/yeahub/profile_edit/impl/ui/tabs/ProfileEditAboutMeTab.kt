@@ -10,9 +10,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import ru.yeahub.core_ui.component.PrimaryTextField
+import ru.yeahub.core_ui.example.staticPreview.StaticPreview
 import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.profile_edit.impl.presentation.ProfileEditState
 import ru.yeahub.profile_edit.impl.presentation.intents.ProfileEditScreenEvent
@@ -51,15 +53,25 @@ internal fun AboutMeContent(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun ProfileEditAboutMePreview() {
-    val aboutMeState = ProfileEditState.AboutMeTabState(
-        aboutMeField = "Android разработчик с фокусом на Compose и архитектуру. ",
+private class AboutMeTabPreviewProvider :
+    PreviewParameterProvider<ProfileEditState.AboutMeTabState> {
+    override val values = sequenceOf(
+        ProfileEditState.AboutMeTabState(
+            aboutMeField = "Android разработчик с фокусом на Compose и архитектуру.",
+        ),
+        ProfileEditState.AboutMeTabState(
+            aboutMeField = "",
+        ),
     )
+}
 
+@StaticPreview
+@Composable
+internal fun ProfileEditAboutMePreview(
+    @PreviewParameter(AboutMeTabPreviewProvider::class) state: ProfileEditState.AboutMeTabState,
+) {
     AboutMeContent(
-        state = aboutMeState,
+        state = state,
         onEvent = {},
     )
 }

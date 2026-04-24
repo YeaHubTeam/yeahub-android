@@ -15,9 +15,9 @@ import ru.yeahub.profile_edit.impl.presentation.UserInput
 import ru.yeahub.profile_edit.impl.presentation.ViewModelStaticData
 import ru.yeahub.test.TestArgumentsProvider
 
-private val skillKotlin = DomainProfileEditSkill(imageRes = 1, name = "Kotlin")
-private val skillJava = DomainProfileEditSkill(imageRes = 2, name = "Java")
-private val skillAndroid = DomainProfileEditSkill(imageRes = 3, name = "Android")
+private val skillKotlin = DomainProfileEditSkill(imageUrl = "1", name = "Kotlin")
+private val skillJava = DomainProfileEditSkill(imageUrl = "2", name = "Java")
+private val skillAndroid = DomainProfileEditSkill(imageUrl = "3", name = "Android")
 
 /**
  * Проверяет, что mapSkillsState() корректно разделяет навыки:
@@ -36,7 +36,7 @@ class ProfileEditScreenMapperSkillsMappingTest {
         val input = ProfileEditMapperInput.Loaded(
             mutableState = ProfileEditMutableState(
                 userInput = UserInput(
-                    avatarUrl = null,
+                    avatarUrl = "",
                     nickname = "validNick",
                     specialization = "",
                     location = "",
@@ -44,12 +44,12 @@ class ProfileEditScreenMapperSkillsMappingTest {
                     aboutMe = "",
                     selectedSkills = testCase.chosenSkills,
                 ),
-                throwable = null,
+                operationError = null,
                 showUnsavedChangesDialog = false,
             ),
             staticData = ViewModelStaticData(
                 initialUserInput = UserInput(
-                    avatarUrl = null,
+                    avatarUrl = "",
                     nickname = "validNick",
                     specialization = "",
                     location = "",

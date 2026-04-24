@@ -32,7 +32,7 @@ class ProfileEditScreenMapperLocationValidationTest {
         val input = ProfileEditMapperInput.Loaded(
             mutableState = ProfileEditMutableState(
                 userInput = UserInput(
-                    avatarUrl = null,
+                    avatarUrl = "",
                     nickname = "validNick",
                     specialization = "",
                     location = testCase.location,
@@ -40,12 +40,12 @@ class ProfileEditScreenMapperLocationValidationTest {
                     aboutMe = "",
                     selectedSkills = persistentListOf(),
                 ),
-                throwable = null,
+                operationError = null,
                 showUnsavedChangesDialog = false,
             ),
             staticData = ViewModelStaticData(
                 initialUserInput = UserInput(
-                    avatarUrl = null,
+                    avatarUrl = "",
                     nickname = "validNick",
                     specialization = "",
                     location = "",
