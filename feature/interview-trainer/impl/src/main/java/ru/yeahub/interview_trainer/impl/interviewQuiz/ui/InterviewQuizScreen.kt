@@ -16,8 +16,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilledIconButton
@@ -29,7 +27,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -46,19 +44,33 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
+import org.koin.androidx.compose.koinViewModel
 import ru.yeahub.core_ui.component.ErrorScreen
+import ru.yeahub.core_ui.component.KnownAnswerButton
 import ru.yeahub.core_ui.component.PrimaryButton
 import ru.yeahub.core_ui.component.SecondaryButton
 import ru.yeahub.core_ui.component.TopAppBarWithBottomBorder
+import ru.yeahub.core_ui.component.UnknownAnswerButton
 import ru.yeahub.core_ui.component.YeahubButtonDefaults
 import ru.yeahub.core_ui.example.staticPreview.StaticPreview
 import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.core_utils.common.TextOrResource
+import ru.yeahub.core_utils.common.observe
 import ru.yeahub.interview_trainer.impl.R
+import ru.yeahub.interview_trainer.impl.interviewQuiz.domain.DomainQuestion
+import ru.yeahub.interview_trainer.impl.interviewQuiz.domain.DomainQuestionsListResponse
+import ru.yeahub.interview_trainer.impl.interviewQuiz.domain.GetQuestionsListUseCase
+import ru.yeahub.interview_trainer.impl.interviewQuiz.domain.QuestionsRequest
+import ru.yeahub.interview_trainer.impl.interviewQuiz.presentation.InterviewQuizCommand
 import ru.yeahub.interview_trainer.impl.interviewQuiz.presentation.InterviewQuizEvent
+import ru.yeahub.interview_trainer.impl.interviewQuiz.presentation.InterviewQuizResult
 import ru.yeahub.interview_trainer.impl.interviewQuiz.presentation.InterviewQuizScreenMapper
 import ru.yeahub.interview_trainer.impl.interviewQuiz.presentation.InterviewQuizState
 import ru.yeahub.interview_trainer.impl.interviewQuiz.presentation.InterviewQuizViewModel
@@ -71,43 +83,77 @@ private val FIGMA_CARD_ELEVATION = 4.dp
 private val FIGMA_RADIUS = 12.dp
 
 @Composable
+fun InterviewQuizScreen(onResult: (InterviewQuizResult) -> Unit) {
+    val viewModel: InterviewQuizViewModel = koinViewModel()
+
+    val screenState = viewModel.screenState.collectAsStateWithLifecycle()
+
+    HandleCommand(
+        commandFlow = viewModel.commands,
+        onResult = onResult
+    )
+
+    ScreenUI(
+        state = screenState,
+        onEvent = viewModel::onEvent
+    )
+}
+
+@Composable
 private fun ScreenUI(
-    headerText: TextOrResource,
-    state: InterviewQuizState,
+    state: State<InterviewQuizState>,
     onEvent: (InterviewQuizEvent) -> Unit
 ) {
     Scaffold(
         containerColor = Theme.colors.black10,
         topBar = {
             TopAppBarWithBottomBorder(
-                title = headerText,
-                onBackClick = { TODO("onBackClick don't implemented") }
+                title = state.value.titleTopAppBar,
+                onBackClick = { onEvent(InterviewQuizEvent.OnBackClick) }
             )
         }
     ) { paddingValues ->
         Box(Modifier.padding(paddingValues)) {
-            when (state) {
+            when (val currentState = state.value) {
                 is InterviewQuizState.Loaded -> BaseQuizScreen(
-                    state = state,
-                    onPreviousClick = { /* TODO */ },
-                    onNextClick = { /* TODO */ },
-                    onUnknownClick = { /* TODO */ },
-                    onKnownClick = { /* TODO */ },
-                    onShowAnswerClick = { /* TODO */ },
-                    onResultClick = { /* TODO */ }
+                    state = currentState,
+                    onPreviousClick = { onEvent(InterviewQuizEvent.OnPreviousQuestionClick) },
+                    onNextClick = { onEvent(InterviewQuizEvent.OnNextQuestionClick) },
+                    onUnknownClick = { onEvent(InterviewQuizEvent.OnUnknownAnswerClick) },
+                    onKnownClick = { onEvent(InterviewQuizEvent.OnKnownAnswerClick) },
+                    onShowAnswerClick = { onEvent(InterviewQuizEvent.OnShowHideAnswerClick) },
+                    onResultClick = { onEvent(InterviewQuizEvent.OnShowResultClick) }
                 )
 
                 is InterviewQuizState.Error -> ErrorScreen(
-                    error = state.throwable.localizedMessage,
+                    error = currentState.throwable.localizedMessage,
                     errorText = TextOrResource.Resource(R.string.error_screen_text),
                     titleText = TextOrResource.Resource(R.string.title_error_screen_text),
                     backText = TextOrResource.Resource(R.string.back_error_screen_text),
                     unknownErrorText = TextOrResource.Resource(R.string.unknown_error_screen_text),
-                    onBack = { TODO() }
+                    onBack = { onEvent(InterviewQuizEvent.OnBackClick) }
                 )
 
                 InterviewQuizState.Loading -> InterviewQuizLoading()
             }
+        }
+    }
+}
+
+@Composable
+private fun HandleCommand(
+    commandFlow: Flow<InterviewQuizCommand>,
+    onResult: (InterviewQuizResult) -> Unit,
+) {
+    commandFlow.observe { command ->
+        when (command) {
+            is InterviewQuizCommand.NavigateBack -> onResult(InterviewQuizResult.NavigateBack)
+
+            is InterviewQuizCommand.NavigateToInterviewQuizResultScreen -> onResult(
+                InterviewQuizResult.NavigateToInterviewQuizResultScreen(
+                    questionsWithAnswersList = command.questionsWithAnswersList
+                )
+            )
         }
     }
 }
@@ -191,7 +237,6 @@ private fun QuestionCard(
     onShowAnswerClick: () -> Unit,
     onResultClick: () -> Unit
 ) {
-    // TODO: нет фичи профиля
     var isFavorite by rememberSaveable { mutableStateOf(false) }
 
     val favoriteIcon: Painter =
@@ -242,7 +287,7 @@ private fun QuestionCard(
                     style = Theme.typography.body3Strong
                 )
                 FilledIconButton(
-                    onClick = { isFavorite = !isFavorite },
+                    onClick = { },
                     modifier = Modifier.size(48.dp),
                     shape = RoundedCornerShape(FIGMA_RADIUS),
                     colors = IconButtonDefaults.filledIconButtonColors(
@@ -283,18 +328,16 @@ private fun QuestionCard(
             Spacer(Modifier.height(FIGMA_VERTICAL_FIRST_AND_LAST_ELEMENT_PADDING))
 
             Row(Modifier.padding(bottom = FIGMA_MEDIUM_PADDING)) {
-                QuizAnswerButton(
-                    painter = painterResource(R.drawable.thumbs_down_icon),
-                    text = TextOrResource.Resource(R.string.quiz_answer_unknown),
-                    onClick = onUnknownClick,
-                    isSelected = state.selectedAnswer == InterviewQuizState.Loaded.QuizAnswer.UNKNOWN
+                UnknownAnswerButton(
+                    enabled = true,
+                    isHighlighted = state.selectedAnswer == InterviewQuizState.Loaded.QuizAnswer.UNKNOWN,
+                    onClick = onUnknownClick
                 )
                 Spacer(Modifier.weight(1f))
-                QuizAnswerButton(
-                    painter = painterResource(R.drawable.thumbs_up_icon),
-                    text = TextOrResource.Resource(R.string.quiz_answer_known),
-                    onClick = onKnownClick,
-                    isSelected = state.selectedAnswer == InterviewQuizState.Loaded.QuizAnswer.KNOWN
+                KnownAnswerButton(
+                    enabled = true,
+                    isHighlighted = state.selectedAnswer == InterviewQuizState.Loaded.QuizAnswer.KNOWN,
+                    onClick = onKnownClick
                 )
             }
             HorizontalDivider(
@@ -408,51 +451,6 @@ private fun NavigationButton(
     }
 }
 
-@Composable
-private fun QuizAnswerButton(
-    painter: Painter,
-    text: TextOrResource,
-    onClick: () -> Unit,
-    isSelected: Boolean
-) {
-    val context = LocalContext.current
-
-    val contentColor = if (isSelected) {
-        Theme.colors.purple700
-    } else {
-        Theme.colors.black700
-    }
-
-    Button(
-        onClick = onClick,
-        modifier = Modifier
-            .width(120.dp)
-            .height(48.dp),
-        shape = RoundedCornerShape(FIGMA_RADIUS),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = Theme.colors.black10,
-            contentColor = contentColor
-        ),
-        contentPadding = PaddingValues(
-            horizontal = 12.dp,
-            vertical = FIGMA_LOW_PADDING
-        )
-    ) {
-        Icon(
-            painter = painter,
-            contentDescription = null,
-            modifier = Modifier.padding(end = FIGMA_LOW_PADDING)
-        )
-        Text(
-            text = when (text) {
-                is TextOrResource.Text -> text.text
-                is TextOrResource.Resource -> text.getString(context)
-            },
-            style = Theme.typography.body2
-        )
-    }
-}
-
 private val shortAnswerForPreview = "Виртуальный DOM (VDOM) — это легковесное " +
         "представление реального DOM в памяти, которое используется в " +
         "JavaScript-библиотеках, таких как React и Vue, " +
@@ -477,6 +475,7 @@ private val answers = persistentMapOf(
 class QuizScreenStateParamProvider : PreviewParameterProvider<InterviewQuizState> {
     override val values: Sequence<InterviewQuizState> = sequenceOf(
         InterviewQuizState.Loaded(
+            titleTopAppBar = TextOrResource.Resource(R.string.create_quiz_top_bar_header_text),
             questions = questions,
             questionsCount = questions.size,
             questionIndex = 0,
@@ -489,6 +488,7 @@ class QuizScreenStateParamProvider : PreviewParameterProvider<InterviewQuizState
             isLastQuestion = false
         ),
         InterviewQuizState.Loaded(
+            titleTopAppBar = TextOrResource.Resource(R.string.create_quiz_top_bar_header_text),
             questions = questions,
             questionsCount = questions.size,
             questionIndex = 2,
@@ -501,6 +501,7 @@ class QuizScreenStateParamProvider : PreviewParameterProvider<InterviewQuizState
             isLastQuestion = false
         ),
         InterviewQuizState.Loaded(
+            titleTopAppBar = TextOrResource.Resource(R.string.create_quiz_top_bar_header_text),
             questions = questions,
             questionsCount = questions.size,
             questionIndex = 3,
@@ -525,9 +526,10 @@ fun InterviewQuizScreen(
     @PreviewParameter(QuizScreenStateParamProvider::class)
     state: InterviewQuizState
 ) {
+    val correctState = flowOf(state)
+
     ScreenUI(
-        headerText = TextOrResource.Resource(R.string.create_quiz_top_bar_header_text),
-        state = state,
+        state = correctState.collectAsStateWithLifecycle(InterviewQuizState.Loading),
         onEvent = {}
     )
 }
@@ -535,14 +537,42 @@ fun InterviewQuizScreen(
 @Preview(showBackground = true)
 @Composable
 fun DynamicPreviewUI() {
-    val mockViewModel = viewModel {
-        InterviewQuizViewModel(InterviewQuizScreenMapper())
+    val mockDomainQuestionsList = questions.map {
+        DomainQuestion(
+            id = it.id,
+            title = "Вопрос под id ${it.id}",
+            shortAnswer = it.shortAnswer
+        )
     }
 
-    val state by mockViewModel.screenState.collectAsState()
+    val getMockQuestionsListUseCase = object : GetQuestionsListUseCase {
+        override suspend fun invoke(request: QuestionsRequest): DomainQuestionsListResponse {
+            return DomainQuestionsListResponse(
+                fullCount = mockDomainQuestionsList.size,
+                questions = mockDomainQuestionsList
+            )
+        }
+    }
+
+    val savedStateHandle = SavedStateHandle(
+        mapOf(
+            "specializationId" to "2",
+            "questionsCount" to mockDomainQuestionsList.size.toString(),
+            "titleTopAppBarResId" to 123
+        )
+    )
+
+    val mockViewModel = viewModel {
+        InterviewQuizViewModel(
+            savedStateHandle = savedStateHandle,
+            screenMapper = InterviewQuizScreenMapper(),
+            getQuestionsListUseCase = getMockQuestionsListUseCase,
+        )
+    }
+
+    val state = mockViewModel.screenState.collectAsStateWithLifecycle()
 
     ScreenUI(
-        headerText = TextOrResource.Resource(R.string.create_quiz_top_bar_header_text),
         state = state,
         onEvent = mockViewModel::onEvent
     )

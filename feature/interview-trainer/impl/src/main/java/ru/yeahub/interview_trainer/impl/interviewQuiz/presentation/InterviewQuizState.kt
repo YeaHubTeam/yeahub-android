@@ -3,14 +3,22 @@ package ru.yeahub.interview_trainer.impl.interviewQuiz.presentation
 import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.PersistentMap
+import ru.yeahub.core_utils.common.TextOrResource
+import ru.yeahub.interview_trainer.impl.R
 
 sealed interface InterviewQuizState {
 
+    val titleTopAppBar: TextOrResource
+
     /** Изначальное состояние */
-    data object Loading : InterviewQuizState
+    data object Loading : InterviewQuizState {
+
+        override val titleTopAppBar = TextOrResource.Resource(R.string.create_quiz_top_bar_header_text)
+    }
 
     @Immutable
     data class Loaded(
+        override val titleTopAppBar: TextOrResource,
         val questions: PersistentList<VoQuestion>,
         val questionsCount: Int,
         val questionIndex: Int,
@@ -33,5 +41,8 @@ sealed interface InterviewQuizState {
         )
     }
 
-    data class Error(val throwable: Throwable) : InterviewQuizState
+    data class Error(val throwable: Throwable) : InterviewQuizState {
+
+        override val titleTopAppBar = TextOrResource.Resource(R.string.create_quiz_top_bar_header_text)
+    }
 }
