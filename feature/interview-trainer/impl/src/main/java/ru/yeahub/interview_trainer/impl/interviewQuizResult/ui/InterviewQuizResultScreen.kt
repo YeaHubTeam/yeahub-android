@@ -1,7 +1,6 @@
 package ru.yeahub.interview_trainer.impl.interviewQuizResult.ui
 
 import InterviewQuizResultState
-import InterviewQuizResultViewModel
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -56,7 +55,8 @@ import ru.yeahub.core_ui.theme.Theme.typography
 import ru.yeahub.core_ui.theme.colors
 import ru.yeahub.core_utils.common.TextOrResource
 import ru.yeahub.interview_trainer.impl.R
-import ru.yeahub.interview_trainer.impl.interviewQuizResult.InterviewQuizResultEvent
+import ru.yeahub.interview_trainer.impl.interviewQuizResult.presentation.InterviewQuizResultEvent
+import ru.yeahub.interview_trainer.impl.interviewQuizResult.presentation.InterviewQuizResultViewModel
 
 private val H_PADDING = 16.dp
 private val V_BLOCK = 16.dp
@@ -106,6 +106,7 @@ private fun ScreenUI(
                     onBack = {}
                 )
             }
+
             is InterviewQuizResultState.Loaded -> {
                 BaseInterviewQuizResultScreen(
                     state = currentState,
@@ -302,7 +303,7 @@ private fun OverallProgressStatistics(
     totalQuestions: Int,
     newQuestions: Int,
     inProgress: Int,
-    studied: Int
+    studied: Int,
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),

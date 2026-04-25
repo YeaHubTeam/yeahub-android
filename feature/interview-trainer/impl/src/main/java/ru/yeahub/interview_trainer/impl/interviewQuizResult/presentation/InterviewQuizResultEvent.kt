@@ -1,4 +1,4 @@
-package ru.yeahub.interview_trainer.impl.interviewQuizResult
+package ru.yeahub.interview_trainer.impl.interviewQuizResult.presentation
 
 sealed interface InterviewQuizResultEvent {
 
