@@ -70,10 +70,7 @@ import ru.yeahub.interview_trainer.impl.createQuiz.presentation.CreateQuizViewMo
 private val FIGMA_VERTICAL_FIRST_AND_LAST_ELEMENT_PADDING = 24.dp
 
 @Composable
-fun CreateQuizScreen(
-    onResult: (CreateQuizResult) -> Unit,
-    titleTopAppBarResId: Int,
-) {
+fun CreateQuizScreen(onResult: (CreateQuizResult) -> Unit) {
     val viewModel: CreateQuizViewModel = koinViewModel()
 
     val screenState = viewModel.screenState.collectAsStateWithLifecycle()
@@ -86,7 +83,7 @@ fun CreateQuizScreen(
     ScreenUI(
         state = screenState,
         onEvent = viewModel::onEvent,
-        titleTopAppBar = TextOrResource.Resource(titleTopAppBarResId)
+        titleTopAppBar = screenState.value.titleTopAppBar
     )
 }
 

@@ -16,11 +16,9 @@ import ru.yeahub.navigation_api.FeatureRoute
 import ru.yeahub.navigation_api.NavigationPathManager
 import timber.log.Timber
 
-private const val TITLE_TOP_APP_BAR = "title"
 private const val SPECIALIZATION_ID = "specializationId"
 private const val QUESTIONS_COUNT = "questionsCount"
 private const val QUIZ_ANSWERS_KEY = "quizAnswersKey"
-private const val NOT_FOUND_NUMBER = 404
 
 class InterviewTrainerFeatureImpl : FeatureApi {
     override fun getFeatureName(): String = FeatureRoute.InterviewTrainerFeature.FEATURE_NAME
@@ -38,27 +36,19 @@ class InterviewTrainerFeatureImpl : FeatureApi {
 
         //Регистрируем путь экрана создания тренировки (interview_trainer/create_quiz/{titleId})
         val createQuizRoute =
-            "$featurePath/${FeatureRoute.InterviewTrainerFeature.CREATE_QUIZ_SCREEN_NAME}/{$TITLE_TOP_APP_BAR}"
+            "$featurePath/${FeatureRoute.InterviewTrainerFeature.CREATE_QUIZ_SCREEN_NAME}"
 
         // Регистрируем путь экрана тренировки
-        // (interview_trainer/interview_quiz/{titleId}/{specializationId}/{questionsCount})
+        // (interview_trainer/interview_quiz/{specializationId}/{questionsCount})
         val interviewQuizRoute =
             "$featurePath/${FeatureRoute.InterviewTrainerFeature.INTERVIEW_QUIZ_SCREEN_NAME}" +
-                    "/{$TITLE_TOP_APP_BAR}/{$SPECIALIZATION_ID}/{$QUESTIONS_COUNT}"
+                    "/{$SPECIALIZATION_ID}/{$QUESTIONS_COUNT}"
 
         Timber.d("InterviewTrainerFeatureImpl registerGraph: currentPath: $createQuizRoute")
 
         navGraphBuilder.composable(
             route = createQuizRoute,
-            arguments = listOf(
-                navArgument(TITLE_TOP_APP_BAR) {
-                    type = NavType.IntType
-                }
-            )
-        ) { backStackEntry ->
-            val titleTopAppBarResId =
-                backStackEntry.arguments?.getInt(TITLE_TOP_APP_BAR) ?: NOT_FOUND_NUMBER
-
+        ) { _ ->
             // Вынос в отдельную переменную для оптимизации (чтоб не пересоздавать лямбду)
             val onResult = { result: CreateQuizResult ->
                 when (result) {
@@ -71,27 +61,21 @@ class InterviewTrainerFeatureImpl : FeatureApi {
                         pathManager = pathManager,
                         navController = navController,
                         featurePath = featurePath,
-                        titleTopAppBarResId = titleTopAppBarResId,
                         specializationId = result.specializationId.toString(),
                         questionsCount = result.questionCount.toString()
                     )
                 }
             }
-            CreateQuizScreen(onResult = onResult, titleTopAppBarResId = titleTopAppBarResId)
+            CreateQuizScreen(onResult = onResult)
         }
 
         navGraphBuilder.composable(
             route = interviewQuizRoute,
             arguments = listOf(
-                navArgument(TITLE_TOP_APP_BAR) { type = NavType.IntType },
                 navArgument(SPECIALIZATION_ID) { type = NavType.StringType },
                 navArgument(QUESTIONS_COUNT) { type = NavType.StringType },
             )
-        ) { backStackEntry ->
-            val titleTopAppBarResId =
-                backStackEntry.arguments?.getInt(TITLE_TOP_APP_BAR)
-                    ?: NOT_FOUND_NUMBER
-
+        ) { _ ->
             InterviewQuizScreen(
                 onResult = { result ->
                     when (result) {
@@ -104,7 +88,6 @@ class InterviewTrainerFeatureImpl : FeatureApi {
                             pathManager = pathManager,
                             navController = navController,
                             featurePath = featurePath,
-                            titleTopAppBarResId = titleTopAppBarResId,
                             questionsWithAnswersList = result.questionsWithAnswersList
                         )
                     }
@@ -143,14 +126,13 @@ class InterviewTrainerFeatureImpl : FeatureApi {
         pathManager: NavigationPathManager,
         navController: NavHostController,
         featurePath: String,
-        titleTopAppBarResId: Int,
         specializationId: String,
         questionsCount: String,
     ) {
         //Регистрируем путь экрана тренировки (interview_trainer/create_quiz/{titleId})
         val interviewQuizRoute = featurePath + "/" +
                 FeatureRoute.InterviewTrainerFeature.INTERVIEW_QUIZ_SCREEN_NAME + "/" +
-                "$titleTopAppBarResId/$specializationId/$questionsCount"
+                "$specializationId/$questionsCount"
 
         Timber.d("InterviewTrainerFeatureImpl registerGraph: $interviewQuizRoute")
 
@@ -165,7 +147,6 @@ class InterviewTrainerFeatureImpl : FeatureApi {
         pathManager: NavigationPathManager,
         navController: NavHostController,
         featurePath: String,
-        titleTopAppBarResId: Int,
         questionsWithAnswersList: List<VoQuestionWithAnswer>
     ) {
         navController.currentBackStackEntry
@@ -173,8 +154,7 @@ class InterviewTrainerFeatureImpl : FeatureApi {
             ?.set(QUIZ_ANSWERS_KEY, ArrayList(questionsWithAnswersList))
 
         val interviewQuizResultRoute =
-            "$featurePath/${FeatureRoute.InterviewTrainerFeature.INTERVIEW_QUIZ_RESULT_SCREEN_NAME}" +
-            "/$titleTopAppBarResId"
+            "$featurePath/${FeatureRoute.InterviewTrainerFeature.INTERVIEW_QUIZ_RESULT_SCREEN_NAME}"
 
         Timber.d("InterviewTrainerFeatureImpl registerGraph: $interviewQuizResultRoute")
 
