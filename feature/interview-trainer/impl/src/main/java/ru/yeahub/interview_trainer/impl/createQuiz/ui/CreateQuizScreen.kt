@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -22,34 +23,28 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import org.koin.androidx.compose.koinViewModel
+import org.koin.androidx.viewmodel.dsl.viewModel
 import ru.yeahub.core_ui.component.ErrorScreen
 import ru.yeahub.core_ui.component.PrimaryButton
 import ru.yeahub.core_ui.component.SkillButton
 import ru.yeahub.core_ui.component.TopAppBarWithBottomBorder
-import ru.yeahub.core_ui.example.dynamicPreview.ProvidePreviewCompositionLocals
+import ru.yeahub.core_ui.example.dynamicPreview.DynamicPreview
+import ru.yeahub.core_ui.example.dynamicPreview.ProvideDynamicPreview
 import ru.yeahub.core_ui.example.staticPreview.StaticPreview
 import ru.yeahub.core_ui.theme.LocalAppTypography
 import ru.yeahub.core_ui.theme.colors
@@ -244,11 +239,8 @@ private fun ChooseSpecializationBlock(
         ) {
             specializations.forEach { specialization ->
                 SkillButton(
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
-                    enabled = true,
-                    activeButton = specialization.id == selectedSpecializationId,
-                    fillButton = true,
                     text = specialization.title,
+                    selected = specialization.id == selectedSpecializationId,
                     onClick = { onSpecializationClick(specialization.id) },
                 )
             }
@@ -313,7 +305,8 @@ private fun QuestionCounter(
                 text = count.toString(),
                 style = LocalAppTypography.current.body5Accent,
                 textAlign = TextAlign.Center,
-                color = colors.black600
+                color = colors.black600,
+                modifier = Modifier.widthIn(min = 32.dp)
             )
 
             IconButton(
@@ -417,7 +410,7 @@ class CreateQuizScreenStateParamProvider : PreviewParameterProvider<CreateQuizSt
 
 @StaticPreview
 @Composable
-internal fun CreateQuizScreenPreview(
+internal fun CreateQuizScreenStaticPreview(
     @PreviewParameter(CreateQuizScreenStateParamProvider::class)
     state: CreateQuizState,
 ) {
@@ -428,9 +421,9 @@ internal fun CreateQuizScreenPreview(
     )
 }
 
-@Preview(showBackground = true)
+@DynamicPreview
 @Composable
-internal fun DynamicPreviewUI() {
+internal fun CreateQuizScreenDynamicPreview() {
     val previewDomainList = testSpecializations.map { voSpec ->
         DomainSpecialization(id = voSpec.id, title = voSpec.title)
     }
@@ -438,58 +431,29 @@ internal fun DynamicPreviewUI() {
     val mockUseCase = object : GetSpecializationsListUseCase {
         override suspend fun invoke(
             request: SpecializationsRequest,
-        ): DomainSpecializationListResponse {
-            delay(RESPONSE_DELAY)
-            return DomainSpecializationListResponse(
-                total = previewDomainList.size.toLong(),
-                data = previewDomainList
-            )
-        }
-    }
-
-    val previewViewModel = viewModelCreator<CreateQuizViewModel> {
-        CreateQuizViewModel(mockUseCase, CreateQuizScreenMapper())
-    }
-
-    val previewState = previewViewModel.screenState.collectAsState()
-
-    LaunchedEffect(Unit) {
-        delay(RESPONSE_DELAY)
-        //Изначальное кол-во == 1
-        previewViewModel.onEvent(CreateQuizEvent.OnPlusQuestionClick(1))
-        delay(RESPONSE_DELAY)
-        // должно быть 2
-        previewViewModel.onEvent(CreateQuizEvent.OnPlusQuestionClick(2))
-        delay(RESPONSE_DELAY)
-        // должно быть 3
-        previewViewModel.onEvent(CreateQuizEvent.OnMinusQuestionClick(3))
-        delay(RESPONSE_DELAY)
-        // должно быть снова 2
-        previewViewModel.onEvent(CreateQuizEvent.OnSpecializationClick(27))
-        // С изначально выбранного Frontend Dev должно быть выбрано Android Dev
-    }
-
-    ProvidePreviewCompositionLocals {
-        ScreenUI(
-            state = previewState,
-            onEvent = previewViewModel::onEvent,
-            titleTopAppBar = TextOrResource.Resource(R.string.create_quiz_top_bar_header_text)
+        ): DomainSpecializationListResponse = DomainSpecializationListResponse(
+            total = previewDomainList.size.toLong(),
+            data = previewDomainList
         )
     }
+
+    ProvideDynamicPreview(
+        moduleDeclaration = {
+            single<GetSpecializationsListUseCase> { mockUseCase }
+            single { CreateQuizScreenMapper() }
+            viewModel {
+                CreateQuizViewModel(getSpecializationsListUseCase = get(), screenMapper = get())
+            }
+        },
+        content = {
+            val previewViewModel = koinViewModel<CreateQuizViewModel>()
+            val previewState = previewViewModel.screenState.collectAsStateWithLifecycle()
+
+            ScreenUI(
+                state = previewState,
+                onEvent = previewViewModel::onEvent,
+                titleTopAppBar = previewState.value.titleTopAppBar
+            )
+        }
+    )
 }
-
-typealias ViewModelCreator = () -> ViewModel?
-
-class ViewModelFactory(
-    private val viewModelCreator: ViewModelCreator = { null },
-) : ViewModelProvider.Factory {
-
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel> create(modelClass: Class<T>): T = viewModelCreator() as T
-}
-
-@Composable
-inline fun <reified VM : ViewModel> viewModelCreator(noinline creator: ViewModelCreator): VM =
-    viewModel(factory = remember { ViewModelFactory(creator) })
-
-private const val RESPONSE_DELAY = 1500L
