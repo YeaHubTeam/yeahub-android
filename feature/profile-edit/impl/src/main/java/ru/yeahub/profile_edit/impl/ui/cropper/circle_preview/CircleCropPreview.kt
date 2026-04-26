@@ -25,7 +25,7 @@ internal class CircleCropPreview(context: Context, previewBorderColor: Int) : Vi
 
     fun attach(controller: CircleCropPreviewController) {
         previewController = controller
-        postInvalidateOnAnimation()
+        controller.attachPreview(this)
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -52,10 +52,6 @@ internal class CircleCropPreview(context: Context, previewBorderColor: Int) : Vi
                 radius - borderPaint.strokeWidth / 2f,
                 borderPaint,
             )
-        }
-
-        if (previewController != null) {
-            postInvalidateOnAnimation()
         }
     }
 

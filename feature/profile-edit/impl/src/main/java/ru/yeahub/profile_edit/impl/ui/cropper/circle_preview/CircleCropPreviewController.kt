@@ -16,6 +16,7 @@ internal class CircleCropPreviewController {
     private var bitmap: Bitmap? = null
     private var bitmapCanvas: Canvas? = null
     private var dirty = true
+    private val previews = mutableSetOf<View>()
 
     fun attachSource(sourceView: View, cropRectProvider: () -> RectF) {
         this.sourceView = sourceView
@@ -23,8 +24,14 @@ internal class CircleCropPreviewController {
         markDirty()
     }
 
+    fun attachPreview(preview: View) {
+        previews.add(preview)
+        preview.postInvalidateOnAnimation()
+    }
+
     fun markDirty() {
         dirty = true
+        invalidatePreviews()
     }
 
     fun getOrCapture(): Bitmap? {
@@ -90,5 +97,12 @@ internal class CircleCropPreviewController {
         bitmapCanvas = null
         sourceView = null
         cropRectProvider = null
+        previews.clear()
+    }
+
+    private fun invalidatePreviews() {
+        previews.forEach { preview ->
+            preview.postInvalidateOnAnimation()
+        }
     }
 }

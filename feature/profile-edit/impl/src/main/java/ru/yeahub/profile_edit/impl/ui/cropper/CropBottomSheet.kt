@@ -224,6 +224,7 @@ private fun CropViewSection(
                                 squareGuide.updateCropRect(rect)
                             }
                             circlePreviewController.markDirty()
+                            scheduleCirclePreviewRefresh(ucropView, circlePreviewController)
                         }
 
                         override fun onLoadFailure(e: Exception) = onCropFailure()
@@ -246,14 +247,7 @@ private fun CropViewSection(
                         event.action == MotionEvent.ACTION_UP ||
                         event.action == MotionEvent.ACTION_CANCEL
                     ) {
-                        v.postDelayed(
-                            {
-                                if (v.isAttachedToWindow) {
-                                    circlePreviewController.markDirty()
-                                }
-                            },
-                            CROP_WRAP_BOUNDS_ANIMATION_DURATION_MS + PREVIEW_REFRESH_EXTRA_DELAY_MS,
-                        )
+                        scheduleCirclePreviewRefresh(v, circlePreviewController)
                     }
                     false
                 }
@@ -262,6 +256,20 @@ private fun CropViewSection(
             }
         },
         modifier = modifier,
+    )
+}
+
+private fun scheduleCirclePreviewRefresh(
+    view: android.view.View,
+    circlePreviewController: CircleCropPreviewController,
+) {
+    view.postDelayed(
+        {
+            if (view.isAttachedToWindow) {
+                circlePreviewController.markDirty()
+            }
+        },
+        CROP_WRAP_BOUNDS_ANIMATION_DURATION_MS + PREVIEW_REFRESH_EXTRA_DELAY_MS,
     )
 }
 
