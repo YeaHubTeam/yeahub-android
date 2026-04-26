@@ -3,6 +3,7 @@ package ru.yeahub.profile_edit.impl.presentation
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -32,7 +33,6 @@ import ru.yeahub.profile_edit.impl.domain.usecase.SaveProfileUseCase
 import ru.yeahub.profile_edit.impl.domain.usecase.UploadAvatarUseCase
 import ru.yeahub.profile_edit.impl.presentation.intents.ProfileEditScreenCommand
 import ru.yeahub.profile_edit.impl.presentation.intents.ProfileEditScreenEvent
-import ru.yeahub.profile_edit.impl.ui.cropper.ImageValidationException
 import ru.yeahub.profile_edit.impl.R as ProfileEditR
 
 internal class ProfileEditViewModel(
@@ -107,6 +107,7 @@ internal class ProfileEditViewModel(
                     },
                 )
             }.catch { cause ->
+                cause.throwIfCancellation()
                 emit(mapper.getScreenState(ProfileEditMapperInput.Error(cause)))
             }
         }.stateIn(
@@ -140,7 +141,7 @@ internal class ProfileEditViewModel(
         )
 
         is ProfileEditScreenEvent.ImageValidationFailed -> handleOperationFailure(
-            ImageValidationException(event.error),
+            ProfileEditImageValidationException(event.error),
             TextOrResource.Resource(ProfileEditR.string.error_action_image_validation),
         ) { emitCommand(ProfileEditScreenCommand.ShowPhotoPicker) }
 
@@ -236,6 +237,7 @@ internal class ProfileEditViewModel(
                     ),
                 )
             }.onSuccess { emitCommand(ProfileEditScreenCommand.NavigateToProfile) }.onFailure {
+                it.throwIfCancellation()
                 handleOperationFailure(
                     it,
                     TextOrResource.Resource(ProfileEditR.string.error_action_save_profile),
@@ -255,6 +257,7 @@ internal class ProfileEditViewModel(
             runCatching { uploadAvatar(avatarBytes) }
                 .onSuccess { updateUserInput { copy(avatarUrl = previewUrl) } }
                 .onFailure {
+                    it.throwIfCancellation()
                     updateUserInput { copy(avatarUrl = previousAvatarUrl) }
                     handleOperationFailure(
                         it,
@@ -274,6 +277,7 @@ internal class ProfileEditViewModel(
         updateUserInput { copy(avatarUrl = "") }
         viewModelScopeSafe.launch(Dispatchers.IO) {
             runCatching { deleteAvatar() }.onFailure {
+                it.throwIfCancellation()
                 updateUserInput { copy(avatarUrl = previousAvatarUrl) }
                 handleOperationFailure(
                     it,
@@ -283,6 +287,10 @@ internal class ProfileEditViewModel(
             }
         }
     }
+}
+
+private fun Throwable.throwIfCancellation() {
+    if (this is CancellationException) throw this
 }
 
 private const val TIME_TO_CLEAN_UP_RESOURCES = 5_000L
