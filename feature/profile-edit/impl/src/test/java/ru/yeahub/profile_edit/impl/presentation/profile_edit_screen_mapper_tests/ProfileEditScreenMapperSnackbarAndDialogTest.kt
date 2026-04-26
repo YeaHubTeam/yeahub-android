@@ -6,6 +6,8 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ArgumentsSource
 import ru.yeahub.core_utils.common.TextOrResource
 import ru.yeahub.profile_edit.impl.presentation.OperationError
+import ru.yeahub.profile_edit.impl.presentation.ProfileEditImageValidationError
+import ru.yeahub.profile_edit.impl.presentation.ProfileEditImageValidationException
 import ru.yeahub.profile_edit.impl.presentation.ProfileEditMapperInput
 import ru.yeahub.profile_edit.impl.presentation.ProfileEditMutableState
 import ru.yeahub.profile_edit.impl.presentation.ProfileEditScreenMapper
@@ -13,8 +15,6 @@ import ru.yeahub.profile_edit.impl.presentation.ProfileEditState
 import ru.yeahub.profile_edit.impl.presentation.StaticDomainData
 import ru.yeahub.profile_edit.impl.presentation.UserInput
 import ru.yeahub.profile_edit.impl.presentation.ViewModelStaticData
-import ru.yeahub.profile_edit.impl.ui.cropper.ImageValidationError
-import ru.yeahub.profile_edit.impl.ui.cropper.ImageValidationException
 import ru.yeahub.test.TestArgumentsProvider
 import ru.yeahub.ui.R
 import java.io.IOException
@@ -155,7 +155,7 @@ class ProfileEditScreenMapperSnackbarAndDialogTest {
             ),
             ProfileEditScreenMapperSnackbarAndDialogTestCase(
                 operationError = OperationError(
-                    ImageValidationException(ImageValidationError.CannotRead),
+                    ProfileEditImageValidationException(ProfileEditImageValidationError.CannotRead),
                     TextOrResource.Resource(
                         ProfileEditR.string.error_action_image_validation,
                     ),
@@ -170,7 +170,7 @@ class ProfileEditScreenMapperSnackbarAndDialogTest {
             ),
             ProfileEditScreenMapperSnackbarAndDialogTestCase(
                 operationError = OperationError(
-                    ImageValidationException(ImageValidationError.FileTooLarge),
+                    ProfileEditImageValidationException(ProfileEditImageValidationError.FileTooLarge),
                     TextOrResource.Resource(
                         ProfileEditR.string.error_action_image_validation,
                     ),
@@ -185,7 +185,7 @@ class ProfileEditScreenMapperSnackbarAndDialogTest {
             ),
             ProfileEditScreenMapperSnackbarAndDialogTestCase(
                 operationError = OperationError(
-                    ImageValidationException(ImageValidationError.CropFailed),
+                    ProfileEditImageValidationException(ProfileEditImageValidationError.CropFailed),
                     TextOrResource.Resource(
                         ProfileEditR.string.error_action_image_validation,
                     ),

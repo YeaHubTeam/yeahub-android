@@ -7,8 +7,6 @@ import retrofit2.HttpException
 import ru.yeahub.core_utils.common.TextOrResource
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSkill
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditSocialPlatform
-import ru.yeahub.profile_edit.impl.ui.cropper.ImageValidationError
-import ru.yeahub.profile_edit.impl.ui.cropper.ImageValidationException
 import ru.yeahub.ui.R
 import java.io.IOException
 import ru.yeahub.profile_edit.impl.R as ProfileEditR
@@ -79,10 +77,15 @@ internal class ProfileEditScreenMapper {
             else -> TextOrResource.Resource(R.string.error_screen_text)
         }
 
-        is ImageValidationException -> when (throwable.error) {
-            ImageValidationError.CannotRead -> TextOrResource.Resource(ProfileEditR.string.error_cannot_read_file)
-            ImageValidationError.FileTooLarge -> TextOrResource.Resource(ProfileEditR.string.error_file_too_large)
-            ImageValidationError.CropFailed -> TextOrResource.Resource(ProfileEditR.string.error_crop_failed)
+        is ProfileEditImageValidationException -> when (throwable.error) {
+            is ProfileEditImageValidationError.CannotRead ->
+                TextOrResource.Resource(ProfileEditR.string.error_cannot_read_file)
+
+            is ProfileEditImageValidationError.FileTooLarge ->
+                TextOrResource.Resource(ProfileEditR.string.error_file_too_large)
+
+            is ProfileEditImageValidationError.CropFailed ->
+                TextOrResource.Resource(ProfileEditR.string.error_crop_failed)
         }
 
         else -> TextOrResource.Resource(R.string.error_screen_text)
@@ -95,6 +98,7 @@ internal class ProfileEditScreenMapper {
             errorMessage = mapThrowableToMessage(operationError.throwable),
         )
     }
+
     private fun mapPersonalInfoState(
         avatarUrl: String,
         nickname: ProfileEditState.ValidatedField,
