@@ -1,13 +1,13 @@
 package ru.yeahub.feature_toggle_api
 
 fun emptyFeatureFlagsSnapshot(): FeatureFlagsSnapshot {
-    return FeatureFlagsSnapshot(featureAvailabilityByKey = emptyMap())
+    return FeatureFlagsSnapshot(featureValueByKey = emptyMap())
 }
 
 data class FeatureFlagsSnapshot(
-    private val featureAvailabilityByKey: Map<FeatureKey, FeatureAvailability>
+    private val featureValueByKey: Map<String, Boolean>
 ) {
-    fun getFeatureAvailability(featureKey: FeatureKey): FeatureAvailability? {
-        return featureAvailabilityByKey.get(featureKey)
+    fun getFeatureValue(key: String): Boolean? {
+        return featureValueByKey[key]
     }
 }

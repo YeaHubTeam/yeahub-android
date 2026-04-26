@@ -9,10 +9,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import ru.yeahub.feature_toggle_api.FeatureAvailability
 import ru.yeahub.feature_toggle_api.FeatureAvailabilityService
 import ru.yeahub.feature_toggle_api.FeatureFlagsSnapshot
-import ru.yeahub.feature_toggle_api.FeatureKey
+import ru.yeahub.feature_toggle_api.FeatureToggle
 import ru.yeahub.feature_toggle_api.emptyFeatureFlagsSnapshot
 import ru.yeahub.feature_toggle_impl.data.FeatureFlagsRepository
 import ru.yeahub.feature_toggle_impl.resolver.FeatureValueResolver
@@ -35,9 +34,9 @@ internal class DefaultFeatureAvailabilityService(
         launchRefreshFeatureFlags()
     }
 
-    override fun getFeatureAvailability(featureKey: FeatureKey): FeatureAvailability {
+    override fun isFeatureEnabled(featureToggle: FeatureToggle): Boolean {
         return featureValueResolver.resolve(
-            featureKey = featureKey,
+            featureToggle = featureToggle,
             featureFlagsSnapshot = mutableFeatureFlagsSnapshot.value
         )
     }

@@ -5,5 +5,5 @@ import kotlinx.coroutines.flow.StateFlow
 interface FeatureAvailabilityService {
     val featureFlagsSnapshot: StateFlow<FeatureFlagsSnapshot>
 
-    fun getFeatureAvailability(featureKey: FeatureKey): FeatureAvailability
+    fun isFeatureEnabled(featureToggle: FeatureToggle): Boolean
 }

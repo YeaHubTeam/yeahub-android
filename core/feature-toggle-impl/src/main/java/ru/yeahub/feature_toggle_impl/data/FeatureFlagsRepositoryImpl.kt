@@ -1,28 +1,25 @@
 package ru.yeahub.feature_toggle_impl.data
 
-import ru.yeahub.feature_toggle_api.FeatureAvailability
 import ru.yeahub.feature_toggle_api.FeatureFlagsSnapshot
-import ru.yeahub.feature_toggle_api.FeatureKey
-import ru.yeahub.feature_toggle_api.FeatureKeys
 import ru.yeahub.feature_toggle_impl.data.remote.FeatureFlagsRemoteDataSource
+import ru.yeahub.feature_toggle_impl.registry.FeatureToggleRegistry
 import ru.yeahub.network_api.models.GetFeatureFlagResponse
 import timber.log.Timber
 
 internal class FeatureFlagsRepositoryImpl(
-    private val remoteDataSource: FeatureFlagsRemoteDataSource
+    private val remoteDataSource: FeatureFlagsRemoteDataSource,
+    private val featureToggleRegistry: FeatureToggleRegistry
 ) : FeatureFlagsRepository {
 
-    private val featureKeysByValue = FeatureKeys.all.associateBy(FeatureKey::value)
-
     override suspend fun getFeatureFlagsSnapshot(): FeatureFlagsSnapshot {
-        val featureAvailabilityByKey = loadAndroidFeatureFlags()
-            .mapNotNull(::mapFeatureAvailabilityByKey)
+        val featureValueByKey = loadAndroidFeatureFlags()
+            .mapNotNull(::mapFeatureValueByKey)
             .toMap()
 
-        logMissingBackendFeatureFlags(featureAvailabilityByKey = featureAvailabilityByKey)
+        logMissingBackendFeatureFlags(featureValueByKey = featureValueByKey)
 
         return FeatureFlagsSnapshot(
-            featureAvailabilityByKey = featureAvailabilityByKey
+            featureValueByKey = featureValueByKey
         )
     }
 
@@ -50,36 +47,37 @@ internal class FeatureFlagsRepositoryImpl(
 
     //Логирование зарегистрированных, но не пришедших с бэкенда фичей
     private fun logMissingBackendFeatureFlags(
-        featureAvailabilityByKey: Map<FeatureKey, FeatureAvailability>
+        featureValueByKey: Map<String, Boolean>
     ) {
-        val missingBackendFeatureFlags = FeatureKeys.all - featureAvailabilityByKey.keys
+        val missingBackendFeatureFlags = featureToggleRegistry.getFeatureToggles()
+            .filter { featureToggle ->
+                featureValueByKey.containsKey(featureToggle.key).not()
+            }
 
         if (missingBackendFeatureFlags.isEmpty()) {
             return
         }
 
         val missingBackendValues = missingBackendFeatureFlags.joinToString { featureKey ->
-            featureKey.value
+            featureKey.key
         }
 
         Timber.tag(FEATURE_TOGGLE_LOG_TAG)
             .w(MISSING_BACKEND_FEATURE_FLAGS_LOG_MESSAGE, missingBackendValues)
     }
 
-    private fun mapFeatureAvailabilityByKey(
+    private fun mapFeatureValueByKey(
         remoteFeatureFlag: GetFeatureFlagResponse
-    ): Pair<FeatureKey, FeatureAvailability>? {
-        val featureKey = featureKeysByValue[remoteFeatureFlag.flag]
+    ): Pair<String, Boolean>? {
+        val featureToggle = featureToggleRegistry.getFeatureToggle(key = remoteFeatureFlag.flag)
 
-        if (featureKey == null) {
+        if (featureToggle == null) {
             Timber.tag(FEATURE_TOGGLE_LOG_TAG)
                 .w(UNKNOWN_BACKEND_FEATURE_FLAG_LOG_MESSAGE, remoteFeatureFlag.flag)
             return null
         }
 
-        return featureKey to FeatureAvailability.fromBoolean(
-            isAvailable = remoteFeatureFlag.enabled
-        )
+        return featureToggle.key to remoteFeatureFlag.enabled
     }
 }
 
