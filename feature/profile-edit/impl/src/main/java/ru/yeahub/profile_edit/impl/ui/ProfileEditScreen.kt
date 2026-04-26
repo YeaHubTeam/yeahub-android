@@ -100,20 +100,20 @@ internal fun ProfileEditScreenUI(
     onEvent: (ProfileEditScreenEvent) -> Unit,
 ) {
     BackHandler {
-        onEvent(ProfileEditScreenEvent.BackPressed)
+        onEvent(ProfileEditScreenEvent.BackClicked)
     }
     Scaffold(
         containerColor = Theme.colors.black10,
         topBar = {
             TopAppBarWithBottomBorder(
                 title = TextOrResource.Resource(ProfileEditR.string.profile_edit_title),
-                onBackClick = { onEvent(ProfileEditScreenEvent.BackPressed) },
+                onBackClick = { onEvent(ProfileEditScreenEvent.BackClicked) },
             )
         },
         bottomBar = {
             if (state is ProfileEditState.Loaded) {
                 PrimaryButton(
-                    onClick = { onEvent(ProfileEditScreenEvent.SaveProfile) },
+                    onClick = { onEvent(ProfileEditScreenEvent.SaveProfileClicked) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp),
@@ -131,7 +131,7 @@ internal fun ProfileEditScreenUI(
                     title = snackbar.actionMessage.getString(context),
                     description = snackbar.errorMessage.getString(context),
                     buttonText = stringResource(R.string.repeat),
-                    onButtonClick = { onEvent(ProfileEditScreenEvent.SnackbarRetryPressed) },
+                    onButtonClick = { onEvent(ProfileEditScreenEvent.SnackbarRetryClicked) },
                     onDismissIconClick = { onEvent(ProfileEditScreenEvent.ErrorSnackbarDismissed) },
                 )
             }
@@ -152,7 +152,7 @@ internal fun ProfileEditScreenUI(
             ) {
                 ErrorScreen(
                     error = null,
-                    onBack = { onEvent(ProfileEditScreenEvent.RetryPressed) },
+                    onBack = { onEvent(ProfileEditScreenEvent.ErrorScreenRetryClicked) },
                     errorText = TextOrResource.Resource(R.string.error_screen_text),
                     titleText = TextOrResource.Resource(R.string.error_screen_title_text),
                     backText = TextOrResource.Resource(R.string.try_again),
@@ -213,7 +213,7 @@ internal fun HandleCommands(
             },
             onChangePhoto = {
                 cropSheetUri = null
-                onEvent(ProfileEditScreenEvent.UploadAvatar)
+                onEvent(ProfileEditScreenEvent.UploadAvatarClicked)
             },
             onDismiss = { cropSheetUri = null },
         )
@@ -327,7 +327,7 @@ private fun ProfileEditContent(
             descriptionText = stringResource(R.string.unsaved_changes_description),
             leftButtonText = stringResource(R.string.yes),
             rightButtonText = stringResource(R.string.no),
-            onLeftButtonClick = { onEvent(ProfileEditScreenEvent.DiscardChanges) },
+            onLeftButtonClick = { onEvent(ProfileEditScreenEvent.DiscardChangesClicked) },
             onRightButtonClick = { onEvent(ProfileEditScreenEvent.UnsavedChangesDialogDismissed) },
         )
     }

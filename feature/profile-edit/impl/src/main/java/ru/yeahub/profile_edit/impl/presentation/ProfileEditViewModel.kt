@@ -121,20 +121,20 @@ internal class ProfileEditViewModel(
 
     @Suppress("ComplexMethod")
     fun onEvent(event: ProfileEditScreenEvent) = when (event) {
-        is ProfileEditScreenEvent.RetryPressed -> onRetry()
-        is ProfileEditScreenEvent.SaveProfile -> onSaveProfile()
-        is ProfileEditScreenEvent.BackPressed -> onBackPressed()
-        is ProfileEditScreenEvent.DiscardChanges -> emitCommand(ProfileEditScreenCommand.NavigateBack)
+        is ProfileEditScreenEvent.ErrorScreenRetryClicked -> onRetry()
+        is ProfileEditScreenEvent.SaveProfileClicked -> onSaveProfile()
+        is ProfileEditScreenEvent.BackClicked -> onBackPressed()
+        is ProfileEditScreenEvent.DiscardChangesClicked -> emitCommand(ProfileEditScreenCommand.NavigateBack)
         is ProfileEditScreenEvent.UnsavedChangesDialogDismissed ->
             updateMutableState { copy(showUnsavedChangesDialog = false) }
 
-        is ProfileEditScreenEvent.SnackbarRetryPressed -> onRetrySnackbar()
+        is ProfileEditScreenEvent.SnackbarRetryClicked -> onRetrySnackbar()
         is ProfileEditScreenEvent.ErrorSnackbarDismissed -> {
             updateMutableState { copy(operationError = null) }
             pendingOperationRetry = null
         }
 
-        is ProfileEditScreenEvent.UploadAvatar -> emitCommand(ProfileEditScreenCommand.ShowPhotoPicker)
+        is ProfileEditScreenEvent.UploadAvatarClicked -> emitCommand(ProfileEditScreenCommand.ShowPhotoPicker)
         is ProfileEditScreenEvent.AvatarSelected -> onAvatarSelected(
             previewUrl = event.previewUrl,
             avatarBytes = event.avatarBytes,
@@ -145,7 +145,7 @@ internal class ProfileEditViewModel(
             TextOrResource.Resource(ProfileEditR.string.error_action_image_validation),
         ) { emitCommand(ProfileEditScreenCommand.ShowPhotoPicker) }
 
-        is ProfileEditScreenEvent.DeleteAvatar -> onDeleteAvatar()
+        is ProfileEditScreenEvent.DeleteAvatarClicked -> onDeleteAvatar()
         is ProfileEditScreenEvent.NicknameChanged -> updateUserInput { copy(nickname = event.nickname) }
         is ProfileEditScreenEvent.SpecializationSelected ->
             updateUserInput { copy(specialization = event.specialization) }
@@ -158,8 +158,8 @@ internal class ProfileEditViewModel(
             updateUserInput { copy(socialLinks = socialLinks + (event.platform to event.url)) }
 
         is ProfileEditScreenEvent.AboutMeChanged -> updateUserInput { copy(aboutMe = event.text) }
-        is ProfileEditScreenEvent.AddSkill -> onAddSkill(event.skillName)
-        is ProfileEditScreenEvent.RemoveSkill ->
+        is ProfileEditScreenEvent.AddSkillClicked -> onAddSkill(event.skillName)
+        is ProfileEditScreenEvent.RemoveSkillClicked ->
             updateUserInput { copy(selectedSkills = selectedSkills.remove(event.skill)) }
     }
 

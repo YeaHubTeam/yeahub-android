@@ -42,7 +42,7 @@ internal fun SkillsContent(
 
     val onRemoveSkill: (DomainProfileEditSkill) -> Unit = remember(onEvent) {
         { skill: DomainProfileEditSkill ->
-            onEvent(ProfileEditScreenEvent.RemoveSkill(skill))
+            onEvent(ProfileEditScreenEvent.RemoveSkillClicked(skill))
         }
     }
 
@@ -64,7 +64,7 @@ internal fun SkillsContent(
             items = skillNames,
             selected = "",
             onSelected = {
-                onEvent(ProfileEditScreenEvent.AddSkill(skillName = it))
+                onEvent(ProfileEditScreenEvent.AddSkillClicked(skillName = it))
             },
         )
         Spacer(modifier = Modifier.height(16.dp))

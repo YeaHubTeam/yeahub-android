@@ -6,19 +6,19 @@ import ru.yeahub.profile_edit.impl.presentation.ProfileEditImageValidationError
 
 sealed interface ProfileEditScreenEvent {
 
-    data object RetryPressed : ProfileEditScreenEvent
-    data object BackPressed : ProfileEditScreenEvent
-    data object DiscardChanges : ProfileEditScreenEvent
+    data object ErrorScreenRetryClicked : ProfileEditScreenEvent
+    data object BackClicked : ProfileEditScreenEvent
+    data object DiscardChangesClicked : ProfileEditScreenEvent
     data object UnsavedChangesDialogDismissed : ProfileEditScreenEvent
-    data object SaveProfile : ProfileEditScreenEvent
+    data object SaveProfileClicked : ProfileEditScreenEvent
 
-    data object UploadAvatar : ProfileEditScreenEvent
+    data object UploadAvatarClicked : ProfileEditScreenEvent
     class AvatarSelected(
         val previewUrl: String,
         val avatarBytes: ByteArray,
     ) : ProfileEditScreenEvent
 
-    data object DeleteAvatar : ProfileEditScreenEvent
+    data object DeleteAvatarClicked : ProfileEditScreenEvent
     data class NicknameChanged(val nickname: String) : ProfileEditScreenEvent
     data class SpecializationSelected(val specialization: String) : ProfileEditScreenEvent
     data object ChangeSpecializationClicked : ProfileEditScreenEvent
@@ -30,13 +30,13 @@ sealed interface ProfileEditScreenEvent {
 
     data class AboutMeChanged(val text: String) : ProfileEditScreenEvent
 
-    data class AddSkill(val skillName: String) : ProfileEditScreenEvent
-    data class RemoveSkill(val skill: DomainProfileEditSkill) : ProfileEditScreenEvent
+    data class AddSkillClicked(val skillName: String) : ProfileEditScreenEvent
+    data class RemoveSkillClicked(val skill: DomainProfileEditSkill) : ProfileEditScreenEvent
 
     data class ImageValidationFailed(
         val error: ProfileEditImageValidationError,
     ) : ProfileEditScreenEvent
 
-    data object SnackbarRetryPressed : ProfileEditScreenEvent
+    data object SnackbarRetryClicked : ProfileEditScreenEvent
     data object ErrorSnackbarDismissed : ProfileEditScreenEvent
 }

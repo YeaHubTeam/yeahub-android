@@ -70,11 +70,11 @@ internal fun PersonalInfoContent(
         item {
             ProfileAvatarSection(
                 avatarUrl = state.avatarUrl,
-                onRemoveClick = { onEvent(ProfileEditScreenEvent.DeleteAvatar) },
+                onRemoveClick = { onEvent(ProfileEditScreenEvent.DeleteAvatarClicked) },
             )
             Spacer(Modifier.height(REMOVE_BUTTON_BOTTOM_SPACING))
             UploadPhotoButton(
-                onClick = { onEvent(ProfileEditScreenEvent.UploadAvatar) },
+                onClick = { onEvent(ProfileEditScreenEvent.UploadAvatarClicked) },
             )
             Spacer(Modifier.height(UPLOAD_BUTTON_AND_PERSONAL_INFO_BOTTOM_SPACING))
         }
