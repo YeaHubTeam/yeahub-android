@@ -62,6 +62,7 @@ import ru.yeahub.profile_edit.impl.domain.usecase.DeleteAvatarUseCase
 import ru.yeahub.profile_edit.impl.domain.usecase.GetProfileUseCase
 import ru.yeahub.profile_edit.impl.domain.usecase.SaveProfileUseCase
 import ru.yeahub.profile_edit.impl.domain.usecase.UploadAvatarUseCase
+import ru.yeahub.profile_edit.impl.presentation.ProfileEditImageValidationError
 import ru.yeahub.profile_edit.impl.presentation.ProfileEditScreenMapper
 import ru.yeahub.profile_edit.impl.presentation.ProfileEditState
 import ru.yeahub.profile_edit.impl.presentation.ProfileEditState.ProfileEditTabs
@@ -74,7 +75,6 @@ import ru.yeahub.profile_edit.impl.presentation.intents.ProfileEditScreenEvent
 import ru.yeahub.profile_edit.impl.presentation.intents.ProfileEditScreenResult
 import ru.yeahub.profile_edit.impl.ui.cropper.CropBottomSheet
 import ru.yeahub.profile_edit.impl.ui.cropper.ImageReadResult
-import ru.yeahub.profile_edit.impl.ui.cropper.ImageValidationError
 import ru.yeahub.profile_edit.impl.ui.cropper.readImageBytesAndValidate
 import ru.yeahub.profile_edit.impl.ui.tabs.AboutMeContent
 import ru.yeahub.profile_edit.impl.ui.tabs.PersonalInfoContent
@@ -170,6 +170,7 @@ internal fun HandleCommands(
     onEvent: (ProfileEditScreenEvent) -> Unit,
 ) {
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
     var cropSheetUri by remember { mutableStateOf<Uri?>(null) }
 
     val pickerLauncher = rememberLauncherForActivityResult(
@@ -185,25 +186,30 @@ internal fun HandleCommands(
             sourceUri = cropSheetUri!!,
             onCropped = { croppedUri ->
                 cropSheetUri = null
+                coroutineScope.launch {
+                    when (val result = croppedUri.readImageBytesAndValidate(context)) {
+                        is ImageReadResult.Success -> {
+                            onEvent(
+                                ProfileEditScreenEvent.AvatarSelected(
+                                    previewUrl = croppedUri.toString(),
+                                    avatarBytes = result.avatarBytes,
+                                ),
+                            )
+                        }
 
-                when (val result = croppedUri.readImageBytesAndValidate(context)) {
-                    is ImageReadResult.Success -> {
-                        onEvent(
-                            ProfileEditScreenEvent.AvatarSelected(
-                                previewUrl = croppedUri.toString(),
-                                avatarBytes = result.avatarBytes,
-                            ),
-                        )
-                    }
-
-                    is ImageReadResult.Error -> {
-                        onEvent(ProfileEditScreenEvent.ImageValidationFailed(result.error))
+                        is ImageReadResult.Error -> {
+                            onEvent(ProfileEditScreenEvent.ImageValidationFailed(result.error))
+                        }
                     }
                 }
             },
             onCropFailure = {
                 cropSheetUri = null
-                onEvent(ProfileEditScreenEvent.ImageValidationFailed(ImageValidationError.CropFailed))
+                onEvent(
+                    ProfileEditScreenEvent.ImageValidationFailed(
+                        ProfileEditImageValidationError.CropFailed,
+                    ),
+                )
             },
             onChangePhoto = {
                 cropSheetUri = null
