@@ -56,12 +56,14 @@ private const val CROP_QUALITY = 90
 private const val CROP_MAX_WIDTH = 2048
 private const val CROP_MAX_HEIGHT = 2048
 private const val CROP_WRAP_BOUNDS_ANIMATION_DURATION_MS = 300L
+private const val CROP_INITIAL_WRAP_BOUNDS_ANIMATION_ENABLED = false
 private const val PREVIEW_REFRESH_EXTRA_DELAY_MS = 32L
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun CropBottomSheet(
     sourceUri: Uri,
+    onCropStarted: () -> Unit,
     onCropped: (Uri) -> Unit,
     onCropFailure: () -> Unit,
     onChangePhoto: () -> Unit,
@@ -140,23 +142,27 @@ internal fun CropBottomSheet(
 
                 PrimaryButton(
                     onClick = {
-                        ucropViewRef.value?.cropImageView?.cropAndSaveImage(
-                            Bitmap.CompressFormat.JPEG,
-                            CROP_QUALITY,
-                            object : BitmapCropCallback {
-                                override fun onBitmapCropped(
-                                    resultUri: Uri,
-                                    offsetX: Int,
-                                    offsetY: Int,
-                                    imageWidth: Int,
-                                    imageHeight: Int,
-                                ) {
-                                    onCropped(resultUri)
-                                }
+                        val cropImageView = ucropViewRef.value?.cropImageView
+                        if (cropImageView != null) {
+                            cropImageView.cropAndSaveImage(
+                                Bitmap.CompressFormat.JPEG,
+                                CROP_QUALITY,
+                                object : BitmapCropCallback {
+                                    override fun onBitmapCropped(
+                                        resultUri: Uri,
+                                        offsetX: Int,
+                                        offsetY: Int,
+                                        imageWidth: Int,
+                                        imageHeight: Int,
+                                    ) {
+                                        onCropped(resultUri)
+                                    }
 
-                                override fun onCropFailure(t: Throwable) = onCropFailure()
-                            },
-                        )
+                                    override fun onCropFailure(t: Throwable) = onCropFailure()
+                                },
+                            )
+                            onCropStarted()
+                        }
                     },
                     modifier = Modifier.fillMaxWidth(),
                 ) {
@@ -219,6 +225,10 @@ private fun CropViewSection(
                         override fun onLoadComplete() {
                             if (!ucropView.isAttachedToWindow) return
                             overlayView.setTargetAspectRatio(CROP_ASPECT_RATIO)
+                            cropImageView.cancelAllAnimations()
+                            cropImageView.setImageToWrapCropBounds(
+                                CROP_INITIAL_WRAP_BOUNDS_ANIMATION_ENABLED,
+                            )
                             val rect = overlayView.cropViewRect
                             if (rect.width() > 0 && rect.height() > 0) {
                                 squareGuide.updateCropRect(rect)

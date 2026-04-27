@@ -184,8 +184,10 @@ internal fun HandleCommands(
     if (cropSheetUri != null) {
         CropBottomSheet(
             sourceUri = cropSheetUri!!,
-            onCropped = { croppedUri ->
+            onCropStarted = {
                 cropSheetUri = null
+            },
+            onCropped = { croppedUri ->
                 coroutineScope.launch {
                     when (val result = croppedUri.readImageBytesAndValidate(context)) {
                         is ImageReadResult.Success -> {
