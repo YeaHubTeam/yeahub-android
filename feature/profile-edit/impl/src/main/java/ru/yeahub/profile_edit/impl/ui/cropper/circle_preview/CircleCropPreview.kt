@@ -10,6 +10,12 @@ import androidx.core.graphics.withClip
 
 private const val BORDER_WIDTH_DP = 1f
 
+/**
+ * View для круглых preview текущей crop-области.
+ *
+ * Сам preview не знает ничего про uCrop: он запрашивает bitmap у [CircleCropPreviewController],
+ * обрезает отображение круглым clip path и масштабирует bitmap так, чтобы круг был заполнен.
+ */
 @SuppressLint("ViewConstructor")
 internal class CircleCropPreview(context: Context, previewBorderColor: Int) : View(context) {
 
@@ -23,17 +29,28 @@ internal class CircleCropPreview(context: Context, previewBorderColor: Int) : Vi
         color = previewBorderColor
     }
 
+    /**
+     * Подключает общий controller, который владеет bitmap cache и invalidation preview.
+     */
     fun attach(controller: CircleCropPreviewController) {
         previewController = controller
         controller.attachPreview(this)
     }
 
+    /**
+     * Перестраивает clip path при изменении размера View.
+     *
+     * Path кешируется, чтобы не создавать новый объект на каждый [onDraw].
+     */
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         clipPath.reset()
         val diameter = minOf(w, h).toFloat()
         clipPath.addCircle(w / 2f, h / 2f, diameter / 2f, Path.Direction.CW)
     }
 
+    /**
+     * Рисует cached crop bitmap по центру круга с scaleCrop-поведением.
+     */
     override fun onDraw(canvas: Canvas) {
         val bitmap = previewController?.getOrCapture()
 

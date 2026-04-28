@@ -9,6 +9,14 @@ import androidx.core.graphics.withScale
 
 private const val CIRCLE_PREVIEW_BITMAP_MAX_SIZE = 512
 
+/**
+ * Общий источник bitmap для круглых preview.
+ *
+ * Controller рисует crop-область из [sourceView] в offscreen bitmap и переиспользует её между
+ * несколькими [CircleCropPreview]. Это дешевле, чем каждому preview отдельно вызывать draw()
+ * у [UCropView][com.yalantis.ucrop.view.UCropView], и позволяет обновлять preview только когда
+ * жесты пользователя действительно изменили crop.
+ */
 internal class CircleCropPreviewController {
 
     private var sourceView: View? = null
@@ -18,22 +26,39 @@ internal class CircleCropPreviewController {
     private var dirty = true
     private val previews = mutableSetOf<View>()
 
+    /**
+     * Подключает View, из которой будут сниматься preview, и provider актуального crop rect.
+     *
+     * Rect берётся лениво, потому что uCrop пересчитывает его после layout, scale и translate.
+     */
     fun attachSource(sourceView: View, cropRectProvider: () -> RectF) {
         this.sourceView = sourceView
         this.cropRectProvider = cropRectProvider
         markDirty()
     }
 
+    /**
+     * Регистрирует preview View, которые нужно инвалидировать при изменении crop.
+     */
     fun attachPreview(preview: View) {
         previews.add(preview)
         preview.postInvalidateOnAnimation()
     }
 
+    /**
+     * Помечает cached bitmap устаревшим после жестов, scale/rotate callbacks или load complete.
+     */
     fun markDirty() {
         dirty = true
         invalidatePreviews()
     }
 
+    /**
+     * Возвращает актуальный bitmap crop-области.
+     *
+     * Новый bitmap захватывается только если controller помечен dirty. Иначе preview разных
+     * размеров получают один и тот же cached bitmap и масштабируют его уже внутри своего Canvas.
+     */
     fun getOrCapture(): Bitmap? {
         val source = sourceView
         val rect = cropRectProvider?.invoke()
@@ -51,6 +76,13 @@ internal class CircleCropPreviewController {
     private fun isSourceValid(source: View, rect: RectF): Boolean =
         !rect.isEmpty && source.width > 0 && source.height > 0
 
+    /**
+     * Захватывает только crop rect, а не весь [source].
+     *
+     * Canvas масштабируется под размер target bitmap, затем смещается на левый верхний угол
+     * crop rect. После этого обычный [View.draw] рисует ровно тот участок uCrop, который
+     * попадёт в аватар.
+     */
     private fun capture(source: View, rect: RectF) {
         ensureBitmap(rect)
 
@@ -67,6 +99,12 @@ internal class CircleCropPreviewController {
         }
     }
 
+    /**
+     * Создаёт bitmap с тем же aspect ratio, что и crop rect, но ограничивает большую сторону.
+     *
+     * Это удерживает потребление памяти предсказуемым и не зависит от размера экрана или
+     * исходного изображения.
+     */
     private fun ensureBitmap(rect: RectF) {
         val ratio = rect.width() / rect.height()
         val width: Int
@@ -91,6 +129,10 @@ internal class CircleCropPreviewController {
         bitmapCanvas = Canvas(newBitmap)
     }
 
+    /**
+     * Освобождает bitmap вручную, потому что controller живёт рядом с Android View, а не как
+     * чистый Compose state.
+     */
     fun onDispose() {
         bitmap?.recycle()
         bitmap = null

@@ -75,6 +75,8 @@ import ru.yeahub.profile_edit.impl.presentation.intents.ProfileEditScreenEvent
 import ru.yeahub.profile_edit.impl.presentation.intents.ProfileEditScreenResult
 import ru.yeahub.profile_edit.impl.ui.cropper.CropBottomSheet
 import ru.yeahub.profile_edit.impl.ui.cropper.ImageReadResult
+import ru.yeahub.profile_edit.impl.ui.cropper.deleteCachedCroppedAvatar
+import ru.yeahub.profile_edit.impl.ui.cropper.deleteCachedCroppedAvatars
 import ru.yeahub.profile_edit.impl.ui.cropper.readImageBytesAndValidate
 import ru.yeahub.profile_edit.impl.ui.tabs.AboutMeContent
 import ru.yeahub.profile_edit.impl.ui.tabs.PersonalInfoContent
@@ -172,12 +174,16 @@ internal fun HandleCommands(
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     var cropSheetUri by remember { mutableStateOf<Uri?>(null) }
+    var latestCroppedUri by remember { mutableStateOf<Uri?>(null) }
 
     val pickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
     ) { uri ->
         if (uri != null) {
-            cropSheetUri = uri
+            coroutineScope.launch {
+                context.deleteCachedCroppedAvatars(latestCroppedUri)
+                cropSheetUri = uri
+            }
         }
     }
 
@@ -191,6 +197,9 @@ internal fun HandleCommands(
                 coroutineScope.launch {
                     when (val result = croppedUri.readImageBytesAndValidate(context)) {
                         is ImageReadResult.Success -> {
+                            val previousCroppedUri = latestCroppedUri
+                            latestCroppedUri = croppedUri
+                            context.deleteCachedCroppedAvatar(previousCroppedUri)
                             onEvent(
                                 ProfileEditScreenEvent.AvatarSelected(
                                     previewUrl = croppedUri.toString(),
@@ -200,6 +209,7 @@ internal fun HandleCommands(
                         }
 
                         is ImageReadResult.Error -> {
+                            context.deleteCachedCroppedAvatar(croppedUri)
                             onEvent(ProfileEditScreenEvent.ImageValidationFailed(result.error))
                         }
                     }
@@ -224,9 +234,17 @@ internal fun HandleCommands(
     LaunchedEffect(commands) {
         commands.collect { command ->
             when (command) {
-                is ProfileEditScreenCommand.NavigateBack -> onResult(ProfileEditScreenResult.NavigateBack)
+                is ProfileEditScreenCommand.NavigateBack -> {
+                    context.deleteCachedCroppedAvatar(latestCroppedUri)
+                    latestCroppedUri = null
+                    onResult(ProfileEditScreenResult.NavigateBack)
+                }
 
-                is ProfileEditScreenCommand.NavigateToProfile -> onResult(ProfileEditScreenResult.NavigateToProfile)
+                is ProfileEditScreenCommand.NavigateToProfile -> {
+                    context.deleteCachedCroppedAvatar(latestCroppedUri)
+                    latestCroppedUri = null
+                    onResult(ProfileEditScreenResult.NavigateToProfile)
+                }
 
                 is ProfileEditScreenCommand.ShowPhotoPicker -> pickerLauncher.launch(
                     PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly),

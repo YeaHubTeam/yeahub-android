@@ -59,6 +59,20 @@ private const val CROP_WRAP_BOUNDS_ANIMATION_DURATION_MS = 300L
 private const val CROP_INITIAL_WRAP_BOUNDS_ANIMATION_ENABLED = false
 private const val PREVIEW_REFRESH_EXTRA_DELAY_MS = 32L
 
+/**
+ * Bottom sheet с ручной обёрткой над [UCropView].
+ *
+ * Компонент отвечает только за UI кроппера и отдаёт наружу готовый [Uri]. Чтение файла,
+ * валидация и отправка события во ViewModel остаются в вызывающем коде, чтобы не смешивать
+ * Android View interop с presentation-логикой.
+ *
+ * @param sourceUri исходное изображение, выбранное через системный picker.
+ * @param onCropStarted вызывается сразу после синхронного запуска [UCropView.cropImageView.cropAndSaveImage].
+ * @param onCropped результат uCrop. Файл уже записан в cache dir по [destinationUri].
+ * @param onCropFailure ошибка загрузки или сохранения изображения.
+ * @param onChangePhoto пользователь хочет выбрать другой исходник.
+ * @param onDismiss пользователь закрывает sheet системным dismiss-сценарием.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun CropBottomSheet(
@@ -71,7 +85,13 @@ internal fun CropBottomSheet(
 ) {
     val context = LocalContext.current
     val destinationUri = remember {
-        Uri.fromFile(File(context.cacheDir, "cropped_avatar_${System.currentTimeMillis()}.jpg"))
+        Uri.fromFile(
+            File(
+                context.cacheDir,
+                CROPPED_AVATAR_FILE_PREFIX +
+                        "${System.currentTimeMillis()}" + CROPPED_AVATAR_FILE_SUFFIX,
+            ),
+        )
     }
     val ucropViewRef = remember { mutableStateOf<UCropView?>(null) }
     val circlePreviewController = remember { CircleCropPreviewController() }
@@ -182,6 +202,21 @@ internal fun CropBottomSheet(
     }
 }
 
+/**
+ * Создаёт и настраивает [UCropView] внутри Compose.
+ *
+ * Здесь держится вся тонкая связка с View-based uCrop: aspect ratio, кастомная квадратная
+ * направляющая поверх стандартного crop frame, touch-проброс для nested scroll и источник
+ * изображения для круглых preview. Если менять поведение жестов или анимаций uCrop, начинать
+ * лучше с этого блока.
+ *
+ * @param sourceUri изображение, которое uCrop должен открыть.
+ * @param destinationUri файл назначения, куда uCrop сохранит результат.
+ * @param ucropViewRef ссылка на View для кнопки "сохранить", потому что crop запускается извне.
+ * @param circlePreviewController общий контроллер bitmap-снимка для preview разного размера.
+ * @param onCropFailure callback ошибок загрузки исходника.
+ * @param modifier modifier контейнера AndroidView.
+ */
 @SuppressLint("ClickableViewAccessibility")
 @Composable
 private fun CropViewSection(
@@ -269,6 +304,13 @@ private fun CropViewSection(
     )
 }
 
+/**
+ * Отложенно обновляет круглые preview после авто-возврата изображения в границы crop area.
+ *
+ * uCrop завершает wrap-анимацию асинхронно через posted Runnable. Если инвалидировать preview
+ * сразу на ACTION_UP, можно снять промежуточный кадр. Поэтому ждём длительность wrap-анимации
+ * плюс небольшой запас и только потом просим controller заново захватить bitmap.
+ */
 private fun scheduleCirclePreviewRefresh(
     view: android.view.View,
     circlePreviewController: CircleCropPreviewController,
@@ -283,6 +325,12 @@ private fun scheduleCirclePreviewRefresh(
     )
 }
 
+/**
+ * Ряд круглых preview одного crop-кадра в разных размерах.
+ *
+ * Оба preview используют один [CircleCropPreviewController], чтобы не рисовать исходный
+ * [UCropView] дважды на каждый кадр и синхронно обновляться после жестов.
+ */
 @Suppress("COMPOSE_APPLIER_CALL_MISMATCH")
 @Composable
 private fun CropCirclesPreviewRow(
