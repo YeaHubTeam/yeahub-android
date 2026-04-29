@@ -14,7 +14,7 @@ import java.io.IOException
 
 class ProfileScreenMapperTest {
 
-    private val mapper = ProfileScreenMapper
+    private val mapper = ProfileScreenMapper()
 
     @Test
     fun `map should return Loading state when result is null`() {

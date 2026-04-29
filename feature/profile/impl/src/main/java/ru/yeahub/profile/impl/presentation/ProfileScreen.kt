@@ -44,9 +44,11 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.Flow
+import org.koin.androidx.compose.koinViewModel
 import ru.yeahub.core_ui.component.ErrorScreen
 import ru.yeahub.core_ui.component.SkillButton
 import ru.yeahub.core_ui.component.TagContainer
@@ -98,6 +100,25 @@ private const val ROTATION_ANGLE_COLLAPSED = 0f
 
 @Composable
 fun ProfileScreen(
+    onResult: (ProfileResult) -> Unit
+) {
+    val viewModel: ProfileViewModel = koinViewModel()
+
+    val screenState by viewModel.screenState.collectAsStateWithLifecycle()
+
+    HandleCommand(
+        commandFlow = viewModel.commands,
+        onResult = { result -> onResult(result) }
+    )
+
+    ScreenUI(
+        state = screenState,
+        onEvent = viewModel::onEvent
+    )
+}
+
+@Composable
+fun ScreenUI(
     state: ProfileScreenState,
     onEvent: (ProfileEvent) -> Unit
 ) {
@@ -590,7 +611,7 @@ fun DynamicPreviewUI() {
     val viewModel = remember {
         ProfileViewModel(
             getProfileUseCase = mockGetProfileUseCase,
-            screenMapper = ProfileScreenMapper
+            screenMapper = ProfileScreenMapper()
         )
     }
 
@@ -602,7 +623,7 @@ fun DynamicPreviewUI() {
             .background(Theme.colors.black25)
     ) {
         ProvidePreviewCompositionLocals {
-            ProfileScreen(
+            ScreenUI(
                 state = state,
                 onEvent = {}
             )
@@ -616,7 +637,7 @@ fun StaticPreviewUI(
     @PreviewParameter(ProfileScreenStateParamProvider::class)
     state: ProfileScreenState
 ) {
-    ProfileScreen(
+    ScreenUI(
         state = state,
         onEvent = {}
     )

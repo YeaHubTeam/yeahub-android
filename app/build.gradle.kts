@@ -99,7 +99,6 @@ dependencies {
     detektPlugins(libs.detekt.formatting)
 
     implementation(project(":feature:example-home:api"))
-    implementation(project(":feature:example-profile:api"))
     implementation(project(":feature:example-questions:api"))
     implementation(project(":feature:example-details:api"))
     implementation(project(":feature:detail-question:api"))
@@ -107,8 +106,8 @@ dependencies {
     implementation(project(":feature:questions-or-collections:api"))
     implementation(project(":feature:public-collections:api"))
     implementation(project(":feature:selection-specializations:api"))
+    implementation(project(":feature:profile:api"))
     implementation(project(":feature:example-home:impl"))
-    implementation(project(":feature:example-profile:impl"))
     implementation(project(":feature:example-questions:impl"))
     implementation(project(":feature:example-details:impl"))
     implementation(project(":feature:public-questions:impl"))
@@ -116,7 +115,7 @@ dependencies {
     implementation(project(":feature:questions-or-collections:impl"))
     implementation(project(":feature:public-collections:impl"))
     implementation(project(":feature:selection-specializations:impl"))
-    implementation(project(":feature:profile"))
+    implementation(project(":feature:profile:impl"))
 }
 
 tasks.withType<Test> {

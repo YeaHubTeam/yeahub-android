@@ -5,11 +5,7 @@ import retrofit2.HttpException
 import ru.yeahub.profile.impl.domain.DomainUserProfile
 import java.io.IOException
 
-object ProfileScreenMapper {
-
-    private const val HTTP_UNAUTHORIZED = 401
-    private const val HTTP_FORBIDDEN = 403
-    private const val HTTP_NOT_FOUND = 404
+class ProfileScreenMapper {
 
     fun map(result: Result<DomainUserProfile>? = null): ProfileScreenState {
         return when (result) {
@@ -68,5 +64,11 @@ object ProfileScreenMapper {
             HTTP_NOT_FOUND -> mapToUserDeleted()
             else -> mapToError("server_error:${exception.code()}")
         }
+    }
+
+    companion object {
+        private const val HTTP_UNAUTHORIZED = 401
+        private const val HTTP_FORBIDDEN = 403
+        private const val HTTP_NOT_FOUND = 404
     }
 }

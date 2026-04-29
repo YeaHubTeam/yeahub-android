@@ -46,9 +46,6 @@ class HomeFeatureImpl(private val homeScreen: HomeScreenApi) : FeatureApi {
         
         navGraphBuilder.composable(currentHomeRoute) {
             homeScreen.HomeScreen(
-                onProfileClick = { userId, userName ->
-                    handleProfileNavigation(pathManager, navController, userId, userName)
-                },
                 onQuestionClick = {
                     handleQuestionsNavigation(pathManager, navController)
                 },
@@ -63,36 +60,6 @@ class HomeFeatureImpl(private val homeScreen: HomeScreenApi) : FeatureApi {
                 },
             )
         }
-    }
-    
-    /**
-     * Обработка навигации к профилю.
-     */
-    private fun handleProfileNavigation(
-        pathManager: NavigationPathManager,
-        navController: NavHostController,
-        userId: String,
-        userName: String
-    ) {
-        // Сбрасываем текущий путь на корневую фичу
-        pathManager.setCurrentPath(getFeatureName())
-        
-        val profilePath = pathManager.createParametrizedPath(
-            featureName = FeatureRoute.ProfileFeature.FEATURE_NAME,
-            "userId",
-            "userName"
-        )
-        
-        val concretePath = pathManager.createConcretePath(
-            profilePath,
-            userId,
-            userName
-        )
-        
-        Timber.d("HomeFeatureImpl handleProfileNavigation: Navigating to: $concretePath")
-        
-        pathManager.setCurrentPath(concretePath)
-        navController.navigate(concretePath)
     }
     
     /**

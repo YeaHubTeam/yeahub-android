@@ -6,6 +6,7 @@ import ru.yeahub.navigation_impl.model.BottomNavigationItem
  * Фабрика для создания навигационных элементов.
  */
 fun getBottomNavItems(): List<BottomNavigationItem> = listOf(
+    BottomNavigationItem.Profile,
     BottomNavigationItem.Collections,
     BottomNavigationItem.Home,
     BottomNavigationItem.Questions

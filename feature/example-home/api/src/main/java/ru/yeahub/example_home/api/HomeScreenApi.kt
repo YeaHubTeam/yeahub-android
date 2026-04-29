@@ -5,7 +5,6 @@ import androidx.compose.runtime.Composable
 interface HomeScreenApi {
     @Composable
     fun HomeScreen(
-        onProfileClick: (userId: String, userName: String) -> Unit,
         onQuestionClick: () -> Unit,
         onDetailsClick: (itemId: String, title: String) -> Unit,
         onSpecializationsAfterCollectionsClick: () -> Unit,

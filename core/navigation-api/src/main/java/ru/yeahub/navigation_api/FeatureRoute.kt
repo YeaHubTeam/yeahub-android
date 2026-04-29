@@ -36,7 +36,7 @@ object FeatureRoute {
     }
 
     object ProfileFeature {
-        const val FEATURE_NAME = "profile"
+        const val PROFILE_SCREEN_NAME = "profile"
     }
 
     object QuestionsFeature {

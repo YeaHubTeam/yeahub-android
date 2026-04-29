@@ -44,15 +44,11 @@ class HomeScreenApiImpl : HomeScreenApi {
     /**
      * Реализация главного экрана.
      *
-     * @param onProfileClick Callback для навигации в профиль.
-     *                      Демонстрирует передачу userId и userName
-     *                      как пример передачи множественных параметров.
      * @param onQuestionClick Callback для навигации к вопросам.
      * @param onDetailsClick Callback для навигации к деталям с параметрами.
      */
     @Composable
     override fun HomeScreen(
-        onProfileClick: (userId: String, userName: String) -> Unit,
         onQuestionClick: () -> Unit,
         onDetailsClick: (itemId: String, title: String) -> Unit,
         onSpecializationsAfterCollectionsClick: () -> Unit,
@@ -95,17 +91,6 @@ class HomeScreenApiImpl : HomeScreenApi {
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
-                    
-                    Button(
-                        onClick = {
-                            // В реальном приложении здесь бы использовались
-                            // актуальные данные пользователя
-                            onProfileClick("12345", "Иван Иванов")
-                        },
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(text = "👤 Перейти в профиль")
-                    }
                     
                     Button(
                         onClick = onQuestionClick,
