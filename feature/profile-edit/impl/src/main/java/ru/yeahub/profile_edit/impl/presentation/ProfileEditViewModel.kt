@@ -236,7 +236,9 @@ internal class ProfileEditViewModel(
                         allSkills = data.allSkills,
                     ),
                 )
-            }.onSuccess { emitCommand(ProfileEditScreenCommand.NavigateToProfile) }.onFailure {
+            }.onSuccess {
+                emitCommand(ProfileEditScreenCommand.NavigateToProfile)
+            }.onFailure {
                 it.throwIfCancellation()
                 handleOperationFailure(
                     it,
@@ -273,18 +275,9 @@ internal class ProfileEditViewModel(
     }
 
     private fun onDeleteAvatar() {
-        val previousAvatarUrl = mutableState.value.userInput.avatarUrl
-        updateUserInput { copy(avatarUrl = "") }
         viewModelScopeSafe.launch(Dispatchers.IO) {
-            runCatching { deleteAvatar() }.onFailure {
-                it.throwIfCancellation()
-                updateUserInput { copy(avatarUrl = previousAvatarUrl) }
-                handleOperationFailure(
-                    it,
-                    TextOrResource.Resource(ProfileEditR.string.error_action_delete_avatar),
-                    ::onDeleteAvatar,
-                )
-            }
+            deleteAvatar()
+            updateUserInput { copy(avatarUrl = "") }
         }
     }
 }
