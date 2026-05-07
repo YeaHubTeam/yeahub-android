@@ -20,8 +20,8 @@ internal const val CROPPED_AVATAR_FILE_SUFFIX = ".jpg"
  * Читает уже обрезанное изображение и валидирует размер перед отправкой во ViewModel.
  *
  * Важно вызывать после uCrop, а не для исходного [Uri]: исходник может быть большим, но после
- * crop и ограничения максимального размера результата файл часто становится допустимым. Работа
- * с [ContentResolver][android.content.ContentResolver] вынесена на IO dispatcher.
+ * crop, сжатия качества и ограничения максимального разрешения результата файл часто становится допустимым. Здесь
+ * проверяется только размер готовых bytes, а формат и геометрию контролирует uCrop.
  */
 internal suspend fun Uri.readImageBytesAndValidate(context: Context): ImageReadResult =
     withContext(Dispatchers.IO) {
@@ -36,9 +36,9 @@ internal suspend fun Uri.readImageBytesAndValidate(context: Context): ImageReadR
     }
 
 /**
- * Читает bytes из content/file Uri.
+ * Читает bytes из content/file Uri через [ContentResolver][android.content.ContentResolver].
  *
- * Возвращает null, если provider не отдал stream.
+ * Возвращает null, если provider не отдал stream; вызывающий код превращает это в CannotRead.
  */
 private fun Uri.readBytesOrNull(context: Context): ByteArray? {
     return context.contentResolver.openInputStream(this)?.use { input ->
@@ -49,8 +49,9 @@ private fun Uri.readBytesOrNull(context: Context): ByteArray? {
 /**
  * Удаляет все временные файлы кроппера, кроме [excludedUri].
  *
- * Используется перед открытием нового кроппера: старые cache-файлы не копятся, но текущий
- * preview остаётся на месте, пока пользователь не выбрал и не обрезал новое изображение.
+ * Используется перед открытием нового кроппера: старые cache-файлы не копятся, но последний
+ * успешно обрезанный файл остаётся доступен для текущего preview, пока пользователь не сохранит
+ * или не отменит редактирование профиля.
  */
 internal suspend fun Context.deleteCachedCroppedAvatars(excludedUri: Uri?) {
     withContext(Dispatchers.IO) {
@@ -66,8 +67,9 @@ internal suspend fun Context.deleteCachedCroppedAvatars(excludedUri: Uri?) {
 /**
  * Удаляет конкретный временный файл кроппера, если он действительно лежит в [Context.cacheDir].
  *
- * Проверка имени и parent directory защищает от случайного удаления произвольного file Uri,
- * если в этот метод когда-нибудь передадут не результат uCrop.
+ * Проверка имени и parent directory защищает от случайного удаления произвольного file Uri.
+ * Этот helper вызывается и для старого успешного crop, и для нового результата, который не
+ * прошёл валидацию размера.
  */
 internal suspend fun Context.deleteCachedCroppedAvatar(uri: Uri?) {
     withContext(Dispatchers.IO) {

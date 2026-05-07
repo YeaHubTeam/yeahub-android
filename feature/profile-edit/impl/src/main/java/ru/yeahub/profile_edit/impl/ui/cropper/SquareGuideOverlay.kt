@@ -12,11 +12,11 @@ private const val GRID_LINE_COUNT = 2
 private const val GRID_ALPHA = 128
 
 /**
- * Квадратная направляющая поверх прямоугольной области uCrop.
+ * Визуальная safe-area для квадратного/круглого аватара внутри прямоугольного crop frame.
  *
- * Сам uCrop работает с aspect ratio профиля [326:263], но аватар в продукте отображается
- * в квадрате/круге. Этот overlay показывает квадрат внутри прямоугольного crop frame, чтобы пользователь
- * видел безопасную область для круглой миниатюры.
+ * Сам результат uCrop остаётся прямоугольным с ratio `326:263`, потому что такой формат нужен
+ * профилю. Overlay не меняет crop-математику: он только показывает пользователю область,
+ * которая попадёт в квадратные и круглые варианты аватара.
  */
 @SuppressLint("ViewConstructor")
 internal class SquareGuideOverlay(context: Context, borderColor: Int) : View(context) {
@@ -42,8 +42,9 @@ internal class SquareGuideOverlay(context: Context, borderColor: Int) : View(con
     /**
      * Пересчитывает квадрат из текущего crop rect uCrop.
      *
-     * Высота crop frame берётся за сторону квадрата, а сам квадрат центрируется по X.
-     * Так направляющая остаётся вписанной в прямоугольный crop frame при любом размере View.
+     * При текущем landscape-ratio высота crop frame является ограничивающей стороной, поэтому
+     * она берётся за сторону квадрата, а сам квадрат центрируется по X. Если формат результата
+     * станет portrait или square, этот расчёт нужно пересмотреть вместе с [CropBottomSheet].
      */
     fun updateCropRect(rect: RectF) {
         if (cropRect == rect) return
@@ -59,7 +60,7 @@ internal class SquareGuideOverlay(context: Context, borderColor: Int) : View(con
     /**
      * Рисует рамку квадрата и простую сетку 3x3.
      *
-     * Сетка не участвует в crop-математике
+     * Сетка не участвует в crop-математике.
      */
     override fun onDraw(canvas: Canvas) {
         if (squareRect.isEmpty) return

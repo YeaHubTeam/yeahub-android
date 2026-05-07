@@ -14,8 +14,8 @@ private const val CIRCLE_PREVIEW_BITMAP_MAX_SIZE = 512
  *
  * Controller рисует crop-область из [sourceView] в offscreen bitmap и переиспользует её между
  * несколькими [CircleCropPreview]. Это дешевле, чем каждому preview отдельно вызывать draw()
- * у [UCropView][com.yalantis.ucrop.view.UCropView], и позволяет обновлять preview только когда
- * жесты пользователя действительно изменили crop.
+ * у [UCropView][com.yalantis.ucrop.view.UCropView], и оставляет одну точку invalidation после
+ * жестов, load callbacks и отложенного возврата изображения в crop frame.
  */
 internal class CircleCropPreviewController {
 
@@ -56,8 +56,9 @@ internal class CircleCropPreviewController {
     /**
      * Возвращает актуальный bitmap crop-области.
      *
-     * Новый bitmap захватывается только если controller помечен dirty. Иначе preview разных
-     * размеров получают один и тот же cached bitmap и масштабируют его уже внутри своего Canvas.
+     * До завершения layout или загрузки uCrop может вернуть null, и preview должен просто
+     * пропустить кадр. Новый bitmap захватывается только если controller помечен dirty; иначе
+     * preview разных размеров получают один cached bitmap и масштабируют его внутри своего Canvas.
      */
     fun getOrCapture(): Bitmap? {
         val source = sourceView

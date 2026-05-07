@@ -30,7 +30,7 @@ internal class CircleCropPreview(context: Context, previewBorderColor: Int) : Vi
     }
 
     /**
-     * Подключает общий controller, который владеет bitmap cache и invalidation preview.
+     * Подключает общий controller, который владеет bitmap cache и решает, когда обновлять preview.
      */
     fun attach(controller: CircleCropPreviewController) {
         previewController = controller
@@ -50,6 +50,9 @@ internal class CircleCropPreview(context: Context, previewBorderColor: Int) : Vi
 
     /**
      * Рисует cached crop bitmap по центру круга с scaleCrop-поведением.
+     *
+     * Если uCrop ещё не загрузился или crop rect ещё пустой, bitmap будет null и preview
+     * намеренно пропустит кадр.
      */
     override fun onDraw(canvas: Canvas) {
         val bitmap = previewController?.getOrCapture()

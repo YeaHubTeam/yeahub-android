@@ -60,15 +60,15 @@ private const val CROP_INITIAL_WRAP_BOUNDS_ANIMATION_ENABLED = false
 private const val PREVIEW_REFRESH_EXTRA_DELAY_MS = 32L
 
 /**
- * Bottom sheet с ручной обёрткой над [UCropView].
+ * Bottom sheet, который встраивает view-based [UCropView] в Compose.
  *
- * Компонент отвечает только за UI кроппера и отдаёт наружу готовый [Uri]. Чтение файла,
- * валидация и отправка события во ViewModel остаются в вызывающем коде, чтобы не смешивать
- * Android View interop с presentation-логикой.
+ * Компонент держит только UI и lifecycle AndroidView. Наружу отдаётся [Uri] временного файла,
+ * а чтение байтов, валидация и отправка события во ViewModel остаются в вызывающем коде. Так
+ * cropper можно рефакторить или заменить без переноса presentation-логики внутрь interop-слоя.
  *
  * @param sourceUri исходное изображение, выбранное через системный picker.
- * @param onCropStarted вызывается сразу после синхронного запуска [UCropView.cropImageView.cropAndSaveImage].
- * @param onCropped результат uCrop. Файл уже записан в cache dir по [destinationUri].
+ * @param onCropStarted вызывается после передачи задания в uCrop, до асинхронного callback результата.
+ * @param onCropped успешный результат uCrop. [Uri] указывает на уже записанный cache-файл.
  * @param onCropFailure ошибка загрузки или сохранения изображения.
  * @param onChangePhoto пользователь хочет выбрать другой исходник.
  * @param onDismiss пользователь закрывает sheet системным dismiss-сценарием.
@@ -203,12 +203,11 @@ internal fun CropBottomSheet(
 }
 
 /**
- * Создаёт и настраивает [UCropView] внутри Compose.
+ * Точка интеграции Compose с [UCropView].
  *
- * Здесь держится вся тонкая связка с View-based uCrop: aspect ratio, кастомная квадратная
- * направляющая поверх стандартного crop frame, touch-проброс для nested scroll и источник
- * изображения для круглых preview. Если менять поведение жестов или анимаций uCrop, начинать
- * лучше с этого блока.
+ * Здесь собраны настройки, которые должны переехать вместе, если cropper вынести в отдельный
+ * компонент: aspect ratio сохранённого результата, квадратная safe-area поверх crop frame,
+ * запрет перехвата жестов bottom sheet и источник изображения для круглых preview.
  *
  * @param sourceUri изображение, которое uCrop должен открыть.
  * @param destinationUri файл назначения, куда uCrop сохранит результат.
