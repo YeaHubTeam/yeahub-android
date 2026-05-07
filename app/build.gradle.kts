@@ -109,6 +109,8 @@ dependencies {
     implementation(project(":feature:questions-or-collections:impl"))
     implementation(project(":feature:public-collections:impl"))
     implementation(project(":feature:selection-specializations:impl"))
+    implementation(project(":feature:authentication:api"))
+    implementation(project(":feature:authentication:impl"))
 }
 
 tasks.withType<Test> {
