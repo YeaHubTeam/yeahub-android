@@ -26,9 +26,13 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -45,7 +49,6 @@ import kotlinx.coroutines.flow.SharedFlow
 import ru.yeahub.authentication.impl.R
 import ru.yeahub.authentication.impl.login.presentation.model.LoginAction
 import ru.yeahub.authentication.impl.login.presentation.model.LoginCommand
-import ru.yeahub.authentication.impl.login.presentation.model.LoginFormState
 import ru.yeahub.authentication.impl.login.presentation.model.LoginState
 import ru.yeahub.authentication.impl.login.presentation.preview.StandardPreviewHeight
 import ru.yeahub.authentication.impl.login.presentation.preview.StandardPreviewWidth
@@ -117,9 +120,9 @@ private fun HandleCommands(
     LaunchedEffect(Unit) {
         commands.collect { command ->
             when (command) {
-                LoginCommand.NavigateToMain -> onNavigateToMain()
-                LoginCommand.NavigateToSignUp -> onNavigateToSignUp()
-                LoginCommand.NavigateToForgotPassword -> onNavigateToForgotPassword()
+                is LoginCommand.NavigateToMain -> onNavigateToMain()
+                is LoginCommand.NavigateToSignUp -> onNavigateToSignUp()
+                is LoginCommand.NavigateToForgotPassword -> onNavigateToForgotPassword()
 
                 is LoginCommand.ShowSnackbar -> {
                     snackbarHostState.showSnackbar(
@@ -132,7 +135,7 @@ private fun HandleCommands(
 }
 
 /**
- * Переключает UI между состояниями экрана.
+ * Отображает основной контент экрана.
  */
 @Composable
 private fun LoginContent(
@@ -140,28 +143,11 @@ private fun LoginContent(
     onAction: (LoginAction) -> Unit,
     modifier: Modifier,
 ) {
-    when (state) {
-        is LoginState.Initial,
-        is LoginState.Editing,
-        is LoginState.Validation,
-        is LoginState.ServerError -> {
-            LoginFormContent(
-                formState = state.formState,
-                isLoading = false,
-                onAction = onAction,
-                modifier = modifier,
-            )
-        }
-
-        is LoginState.Loading -> {
-            LoginFormContent(
-                formState = state.formState,
-                isLoading = true,
-                onAction = onAction,
-                modifier = modifier,
-            )
-        }
-    }
+    LoginFormContent(
+        state = state,
+        onAction = onAction,
+        modifier = modifier,
+    )
 }
 
 /**
@@ -169,11 +155,12 @@ private fun LoginContent(
  */
 @Composable
 private fun LoginFormContent(
-    formState: LoginFormState,
-    isLoading: Boolean,
+    state: LoginState,
     onAction: (LoginAction) -> Unit,
     modifier: Modifier,
 ) {
+    var wasEmailFocused by remember { mutableStateOf(false) }
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -192,23 +179,33 @@ private fun LoginFormContent(
         )
 
         PrimaryTextField(
-            value = formState.email,
+            value = state.email,
             onValueChange = { value ->
                 onAction(LoginAction.OnEmailChanged(value))
             },
             title = stringResource(R.string.email_title),
             placeholder = stringResource(R.string.email_placeholder),
-            error = formState.emailError,
+            error = state.emailError,
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Email,
             ),
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .onFocusChanged { focusState ->
+                    if (focusState.isFocused) {
+                        wasEmailFocused = true
+                    }
+
+                    if (wasEmailFocused && focusState.isFocused.not()) {
+                        onAction(LoginAction.OnEmailFocusLost)
+                    }
+                },
         )
 
         PasswordBlock(
-            password = formState.password,
-            isVisible = formState.isPasswordVisible,
-            error = formState.passwordError,
+            password = state.password,
+            isVisible = state.isPasswordVisible,
+            error = state.passwordError,
             onAction = onAction,
             modifier = Modifier.fillMaxWidth(),
         )
@@ -218,8 +215,8 @@ private fun LoginFormContent(
         )
 
         PrimaryButtonWithLoading(
-            enabled = formState.isSubmitEnabled && isLoading.not(),
-            loading = isLoading,
+            enabled = state.isSubmitEnabled && state.isSubmitting.not(),
+            loading = state.isSubmitting,
             onClick = {
                 onAction(LoginAction.OnLoginClick)
             },
@@ -258,6 +255,8 @@ private fun PasswordBlock(
     onAction: (LoginAction) -> Unit,
     modifier: Modifier,
 ) {
+    var wasPasswordFocused by remember { mutableStateOf(false) }
+
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -292,7 +291,17 @@ private fun PasswordBlock(
                     R.string.login_password_visibility_show
                 },
             ),
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .onFocusChanged { focusState ->
+                    if (focusState.isFocused) {
+                        wasPasswordFocused = true
+                    }
+
+                    if (wasPasswordFocused && focusState.isFocused.not()) {
+                        onAction(LoginAction.OnPasswordFocusLost)
+                    }
+                },
             onTrailingIconClick = {
                 onAction(LoginAction.OnTogglePasswordVisible)
             },
@@ -399,55 +408,50 @@ private fun BottomSignUpRow(
 class LoginStatePreviewProvider : PreviewParameterProvider<LoginState> {
 
     override val values: Sequence<LoginState> = sequenceOf(
-        LoginState.Initial(
-            formState = LoginFormState(
-                email = "",
-                password = "",
-                isPasswordVisible = false,
-                emailError = null,
-                passwordError = null,
-                isSubmitEnabled = false,
-            ),
+        LoginState(
+            email = "",
+            password = "",
+            isPasswordVisible = false,
+            emailError = null,
+            passwordError = null,
+            isSubmitEnabled = false,
+            isSubmitting = false,
         ),
-        LoginState.Editing(
-            formState = LoginFormState(
-                email = "user@example.com",
-                password = "qwerty",
-                isPasswordVisible = false,
-                emailError = null,
-                passwordError = null,
-                isSubmitEnabled = true,
-            ),
+        LoginState(
+            email = "user@example.com",
+            password = "qwerty",
+            isPasswordVisible = false,
+            emailError = null,
+            passwordError = null,
+            isSubmitEnabled = true,
+            isSubmitting = false,
         ),
-        LoginState.Loading(
-            formState = LoginFormState(
-                email = "user@example.com",
-                password = "qwerty",
-                isPasswordVisible = false,
-                emailError = null,
-                passwordError = null,
-                isSubmitEnabled = true,
-            ),
+        LoginState(
+            email = "user@example.com",
+            password = "qwerty",
+            isPasswordVisible = false,
+            emailError = null,
+            passwordError = null,
+            isSubmitEnabled = true,
+            isSubmitting = true,
         ),
-        LoginState.Validation(
-            formState = LoginFormState(
-                email = "invalid-email",
-                password = "",
-                isPasswordVisible = false,
-                emailError = TextOrResource.Resource(R.string.login_email_invalid),
-                passwordError = TextOrResource.Resource(R.string.login_password_empty),
-                isSubmitEnabled = false,
-            ),
+        LoginState(
+            email = "invalid-email",
+            password = "",
+            isPasswordVisible = false,
+            emailError = TextOrResource.Resource(R.string.login_email_invalid),
+            passwordError = TextOrResource.Resource(R.string.login_password_empty),
+            isSubmitEnabled = false,
+            isSubmitting = false,
         ),
-        LoginState.ServerError(
-            formState = LoginFormState(
-                email = "user@example.com",
-                password = "123456",
-                isPasswordVisible = false,
-                emailError = TextOrResource.Resource(R.string.login_invalid_credentials),
-                passwordError = null,
-                isSubmitEnabled = true,
-            ),
+        LoginState(
+            email = "user@example.com",
+            password = "123456",
+            isPasswordVisible = false,
+            emailError = TextOrResource.Resource(R.string.login_invalid_credentials),
+            passwordError = null,
+            isSubmitEnabled = true,
+            isSubmitting = false,
         ),
     )
 }
@@ -499,15 +503,14 @@ fun LoginScreenPreviewInitial() {
             height = StandardPreviewHeight,
             content = {
                 LoginScreen(
-                    state = LoginState.Initial(
-                        formState = LoginFormState(
-                            email = "",
-                            password = "",
-                            isPasswordVisible = false,
-                            emailError = null,
-                            passwordError = null,
-                            isSubmitEnabled = false,
-                        ),
+                    state = LoginState(
+                        email = "",
+                        password = "",
+                        isPasswordVisible = false,
+                        emailError = null,
+                        passwordError = null,
+                        isSubmitEnabled = false,
+                        isSubmitting = false,
                     ),
                     commands = MutableSharedFlow(),
                     onAction = {},
@@ -537,15 +540,14 @@ fun LoginScreenPreviewEditing() {
             height = StandardPreviewHeight,
             content = {
                 LoginScreen(
-                    state = LoginState.Editing(
-                        formState = LoginFormState(
-                            email = "admin@mail.ru",
-                            password = "qwerty",
-                            isPasswordVisible = false,
-                            emailError = null,
-                            passwordError = null,
-                            isSubmitEnabled = true,
-                        ),
+                    state = LoginState(
+                        email = "admin@mail.ru",
+                        password = "qwerty",
+                        isPasswordVisible = false,
+                        emailError = null,
+                        passwordError = null,
+                        isSubmitEnabled = true,
+                        isSubmitting = false,
                     ),
                     commands = MutableSharedFlow(),
                     onAction = {},
@@ -575,15 +577,14 @@ fun LoginScreenPreviewLoading() {
             height = StandardPreviewHeight,
             content = {
                 LoginScreen(
-                    state = LoginState.Loading(
-                        formState = LoginFormState(
-                            email = "admin@mail.ru",
-                            password = "qwerty",
-                            isPasswordVisible = false,
-                            emailError = null,
-                            passwordError = null,
-                            isSubmitEnabled = true,
-                        ),
+                    state = LoginState(
+                        email = "admin@mail.ru",
+                        password = "qwerty",
+                        isPasswordVisible = false,
+                        emailError = null,
+                        passwordError = null,
+                        isSubmitEnabled = true,
+                        isSubmitting = true,
                     ),
                     commands = MutableSharedFlow(),
                     onAction = {},
@@ -613,15 +614,14 @@ fun LoginScreenPreviewValidation() {
             height = StandardPreviewHeight,
             content = {
                 LoginScreen(
-                    state = LoginState.Validation(
-                        formState = LoginFormState(
-                            email = "admin@",
-                            password = "",
-                            isPasswordVisible = false,
-                            emailError = TextOrResource.Resource(R.string.login_email_invalid),
-                            passwordError = TextOrResource.Resource(R.string.login_password_empty),
-                            isSubmitEnabled = false,
-                        ),
+                    state = LoginState(
+                        email = "admin@",
+                        password = "",
+                        isPasswordVisible = false,
+                        emailError = TextOrResource.Resource(R.string.login_email_invalid),
+                        passwordError = TextOrResource.Resource(R.string.login_password_empty),
+                        isSubmitEnabled = false,
+                        isSubmitting = false,
                     ),
                     commands = MutableSharedFlow(),
                     onAction = {},
@@ -651,15 +651,14 @@ fun LoginScreenPreviewServerError() {
             height = StandardPreviewHeight,
             content = {
                 LoginScreen(
-                    state = LoginState.ServerError(
-                        formState = LoginFormState(
-                            email = "user@example.com",
-                            password = "123456",
-                            isPasswordVisible = false,
-                            emailError = TextOrResource.Resource(R.string.login_invalid_credentials),
-                            passwordError = null,
-                            isSubmitEnabled = true,
-                        ),
+                    state = LoginState(
+                        email = "user@example.com",
+                        password = "123456",
+                        isPasswordVisible = false,
+                        emailError = TextOrResource.Resource(R.string.login_invalid_credentials),
+                        passwordError = null,
+                        isSubmitEnabled = true,
+                        isSubmitting = false,
                     ),
                     commands = MutableSharedFlow(),
                     onAction = {},

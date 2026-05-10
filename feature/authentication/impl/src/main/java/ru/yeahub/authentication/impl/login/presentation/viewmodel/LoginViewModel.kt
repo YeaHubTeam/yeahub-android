@@ -19,17 +19,14 @@ import ru.yeahub.authentication.impl.login.domain.usecase.LoginUseCase
 import ru.yeahub.authentication.impl.login.presentation.mapper.LoginStateMapper
 import ru.yeahub.authentication.impl.login.presentation.model.LoginAction
 import ru.yeahub.authentication.impl.login.presentation.model.LoginCommand
-import ru.yeahub.authentication.impl.login.presentation.model.LoginFieldErrorState
-import ru.yeahub.authentication.impl.login.presentation.model.LoginRawState
 import ru.yeahub.authentication.impl.login.presentation.model.LoginState
 import ru.yeahub.core_utils.common.TextOrResource
-
 private const val UI_STATE_STOP_TIMEOUT = 5000L
 
 /**
  * ViewModel логина:
- * - обрабатывает LoginAction
- * - обновляет состояние формы
+ * - хранит пользовательский ввод
+ * - формирует экранный state через LoginStateMapper
  * - запускает авторизацию
  * - отправляет LoginCommand
  */
@@ -37,18 +34,16 @@ class LoginViewModel(
     private val loginUseCase: LoginUseCase,
     private val mapper: LoginStateMapper,
 ) : ViewModel() {
-
-    private val rawState = MutableStateFlow<LoginRawState>(
-        value = mapper.getInitialRawState(),
+    private val userInputState = MutableStateFlow(
+        value = mapper.getInitialUserInput(),
     )
-
     private val _commands = MutableSharedFlow<LoginCommand>()
     val commands = _commands.asSharedFlow()
 
-    val state: StateFlow<LoginState> = rawState
-        .map { currentRawState ->
+    val state: StateFlow<LoginState> = userInputState
+        .map { userInput ->
             mapper.mapToScreenState(
-                rawState = currentRawState,
+                userInput = userInput,
             )
         }
         .stateIn(
@@ -67,120 +62,56 @@ class LoginViewModel(
                 value = action.value,
             )
 
-            LoginAction.OnTogglePasswordVisible -> onTogglePasswordVisible()
-            LoginAction.OnForgotPasswordClick -> onForgotPasswordClick()
-            LoginAction.OnLoginClick -> onLoginClick()
-            LoginAction.OnSignUpClick -> onSignUpClick()
+            is LoginAction.OnEmailFocusLost -> onEmailFocusLost()
+            is LoginAction.OnPasswordFocusLost -> onPasswordFocusLost()
+            is LoginAction.OnTogglePasswordVisible -> onTogglePasswordVisible()
+            is LoginAction.OnForgotPasswordClick -> onForgotPasswordClick()
+            is LoginAction.OnLoginClick -> onLoginClick()
+            is LoginAction.OnSignUpClick -> onSignUpClick()
         }
     }
 
     private fun onEmailChanged(value: String) {
         val email = value.trim()
 
-        rawState.update { currentState ->
-            when (currentState) {
-                is LoginRawState.Initial -> LoginRawState.Editing(
-                    email = email,
-                    password = currentState.password,
-                    isPasswordVisible = currentState.isPasswordVisible,
-                )
-
-                is LoginRawState.Editing -> currentState.copy(
-                    email = email,
-                )
-
-                is LoginRawState.Validation -> currentState.copy(
-                    email = email,
-                )
-
-                is LoginRawState.Loading -> currentState.copy(
-                    email = email,
-                )
-
-                is LoginRawState.ServerError -> {
-                    val updatedState = currentState.copy(
-                        email = email,
-                        emailError = null,
-                    )
-
-                    if (updatedState.emailError == null && updatedState.passwordError == null) {
-                        LoginRawState.Validation(
-                            email = updatedState.email,
-                            password = updatedState.password,
-                            isPasswordVisible = updatedState.isPasswordVisible,
-                        )
-                    } else {
-                        updatedState
-                    }
-                }
-            }
+        userInputState.update { currentState ->
+            currentState.copy(
+                email = email,
+                emailServerError = null,
+            )
         }
     }
 
     private fun onPasswordChanged(value: String) {
-        rawState.update { currentState ->
-            when (currentState) {
-                is LoginRawState.Initial -> LoginRawState.Editing(
-                    email = currentState.email,
-                    password = value,
-                    isPasswordVisible = currentState.isPasswordVisible,
-                )
+        userInputState.update { currentState ->
+            currentState.copy(
+                password = value,
+                passwordServerError = null,
+            )
+        }
+    }
 
-                is LoginRawState.Editing -> currentState.copy(
-                    password = value,
-                )
+    private fun onEmailFocusLost() {
+        userInputState.update { currentState ->
+            currentState.copy(
+                isEmailTouched = true,
+            )
+        }
+    }
 
-                is LoginRawState.Validation -> currentState.copy(
-                    password = value,
-                )
-
-                is LoginRawState.Loading -> currentState.copy(
-                    password = value,
-                )
-
-                is LoginRawState.ServerError -> {
-                    val updatedState = currentState.copy(
-                        password = value,
-                        passwordError = null,
-                    )
-
-                    if (updatedState.emailError == null && updatedState.passwordError == null) {
-                        LoginRawState.Validation(
-                            email = updatedState.email,
-                            password = updatedState.password,
-                            isPasswordVisible = updatedState.isPasswordVisible,
-                        )
-                    } else {
-                        updatedState
-                    }
-                }
-            }
+    private fun onPasswordFocusLost() {
+        userInputState.update { currentState ->
+            currentState.copy(
+                isPasswordTouched = true,
+            )
         }
     }
 
     private fun onTogglePasswordVisible() {
-        rawState.update { currentState ->
-            when (currentState) {
-                is LoginRawState.Initial -> currentState.copy(
-                    isPasswordVisible = currentState.isPasswordVisible.not(),
-                )
-
-                is LoginRawState.Editing -> currentState.copy(
-                    isPasswordVisible = currentState.isPasswordVisible.not(),
-                )
-
-                is LoginRawState.Validation -> currentState.copy(
-                    isPasswordVisible = currentState.isPasswordVisible.not(),
-                )
-
-                is LoginRawState.Loading -> currentState.copy(
-                    isPasswordVisible = currentState.isPasswordVisible.not(),
-                )
-
-                is LoginRawState.ServerError -> currentState.copy(
-                    isPasswordVisible = currentState.isPasswordVisible.not(),
-                )
-            }
+        userInputState.update { currentState ->
+            currentState.copy(
+                isPasswordVisible = currentState.isPasswordVisible.not(),
+            )
         }
     }
 
@@ -197,44 +128,52 @@ class LoginViewModel(
     }
 
     private fun onLoginClick() {
-        if (rawState.value is LoginRawState.Loading) {
+        val currentUserInput = userInputState.value
+        if (currentUserInput.isSubmitting) {
             return
         }
-
-        val validationState = rawState.value.toValidationState()
-
-        rawState.value = validationState
-
-        val currentUiState = mapper.mapToScreenState(
-            rawState = validationState,
+        val validationUserInput = currentUserInput.copy(
+            isEmailTouched = true,
+            isPasswordTouched = true,
+            isValidationRequested = true,
         )
 
-        if (currentUiState.formState.isSubmitEnabled.not()) {
+        userInputState.value = validationUserInput
+
+        val currentUiState = mapper.mapToScreenState(
+            userInput = validationUserInput,
+        )
+        if (currentUiState.isSubmitEnabled.not()) {
             return
         }
-
-        rawState.value = validationState.toLoadingState()
-
+        userInputState.value = validationUserInput.copy(
+            isSubmitting = true,
+        )
         viewModelScope.launch {
             try {
-                val currentRawState = rawState.value
+                val submittingUserInput = userInputState.value
 
                 val loginModel = LoginModel(
-                    email = currentRawState.email,
-                    password = currentRawState.password,
+                    email = submittingUserInput.email,
+                    password = submittingUserInput.password,
                 )
-
                 loginUseCase.invoke(
                     loginModel = loginModel,
                 )
-
-                rawState.value = currentRawState.toValidationState()
-
+                userInputState.update { currentState ->
+                    currentState.copy(
+                        isSubmitting = false,
+                    )
+                }
                 sendCommand(
                     command = LoginCommand.NavigateToMain,
                 )
             } catch (exception: LoginException) {
-                rawState.value = rawState.value.toValidationState()
+                userInputState.update { currentState ->
+                    currentState.copy(
+                        isSubmitting = false,
+                    )
+                }
 
                 handleLoginException(
                     exception = exception,
@@ -245,23 +184,21 @@ class LoginViewModel(
 
     private fun handleLoginException(exception: LoginException) {
         when (exception.error) {
-            LoginError.InvalidCredentials -> {
-                rawState.update { currentState ->
-                    LoginRawState.ServerError(
-                        email = currentState.email,
-                        password = currentState.password,
-                        isPasswordVisible = currentState.isPasswordVisible,
-                        emailError = LoginFieldErrorState(
-                            message = TextOrResource.Resource(
-                                R.string.login_invalid_credentials,
-                            ),
+            is LoginError.InvalidCredentials -> {
+                userInputState.update { currentState ->
+                    currentState.copy(
+                        isEmailTouched = true,
+                        isPasswordTouched = true,
+                        isValidationRequested = true,
+                        emailServerError = TextOrResource.Resource(
+                            R.string.login_invalid_credentials,
                         ),
-                        passwordError = null,
+                        passwordServerError = null,
                     )
                 }
             }
 
-            LoginError.UserNotFound -> {
+            is LoginError.UserNotFound -> {
                 sendCommand(
                     command = LoginCommand.ShowSnackbar(
                         message = TextOrResource.Resource(
@@ -271,7 +208,7 @@ class LoginViewModel(
                 )
             }
 
-            LoginError.Network -> {
+            is LoginError.Network -> {
                 sendCommand(
                     command = LoginCommand.ShowSnackbar(
                         message = TextOrResource.Resource(
@@ -281,7 +218,7 @@ class LoginViewModel(
                 )
             }
 
-            LoginError.Server -> {
+            is LoginError.Server -> {
                 sendCommand(
                     command = LoginCommand.ShowSnackbar(
                         message = TextOrResource.Resource(
@@ -291,7 +228,7 @@ class LoginViewModel(
                 )
             }
 
-            LoginError.Unknown -> {
+            is LoginError.Unknown -> {
                 sendCommand(
                     command = LoginCommand.ShowSnackbar(
                         message = TextOrResource.Resource(
@@ -307,43 +244,5 @@ class LoginViewModel(
         viewModelScope.launch {
             _commands.emit(command)
         }
-    }
-
-    private fun LoginRawState.toValidationState(): LoginRawState.Validation {
-        return when (this) {
-            is LoginRawState.Initial -> LoginRawState.Validation(
-                email = email,
-                password = password,
-                isPasswordVisible = isPasswordVisible,
-            )
-
-            is LoginRawState.Editing -> LoginRawState.Validation(
-                email = email,
-                password = password,
-                isPasswordVisible = isPasswordVisible,
-            )
-
-            is LoginRawState.Validation -> this
-
-            is LoginRawState.Loading -> LoginRawState.Validation(
-                email = email,
-                password = password,
-                isPasswordVisible = isPasswordVisible,
-            )
-
-            is LoginRawState.ServerError -> LoginRawState.Validation(
-                email = email,
-                password = password,
-                isPasswordVisible = isPasswordVisible,
-            )
-        }
-    }
-
-    private fun LoginRawState.Validation.toLoadingState(): LoginRawState.Loading {
-        return LoginRawState.Loading(
-            email = email,
-            password = password,
-            isPasswordVisible = isPasswordVisible,
-        )
     }
 }
