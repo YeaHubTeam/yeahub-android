@@ -4,7 +4,6 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
-import ru.yeahub.core_utils.common.TextOrResource
 import ru.yeahub.example_home.impl.presentation.view.QuestionsMainScreen
 import ru.yeahub.navigation_api.FeatureApi
 import ru.yeahub.navigation_api.FeatureRoute
@@ -112,14 +111,12 @@ class QuestionMainFeatureImpl : FeatureApi {
         pathManager: NavigationPathManager,
         navController: NavHostController,
     ) {
-        val titleTopAppBarResId = TextOrResource.Resource(R.string.create_quiz_top_bar_header_text)
-
         // Сбрасываем текущий путь на корневую фичу
         pathManager.setCurrentPath(FeatureRoute.InterviewTrainerFeature.FEATURE_NAME)
 
         val createQuizPath = pathManager.createChildPath(
             featureName = FeatureRoute.InterviewTrainerFeature.CREATE_QUIZ_SCREEN_NAME
-        ) + "/" + titleTopAppBarResId.resource
+        )
 
         Timber.d("HomeFeatureImpl handleInterviewTrainerNavigation: Navigating to: $createQuizPath")
 
