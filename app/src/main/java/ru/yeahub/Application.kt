@@ -7,6 +7,7 @@ import ru.yeahub.detail_question.impl.di.detailQuestionFeatureModule
 import ru.yeahub.example_details.impl.detailsFeatureModule
 import ru.yeahub.example_home.impl.data.di.questionsMainFeatureModule
 import ru.yeahub.example_profile.impl.profileFeatureModule
+import ru.yeahub.feature_toggle_impl.di.featureToggleModule
 import ru.yeahub.navigation_impl.navigationPathModule
 import ru.yeahub.network_impl.networkModule
 import ru.yeahub.public_collections.impl.di.CollectionsFeatureModule
@@ -44,6 +45,7 @@ class Application : Application() {
             printLogger()              // включаем лог Koin
             modules(
                 networkModule,
+                featureToggleModule,
                 navigationPathModule,
                 questionsModule,
                 profileFeatureModule,

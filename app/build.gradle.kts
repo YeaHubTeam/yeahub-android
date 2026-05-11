@@ -62,6 +62,7 @@ dependencies {
     implementation(project(":core:navigation-api"))
     implementation(project(":core:ui"))
     implementation(project(":core:navigation-impl"))
+    implementation(project(":core:feature-toggle-impl"))
 
     //Timber
     implementation(libs.timber)

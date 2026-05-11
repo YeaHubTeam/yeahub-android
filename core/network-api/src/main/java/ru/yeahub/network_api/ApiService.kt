@@ -1,6 +1,7 @@
 package ru.yeahub.network_api
 
 import ru.yeahub.network_api.models.GetCollectionsResponse
+import ru.yeahub.network_api.models.GetFeatureFlagsResponse
 import ru.yeahub.network_api.models.GetPublicQuestionResponse
 import ru.yeahub.network_api.models.GetPublicQuestionsResponse
 import ru.yeahub.network_api.models.GetSkillsResponse
@@ -8,6 +9,15 @@ import ru.yeahub.network_api.models.GetSpecializationResponse
 import ru.yeahub.network_api.models.GetSpecializationsResponse
 
 interface ApiService {
+
+    suspend fun getFeatureFlags(
+        page: Int,
+        limit: Int,
+        search: String?,
+        enabled: Boolean?,
+        roleIds: List<Long>?,
+        clientType: String
+    ): GetFeatureFlagsResponse
 
     suspend fun getQuestions(
         page: Int,
