@@ -112,7 +112,7 @@ internal class ProfileEditViewModel(
             }
         }.stateIn(
             scope = viewModelScopeSafe,
-            started = SharingStarted.WhileSubscribed(TIME_TO_CLEAN_UP_RESOURCES),
+            started = SharingStarted.Lazily,
             initialValue = ProfileEditState.Loading,
         )
 
@@ -285,8 +285,6 @@ internal class ProfileEditViewModel(
 private fun Throwable.throwIfCancellation() {
     if (this is CancellationException) throw this
 }
-
-private const val TIME_TO_CLEAN_UP_RESOURCES = 5_000L
 
 internal data class OperationError(
     val throwable: Throwable,
