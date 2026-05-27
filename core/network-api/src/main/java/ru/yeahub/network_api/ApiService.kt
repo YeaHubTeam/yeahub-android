@@ -7,8 +7,20 @@ import ru.yeahub.network_api.models.GetSkillsResponse
 import ru.yeahub.network_api.models.GetSpecializationResponse
 import ru.yeahub.network_api.models.GetSpecializationsResponse
 import ru.yeahub.network_api.models.RegistrationRequestDto
+import ru.yeahub.network_api.models.AuthUserDto
+import ru.yeahub.network_api.models.LoginRequestDto
+import ru.yeahub.network_api.models.LoginResponseDto
 
 interface ApiService {
+
+    /**
+     * API авторизации:
+     * - login - выполняет вход по email и паролю
+     * - getProfile - получает профиль авторизованного пользователя
+     */
+    suspend fun login(request: LoginRequestDto): LoginResponseDto
+
+    suspend fun getProfile(): AuthUserDto
 
     suspend fun register(request: RegistrationRequestDto)
 

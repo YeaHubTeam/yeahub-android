@@ -41,9 +41,6 @@
             <option value="$PROJECT_DIR$/feature/example-questions" />
             <option value="$PROJECT_DIR$/feature/example-questions/api" />
             <option value="$PROJECT_DIR$/feature/example-questions/impl" />
-            <option value="$PROJECT_DIR$/feature/forgot-password" />
-            <option value="$PROJECT_DIR$/feature/forgot-password/api" />
-            <option value="$PROJECT_DIR$/feature/forgot-password/impl" />
             <option value="$PROJECT_DIR$/feature/public-collections" />
             <option value="$PROJECT_DIR$/feature/public-collections/api" />
             <option value="$PROJECT_DIR$/feature/public-collections/impl" />
