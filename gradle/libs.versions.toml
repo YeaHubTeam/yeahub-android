@@ -63,6 +63,9 @@ compose-markdown = { group = "com.github.jeziellago", name = "compose-markdown",
 retrofit-core = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
 retrofit-gsonConverter = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit" }
 
+#GSON
+gson = { module = "com.google.code.gson:gson", version = "2.14.0" }
+
 #KOIN
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }

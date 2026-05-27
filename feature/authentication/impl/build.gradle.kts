@@ -75,6 +75,7 @@ dependencies {
 
     // Retrofit (for HttpException)
     implementation(libs.retrofit.core)
+    implementation(libs.gson)
 
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
