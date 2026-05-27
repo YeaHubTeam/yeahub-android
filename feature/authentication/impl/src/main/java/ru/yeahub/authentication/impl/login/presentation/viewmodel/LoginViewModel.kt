@@ -21,6 +21,7 @@ import ru.yeahub.authentication.impl.login.presentation.model.LoginAction
 import ru.yeahub.authentication.impl.login.presentation.model.LoginCommand
 import ru.yeahub.authentication.impl.login.presentation.model.LoginState
 import ru.yeahub.core_utils.common.TextOrResource
+
 private const val UI_STATE_STOP_TIMEOUT = 5000L
 
 /**
@@ -228,7 +229,7 @@ class LoginViewModel(
                 )
             }
 
-            is LoginError.Unknown -> {
+            else -> {
                 sendCommand(
                     command = LoginCommand.ShowSnackbar(
                         message = TextOrResource.Resource(
