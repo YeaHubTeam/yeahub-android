@@ -3,6 +3,7 @@ package ru.yeahub
 import android.app.Application
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
+import ru.yeahub.datastore_api.di.datastoreModule
 import ru.yeahub.detail_question.impl.di.detailQuestionFeatureModule
 import ru.yeahub.example_details.impl.detailsFeatureModule
 import ru.yeahub.example_home.impl.data.di.questionsMainFeatureModule
@@ -45,6 +46,7 @@ class Application : Application() {
             modules(
                 networkModule,
                 navigationPathModule,
+                datastoreModule,
                 questionsModule,
                 profileFeatureModule,
                 questionsMainFeatureModule,

@@ -12,7 +12,9 @@ import ru.yeahub.authentication.impl.login.data.repository.remote.LoginRemoteDat
 import ru.yeahub.authentication.impl.login.data.repository.LoginRepositoryImpl
 import ru.yeahub.authentication.impl.login.data.repository.remote.LoginRemoteDataSourceImpl
 import ru.yeahub.authentication.impl.login.domain.repository.LoginRepositoryApi
+import ru.yeahub.authentication.impl.login.domain.usecase.CheckAuthStateUseCase
 import ru.yeahub.authentication.impl.login.domain.usecase.LoginUseCase
+import ru.yeahub.authentication.impl.login.domain.usecase.LogoutUseCase
 import ru.yeahub.authentication.impl.login.presentation.mapper.LoginStateMapper
 import ru.yeahub.authentication.impl.login.presentation.viewmodel.LoginViewModel
 
@@ -38,7 +40,9 @@ val loginFeatureModule = module {
         bind<LoginRepositoryApi>()
     }
 
+    factoryOf(::CheckAuthStateUseCase)
     factoryOf(::LoginUseCase)
+    factoryOf(::LogoutUseCase)
 
     singleOf(::LoginStateMapper)
     viewModelOf(::LoginViewModel)
