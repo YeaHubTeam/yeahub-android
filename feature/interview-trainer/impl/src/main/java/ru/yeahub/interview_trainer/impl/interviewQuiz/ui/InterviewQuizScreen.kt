@@ -366,7 +366,7 @@ private fun QuestionCard(
                 }
             } else {
                 SecondaryButton(
-                    onClick = {},
+                    onClick = onResultClick,
                     modifier = Modifier
                         .width(170.dp)
                         .height(48.dp)

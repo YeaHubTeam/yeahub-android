@@ -56,7 +56,7 @@ open class InterviewQuizViewModel(
             selectedAnswer = userInput.selectedAnswer
         )
     }.catch { e ->
-        screenMapper.getScreenState(e)
+        emit(screenMapper.getScreenState(e))
     }.stateIn(
         scope = viewModelScopeSafe,
         started = SharingStarted.WhileSubscribed(TIME_TO_CLEAN_UP_RESOURCES),

@@ -5,6 +5,6 @@ data class GetNewMockQuizResponse(
     val startDate: String,
     val fullCount: Int,
     val skills: List<String>,
-    val response: List<QuestionAnswerDto>,
+    val response: QuizAnswersWrapperDto,
     val questions: List<GetQuestionResponse>
 )

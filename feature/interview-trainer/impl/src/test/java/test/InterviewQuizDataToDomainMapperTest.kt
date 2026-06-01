@@ -9,6 +9,7 @@ import ru.yeahub.interview_trainer.impl.interviewQuiz.domain.DomainQuestionsList
 import ru.yeahub.network_api.models.GetNewMockQuizResponse
 import ru.yeahub.network_api.models.GetQuestionResponse
 import ru.yeahub.network_api.models.NestedUserReferenceDto
+import ru.yeahub.network_api.models.QuizAnswersWrapperDto
 import ru.yeahub.test.TestArgumentsProvider
 
 class InterviewQuizDataToDomainMapperTest {
@@ -87,7 +88,7 @@ class InterviewQuizDataToDomainMapperTest {
             startDate = "01.01.2026",
             fullCount = 2,
             skills = emptyList(),
-            response = emptyList(),
+            response = QuizAnswersWrapperDto(emptyList()),
             questions = listOf(defaultQuestionResponse, defaultQuestionResponseWithLongAnswer),
         )
 
