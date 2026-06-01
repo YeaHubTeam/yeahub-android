@@ -18,7 +18,6 @@ import ru.yeahub.core_utils.BaseViewModel
 import ru.yeahub.interview_trainer.impl.interviewQuiz.domain.GetQuestionsListUseCase
 import ru.yeahub.interview_trainer.impl.interviewQuiz.domain.QuestionsRequest
 import ru.yeahub.interview_trainer.impl.interviewQuiz.presentation.InterviewQuizState.Loaded.QuizAnswer
-import timber.log.Timber
 
 open class InterviewQuizViewModel(
     savedStateHandle: SavedStateHandle,
