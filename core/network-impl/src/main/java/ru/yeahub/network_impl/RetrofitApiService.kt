@@ -63,7 +63,7 @@ interface RetrofitApiService : ApiService {
         @Query("isFree") isFree: Boolean
     ): GetCollectionsResponse
 
-    @GET("/interview-preparation/quizzes/mock/new")
+    @GET("interview-preparation/quizzes/mock/new")
     override suspend fun getQuizMockQuestions(
         @Query("skills") skills: List<String>?,
         @Query("complexity") complexity: List<Int>?,
