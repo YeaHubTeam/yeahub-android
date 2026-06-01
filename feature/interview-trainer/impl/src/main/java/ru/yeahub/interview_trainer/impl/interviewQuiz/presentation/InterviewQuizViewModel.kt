@@ -57,7 +57,6 @@ open class InterviewQuizViewModel(
             selectedAnswer = userInput.selectedAnswer
         )
     }.catch { e ->
-        Timber.d("$e")
         emit(screenMapper.getScreenState(e))
     }.stateIn(
         scope = viewModelScopeSafe,
