@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -25,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.valentinilk.shimmer.shimmer
 import ru.yeahub.core_ui.component.SecondaryButton
@@ -51,7 +53,7 @@ fun CreateQuizLoading(
 
             PlaceHolderBlock()
 
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(Modifier.weight(1f))
 
             DisabledStartQuizButton()
         }
@@ -59,9 +61,7 @@ fun CreateQuizLoading(
 }
 
 @Composable
-private fun PlaceHolderBlock(
-    modifier: Modifier = Modifier,
-) {
+private fun PlaceHolderBlock(modifier: Modifier = Modifier) {
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -76,15 +76,34 @@ private fun PlaceHolderBlock(
                 .background(Color.LightGray, shape = RoundedCornerShape(4.dp))
         )
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(Modifier.height(24.dp))
 
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(640.dp)
-                .background(Color.LightGray, shape = RoundedCornerShape(4.dp))
-        )
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(
+                space = 12.dp,
+                alignment = Alignment.Start
+            ),
+            verticalArrangement = Arrangement.spacedBy(
+                space = 12.dp,
+                alignment = Alignment.Top
+            ),
+        ) {
+            repeat(12) {
+                LoadingSpecializationButton(width = 240.dp)
+            }
+        }
+        Spacer(Modifier.height(24.dp))
     }
+}
+
+@Composable
+private fun LoadingSpecializationButton(width: Dp) {
+    Box(
+        modifier = Modifier
+            .width(width)
+            .height(40.dp)
+            .background(Color.LightGray, shape = RoundedCornerShape(24.dp))
+    )
 }
 
 @Composable

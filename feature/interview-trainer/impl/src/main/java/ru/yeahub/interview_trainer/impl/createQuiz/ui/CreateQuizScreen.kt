@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -22,33 +23,28 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.State
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import org.koin.androidx.compose.koinViewModel
+import org.koin.androidx.viewmodel.dsl.viewModel
 import ru.yeahub.core_ui.component.ErrorScreen
 import ru.yeahub.core_ui.component.PrimaryButton
 import ru.yeahub.core_ui.component.SkillButton
 import ru.yeahub.core_ui.component.TopAppBarWithBottomBorder
-import ru.yeahub.core_ui.example.dynamicPreview.ProvidePreviewCompositionLocals
+import ru.yeahub.core_ui.example.dynamicPreview.DynamicPreview
+import ru.yeahub.core_ui.example.dynamicPreview.ProvideDynamicPreview
 import ru.yeahub.core_ui.example.staticPreview.StaticPreview
 import ru.yeahub.core_ui.theme.LocalAppTypography
 import ru.yeahub.core_ui.theme.colors
@@ -69,13 +65,10 @@ import ru.yeahub.interview_trainer.impl.createQuiz.presentation.CreateQuizViewMo
 private val FIGMA_VERTICAL_FIRST_AND_LAST_ELEMENT_PADDING = 24.dp
 
 @Composable
-fun CreateQuizScreen(
-    onResult: (CreateQuizResult) -> Unit,
-    titleTopAppBarResId: Int,
-) {
+fun CreateQuizScreen(onResult: (CreateQuizResult) -> Unit) {
     val viewModel: CreateQuizViewModel = koinViewModel()
 
-    val screenState by viewModel.screenState.collectAsStateWithLifecycle()
+    val screenState = viewModel.screenState.collectAsStateWithLifecycle()
 
     HandleCommand(
         commandFlow = viewModel.commands,
@@ -85,13 +78,13 @@ fun CreateQuizScreen(
     ScreenUI(
         state = screenState,
         onEvent = viewModel::onEvent,
-        titleTopAppBar = TextOrResource.Resource(titleTopAppBarResId)
+        titleTopAppBar = screenState.value.titleTopAppBar
     )
 }
 
 @Composable
 private fun ScreenUI(
-    state: CreateQuizState,
+    state: State<CreateQuizState>,
     onEvent: (CreateQuizEvent) -> Unit,
     titleTopAppBar: TextOrResource,
 ) {
@@ -104,11 +97,11 @@ private fun ScreenUI(
             )
         }
     ) { paddingValues ->
-        when (state) {
+        when (val currentState = state.value) {
             CreateQuizState.Loading -> CreateQuizLoading(paddingValues = paddingValues)
 
             is CreateQuizState.Error -> ErrorScreen(
-                error = state.throwable.localizedMessage,
+                error = currentState.throwable.localizedMessage,
                 errorText = TextOrResource.Resource(R.string.error_screen_text),
                 titleText = TextOrResource.Resource(R.string.title_error_screen_text),
                 backText = TextOrResource.Resource(R.string.back_error_screen_text),
@@ -117,9 +110,9 @@ private fun ScreenUI(
             )
 
             is CreateQuizState.Loaded -> BaseCreateQuizScreen(
-                specializations = state.specializations,
-                selectedSpecializationId = state.selectedSpecializationId,
-                questionsCount = state.questionsCount,
+                specializations = currentState.specializations,
+                selectedSpecializationId = currentState.selectedSpecializationId,
+                questionsCount = currentState.questionsCount,
                 onSpecializationClick = { id ->
                     onEvent(CreateQuizEvent.OnSpecializationClick(specializationId = id))
                 },
@@ -246,11 +239,8 @@ private fun ChooseSpecializationBlock(
         ) {
             specializations.forEach { specialization ->
                 SkillButton(
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
-                    enabled = true,
-                    activeButton = specialization.id == selectedSpecializationId,
-                    fillButton = true,
                     text = specialization.title,
+                    selected = specialization.id == selectedSpecializationId,
                     onClick = { onSpecializationClick(specialization.id) },
                 )
             }
@@ -286,8 +276,8 @@ private fun ChooseQuestionsCountBlock(
 private fun QuestionCounter(
     onPlusQuestionCountClick: (count: Int) -> Unit,
     onMinusQuestionCountClick: (count: Int) -> Unit,
-    modifier: Modifier = Modifier,
     count: Int,
+    modifier: Modifier = Modifier,
 ) {
     Surface(
         modifier = modifier,
@@ -315,7 +305,8 @@ private fun QuestionCounter(
                 text = count.toString(),
                 style = LocalAppTypography.current.body5Accent,
                 textAlign = TextAlign.Center,
-                color = colors.black600
+                color = colors.black600,
+                modifier = Modifier.widthIn(min = 32.dp)
             )
 
             IconButton(
@@ -413,87 +404,56 @@ class CreateQuizScreenStateParamProvider : PreviewParameterProvider<CreateQuizSt
             questionsCount = 1
         ),
         CreateQuizState.Loading,
-        CreateQuizState.Error(
-            Throwable("Не удалось загрузить данные")
-        )
+        CreateQuizState.Error(Throwable("Не удалось загрузить данные"))
     )
 }
 
 @StaticPreview
 @Composable
-internal fun CreateQuizScreenPreview(
+internal fun CreateQuizScreenStaticPreview(
     @PreviewParameter(CreateQuizScreenStateParamProvider::class)
     state: CreateQuizState,
 ) {
     ScreenUI(
-        state = state,
+        state = rememberUpdatedState(state),
         onEvent = { },
         titleTopAppBar = TextOrResource.Resource(R.string.create_quiz_top_bar_header_text),
     )
 }
 
-@Preview(showBackground = true)
+@DynamicPreview
 @Composable
-internal fun DynamicPreviewUI() {
-    val mockDomainList = testSpecializations.map { voSpec ->
+internal fun CreateQuizScreenDynamicPreview() {
+    val previewDomainList = testSpecializations.map { voSpec ->
         DomainSpecialization(id = voSpec.id, title = voSpec.title)
     }
 
     val mockUseCase = object : GetSpecializationsListUseCase {
         override suspend fun invoke(
             request: SpecializationsRequest,
-        ): DomainSpecializationListResponse {
-            delay(RESPONSE_DELAY)
-            return DomainSpecializationListResponse(
-                total = mockDomainList.size.toLong(),
-                data = mockDomainList
-            )
-        }
-    }
-
-    val mockViewModel = viewModelCreator<CreateQuizViewModel> {
-        CreateQuizViewModel(mockUseCase, CreateQuizScreenMapper())
-    }
-
-    val mockState by mockViewModel.screenState.collectAsState()
-
-    LaunchedEffect(Unit) {
-        delay(RESPONSE_DELAY)
-        //Изначальное кол-во == 1
-        mockViewModel.onEvent(CreateQuizEvent.OnPlusQuestionClick(1))
-        delay(RESPONSE_DELAY)
-        // должно быть 2
-        mockViewModel.onEvent(CreateQuizEvent.OnPlusQuestionClick(2))
-        delay(RESPONSE_DELAY)
-        // должно быть 3
-        mockViewModel.onEvent(CreateQuizEvent.OnMinusQuestionClick(3))
-        delay(RESPONSE_DELAY)
-        // должно быть снова 2
-        mockViewModel.onEvent(CreateQuizEvent.OnSpecializationClick(27))
-        // С изначально выбранного Frontend Dev должно быть выбрано Android Dev
-    }
-
-    ProvidePreviewCompositionLocals {
-        ScreenUI(
-            state = mockState,
-            onEvent = mockViewModel::onEvent,
-            titleTopAppBar = TextOrResource.Resource(R.string.create_quiz_top_bar_header_text)
+        ): DomainSpecializationListResponse = DomainSpecializationListResponse(
+            total = previewDomainList.size.toLong(),
+            data = previewDomainList
         )
     }
+
+    ProvideDynamicPreview(
+        moduleDeclaration = {
+            single<GetSpecializationsListUseCase> { mockUseCase }
+            single { CreateQuizScreenMapper() }
+            viewModel {
+                CreateQuizViewModel(getSpecializationsListUseCase = get(), screenMapper = get())
+            }
+        },
+        content = {
+            val previewViewModel = koinViewModel<CreateQuizViewModel>()
+            val previewState = previewViewModel.screenState.collectAsStateWithLifecycle()
+
+            ScreenUI(
+                state = previewState,
+                onEvent = previewViewModel::onEvent,
+                titleTopAppBar = previewState.value.titleTopAppBar
+            )
+        }
+    )
 }
-
-typealias ViewModelCreator = () -> ViewModel?
-
-class ViewModelFactory(
-    private val viewModelCreator: ViewModelCreator = { null },
-) : ViewModelProvider.Factory {
-
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel> create(modelClass: Class<T>): T = viewModelCreator() as T
-}
-
-@Composable
-inline fun <reified VM : ViewModel> viewModelCreator(noinline creator: ViewModelCreator): VM =
-    viewModel(factory = remember { ViewModelFactory(creator) })
-
-private const val RESPONSE_DELAY = 1500L
