@@ -11,8 +11,9 @@ fun getBottomNavItems(): List<BottomNavigationItem> = listOf(
     BottomNavigationItem.Questions
 )
 
-fun getSelectedRoute(currentRoute: String?, navItems: List<BottomNavigationItem>): String = when {
-    currentRoute == null -> navItems[1].route
+fun getSelectedRoute(currentRoute: String?, navItems: List<BottomNavigationItem>): String? = when {
+    navItems.isEmpty() -> null
+    currentRoute == null -> navItems.first().route
     navItems.any { it.route == currentRoute } -> currentRoute
     else -> navItems.find { currentRoute.startsWith(it.route) }?.route ?: navItems.last().route
 }
