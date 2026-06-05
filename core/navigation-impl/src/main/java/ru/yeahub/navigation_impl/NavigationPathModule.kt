@@ -14,7 +14,13 @@ val navigationPathModule = module {
     singleOf(::NavigationPathManagerImpl) bind NavigationPathManager::class
     
     // Сервис для обработки уведомлений
-    singleOf(::NotificationNavigationService)
+    single {
+        NotificationNavigationService(
+            pathManager = get(),
+            featureAvailabilityService = get(),
+            featureApis = getAll()
+        )
+    }
     
     // Универсальный сервис уведомлений
     single<NotificationService> { NotificationServiceImpl(get()) }

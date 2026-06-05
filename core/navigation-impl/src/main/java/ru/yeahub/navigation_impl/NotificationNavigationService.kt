@@ -2,7 +2,9 @@ package ru.yeahub.navigation_impl
 
 import android.content.Intent
 import androidx.navigation.NavHostController
+import ru.yeahub.feature_toggle_api.FeatureAvailabilityService
 import ru.yeahub.navigation_api.DeepLinkConfig
+import ru.yeahub.navigation_api.FeatureApi
 import ru.yeahub.navigation_api.NavigationPathManager
 import timber.log.Timber
 
@@ -15,7 +17,9 @@ import timber.log.Timber
  * - Правильную настройку back stack для корректной навигации назад
  */
 class NotificationNavigationService(
-    private val pathManager: NavigationPathManager
+    private val pathManager: NavigationPathManager,
+    private val featureAvailabilityService: FeatureAvailabilityService,
+    private val featureApis: Collection<FeatureApi>
 ) {
     
     /**
@@ -209,8 +213,29 @@ class NotificationNavigationService(
      * Общий метод для навигации с direct path.
      */
     private fun navigateWithDirectPath(directPath: String, navController: NavHostController) {
+        val disabledFeatureNames = collectDisabledFeatureNames(featureApis, featureAvailabilityService)
+        val targetRoute = resolveDeepLinkRoute(
+            directPath = directPath,
+            disabledFeatureNames = disabledFeatureNames,
+            fallbackCandidates = getBottomNavItems().map { it.route }
+        )
+
+        if (targetRoute == null) {
+            Timber.w("Deep link to disabled feature blocked, no fallback: '$directPath'")
+            return
+        }
+
+        if (targetRoute != directPath) {
+            Timber.w("Deep link to disabled feature blocked: '$directPath' -> '$targetRoute'")
+            navController.navigate(targetRoute) {
+                popUpTo(navController.graph.startDestinationId) { inclusive = false }
+                launchSingleTop = true
+            }
+            return
+        }
+
         pathManager.prepareForDirectNavigation(directPath)
-        
+
         navController.navigate(directPath) {
             popUpTo(navController.graph.startDestinationId) {
                 inclusive = false
