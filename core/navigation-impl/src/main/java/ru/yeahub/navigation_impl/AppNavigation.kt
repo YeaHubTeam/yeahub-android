@@ -16,6 +16,8 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -33,6 +35,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import org.koin.compose.getKoin
 import ru.yeahub.core_ui.theme.Theme
+import ru.yeahub.feature_toggle_api.FeatureAvailabilityService
 import ru.yeahub.navigation_api.FeatureApi
 import ru.yeahub.navigation_api.NavigationPathManager
 import ru.yeahub.navigation_impl.model.BottomNavigationItem
@@ -66,21 +69,43 @@ fun AppNavigation(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
     pathManager: NavigationPathManager = getKoin().get<NavigationPathManager>(),
+    featureAvailabilityService: FeatureAvailabilityService = getKoin().get<FeatureAvailabilityService>(),
 ) {
     val features: Set<FeatureApi> = getKoin().getAll<FeatureApi>().toSet()
     Timber.d("AppNavigation onCreate: Loaded features: ${features.map { it.javaClass.simpleName }}")
     val navItems = getBottomNavItems()
-    
+
     features.forEach { feature ->
         feature.initialize(pathManager)
     }
 
+    val featureFlagsSnapshot by featureAvailabilityService.featureFlagsSnapshot.collectAsState()
+    val disabledFeatureNames = remember(featureFlagsSnapshot) {
+        collectDisabledFeatureNames(features, featureAvailabilityService)
+    }
+
+    val visibleNavItems = remember(disabledFeatureNames) {
+        navItems.filter { isRouteEnabled(it.route, disabledFeatureNames) }
+    }
+
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
-    val selectedRoute = getSelectedRoute(currentRoute, navItems)
-    
+    val selectedRoute = getSelectedRoute(currentRoute, visibleNavItems)
+
     currentRoute?.let { route ->
         pathManager.setCurrentPath(route)
+    }
+
+    LaunchedEffect(disabledFeatureNames, currentRoute) {
+        if (currentRoute != null && !isRouteEnabled(currentRoute, disabledFeatureNames)) {
+            val fallbackRoute = firstAvailableRoute(navItems.map { it.route }, disabledFeatureNames)
+            if (fallbackRoute != null && fallbackRoute != currentRoute) {
+                navController.navigate(fallbackRoute) {
+                    launchSingleTop = true
+                    popUpTo(navController.graph.startDestinationId) { inclusive = false }
+                }
+            }
+        }
     }
 
     Scaffold(
@@ -91,7 +116,7 @@ fun AppNavigation(
                     .height(100.dp),
                 containerColor = Theme.colors.purple700
             ) {
-                navItems.forEach { item ->
+                visibleNavItems.forEach { item ->
                     val isSelected by remember(selectedRoute) {
                         derivedStateOf { selectedRoute == item.route }
                     }
@@ -139,7 +164,6 @@ fun AppNavigation(
                         },
                         alwaysShowLabel = false
                     )
-                    Timber.d("NavSelected", "$currentRoute")
                 }
             }
         }
@@ -251,7 +275,7 @@ private fun registerChildFeatures(
         
         targetRootFeatures.forEach { rootFeature ->
             pathManager.setCurrentPath(rootFeature.getFeatureName())
-            
+
             // Регистрируем дочернюю фичу
             childFeature.registerGraph(
                 navGraphBuilder = navGraphBuilder,
