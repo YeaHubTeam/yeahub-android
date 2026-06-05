@@ -36,6 +36,8 @@ android {
 }
 
 dependencies {
+    api(project(":core:feature-toggle-api"))
+
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
