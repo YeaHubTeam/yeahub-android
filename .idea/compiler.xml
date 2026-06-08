@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
-    <bytecodeTargetLevel target="11" />
+    <bytecodeTargetLevel target="11">
+      <module name="yeahub-android.YeaHub.detekt-rules" target="17" />
+      <module name="yeahub-android.YeaHub.detekt-rules.main" target="21" />
+      <module name="yeahub-android.YeaHub.detekt-rules.main~1" target="21" />
+      <module name="yeahub-android.YeaHub.detekt-rules.test" target="21" />
+      <module name="yeahub-android.YeaHub.detekt-rules.test~1" target="21" />
+      <module name="YeaHub.feature.profile" target="21" />
+      <module name="YeaHub.feature.profile.api" target="21" />
+      <module name="YeaHub.feature.profile.impl" target="21" />
+    </bytecodeTargetLevel>
   </component>
 </project>

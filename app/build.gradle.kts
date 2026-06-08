@@ -96,6 +96,7 @@ dependencies {
     implementation(project(":core:network-impl"))
 
     detektPlugins(libs.detekt.formatting)
+    detektPlugins(project(":detekt-rules"))
 
     implementation(project(":feature:example-home:api"))
     implementation(project(":feature:example-profile:api"))
