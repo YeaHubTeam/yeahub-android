@@ -3,14 +3,16 @@ package ru.yeahub.profile_edit.impl.data
 import android.util.Base64
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.yeahub.network_api.ApiService
 import ru.yeahub.network_api.models.GetProfileForUserResponse
 import ru.yeahub.network_api.models.GetSkillResponse
 import ru.yeahub.network_api.models.GetSpecializationResponse
 import ru.yeahub.network_api.models.GetUserProfileResponse
+import ru.yeahub.network_api.models.UpdateProfileRequest
+import ru.yeahub.network_api.models.UpdateUserRequest
 import ru.yeahub.profile_edit.impl.domain.models.DomainProfileEditData
 import ru.yeahub.profile_edit.impl.domain.repository.ProfileEditRepository
 
@@ -58,41 +60,117 @@ internal class ProfileEditRepositoryImpl(
         return response.data
     }
 
+    /**
+     * При загрузке профиля мы сохраняем исходные ответы в cachedUser и cachedProfile.
+     * На save прогоняем эти данные через тот же mapper, что и текущую форму, а затем
+     * сравниваем готовые request-ы. Так не приходится отдельно описывать, какие поля
+     * относятся к user, а какие к profile.
+     * После сравнения отправляем только изменённые request-ы или не отправляем ничего.
+     */
     override suspend fun saveProfile(profile: DomainProfileEditData) {
         val user = cachedUser ?: error("Profile not loaded")
         val activeProfile = cachedProfile ?: error("Profile not loaded")
-        val cachedDescription = activeProfile.description.orEmpty()
-        val normalizedCachedDescription =
-            mapperDataToDomain.mapDescriptionToPlainText(cachedDescription)
-        val description = if (profile.aboutMe == normalizedCachedDescription) {
-            cachedDescription
-        } else {
-            mapperDomainToData.mapAboutMeToHtml(profile.aboutMe)
-        }
+        val cachedDomainProfile = mapperDataToDomain.mapProfileToDomain(
+            user = user,
+            activeProfile = activeProfile,
+            allSkills = cachedAllSkillResponses,
+            specializations = cachedAllSpecializations,
+        )
 
-        val updateProfileRequest = mapperDomainToData.mapToUpdateProfileRequest(
+        val currentProfileRequest = mapperDomainToData.mapToUpdateProfileRequest(
             profile = profile,
-            description = description,
+            description = resolveDescription(profile, activeProfile),
             cachedProfile = activeProfile,
             cachedUser = user,
             cachedAllSkills = cachedAllSkillResponses,
             allSpecializations = cachedAllSpecializations,
         )
-
-        val updateUserRequest = mapperDomainToData.mapToUpdateUserRequest(
+        val cachedProfileRequest = mapperDomainToData.mapToUpdateProfileRequest(
+            profile = cachedDomainProfile,
+            description = activeProfile.description.orEmpty(),
+            cachedProfile = activeProfile,
+            cachedUser = user,
+            cachedAllSkills = cachedAllSkillResponses,
+            allSpecializations = cachedAllSpecializations,
+        )
+        val currentUserRequest = mapperDomainToData.mapToUpdateUserRequest(
             profile = profile,
             cachedUser = user,
             pendingAvatarChange = pendingAvatarChange,
         )
+        val cachedUserRequest = mapperDomainToData.mapToUpdateUserRequest(
+            profile = cachedDomainProfile,
+            cachedUser = user,
+            pendingAvatarChange = PendingAvatarChange.None,
+        )
+
+        val shouldUpdateProfile = currentProfileRequest.toComparableProfileRequest() !=
+                cachedProfileRequest.toComparableProfileRequest()
+        val shouldUpdateUser = currentUserRequest.toComparableUserRequest() !=
+                cachedUserRequest.toComparableUserRequest()
+
+        if (!shouldUpdateProfile && !shouldUpdateUser) return
+
         withContext(Dispatchers.IO) {
-            val updateProfile = async {
-                apiService.updateProfile(activeProfile.id, updateProfileRequest)
+            if (shouldUpdateProfile) {
+                launch {
+                    apiService.updateProfile(activeProfile.id, currentProfileRequest)
+                }
             }
-            val updateUser = async {
-                apiService.updateUser(user.id, updateUserRequest)
+
+            if (shouldUpdateUser) {
+                launch {
+                    apiService.updateUser(user.id, currentUserRequest)
+                }
             }
-            awaitAll(updateProfile, updateUser)
         }
+    }
+
+    /**
+     * Если текст AboutMe не меняли, отправляем HTML с backend без пересборки.
+     * Иначе можно случайно потерять форматирование, которое не видно в plain text.
+     */
+    private fun resolveDescription(
+        profile: DomainProfileEditData,
+        cachedProfile: GetProfileForUserResponse,
+    ): String {
+        val cachedDescription = cachedProfile.description.orEmpty()
+        val normalizedCachedDescription =
+            mapperDataToDomain.mapDescriptionToPlainText(cachedDescription)
+
+        return if (profile.aboutMe == normalizedCachedDescription) {
+            cachedDescription
+        } else {
+            mapperDomainToData.mapAboutMeToHtml(profile.aboutMe)
+        }
+    }
+
+    /**
+     * Перед сравнением сортируем списки, где порядок не важен для сохранения.
+     * Перестановка skills или соцсетей не должна приводить к обновлению профиля.
+     */
+    private fun UpdateProfileRequest.toComparableProfileRequest(): UpdateProfileRequest {
+        return copy(
+            socialNetwork = socialNetwork?.sortedWith(
+                compareBy(
+                    { socialNetwork -> socialNetwork.code },
+                    { socialNetwork -> socialNetwork.title },
+                ),
+            ),
+            profileSkills = profileSkills.sorted(),
+        )
+    }
+
+    /**
+     * В форме пустые user-поля представлены пустой строкой, а backend может вернуть null.
+     * Для сравнения считаем это одним и тем же значением.
+     */
+    private fun UpdateUserRequest.toComparableUserRequest(): UpdateUserRequest {
+        return copy(
+            username = username.orEmpty(),
+            city = city.orEmpty(),
+            avatarUrl = avatarUrl.orEmpty(),
+        )
     }
 
     override suspend fun cacheAvatar(avatarBytes: ByteArray) {
