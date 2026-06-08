@@ -57,6 +57,12 @@ internal class ProfileEditDataToDomainMapper {
         )
     }
 
+    /**
+     *id невыбранной специализации на бэкенде == 0 ->
+     * функция возвращает нулл если специализация ещё не была выбрана ранее.
+     * Если же она была выбрана, но не найдена в списке специализаций -
+     * это ошибка (бекенда или нашего кода) и будет fail-fast краш
+     */
     private fun resolveSpecializationName(
         specializationId: Long?,
         specializations: List<GetSpecializationResponse>,
