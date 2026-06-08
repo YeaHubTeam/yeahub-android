@@ -62,7 +62,8 @@ internal class ProfileEditDataToDomainMapper {
         specializations: List<GetSpecializationResponse>,
     ): String? {
         if (specializationId == null || specializationId == 0L) return null
-        return specializations.find { it.id == specializationId }!!.title
+        return specializations.find { it.id == specializationId }?.title
+            ?: error("ProfileEdit: specializationId=$specializationId was not found in loaded specializations")
     }
 
     private fun mapSocialNetworkToDomain(

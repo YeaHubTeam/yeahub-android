@@ -97,7 +97,9 @@ internal class ProfileEditDomainToDataMapper {
         specName: String,
         allSpecializations: List<GetSpecializationResponse>,
     ): Long {
-        return allSpecializations.find { it.title == specName }!!.id
+        return allSpecializations.find { it.title == specName }?.id
+            ?: error("ProfileEdit: specialization=$specName was not found in loaded specializations")
+
     }
 
     private fun normalizePlainText(text: String): String {
