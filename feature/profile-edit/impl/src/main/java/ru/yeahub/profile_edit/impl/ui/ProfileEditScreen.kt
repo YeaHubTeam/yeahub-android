@@ -189,7 +189,9 @@ internal fun HandleCommands(
 
     if (cropSheetUri != null) {
         CropBottomSheet(
-            sourceUri = cropSheetUri!!,
+            sourceUri = checkNotNull(cropSheetUri) {
+                "cropSheetUri не может быть null"
+            },
             onCropStarted = {
                 cropSheetUri = null
             },
