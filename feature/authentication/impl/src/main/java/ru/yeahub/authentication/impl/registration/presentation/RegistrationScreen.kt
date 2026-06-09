@@ -43,6 +43,7 @@ import ru.yeahub.core_ui.component.PrimaryButton
 import ru.yeahub.core_ui.component.PrimaryTextField
 import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.core_ui.theme.YeaHubTheme
+import ru.yeahub.core_utils.common.TextOrResource
 
 @Composable
 fun RegistrationScreen(
@@ -361,13 +362,13 @@ fun RegistrationScreenPreview_Error() {
                 RegistrationUiState.Error(
                     formState = RegistrationFormState(
                         nickname = "",
-                        nicknameError = ru.yeahub.core_utils.common.TextOrResource.Text("Имя пользователя не может быть пустым"),
+                        nicknameError = TextOrResource.Text("Имя пользователя не может быть пустым"),
                         email = "invalid-email",
-                        emailError = ru.yeahub.core_utils.common.TextOrResource.Text("Некорректный email"),
+                        emailError = TextOrResource.Text("Некорректный email"),
                         password = "123",
-                        passwordError = ru.yeahub.core_utils.common.TextOrResource.Text("Пароль слишком короткий"),
+                        passwordError = TextOrResource.Text("Пароль слишком короткий"),
                         confirmPassword = "456",
-                        confirmPasswordError = ru.yeahub.core_utils.common.TextOrResource.Text("Пароли не совпадают"),
+                        confirmPasswordError = TextOrResource.Text("Пароли не совпадают"),
                         isPasswordVisible = true,
                         isConfirmPasswordVisible = true,
                         isPdAccepted = false,

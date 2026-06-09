@@ -64,7 +64,6 @@ class RegistrationUiStateMapperTest {
         isOfferAccepted: Boolean,
         expectedSubmitEnabled: Boolean
     ) {
-        // Arrange
         every { EmailValidator.isValid(any()) } returns isEmailValid
         
         val form = mapper.getInitialFormState().copy(
@@ -77,28 +76,124 @@ class RegistrationUiStateMapperTest {
         )
         val currentState = RegistrationUiState.Content(form)
 
-        // Act - trigger validation by any action that updates state
         val resultState = mapper.mapToUpdatedState(currentState, RegistrationAction.NicknameChanged(nickname))
 
-        // Assert
         assertEquals(expectedSubmitEnabled, resultState.formState.isSubmitEnabled)
     }
 
     companion object {
         @JvmStatic
         fun provideValidationCases(): Stream<Arguments> = Stream.of(
-            // nickname, email, isEmailValid, password, confirmPassword, isPdAccepted, isOfferAccepted, expectedSubmitEnabled
-            Arguments.of("user", "test@test.com", true, "Pass123!", "Pass123!", true, true, true),
-            Arguments.of("", "test@test.com", true, "Pass123!", "Pass123!", true, true, false), // Empty nickname
-            Arguments.of("user", "invalid", false, "Pass123!", "Pass123!", true, true, false), // Invalid email
-            Arguments.of("user", "test@test.com", true, "short", "short", true, true, false), // Short password
-            Arguments.of("user", "test@test.com", true, "Pass123!", "Mismatch!", true, true, false), // Password mismatch
-            Arguments.of("user", "test@test.com", true, "short", "short", true, true, false), // Too short
-            Arguments.of("user", "test@test.com", true, "nospecial123", "nospecial123", true, true, false), // No special
-            Arguments.of("user", "test@test.com", true, "NoDigit!", "NoDigit!", true, true, false), // No digit
-            Arguments.of("user", "test@test.com", true, "nouppercase1!", "nouppercase1!", true, true, false), // No uppercase
-            Arguments.of("user", "test@test.com", true, "Pass123!", "Pass123!", false, true, false), // PD not accepted
-            Arguments.of("user", "test@test.com", true, "Pass123!", "Pass123!", true, false, false)  // Offer not accepted
+            Arguments.of(
+                "user",
+                "test@test.com",
+                true,
+                "Pass123!",
+                "Pass123!",
+                true,
+                true,
+                true
+            ),
+            Arguments.of(
+                "",
+                "test@test.com",
+                true,
+                "Pass123!",
+                "Pass123!",
+                true,
+                true,
+                false
+            ),
+            Arguments.of(
+                "user",
+                "invalid",
+                false,
+                "Pass123!",
+                "Pass123!",
+                true,
+                true,
+                false
+            ),
+            Arguments.of(
+                "user",
+                "test@test.com",
+                true,
+                "short",
+                "short",
+                true,
+                true,
+                false
+            ),
+            Arguments.of(
+                "user",
+                "test@test.com",
+                true,
+                "Pass123!",
+                "Mismatch!",
+                true,
+                true,
+                false
+            ),
+            Arguments.of(
+                "user",
+                "test@test.com",
+                true,
+                "short",
+                "short",
+                true,
+                true,
+                false
+            ),
+            Arguments.of(
+                "user",
+                "test@test.com",
+                true,
+                "nospecial123",
+                "nospecial123",
+                true,
+                true,
+                false
+            ),
+            Arguments.of(
+                "user",
+                "test@test.com",
+                true,
+                "NoDigit!",
+                "NoDigit!",
+                true,
+                true,
+                false
+            ),
+            Arguments.of(
+                "user",
+                "test@test.com",
+                true,
+                "nouppercase1!",
+                "nouppercase1!",
+                true,
+                true,
+                false
+            ),
+            Arguments.of(
+                "user",
+                "test@test.com",
+                true,
+                "Pass123!",
+                "Pass123!",
+                false,
+                true,
+                false
+            ),
+            Arguments.of(
+                "user",
+                "test@test.com",
+                true,
+                "Pass123!",
+                "Pass123!",
+                true,
+                false,
+                false
+            )
         )
 
         @JvmStatic
@@ -116,17 +211,14 @@ class RegistrationUiStateMapperTest {
         password: String,
         expectedErrorRes: Int
     ) {
-        // Arrange
         val form = mapper.getInitialFormState().copy(
             password = password,
-            isPasswordTouched = true // Error only shows if touched
+            isPasswordTouched = true 
         )
         val currentState = RegistrationUiState.Content(form)
 
-        // Act
         val resultState = mapper.mapToUpdatedState(currentState, RegistrationAction.PasswordChanged(password))
 
-        // Assert
         val error = resultState.formState.passwordError as? TextOrResource.Resource
         assertEquals(expectedErrorRes, error?.resource)
     }
@@ -147,12 +239,16 @@ class RegistrationUiStateMapperTest {
         val form = mapper.getInitialFormState().copy(email = "test")
         val currentState = RegistrationUiState.Content(form)
 
-        // Email lost focus
-        val stateAfterFocusLost = mapper.mapToUpdatedState(currentState, RegistrationAction.EmailFocusChanged(false))
+        val stateAfterFocusLost = mapper.mapToUpdatedState(
+            currentState,
+            RegistrationAction.EmailFocusChanged(false)
+        )
         assertTrue(stateAfterFocusLost.formState.isEmailTouched)
 
-        // Email gained focus
-        val stateAfterFocusGained = mapper.mapToUpdatedState(stateAfterFocusLost, RegistrationAction.EmailFocusChanged(true))
+        val stateAfterFocusGained = mapper.mapToUpdatedState(
+            stateAfterFocusLost,
+            RegistrationAction.EmailFocusChanged(true)
+        )
         assertFalse(stateAfterFocusGained.formState.isEmailTouched)
     }
 }
