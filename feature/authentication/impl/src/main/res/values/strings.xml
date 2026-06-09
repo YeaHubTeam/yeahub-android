@@ -15,6 +15,10 @@
     <string name="pd_consent_suffix">, в соответствии с Политикой в отношении ПД</string>
     <string name="offer_consent_prefix">"Подтверждаю что ознакомился(-ась) с "</string>
     <string name="offer_consent_link">Договором-офертой</string>
+
+    <string name="pd_offer_url">https://docs.google.com/document/d/1OX9Fc3HPhjL_U9xkF2P3vsSmM1fAdhmQ88J2NT0emFo/edit?tab=t.0</string>
+    <string name="public_offer_uri">https://docs.google.com/document/d/1tU9lgOu_W21DAoHOH0kQmTWq5hG3rvxv_Q_jzRi8Gh4/edit?tab=t.0</string>
+
     <string name="login_title">Вход в личный кабинет</string>
     <string name="login_button">Вход</string>
     <string name="forgot_password">Забыли пароль?</string>
@@ -29,4 +33,13 @@
     <string name="login_unknown_error">Произошла непредвиденная ошибка</string>
     <string name="login_password_visibility_show">Показать пароль</string>
     <string name="login_password_visibility_hide">Скрыть пароль</string>
+
+    <string name="error_email_invalid">Email введен неверно</string>
+    <string name="error_password_too_short">Минимум 8 символов</string>
+    <string name="error_password_no_uppercase">Нужна заглавная буква</string>
+    <string name="error_password_no_digit">Нужна цифра</string>
+    <string name="error_password_no_special_char">Нужен спецсимвол</string>
+    <string name="error_passwords_not_match">Пароли не совпадают</string>
+    <string name="error_user_already_exists">Пользователь уже существует</string>
+    <string name="error_resource_not_found">Ресурс не найден</string>
 </resources>
