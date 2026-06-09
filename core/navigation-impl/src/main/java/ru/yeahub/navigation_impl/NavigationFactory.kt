@@ -6,13 +6,14 @@ import ru.yeahub.navigation_impl.model.BottomNavigationItem
  * Фабрика для создания навигационных элементов.
  */
 fun getBottomNavItems(): List<BottomNavigationItem> = listOf(
+    BottomNavigationItem.Profile,
     BottomNavigationItem.Collections,
     BottomNavigationItem.Home,
     BottomNavigationItem.Questions
 )
 
 fun getSelectedRoute(currentRoute: String?, navItems: List<BottomNavigationItem>): String = when {
-    currentRoute == null -> navItems[1].route
+    currentRoute == null -> navItems[2].route
     navItems.any { it.route == currentRoute } -> currentRoute
     else -> navItems.find { currentRoute.startsWith(it.route) }?.route ?: navItems.last().route
 }
