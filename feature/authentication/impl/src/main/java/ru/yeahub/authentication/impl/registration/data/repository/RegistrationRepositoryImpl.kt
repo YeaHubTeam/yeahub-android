@@ -1,5 +1,6 @@
 package ru.yeahub.authentication.impl.registration.data.repository
 
+import com.google.gson.Gson
 import kotlinx.coroutines.CancellationException
 import retrofit2.HttpException
 import ru.yeahub.authentication.impl.registration.data.mapper.RegistrationDomainToDataMapper
@@ -9,11 +10,13 @@ import ru.yeahub.authentication.impl.registration.domain.entity.RegistrationErro
 import ru.yeahub.authentication.impl.registration.domain.entity.RegistrationException
 import ru.yeahub.authentication.impl.registration.domain.entity.RegistrationModel
 import ru.yeahub.authentication.impl.registration.domain.repository.RegistrationRepositoryApi
+import ru.yeahub.network_api.models.ErrorResponseDto
 import java.io.IOException
 
 class RegistrationRepositoryImpl(
     private val remoteDataSourceApi: RegistrationRemoteDataSourceApi,
-    private val mapper: RegistrationDomainToDataMapper
+    private val mapper: RegistrationDomainToDataMapper,
+    private val gson: Gson
 ) : RegistrationRepositoryApi {
 
     override suspend fun register(registrationModel: RegistrationModel) =
@@ -24,7 +27,7 @@ class RegistrationRepositoryImpl(
             throw e
         } catch (e: IOException) {
             throw RegistrationException(
-                error = RegistrationError.Network,
+                error = RegistrationError.UnknownError,
                 failure = Failure(cause = e)
             )
         } catch (e: HttpException) {
@@ -33,20 +36,26 @@ class RegistrationRepositoryImpl(
 
     private fun mapHttpException(e: HttpException): RegistrationException {
         val code = e.code()
-        val error =
-            when (code) {
-                HTTP_CONFLICT -> RegistrationError.EmailAlreadyExists
-                HTTP_BAD_REQUEST -> RegistrationError.InvalidCredentials
-                in HTTP_SERVER_ERROR_MIN..HTTP_SERVER_ERROR_MAX -> RegistrationError.Server
-                else -> RegistrationError.Unknown
-            }
+        val errorBody = e.response()?.errorBody()?.string()
+        val errorDto = errorBody?.let {
+            runCatching { gson.fromJson(it, ErrorResponseDto::class.java) }.getOrNull()
+        }
+
+        val backendKey = errorDto?.message
+
+        val error = when {
+            backendKey == BACKEND_KEY_USER_CONFLICT || code == HTTP_CONFLICT -> RegistrationError.Conflict
+            backendKey == BACKEND_KEY_USER_NOT_FOUND || code == HTTP_NOT_FOUND -> RegistrationError.NotFound
+            else -> RegistrationError.UnknownError
+        }
+
         return RegistrationException(error = error, failure = Failure(cause = e, httpCode = code))
     }
 
     private companion object {
-        private const val HTTP_BAD_REQUEST = 400
         private const val HTTP_CONFLICT = 409
-        private const val HTTP_SERVER_ERROR_MIN = 500
-        private const val HTTP_SERVER_ERROR_MAX = 599
+        private const val HTTP_NOT_FOUND = 404
+        private const val BACKEND_KEY_USER_CONFLICT = "user.user.conflict"
+        private const val BACKEND_KEY_USER_NOT_FOUND = "user.user.id.not_found"
     }
 }
