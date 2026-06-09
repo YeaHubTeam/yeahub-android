@@ -285,27 +285,128 @@ private fun ConsentRow(
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, name = "Empty State")
 @Composable
-fun RegistrationScreenPreview() {
+fun RegistrationScreenPreview_Empty() {
+    YeaHubTheme {
+        RegistrationContent(
+            state = RegistrationUiState.Content(
+                RegistrationFormState(
+                    nickname = "",
+                    nicknameError = null,
+                    email = "",
+                    emailError = null,
+                    password = "",
+                    passwordError = null,
+                    confirmPassword = "",
+                    confirmPasswordError = null,
+                    isPdAccepted = false,
+                    isOfferAccepted = false,
+                    isMailingAccepted = false,
+                    isPasswordVisible = false,
+                    isConfirmPasswordVisible = false,
+                    isSubmitEnabled = false,
+                    isEmailTouched = false,
+                    isPasswordTouched = false,
+                    isConfirmPasswordTouched = false
+                )
+            ),
+            onAction = {},
+            onOpenPdPolicy = {},
+            onOpenOffer = {}
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Valid State")
+@Composable
+fun RegistrationScreenPreview_Valid() {
     YeaHubTheme {
         RegistrationContent(
             state =
                 RegistrationUiState.Content(
                     RegistrationFormState(
-                        nickname = "admin",
+                        nickname = "JohnDoe",
                         nicknameError = null,
-                        email = "admin@mail.ru",
+                        email = "john@example.com",
                         emailError = null,
-                        password = "1234",
+                        password = "Password123!",
                         passwordError = null,
-                        confirmPassword = "1234",
+                        confirmPassword = "Password123!",
                         confirmPasswordError = null,
-                        isPasswordVisible = true,
-                        isConfirmPasswordVisible = true,
+                        isPasswordVisible = false,
+                        isConfirmPasswordVisible = false,
                         isPdAccepted = true,
                         isOfferAccepted = true,
+                        isMailingAccepted = true,
+                        isSubmitEnabled = true,
+                        isEmailTouched = true,
+                        isPasswordTouched = true,
+                        isConfirmPasswordTouched = true
+                    )
+                ),
+            onAction = {},
+            onOpenPdPolicy = {},
+            onOpenOffer = {}
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Error State")
+@Composable
+fun RegistrationScreenPreview_Error() {
+    YeaHubTheme {
+        RegistrationContent(
+            state =
+                RegistrationUiState.Error(
+                    formState = RegistrationFormState(
+                        nickname = "",
+                        nicknameError = ru.yeahub.core_utils.common.TextOrResource.Text("Имя пользователя не может быть пустым"),
+                        email = "invalid-email",
+                        emailError = ru.yeahub.core_utils.common.TextOrResource.Text("Некорректный email"),
+                        password = "123",
+                        passwordError = ru.yeahub.core_utils.common.TextOrResource.Text("Пароль слишком короткий"),
+                        confirmPassword = "456",
+                        confirmPasswordError = ru.yeahub.core_utils.common.TextOrResource.Text("Пароли не совпадают"),
+                        isPasswordVisible = true,
+                        isConfirmPasswordVisible = true,
+                        isPdAccepted = false,
+                        isOfferAccepted = false,
                         isMailingAccepted = false,
+                        isSubmitEnabled = false,
+                        isEmailTouched = true,
+                        isPasswordTouched = true,
+                        isConfirmPasswordTouched = true
+                    )
+                ),
+            onAction = {},
+            onOpenPdPolicy = {},
+            onOpenOffer = {}
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Loading State")
+@Composable
+fun RegistrationScreenPreview_Loading() {
+    YeaHubTheme {
+        RegistrationContent(
+            state =
+                RegistrationUiState.Loading(
+                    RegistrationFormState(
+                        nickname = "JohnDoe",
+                        nicknameError = null,
+                        email = "john@example.com",
+                        emailError = null,
+                        password = "Password123!",
+                        passwordError = null,
+                        confirmPassword = "Password123!",
+                        confirmPasswordError = null,
+                        isPasswordVisible = false,
+                        isConfirmPasswordVisible = false,
+                        isPdAccepted = true,
+                        isOfferAccepted = true,
+                        isMailingAccepted = true,
                         isSubmitEnabled = true,
                         isEmailTouched = true,
                         isPasswordTouched = true,
