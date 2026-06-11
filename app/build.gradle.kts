@@ -98,8 +98,6 @@ dependencies {
     implementation(project(":feature:questions-or-collections:api"))
     implementation(project(":feature:public-collections:api"))
     implementation(project(":feature:selection-specializations:api"))
-//    implementation(project(":feature:forgot-password:api"))
-//    implementation(project(":feature:forgot-password:impl"))
     implementation(project(":feature:example-home:impl"))
     implementation(project(":feature:example-profile:impl"))
     implementation(project(":feature:example-questions:impl"))
