@@ -18,12 +18,15 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -187,35 +190,40 @@ fun RegistrationContent(
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
             )
 
-            ConsentRow(
-                checked = form.isPdAccepted,
-                onCheckedChange = {
-                    onAction(RegistrationAction.PdAcceptedChanged(it))
-                },
-                text = pdConsentText(linkColor),
-                onLinkClicked = { tag -> if (tag == "pd") onOpenPdPolicy() }
-            )
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                ConsentRow(
+                    checked = form.isPdAccepted,
+                    onCheckedChange = {
+                        onAction(RegistrationAction.PdAcceptedChanged(it))
+                    },
+                    text = pdConsentText(linkColor),
+                    onLinkClicked = { tag -> if (tag == "pd") onOpenPdPolicy() }
+                )
 
-            ConsentRow(
-                checked = form.isOfferAccepted,
-                onCheckedChange = {
-                    onAction(RegistrationAction.OfferAcceptedChanged(it))
-                },
-                text = offerConsentText(linkColor),
-                onLinkClicked = { tag -> if (tag == "offer") onOpenOffer() }
-            )
+                ConsentRow(
+                    checked = form.isOfferAccepted,
+                    onCheckedChange = {
+                        onAction(RegistrationAction.OfferAcceptedChanged(it))
+                    },
+                    text = offerConsentText(linkColor),
+                    onLinkClicked = { tag -> if (tag == "offer") onOpenOffer() }
+                )
 
-            ConsentRow(
-                checked = form.isMailingAccepted,
-                onCheckedChange = {
-                    onAction(RegistrationAction.MailingAcceptedChanged(it))
-                },
-                text =
-                    AnnotatedString(
-                        stringResource(R.string.marketing_opt_in_text)
-                    ),
-                onLinkClicked = {}
-            )
+                ConsentRow(
+                    checked = form.isMailingAccepted,
+                    onCheckedChange = {
+                        onAction(RegistrationAction.MailingAcceptedChanged(it))
+                    },
+                    text =
+                        AnnotatedString(
+                            stringResource(R.string.marketing_opt_in_text)
+                        ),
+                    onLinkClicked = {}
+                )
+            }
 
             Spacer(Modifier.height(8.dp))
 
@@ -258,16 +266,19 @@ private fun ConsentRow(
     onLinkClicked: (tag: String) -> Unit
 ) {
     Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.Top) {
-        Checkbox(
-            checked = checked,
-            onCheckedChange = onCheckedChange,
-            colors =
-                CheckboxDefaults.colors(
-                    checkedColor = Theme.colors.purple700,
-                    uncheckedColor = Theme.colors.purple200,
-                    checkmarkColor = Theme.colors.white900
-                )
-        )
+        CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides Dp.Unspecified) {
+            Checkbox(
+                checked = checked,
+                onCheckedChange = onCheckedChange,
+                modifier = Modifier.padding(top = 2.dp),
+                colors =
+                    CheckboxDefaults.colors(
+                        checkedColor = Theme.colors.purple700,
+                        uncheckedColor = Theme.colors.black200,
+                        checkmarkColor = Theme.colors.white900
+                    )
+            )
+        }
         Spacer(Modifier.width(8.dp))
         ClickableText(
             text = text,
