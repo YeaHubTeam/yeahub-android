@@ -12,7 +12,6 @@ import ru.yeahub.authentication.impl.login.domain.entity.LoginError
 import ru.yeahub.authentication.impl.login.domain.entity.LoginException
 import ru.yeahub.authentication.impl.login.domain.entity.LoginModel
 import ru.yeahub.authentication.impl.login.domain.repository.LoginRepositoryApi
-import ru.yeahub.datastore_api.TokenDataStore
 import ru.yeahub.network_api.models.ErrorResponseDto
 import java.io.IOException
 
@@ -27,7 +26,6 @@ class LoginRepositoryImpl(
     private val remoteDataSourceApi: LoginRemoteDataSourceApi,
     private val domainToDataMapper: LoginDomainToDataMapper,
     private val responseToDomainMapper: LoginResponseToDomainMapper,
-    private val tokenDataStore: TokenDataStore,
     private val gson: Gson,
 ) : LoginRepositoryApi {
 
@@ -36,19 +34,13 @@ class LoginRepositoryImpl(
      * - преобразует LoginModel в request DTO
      * - вызывает backend
      * - преобразует response DTO в AuthResult
-     * - сохраняет access token в локальное хранилище
      */
     override suspend fun login(loginModel: LoginModel): AuthResult {
         return try {
             val request = domainToDataMapper.map(loginModel)
             val response = remoteDataSourceApi.login(request)
-            val authResult = responseToDomainMapper.map(response)
 
-            tokenDataStore.saveAccessToken(
-                accessToken = authResult.tokens.accessToken,
-            )
-
-            authResult
+            responseToDomainMapper.map(response)
         } catch (exception: CancellationException) {
             throw exception
         } catch (exception: IOException) {

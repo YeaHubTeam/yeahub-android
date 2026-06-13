@@ -8,9 +8,11 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import ru.yeahub.authentication.impl.login.data.mapper.LoginDomainToDataMapper
 import ru.yeahub.authentication.impl.login.data.mapper.LoginResponseToDomainMapper
-import ru.yeahub.authentication.impl.login.data.repository.remote.LoginRemoteDataSourceApi
+import ru.yeahub.authentication.impl.login.data.repository.AuthSessionRepositoryImpl
 import ru.yeahub.authentication.impl.login.data.repository.LoginRepositoryImpl
+import ru.yeahub.authentication.impl.login.data.repository.remote.LoginRemoteDataSourceApi
 import ru.yeahub.authentication.impl.login.data.repository.remote.LoginRemoteDataSourceImpl
+import ru.yeahub.authentication.impl.login.domain.repository.AuthSessionRepository
 import ru.yeahub.authentication.impl.login.domain.repository.LoginRepositoryApi
 import ru.yeahub.authentication.impl.login.domain.usecase.CheckAuthStateUseCase
 import ru.yeahub.authentication.impl.login.domain.usecase.LoginUseCase
@@ -23,6 +25,7 @@ import ru.yeahub.authentication.impl.login.presentation.viewmodel.LoginViewModel
  * - регистрирует mapper'ы
  * - регистрирует remote data source
  * - регистрирует repository
+ * - регистрирует auth session repository
  * - регистрирует use case
  * - регистрирует ViewModel
  */
@@ -40,8 +43,12 @@ val loginFeatureModule = module {
         bind<LoginRepositoryApi>()
     }
 
-    factoryOf(::CheckAuthStateUseCase)
+    singleOf(::AuthSessionRepositoryImpl) {
+        bind<AuthSessionRepository>()
+    }
+
     factoryOf(::LoginUseCase)
+    factoryOf(::CheckAuthStateUseCase)
     factoryOf(::LogoutUseCase)
 
     singleOf(::LoginStateMapper)

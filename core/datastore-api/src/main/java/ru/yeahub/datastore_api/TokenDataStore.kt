@@ -8,9 +8,9 @@ package ru.yeahub.datastore_api
  */
 interface TokenDataStore {
 
-    suspend fun saveAccessToken(accessToken: String)
+    suspend fun saveAccessToken(accessToken: String): TokenStorageResult
 
     suspend fun getAccessToken(): String?
 
-    suspend fun clearTokens()
+    suspend fun clearTokens(): TokenStorageResult
 }

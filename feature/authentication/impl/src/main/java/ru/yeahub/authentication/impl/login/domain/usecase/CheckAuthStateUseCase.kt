@@ -1,16 +1,16 @@
 package ru.yeahub.authentication.impl.login.domain.usecase
 
-import ru.yeahub.datastore_api.TokenDataStore
+import ru.yeahub.authentication.impl.login.domain.repository.AuthSessionRepository
 
 /**
- * UseCase проверки авторизации пользователя:
- * - возвращает true, если access token сохранён
+ * UseCase проверки авторизованного состояния:
+ * - проверяет наличие сохранённого access token
  */
 class CheckAuthStateUseCase(
-    private val tokenDataStore: TokenDataStore,
+    private val authSessionRepository: AuthSessionRepository,
 ) {
 
     suspend operator fun invoke(): Boolean {
-        return tokenDataStore.getAccessToken().isNullOrBlank().not()
+        return authSessionRepository.getAccessToken().isNullOrBlank().not()
     }
 }

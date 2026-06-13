@@ -4,14 +4,16 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.first
 import ru.yeahub.datastore_api.TokenDataStore
+import ru.yeahub.datastore_api.TokenStorageResult
 import ru.yeahub.datastore_impl.crypto.CryptoManager
 
 /**
  * Реализация локального хранения токена через Preferences DataStore:
- * - сохраняет access token
- * - читает access token
+ * - шифрует access token перед сохранением
+ * - читает и расшифровывает access token
  * - очищает токены авторизации
  */
 class TokenDataStoreImpl(
@@ -19,11 +21,24 @@ class TokenDataStoreImpl(
     private val cryptoManager: CryptoManager,
 ) : TokenDataStore {
 
-    override suspend fun saveAccessToken(accessToken: String) {
-        dataStore.edit { preferences ->
-            val encryptedToken = cryptoManager.encrypt(accessToken)
-            preferences[ACCESS_TOKEN_KEY] = encryptedToken
-        }
+    override suspend fun saveAccessToken(accessToken: String): TokenStorageResult {
+        return runCatching {
+            dataStore.edit { preferences ->
+                val encryptedToken = cryptoManager.encrypt(accessToken)
+                preferences[ACCESS_TOKEN_KEY] = encryptedToken
+            }
+        }.fold(
+            onSuccess = {
+                TokenStorageResult.Success
+            },
+            onFailure = { exception ->
+                if (exception is CancellationException) {
+                    throw exception
+                }
+
+                TokenStorageResult.Error
+            },
+        )
     }
 
     override suspend fun getAccessToken(): String? {
@@ -36,10 +51,23 @@ class TokenDataStoreImpl(
         }.getOrNull()
     }
 
-    override suspend fun clearTokens() {
-        dataStore.edit { preferences ->
-            preferences.remove(ACCESS_TOKEN_KEY)
-        }
+    override suspend fun clearTokens(): TokenStorageResult {
+        return runCatching {
+            dataStore.edit { preferences ->
+                preferences.remove(ACCESS_TOKEN_KEY)
+            }
+        }.fold(
+            onSuccess = {
+                TokenStorageResult.Success
+            },
+            onFailure = { exception ->
+                if (exception is CancellationException) {
+                    throw exception
+                }
+
+                TokenStorageResult.Error
+            },
+        )
     }
 
     private companion object {
