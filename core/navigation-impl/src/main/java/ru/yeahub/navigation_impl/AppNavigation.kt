@@ -34,6 +34,7 @@ import androidx.navigation.compose.rememberNavController
 import org.koin.compose.getKoin
 import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.navigation_api.FeatureApi
+import ru.yeahub.navigation_api.FeatureRoute
 import ru.yeahub.navigation_api.NavigationPathManager
 import ru.yeahub.navigation_impl.model.BottomNavigationItem
 import timber.log.Timber
@@ -70,7 +71,7 @@ fun AppNavigation(
     val features: Set<FeatureApi> = getKoin().getAll<FeatureApi>().toSet()
     Timber.d("AppNavigation onCreate: Loaded features: ${features.map { it.javaClass.simpleName }}")
     val navItems = getBottomNavItems()
-    
+
     features.forEach { feature ->
         feature.initialize(pathManager)
     }
@@ -78,16 +79,18 @@ fun AppNavigation(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
     val selectedRoute = getSelectedRoute(currentRoute, navItems)
-    
+
     currentRoute?.let { route ->
         pathManager.setCurrentPath(route)
     }
 
     Scaffold(
         modifier = modifier,
+        containerColor = Theme.colors.white900,
         bottomBar = {
             NavigationBar(
-                modifier = Modifier.clip(RoundedCornerShape(12.dp))
+                modifier = Modifier
+                    .clip(RoundedCornerShape(12.dp))
                     .height(100.dp),
                 containerColor = Theme.colors.purple700
             ) {
@@ -120,7 +123,11 @@ fun AppNavigation(
                                     .fillMaxWidth()
                                     .background(
                                         color = animateColorAsState(
-                                            targetValue = if (isSelected) Theme.colors.white900 else Color.Transparent,
+                                            targetValue = if (isSelected) {
+                                                Theme.colors.white900
+                                            } else {
+                                                Color.Transparent
+                                            },
                                             animationSpec = tween(durationMillis = 80)
                                         ).value,
                                         shape = RoundedCornerShape(8.dp)
@@ -139,25 +146,41 @@ fun AppNavigation(
                         },
                         alwaysShowLabel = false
                     )
-                    Timber.d("NavSelected", "$currentRoute")
+                    Timber.d("NavSelected: $currentRoute")
                 }
             }
         }
     ) { padding ->
         Box(modifier = Modifier.padding(padding)) {
-            NavHost(
+            AppNavHost(
                 navController = navController,
-                startDestination = navItems[1].route,
-                modifier = Modifier,
-            ) {
-                registerDynamicNavigation(
-                    features = features,
-                    pathManager = pathManager,
-                    navController = navController,
-                    navGraphBuilder = this
-                )
-            }
+                features = features,
+                pathManager = pathManager
+            )
         }
+    }
+}
+
+/**
+ * Отдельный компонент для NavHost, чтобы избежать дублирования кода.
+ */
+@Composable
+private fun AppNavHost(
+    navController: NavHostController,
+    features: Set<FeatureApi>,
+    pathManager: NavigationPathManager
+) {
+    NavHost(
+        navController = navController,
+        startDestination = FeatureRoute.HomeFeature.FEATURE_NAME,
+        modifier = Modifier,
+    ) {
+        registerDynamicNavigation(
+            features = features,
+            pathManager = pathManager,
+            navController = navController,
+            navGraphBuilder = this
+        )
     }
 }
 
@@ -186,9 +209,9 @@ private fun handleBottomNavClick(
         // Навигируем на родительский маршрут другого таба
         Timber.d(
             "AppNavigation onClick: Navigating to different tab: " +
-                "${item.route} from: $currentRoute"
+                    "${item.route} from: $currentRoute"
         )
-        
+
         // Устанавливаем новый корневой путь
         pathManager.setCurrentPath(item.route)
         navController.navigate(item.route) {
@@ -210,21 +233,21 @@ private fun registerDynamicNavigation(
 ) {
     val rootFeatures = features.filter { it.isRootFeature() }
     val childFeatures = features.filter { !it.isRootFeature() }
-    
+
     // Регистрируем корневые фичи
     rootFeatures.forEach { feature ->
         Timber.d(
             "AppNavigation registerGraph: Registering root feature: " +
                     "${feature.javaClass.simpleName}"
         )
-        
+
         // Сбрасываем путь для корневой фичи
         pathManager.setCurrentPath("")
         pathManager.registerFeaturePath(feature.getFeatureName(), feature.getFeatureName())
-        
+
         feature.registerGraph(navGraphBuilder, navController, pathManager)
     }
-    
+
     // Регистрируем дочерние фичи для каждой корневой фичи
     registerChildFeatures(childFeatures, rootFeatures, pathManager, navController, navGraphBuilder)
 }
@@ -241,17 +264,17 @@ private fun registerChildFeatures(
 ) {
     childFeatures.forEach { childFeature ->
         val dependentRootFeatures = childFeature.getDependentRootFeatures(rootFeatures)
-        
+
         // Если фича не указала зависимости, регистрируем для всех корневых фич
         val targetRootFeatures = if (dependentRootFeatures.isEmpty()) {
             rootFeatures
         } else {
             dependentRootFeatures
         }
-        
+
         targetRootFeatures.forEach { rootFeature ->
             pathManager.setCurrentPath(rootFeature.getFeatureName())
-            
+
             // Регистрируем дочернюю фичу
             childFeature.registerGraph(
                 navGraphBuilder = navGraphBuilder,

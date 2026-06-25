@@ -64,7 +64,4 @@ include(":feature:authentication:impl")
 include(":feature:enter-and-registration")
 include(":feature:enter-and-registration:api")
 include(":feature:enter-and-registration:impl")
-//include(":feature:forgot-password")
-//include(":feature:forgot-password:api")
-//include(":feature:forgot-password:impl")
 

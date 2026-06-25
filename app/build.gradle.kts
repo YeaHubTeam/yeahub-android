@@ -99,8 +99,6 @@ dependencies {
     implementation(project(":feature:questions-or-collections:api"))
     implementation(project(":feature:public-collections:api"))
     implementation(project(":feature:selection-specializations:api"))
-//    implementation(project(":feature:forgot-password:api"))
-//    implementation(project(":feature:forgot-password:impl"))
     implementation(project(":feature:example-home:impl"))
     implementation(project(":feature:example-profile:impl"))
     implementation(project(":feature:example-questions:impl"))
@@ -110,6 +108,8 @@ dependencies {
     implementation(project(":feature:questions-or-collections:impl"))
     implementation(project(":feature:public-collections:impl"))
     implementation(project(":feature:selection-specializations:impl"))
+    implementation(project(":feature:authentication:api"))
+    implementation(project(":feature:authentication:impl"))
 }
 
 tasks.withType<Test> {
