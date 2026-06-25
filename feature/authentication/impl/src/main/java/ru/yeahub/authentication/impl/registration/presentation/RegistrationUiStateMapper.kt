@@ -63,7 +63,7 @@ class RegistrationUiStateMapper {
             is RegistrationAction.TogglePasswordVisible,
             is RegistrationAction.ToggleConfirmPasswordVisible -> handleToggleAction(currentForm, action)
 
-            else -> currentForm
+            is RegistrationAction.SubmitClicked -> currentForm
         }
     }
 
@@ -75,7 +75,15 @@ class RegistrationUiStateMapper {
         is RegistrationAction.EmailChanged -> form.copy(email = action.value)
         is RegistrationAction.PasswordChanged -> form.copy(password = action.value)
         is RegistrationAction.ConfirmPasswordChanged -> form.copy(confirmPassword = action.value)
-        else -> form
+        is RegistrationAction.PdAcceptedChanged,
+        is RegistrationAction.OfferAcceptedChanged,
+        is RegistrationAction.MailingAcceptedChanged,
+        is RegistrationAction.TogglePasswordVisible,
+        is RegistrationAction.ToggleConfirmPasswordVisible,
+        is RegistrationAction.SubmitClicked,
+        is RegistrationAction.EmailFocusChanged,
+        is RegistrationAction.PasswordFocusChanged,
+        is RegistrationAction.ConfirmPasswordFocusChanged -> form
     }
 
     private fun handleFocusAction(
@@ -88,7 +96,16 @@ class RegistrationUiStateMapper {
             form.copy(isPasswordTouched = !action.hasFocus && form.password.isNotEmpty())
         is RegistrationAction.ConfirmPasswordFocusChanged ->
             form.copy(isConfirmPasswordTouched = !action.hasFocus && form.confirmPassword.isNotEmpty())
-        else -> form
+        is RegistrationAction.NicknameChanged,
+        is RegistrationAction.EmailChanged,
+        is RegistrationAction.PasswordChanged,
+        is RegistrationAction.ConfirmPasswordChanged,
+        is RegistrationAction.PdAcceptedChanged,
+        is RegistrationAction.OfferAcceptedChanged,
+        is RegistrationAction.MailingAcceptedChanged,
+        is RegistrationAction.TogglePasswordVisible,
+        is RegistrationAction.ToggleConfirmPasswordVisible,
+        is RegistrationAction.SubmitClicked -> form
     }
 
     private fun handleConsentAction(
@@ -98,7 +115,16 @@ class RegistrationUiStateMapper {
         is RegistrationAction.PdAcceptedChanged -> form.copy(isPdAccepted = action.value)
         is RegistrationAction.OfferAcceptedChanged -> form.copy(isOfferAccepted = action.value)
         is RegistrationAction.MailingAcceptedChanged -> form.copy(isMailingAccepted = action.value)
-        else -> form
+        is RegistrationAction.NicknameChanged,
+        is RegistrationAction.EmailChanged,
+        is RegistrationAction.PasswordChanged,
+        is RegistrationAction.ConfirmPasswordChanged,
+        is RegistrationAction.TogglePasswordVisible,
+        is RegistrationAction.ToggleConfirmPasswordVisible,
+        is RegistrationAction.SubmitClicked,
+        is RegistrationAction.EmailFocusChanged,
+        is RegistrationAction.PasswordFocusChanged,
+        is RegistrationAction.ConfirmPasswordFocusChanged -> form
     }
 
     private fun handleToggleAction(
@@ -109,7 +135,17 @@ class RegistrationUiStateMapper {
             form.copy(isPasswordVisible = !form.isPasswordVisible)
         is RegistrationAction.ToggleConfirmPasswordVisible ->
             form.copy(isConfirmPasswordVisible = !form.isConfirmPasswordVisible)
-        else -> form
+        is RegistrationAction.NicknameChanged,
+        is RegistrationAction.EmailChanged,
+        is RegistrationAction.PasswordChanged,
+        is RegistrationAction.ConfirmPasswordChanged,
+        is RegistrationAction.PdAcceptedChanged,
+        is RegistrationAction.OfferAcceptedChanged,
+        is RegistrationAction.MailingAcceptedChanged,
+        is RegistrationAction.SubmitClicked,
+        is RegistrationAction.EmailFocusChanged,
+        is RegistrationAction.PasswordFocusChanged,
+        is RegistrationAction.ConfirmPasswordFocusChanged -> form
     }
 
     fun mapToLoadingState(currentState: RegistrationUiState): RegistrationUiState {
