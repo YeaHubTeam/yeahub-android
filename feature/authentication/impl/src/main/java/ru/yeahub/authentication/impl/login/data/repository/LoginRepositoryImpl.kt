@@ -29,10 +29,17 @@ class LoginRepositoryImpl(
     private val gson: Gson,
 ) : LoginRepositoryApi {
 
+    /**
+     * Выполняет авторизацию пользователя:
+     * - преобразует LoginModel в request DTO
+     * - вызывает backend
+     * - преобразует response DTO в AuthResult
+     */
     override suspend fun login(loginModel: LoginModel): AuthResult {
         return try {
             val request = domainToDataMapper.map(loginModel)
             val response = remoteDataSourceApi.login(request)
+
             responseToDomainMapper.map(response)
         } catch (exception: CancellationException) {
             throw exception

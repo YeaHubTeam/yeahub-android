@@ -46,6 +46,7 @@ android {
 }
 
 dependencies {
+    implementation(project(":core:datastore-api"))
     implementation(project(":core:navigation-api"))
     implementation(project(":core:network-api"))
     implementation(libs.androidx.compose.material.icons.extended)

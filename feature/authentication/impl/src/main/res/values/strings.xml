@@ -42,4 +42,5 @@
     <string name="error_passwords_not_match">Пароли не совпадают</string>
     <string name="error_user_already_exists">Пользователь уже существует</string>
     <string name="error_resource_not_found">Ресурс не найден</string>
+    <string name="login_token_save_error">Не удалось сохранить сессию. Попробуйте войти ещё раз</string>
 </resources>

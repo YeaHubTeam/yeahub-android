@@ -229,6 +229,16 @@ class LoginViewModel(
                 )
             }
 
+            is LoginError.TokenSaveFailed -> {
+                sendCommand(
+                    command = LoginCommand.ShowSnackbar(
+                        message = TextOrResource.Resource(
+                            R.string.login_token_save_error,
+                        ),
+                    ),
+                )
+            }
+
             else -> {
                 sendCommand(
                     command = LoginCommand.ShowSnackbar(

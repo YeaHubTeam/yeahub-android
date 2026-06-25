@@ -8,6 +8,7 @@ package ru.yeahub.authentication.impl.login.domain.entity
  * - AccountBlocked - аккаунт заблокирован
  * - TooManyAttempts - слишком много попыток входа
  * - EmailNotConfirmed - email не подтверждён
+ * - TokenSaveFailed - не удалось сохранить токен авторизации
  * - Network - ошибка сети
  * - Server - ошибка сервера
  * - Unknown - неизвестная ошибка
@@ -20,6 +21,7 @@ sealed interface LoginError {
     data object AccountBlocked : LoginError
     data object TooManyAttempts : LoginError
     data object EmailNotConfirmed : LoginError
+    data object TokenSaveFailed : LoginError
     data object Network : LoginError
     data object Server : LoginError
     data object Unknown : LoginError
