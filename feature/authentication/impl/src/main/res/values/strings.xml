@@ -29,4 +29,5 @@
     <string name="login_unknown_error">Произошла непредвиденная ошибка</string>
     <string name="login_password_visibility_show">Показать пароль</string>
     <string name="login_password_visibility_hide">Скрыть пароль</string>
+    <string name="login_token_save_error">Не удалось сохранить сессию. Попробуйте войти ещё раз</string>
 </resources>
