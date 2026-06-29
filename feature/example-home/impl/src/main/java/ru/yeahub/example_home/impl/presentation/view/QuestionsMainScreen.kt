@@ -37,7 +37,8 @@ import ru.yeahub.ui.R
 fun QuestionsMainScreen(
     onBackClick: () -> Unit,
     onNavigateToBaseQuestions: () -> Unit,
-    onNavigateToCollections: () -> Unit
+    onNavigateToCollections: () -> Unit,
+    onNavigateToInterviewTrainer: () -> Unit,
 ) {
     val viewModel: QuestionMainViewModel = koinViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -46,6 +47,7 @@ fun QuestionsMainScreen(
         when (command) {
             is QuestionMainScreenCommand.NavigateToBaseQuestions -> onNavigateToBaseQuestions()
             is QuestionMainScreenCommand.NavigateToCollections -> onNavigateToCollections()
+            is QuestionMainScreenCommand.NavigateToInterviewTrainer -> onNavigateToInterviewTrainer()
         }
     }
 
@@ -60,7 +62,7 @@ fun QuestionsMainScreen(
 fun QuestionsMainScreenContent(
     state: QuestionMainScreenState,
     onItemClick: (QuestionMainUiModel) -> Unit,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
 ) {
     val context = LocalContext.current
     val scrollState = rememberScrollState()
@@ -192,6 +194,13 @@ val stateWithContent = QuestionMainScreenState.Content(
             title = TextOrResource.Resource(R.string.base_questions_title),
             description = TextOrResource.Resource(R.string.base_questions_description),
             imageRes = R.drawable.icon_base_question
+        ),
+        // TODO("imageRes тренажера потом изменить на нормальный")
+        QuestionMainUiModel(
+            type = QuestionMainItemType.InterviewTrainer,
+            title = TextOrResource.Resource(R.string.interview_trainer_title),
+            description = TextOrResource.Resource(R.string.interview_trainer_description),
+            imageRes = R.drawable.question_square
         ),
         QuestionMainUiModel(
             type = QuestionMainItemType.Collections,

@@ -37,13 +37,20 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.8"
     }
+    testOptions {
+        unitTests.all {
+            it.useJUnitPlatform()
+        }
+    }
 }
 
 dependencies {
     implementation(project(":core:ui"))
     implementation(project(":core:utils"))
     implementation(project(":core:navigation-api"))
+    implementation(project(":core:feature-toggle-api"))
     implementation(project(":feature:example-home:api"))
+    implementation(project(":feature:interview-trainer:api"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
@@ -63,7 +70,9 @@ dependencies {
     // Timber
     implementation(libs.timber)
 
-    testImplementation(libs.junit)
+    testImplementation(libs.junit.jupiter)
+    testImplementation(platform(libs.junit.bom))
+    testRuntimeOnly(libs.junit.platform.launcher)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 

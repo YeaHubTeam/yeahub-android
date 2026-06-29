@@ -8,6 +8,9 @@ import ru.yeahub.example_details.impl.detailsFeatureModule
 import ru.yeahub.example_home.impl.data.di.questionsMainFeatureModule
 import ru.yeahub.example_profile.impl.profileFeatureModule
 import ru.yeahub.feature_toggle_impl.di.featureToggleModule
+import ru.yeahub.interview_trainer.impl.createQuiz.di.createQuizModule
+import ru.yeahub.interview_trainer.impl.interviewQuiz.di.interviewQuizModule
+import ru.yeahub.interview_trainer.impl.interviewQuizResult.di.interviewQuizResultModule
 import ru.yeahub.navigation_impl.navigationPathModule
 import ru.yeahub.network_impl.networkModule
 import ru.yeahub.public_collections.impl.di.CollectionsFeatureModule
@@ -55,7 +58,10 @@ class Application : Application() {
                 CollectionsFeatureModule,
                 detailQuestionFeatureModule,
                 collectionsAndQuestionsFeatureModule,
-                specializationFeatureModule
+                specializationFeatureModule,
+                createQuizModule,
+                interviewQuizModule,
+                interviewQuizResultModule
             )
         }
         // проверка, что модули загружены

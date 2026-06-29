@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import ru.yeahub.example_home.impl.presentation.intents.QuestionMainScreenCommand
@@ -14,21 +14,24 @@ import ru.yeahub.example_home.impl.presentation.intents.QuestionMainScreenEvent
 import ru.yeahub.example_home.impl.presentation.mapper.QuestionMainScreenMapper
 import ru.yeahub.example_home.impl.presentation.model.QuestionMainItemType
 import ru.yeahub.example_home.impl.presentation.state.QuestionMainScreenState
+import ru.yeahub.feature_toggle_api.FeatureAvailabilityService
+import ru.yeahub.interview_trainer.api.EnableInterviewTrainer
 
 class QuestionMainViewModel(
     private val domainMapper: QuestionMainScreenMapper,
+    private val featureAvailabilityService: FeatureAvailabilityService,
 ) : ViewModel() {
 
     private val _command = MutableSharedFlow<QuestionMainScreenCommand>()
     val command: SharedFlow<QuestionMainScreenCommand> = _command
 
-    private val initialStateFlow = flow {
-        emit(QuestionMainScreenState.Loading)
-        val uiModels = domainMapper.getInitialUiModels()
-        emit(QuestionMainScreenState.Content(uiModels))
-    }
-
-    val state: StateFlow<QuestionMainScreenState> = initialStateFlow
+    val state: StateFlow<QuestionMainScreenState> = featureAvailabilityService.featureFlagsSnapshot
+        .map {
+            val uiModels = domainMapper.getInitialUiModels(
+                isInterviewTrainerEnabled = featureAvailabilityService.isFeatureEnabled(EnableInterviewTrainer)
+            )
+            QuestionMainScreenState.Content(uiModels)
+        }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.Lazily,
@@ -45,6 +48,10 @@ class QuestionMainViewModel(
                         )
                         QuestionMainItemType.Collections ->
                             _command.emit(QuestionMainScreenCommand.NavigateToCollections)
+
+                        QuestionMainItemType.InterviewTrainer -> {
+                            _command.emit(QuestionMainScreenCommand.NavigateToInterviewTrainer)
+                        }
                     }
                 }
             }

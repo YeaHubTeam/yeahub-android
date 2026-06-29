@@ -6,6 +6,7 @@ import retrofit2.http.Query
 import ru.yeahub.network_api.ApiService
 import ru.yeahub.network_api.models.GetCollectionsResponse
 import ru.yeahub.network_api.models.GetFeatureFlagsResponse
+import ru.yeahub.network_api.models.GetNewMockQuizResponse
 import ru.yeahub.network_api.models.GetPublicQuestionResponse
 import ru.yeahub.network_api.models.GetPublicQuestionsResponse
 import ru.yeahub.network_api.models.GetSkillsResponse
@@ -72,4 +73,13 @@ interface RetrofitApiService : ApiService {
         @Query("roleIds") roleIds: List<Long>?,
         @Query("clientType") clientType: String
     ): GetFeatureFlagsResponse
+
+    @GET("interview-preparation/quizzes/mock/new")
+    override suspend fun getQuizMockQuestions(
+        @Query("skills") skills: List<String>?,
+        @Query("complexity") complexity: List<Int>?,
+        @Query("collection") collection: Int?,
+        @Query("limit") limit: Int?,
+        @Query("specialization") specialization: Int,
+    ): GetNewMockQuizResponse
 }
