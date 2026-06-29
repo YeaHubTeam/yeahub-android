@@ -38,10 +38,16 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.8"
     }
+    testOptions {
+        unitTests.all {
+            it.useJUnitPlatform()
+        }
+    }
 }
 
 dependencies {
     implementation(project(":core:navigation-api"))
+    implementation(project(":core:feature-toggle-api"))
     implementation(project(":core:ui"))
 
     // Feature APIs
@@ -66,7 +72,9 @@ dependencies {
     implementation(libs.androidx.runtime.android)
     implementation(libs.androidx.icons)
 
-    testImplementation(libs.junit)
+    testImplementation(libs.junit.jupiter)
+    testImplementation(platform(libs.junit.bom))
+    testRuntimeOnly(libs.junit.platform.launcher)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     // Timber

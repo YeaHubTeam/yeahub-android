@@ -3,10 +3,11 @@ package ru.yeahub.navigation_api
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import ru.yeahub.feature_toggle_api.FeatureToggle
 
 /**
  * Интерфейс для модульной регистрации навигации фичи.
- * 
+ *
  * Каждая фича должна реализовать этот интерфейс, чтобы:
  * 1. Максимально изолировать логику навигации внутри модуля
  * 2. Самостоятельно регистрировать все необходимые маршруты
@@ -16,14 +17,21 @@ import androidx.navigation.NavHostController
 interface FeatureApi {
     /**
      * Определяет имя фичи для создания маршрута.
-     * 
+     *
      * @return Имя фичи (например, "home", "profile", "questions")
      */
     fun getFeatureName(): String
-    
+
+    /**
+     * Тоггл доступности фичи или null, если фича всегда доступна.
+     *
+     * @return Тоггл фичи или null для core-фичи
+     */
+    fun featureToggle(): FeatureToggle? = null
+
     /**
      * Определяет является ли фича корневой (отображается в нижней навигации).
-     * 
+     *
      * @return true если фича должна отображаться в нижней навигации
      */
     fun isRootFeature(): Boolean = false

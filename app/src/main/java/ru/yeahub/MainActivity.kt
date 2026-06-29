@@ -13,7 +13,6 @@ import androidx.compose.runtime.setValue
 import androidx.navigation.compose.rememberNavController
 import org.koin.android.ext.android.inject
 import ru.yeahub.core_ui.theme.YeaHubTheme
-import ru.yeahub.navigation_api.NavigationPathManager
 import ru.yeahub.navigation_impl.AppNavigation
 import ru.yeahub.navigation_impl.NotificationNavigationService
 import timber.log.Timber
@@ -49,17 +48,13 @@ import timber.log.Timber
  *    - Используйте NavController для навигации между экранами
  */
 class MainActivity : ComponentActivity() {
-    
-    private val pathManager: NavigationPathManager by inject()
-    private lateinit var notificationService: NotificationNavigationService
-    
+
+    private val notificationService: NotificationNavigationService by inject()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        
-        // Инициализируем сервис уведомлений
-        notificationService = NotificationNavigationService(pathManager)
-        
+
         setContent {
             YeaHubTheme {
                 val navController = rememberNavController()
