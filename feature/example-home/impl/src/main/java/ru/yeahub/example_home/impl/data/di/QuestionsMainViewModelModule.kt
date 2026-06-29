@@ -7,7 +7,8 @@ import ru.yeahub.example_home.impl.presentation.viewmodel.QuestionMainViewModel
 val questionsViewModelModule = module {
     viewModel {
         QuestionMainViewModel(
-            domainMapper = get()
+            domainMapper = get(),
+            featureAvailabilityService = get()
         )
     }
 }
