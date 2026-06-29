@@ -2,6 +2,7 @@ package ru.yeahub.network_api
 
 import ru.yeahub.network_api.models.GetCollectionsResponse
 import ru.yeahub.network_api.models.GetFeatureFlagsResponse
+import ru.yeahub.network_api.models.GetNewMockQuizResponse
 import ru.yeahub.network_api.models.GetPublicQuestionResponse
 import ru.yeahub.network_api.models.GetPublicQuestionsResponse
 import ru.yeahub.network_api.models.GetSkillsResponse
@@ -61,4 +62,12 @@ interface ApiService {
         specializationsId: Long,
         isFree: Boolean
     ): GetCollectionsResponse
+
+    suspend fun getQuizMockQuestions(
+        skills: List<String>?,
+        complexity: List<Int>?,
+        collection: Int?,
+        limit: Int?,
+        specialization: Int,
+    ): GetNewMockQuizResponse
 }

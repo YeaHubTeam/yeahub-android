@@ -27,6 +27,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -61,7 +62,6 @@ import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 import ru.yeahub.core_ui.component.CollectionCard
 import ru.yeahub.core_ui.component.ErrorScreen
-import ru.yeahub.core_ui.example.dynamicPreview.ProvidePreviewCompositionLocals
 import ru.yeahub.core_ui.example.staticPreview.StaticPreview
 import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.core_ui.theme.Theme.colors
@@ -524,7 +524,7 @@ fun PublicCollectionsScreenDynamicPreview() {
         mockViewModel.onEvent(PublicCollectionsScreenEvent.LoadNextPage)
     }
 
-    ProvidePreviewCompositionLocals {
+    CompositionLocalProvider {
         ScreenUI(
             listState = lazyListState,
             state = state,

@@ -62,4 +62,12 @@ object FeatureRoute {
     object PublicCollectionsFeature {
         const val FEATURE_NAME = "public_collections"
     }
+
+    object InterviewTrainerFeature {
+        const val FEATURE_NAME = "interview_trainer"
+
+        const val CREATE_QUIZ_SCREEN_NAME = "create_quiz"
+        const val INTERVIEW_QUIZ_SCREEN_NAME = "interview_quiz"
+        const val INTERVIEW_QUIZ_RESULT_SCREEN_NAME = "interview_quiz_result"
+    }
 }

@@ -14,6 +14,13 @@ class QuestionMainScreenMapper {
                 description = TextOrResource.Resource(R.string.base_questions_description),
                 imageRes = R.drawable.icon_base_question
             ),
+            // TODO("imageRes тренажера потом изменить на нормальный")
+            QuestionMainUiModel(
+                type = QuestionMainItemType.InterviewTrainer,
+                title = TextOrResource.Resource(R.string.interview_trainer_title),
+                description = TextOrResource.Resource(R.string.interview_trainer_description),
+                imageRes = R.drawable.question_square
+            ),
             QuestionMainUiModel(
                 type = QuestionMainItemType.Collections,
                 title = TextOrResource.Resource(R.string.collections_title),
