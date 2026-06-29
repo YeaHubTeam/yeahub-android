@@ -3,6 +3,8 @@ package ru.yeahub.interview_trainer.impl.createQuiz.di
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import ru.yeahub.feature_toggle_api.registerFeatureToggle
+import ru.yeahub.interview_trainer.api.EnableInterviewTrainer
 import ru.yeahub.interview_trainer.impl.InterviewTrainerFeatureImpl
 import ru.yeahub.interview_trainer.impl.createQuiz.data.CreateQuizDataToDomainMapper
 import ru.yeahub.interview_trainer.impl.createQuiz.data.CreateQuizRepositoryImpl
@@ -14,6 +16,8 @@ import ru.yeahub.interview_trainer.impl.createQuiz.presentation.CreateQuizViewMo
 import ru.yeahub.navigation_api.FeatureApi
 
 val createQuizModule = module {
+    registerFeatureToggle(EnableInterviewTrainer)
+
     // FeatureImpl для реализации навигации фичи
     single { InterviewTrainerFeatureImpl() } bind FeatureApi::class
 

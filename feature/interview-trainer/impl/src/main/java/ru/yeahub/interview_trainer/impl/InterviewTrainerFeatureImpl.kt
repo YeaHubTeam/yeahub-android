@@ -6,6 +6,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import ru.yeahub.feature_toggle_api.FeatureToggle
+import ru.yeahub.interview_trainer.api.EnableInterviewTrainer
 import ru.yeahub.interview_trainer.impl.createQuiz.presentation.CreateQuizResult
 import ru.yeahub.interview_trainer.impl.createQuiz.ui.CreateQuizScreen
 import ru.yeahub.interview_trainer.impl.interviewQuiz.presentation.InterviewQuizResult
@@ -22,6 +24,8 @@ private const val QUIZ_ANSWERS_KEY = "quizAnswersKey"
 
 class InterviewTrainerFeatureImpl : FeatureApi {
     override fun getFeatureName(): String = FeatureRoute.InterviewTrainerFeature.FEATURE_NAME
+
+    override fun featureToggle(): FeatureToggle = EnableInterviewTrainer
 
     override fun registerGraph(
         navGraphBuilder: NavGraphBuilder,
