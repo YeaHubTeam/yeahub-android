@@ -29,5 +29,28 @@
     <string name="login_unknown_error">Произошла непредвиденная ошибка</string>
     <string name="login_password_visibility_show">Показать пароль</string>
     <string name="login_password_visibility_hide">Скрыть пароль</string>
+
+    <!--забыл пароль-->
+    <string name="change_password_title">Изменение пароля</string>
+    <string name="close">Закрыть</string>
+    <string name="letter">Письмо</string>
+    <string name="instructions_letter">Мы отправили письмо\nс инструкциями</string>
+    <string name="instruction">Если вы не получили письмо\nс инструкциями, проверьте, пожалуйста,\nпапку «Спам» или попробуйте отправить\nзапрос еще раз</string>
+    <string name="resend">Отправить повторно через %1$d c</string>
+    <string name="resend_button">Отправить повторно</string>
+    <string name="ok">Хорошо</string>
+    <string name="enter_email_instruction">Для восстановления пароля введите адрес\nэл.почты, на который вы регистрировались.\nМы отправим письмо для восстановления пароля</string>
+    <string name="send_button">Отправить</string>
+    <string name="cant_send_a_letter">Не удалось отправить письмо</string>
     <string name="login_token_save_error">Не удалось сохранить сессию. Попробуйте войти ещё раз</string>
+    <string name="password_error_too_short">Пароль должен содержать минимум 8 символов</string>
+    <string name="password_error_no_uppercase">Пароль должен содержать заглавную букву</string>
+    <string name="password_error_no_digit">Пароль должен содержать число</string>
+    <string name="password_error_no_special_char">Пароль должен содержать специальные символы</string>
+    <string name="password_rules">Пароль должен содержать не менее 8 символов, заглавную букву, цифру и специальный символ.</string>
+    <string name="repeat_password">Повторите пароль</string>
+    <string name="passwords_do_not_match">Пароли не совпадают</string>
+    <string name="reset_link_invalid">Ссылка для сброса пароля недействительна</string>
+    <string name="send_again_in_seconds">Отправить повторно через %1$d сек.</string>
+    <string name="save_new_password">Сохранить</string>
 </resources>
