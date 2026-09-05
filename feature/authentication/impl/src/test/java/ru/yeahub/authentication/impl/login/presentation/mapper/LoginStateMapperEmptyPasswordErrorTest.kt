@@ -8,6 +8,7 @@ import ru.yeahub.authentication.impl.login.presentation.model.LoginUserInput
 import ru.yeahub.core_utils.common.TextOrResource
 import ru.yeahub.test.TestArgumentsProvider
 
+//при пустом пароле после взаимодействия с полем появляется ошибка
 class LoginStateMapperEmptyPasswordErrorTest {
 
     @ParameterizedTest

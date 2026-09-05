@@ -6,6 +6,7 @@ import org.junit.jupiter.params.provider.ArgumentsSource
 import ru.yeahub.authentication.impl.login.presentation.model.LoginState
 import ru.yeahub.test.TestArgumentsProvider
 
+//проверяли начальное состояние экрана: поля пустые, ошибок нет, кнопка входа выключена
 class LoginStateMapperInitialStateTest {
     @ParameterizedTest
     @ArgumentsSource(LoginStateMapperInitialStateArgumentsProvider::class)

@@ -12,6 +12,7 @@ import ru.yeahub.core_utils.common.TextOrResource
 import ru.yeahub.core_utils.validation.EmailValidator
 import ru.yeahub.test.TestArgumentsProvider
 
+//при некорректном email появляется ошибка, но до взаимодействия с полем она не показывается
 class LoginStateMapperInvalidEmailErrorTest {
 
     @ParameterizedTest

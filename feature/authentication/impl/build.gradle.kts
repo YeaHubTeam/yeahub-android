@@ -86,6 +86,7 @@ dependencies {
     testRuntimeOnly(libs.junit.platform.launcher)
     implementation(libs.androidx.junit.ktx)
     testImplementation(libs.mockk)
+    testImplementation(libs.kotlinx.coroutines.test)
 }
 tasks.withType<Test> {
     useJUnitPlatform()

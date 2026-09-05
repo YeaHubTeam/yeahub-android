@@ -10,6 +10,7 @@ import ru.yeahub.authentication.impl.login.presentation.model.LoginUserInput
 import ru.yeahub.core_utils.validation.EmailValidator
 import ru.yeahub.test.TestArgumentsProvider
 
+//кнопка «Войти» активна только при корректном email и заполненном пароле
 class LoginStateMapperSubmitEnabledTest {
 
     @ParameterizedTest

@@ -30,4 +30,8 @@
     <string name="login_password_visibility_show">Показать пароль</string>
     <string name="login_password_visibility_hide">Скрыть пароль</string>
     <string name="login_token_save_error">Не удалось сохранить сессию. Попробуйте войти ещё раз</string>
+    <string name="login_invalid_password">Неверный пароль</string>
+    <string name="login_account_blocked">Аккаунт заблокирован</string>
+    <string name="login_too_many_attempts">Слишком много попыток входа. Попробуйте позже</string>
+    <string name="login_email_not_confirmed">Подтвердите адрес электронной почты</string>
 </resources>

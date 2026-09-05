@@ -199,6 +199,49 @@ class LoginViewModel(
                 }
             }
 
+            is LoginError.InvalidPassword -> {
+                userInputState.update { currentState ->
+                    currentState.copy(
+                        isPasswordTouched = true,
+                        isValidationRequested = true,
+                        emailServerError = null,
+                        passwordServerError = TextOrResource.Resource(
+                            R.string.login_invalid_password,
+                        ),
+                    )
+                }
+            }
+
+            is LoginError.AccountBlocked -> {
+                sendCommand(
+                    command = LoginCommand.ShowSnackbar(
+                        message = TextOrResource.Resource(
+                            R.string.login_account_blocked,
+                        ),
+                    ),
+                )
+            }
+
+            is LoginError.TooManyAttempts -> {
+                sendCommand(
+                    command = LoginCommand.ShowSnackbar(
+                        message = TextOrResource.Resource(
+                            R.string.login_too_many_attempts,
+                        ),
+                    ),
+                )
+            }
+
+            is LoginError.EmailNotConfirmed -> {
+                sendCommand(
+                    command = LoginCommand.ShowSnackbar(
+                        message = TextOrResource.Resource(
+                            R.string.login_email_not_confirmed,
+                        ),
+                    ),
+                )
+            }
+
             is LoginError.UserNotFound -> {
                 sendCommand(
                     command = LoginCommand.ShowSnackbar(
@@ -239,7 +282,7 @@ class LoginViewModel(
                 )
             }
 
-            else -> {
+            is LoginError.Unknown -> {
                 sendCommand(
                     command = LoginCommand.ShowSnackbar(
                         message = TextOrResource.Resource(
