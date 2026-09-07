@@ -1,7 +1,7 @@
 package ru.yeahub.authentication.impl.forgot_password.presentation.change_password.mapper
 
 import ru.yeahub.authentication.impl.forgot_password.presentation.change_password.model.ChangePasswordState
-import ru.yeahub.authentication.impl.forgot_password.presentation.change_password.model.ChangePasswordUserInput
+import ru.yeahub.authentication.impl.forgot_password.presentation.change_password.model.ChangePasswordRawState
 import ru.yeahub.core_utils.common.TextOrResource
 import ru.yeahub.core_utils.validation.PasswordValidationError
 import ru.yeahub.core_utils.validation.PasswordValidator
@@ -9,7 +9,7 @@ import ru.yeahub.authentication.impl.R
 
 class ChangePasswordStateMapper {
 
-    internal fun getInitialUserInput(): ChangePasswordUserInput = ChangePasswordUserInput(
+    internal fun getInitialRawState(): ChangePasswordRawState = ChangePasswordRawState(
         password = "",
         repeatedPassword = "",
         isPasswordVisible = false,
@@ -25,33 +25,33 @@ class ChangePasswordStateMapper {
         tokenError: TextOrResource? = null,
     ): ChangePasswordState =
         mapToScreenState(
-            userInput = getInitialUserInput(),
+            rawState = getInitialRawState(),
             tokenError = tokenError
         )
 
     internal fun mapToScreenState(
-        userInput: ChangePasswordUserInput,
+        rawState: ChangePasswordRawState,
         tokenError: TextOrResource? = null
     ): ChangePasswordState {
-        val passwordLocalError = validatePassword(userInput.password)
+        val passwordLocalError = validatePassword(rawState.password)
 
         val repeatedPasswordLocalError = validateRepeatedPassword(
-            password = userInput.password,
-            repeatedPassword = userInput.repeatedPassword,
+            password = rawState.password,
+            repeatedPassword = rawState.repeatedPassword,
         )
 
         val shouldShowPasswordError =
-            userInput.isPasswordTouched || userInput.isValidationRequested
+            rawState.isPasswordTouched || rawState.isValidationRequested
 
         val shouldShowRepeatedPasswordError =
-            userInput.isRepeatedPasswordTouched || userInput.isValidationRequested
+            rawState.isRepeatedPasswordTouched || rawState.isValidationRequested
 
         return ChangePasswordState(
-            password = userInput.password,
-            repeatedPassword = userInput.repeatedPassword,
-            isPasswordVisible = userInput.isPasswordVisible,
-            isRepeatedPasswordVisible = userInput.isRepeatedPasswordVisible,
-            passwordError = userInput.passwordServerError ?: passwordLocalError.takeIf {
+            password = rawState.password,
+            repeatedPassword = rawState.repeatedPassword,
+            isPasswordVisible = rawState.isPasswordVisible,
+            isRepeatedPasswordVisible = rawState.isRepeatedPasswordVisible,
+            passwordError = rawState.passwordServerError ?: passwordLocalError.takeIf {
                 shouldShowPasswordError
             },
             repeatedPasswordError = repeatedPasswordLocalError.takeIf {
@@ -61,7 +61,7 @@ class ChangePasswordStateMapper {
             isSubmitEnabled = tokenError == null &&
                     passwordLocalError == null &&
                     repeatedPasswordLocalError == null,
-            isSubmitting = userInput.isSubmitting,
+            isSubmitting = rawState.isSubmitting,
         )
     }
 

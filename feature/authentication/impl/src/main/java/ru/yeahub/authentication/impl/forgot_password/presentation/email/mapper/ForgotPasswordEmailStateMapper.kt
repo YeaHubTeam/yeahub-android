@@ -2,14 +2,14 @@ package ru.yeahub.authentication.impl.forgot_password.presentation.email.mapper
 
 import ru.yeahub.authentication.impl.R
 import ru.yeahub.authentication.impl.forgot_password.presentation.email.model.ForgotPasswordEmailState
-import ru.yeahub.authentication.impl.forgot_password.presentation.email.model.ForgotPasswordEmailUserInput
+import ru.yeahub.authentication.impl.forgot_password.presentation.email.model.ForgotPasswordEmailRawState
 import ru.yeahub.core_utils.common.TextOrResource
 import ru.yeahub.core_utils.validation.EmailValidator
 
 class ForgotPasswordEmailStateMapper {
 
-    internal fun getInitialUserInput(): ForgotPasswordEmailUserInput =
-        ForgotPasswordEmailUserInput(
+    internal fun getInitialRawState(): ForgotPasswordEmailRawState =
+        ForgotPasswordEmailRawState(
             email = "",
             isEmailTouched = false,
             isValidationRequested = false,
@@ -20,25 +20,25 @@ class ForgotPasswordEmailStateMapper {
         )
 
     internal fun getInitialState(): ForgotPasswordEmailState =
-        mapToScreenState(getInitialUserInput())
+        mapToScreenState(getInitialRawState())
 
     internal fun mapToScreenState(
-        userInput: ForgotPasswordEmailUserInput,
+        rawState: ForgotPasswordEmailRawState,
     ): ForgotPasswordEmailState {
-        val emailLocalError = validateEmail(userInput.email)
+        val emailLocalError = validateEmail(rawState.email)
 
         val shouldShowEmailError =
-            userInput.isEmailTouched || userInput.isValidationRequested
+            rawState.isEmailTouched || rawState.isValidationRequested
 
         return ForgotPasswordEmailState(
-            email = userInput.email,
-            emailError = userInput.emailServerError ?: emailLocalError.takeIf {
+            email = rawState.email,
+            emailError = rawState.emailServerError ?: emailLocalError.takeIf {
                 shouldShowEmailError
             },
             isSubmitEnabled = emailLocalError == null,
-            isSubmitting = userInput.isSubmitting,
-            isSuccessDialogVisible = userInput.isSuccessDialogVisible,
-            cooldownSecondsLeft = userInput.cooldownSecondsLeft
+            isSubmitting = rawState.isSubmitting,
+            isSuccessDialogVisible = rawState.isSuccessDialogVisible,
+            cooldownSecondsLeft = rawState.cooldownSecondsLeft
         )
     }
 

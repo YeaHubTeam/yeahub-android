@@ -33,12 +33,12 @@ class ChangePasswordViewModel(
             null
         }
 
-    private val userInputState = MutableStateFlow(mapper.getInitialUserInput())
+    private val rawState = MutableStateFlow(mapper.getInitialRawState())
 
-    internal val state = userInputState
-        .map { userInput ->
+    internal val state = rawState
+        .map { rawState ->
             mapper.mapToScreenState(
-                userInput = userInput,
+                rawState = rawState,
                 tokenError = tokenError,
             )
         }
@@ -63,7 +63,7 @@ class ChangePasswordViewModel(
     }
 
     private fun onPasswordChanged(value: String) {
-        userInputState.update {
+        rawState.update {
             it.copy(
                 password = value,
                 passwordServerError = null
@@ -72,7 +72,7 @@ class ChangePasswordViewModel(
     }
 
     private fun onRepeatedPasswordChanged(value: String) {
-        userInputState.update {
+        rawState.update {
             it.copy(
                 repeatedPassword = value,
                 passwordServerError = null
@@ -81,7 +81,7 @@ class ChangePasswordViewModel(
     }
 
     private fun onPasswordFocusLost() {
-        userInputState.update {
+        rawState.update {
             it.copy(
                 isPasswordTouched = true
             )
@@ -89,7 +89,7 @@ class ChangePasswordViewModel(
     }
 
     private fun onRepeatedPasswordFocusLost() {
-        userInputState.update {
+        rawState.update {
             it.copy(
                 isRepeatedPasswordTouched = true
             )
@@ -97,7 +97,7 @@ class ChangePasswordViewModel(
     }
 
     private fun onTogglePasswordVisible() {
-        userInputState.update {
+        rawState.update {
             it.copy(
                 isPasswordVisible = !it.isPasswordVisible
             )
@@ -105,7 +105,7 @@ class ChangePasswordViewModel(
     }
 
     private fun onToggleRepeatedPasswordVisible() {
-        userInputState.update {
+        rawState.update {
             it.copy(
                 isRepeatedPasswordVisible = !it.isRepeatedPasswordVisible
             )
@@ -113,19 +113,19 @@ class ChangePasswordViewModel(
     }
 
     private fun onSaveClick() {
-        val validationInput = userInputState.value.copy(
+        val validationRawState = rawState.value.copy(
             isPasswordTouched = true,
             isRepeatedPasswordTouched = true,
             isValidationRequested = true
         )
 
-        userInputState.value = validationInput
+        rawState.value = validationRawState
 
         val currentUiState = mapper.mapToScreenState(
-            userInput = validationInput,
+            rawState = validationRawState,
             tokenError = tokenError,
         )
-        if (!currentUiState.isSubmitEnabled || validationInput.isSubmitting) {
+        if (!currentUiState.isSubmitEnabled || validationRawState.isSubmitting) {
             return
         }
         if (resetToken.isBlank()) {
@@ -136,7 +136,7 @@ class ChangePasswordViewModel(
             )
             return
         }
-        userInputState.update {
+        rawState.update {
             it.copy(
                 isSubmitting = true
             )
@@ -145,11 +145,11 @@ class ChangePasswordViewModel(
             when (
                 val result = changePasswordUseCase(
                 token = resetToken,
-                password = validationInput.password
+                password = validationRawState.password
             )
             ) {
                 is ForgotPasswordResult.Success -> {
-                    userInputState.update {
+                    rawState.update {
                         it.copy(
                             isSubmitting = false
                         )
@@ -158,7 +158,7 @@ class ChangePasswordViewModel(
                 }
 
                 is ForgotPasswordResult.Error -> {
-                    userInputState.update {
+                    rawState.update {
                         it.copy(
                             isSubmitting = false,
                             passwordServerError = TextOrResource.Text(result.message)

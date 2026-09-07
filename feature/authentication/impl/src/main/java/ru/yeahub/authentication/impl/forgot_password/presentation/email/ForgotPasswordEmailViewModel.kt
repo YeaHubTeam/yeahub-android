@@ -31,7 +31,7 @@ class ForgotPasswordEmailViewModel(
 ) : ViewModel() {
 
     private val emailFormState = MutableStateFlow(
-        mapper.getInitialUserInput()
+        mapper.getInitialRawState()
     )
     private var cooldownJob: Job? = null
 
@@ -75,19 +75,19 @@ class ForgotPasswordEmailViewModel(
     }
 
     private fun onSubmitClick() {
-        val currentInput = emailFormState.value
+        val currentRawState = emailFormState.value
 
-        if (currentInput.isSubmitting || currentInput.isCooldownActive) {
+        if (currentRawState.isSubmitting || currentRawState.isCooldownActive) {
             return
         }
 
-        val validationInput = currentInput.copy(
+        val validationRawState = currentRawState.copy(
             isEmailTouched = true,
             isValidationRequested = true
         )
-        emailFormState.value = validationInput
+        emailFormState.value = validationRawState
 
-        val currentUiState = mapper.mapToScreenState(validationInput)
+        val currentUiState = mapper.mapToScreenState(validationRawState)
         if (!currentUiState.isSubmitEnabled) {
             return
         }
@@ -100,7 +100,7 @@ class ForgotPasswordEmailViewModel(
         }
 
         viewModelScope.launch {
-            when (val result = sendResetLinkUseCase(validationInput.email)) {
+            when (val result = sendResetLinkUseCase(validationRawState.email)) {
                 is ForgotPasswordResult.Success -> {
                     emailFormState.update {
                         it.copy(

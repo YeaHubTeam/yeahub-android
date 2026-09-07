@@ -14,7 +14,7 @@ import ru.yeahub.core_utils.common.TextOrResource
  * - isSubmitting — идет смена пароля
  * - passwordServerError — серверная ошибка пароля
  */
-data class ChangePasswordUserInput(
+data class ChangePasswordRawState(
     val password: String,
     val repeatedPassword: String,
     val isPasswordVisible: Boolean,

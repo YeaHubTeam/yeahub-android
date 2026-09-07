@@ -12,7 +12,7 @@ import ru.yeahub.core_utils.common.TextOrResource
  * - emailServerError — серверная ошибка email
  */
 
-data class ForgotPasswordEmailUserInput(
+data class ForgotPasswordEmailRawState(
     val email: String,
     val isEmailTouched: Boolean,
     val isValidationRequested: Boolean,

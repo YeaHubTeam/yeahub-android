@@ -37,7 +37,7 @@ import ru.yeahub.authentication.impl.forgot_password.presentation.change_passwor
 import ru.yeahub.authentication.impl.forgot_password.presentation.change_password.model.ChangePasswordCommand
 import ru.yeahub.authentication.impl.forgot_password.presentation.change_password.model.ChangePasswordEvent
 import ru.yeahub.authentication.impl.forgot_password.presentation.change_password.model.ChangePasswordState
-import ru.yeahub.authentication.impl.forgot_password.presentation.change_password.model.ChangePasswordUserInput
+import ru.yeahub.authentication.impl.forgot_password.presentation.change_password.model.ChangePasswordRawState
 import ru.yeahub.core_ui.component.PrimaryButton
 import ru.yeahub.core_ui.component.PrimaryTextField
 import ru.yeahub.core_ui.theme.Theme
@@ -216,7 +216,7 @@ fun ChangePasswordScreenPreview_interactivePreview() {
     val mapper = remember { ChangePasswordStateMapper() }
     var previewInput by remember {
         mutableStateOf(
-            ChangePasswordUserInput(
+            ChangePasswordRawState(
                 password = "Password123!",
                 repeatedPassword = "Password123!",
                 isPasswordVisible = true,
@@ -231,7 +231,7 @@ fun ChangePasswordScreenPreview_interactivePreview() {
     }
     var previewState by remember {
         mutableStateOf(
-            mapper.mapToScreenState(userInput = previewInput)
+            mapper.mapToScreenState(rawState = previewInput)
         )
     }
 
@@ -280,7 +280,7 @@ fun ChangePasswordScreenPreview_interactivePreview() {
                         )
                     }
                 }
-                previewState = mapper.mapToScreenState(userInput = previewInput)
+                previewState = mapper.mapToScreenState(rawState = previewInput)
             },
         )
     }
