@@ -22,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -29,9 +30,12 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ru.yeahub.authentication.impl.R
+import ru.yeahub.authentication.impl.forgot_password.presentation.change_password.ChangePasswordViewModel
 import ru.yeahub.authentication.impl.forgot_password.presentation.change_password.mapper.ChangePasswordStateMapper
-import ru.yeahub.authentication.impl.forgot_password.presentation.change_password.model.ChangePasswordAction
+import ru.yeahub.authentication.impl.forgot_password.presentation.change_password.model.ChangePasswordCommand
+import ru.yeahub.authentication.impl.forgot_password.presentation.change_password.model.ChangePasswordEvent
 import ru.yeahub.authentication.impl.forgot_password.presentation.change_password.model.ChangePasswordState
 import ru.yeahub.authentication.impl.forgot_password.presentation.change_password.model.ChangePasswordUserInput
 import ru.yeahub.core_ui.component.PrimaryButton
@@ -39,11 +43,38 @@ import ru.yeahub.core_ui.component.PrimaryTextField
 import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.core_ui.theme.YeaHubTheme
 import ru.yeahub.core_utils.common.TextOrResource
+import ru.yeahub.core_utils.common.observe
+
+@Composable
+fun ChangePasswordRoute(
+    viewModel: ChangePasswordViewModel,
+    onNavigateToProfile: () -> Unit,
+    showSnackbar: suspend (String) -> Unit,
+) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+
+    viewModel.commands.observe(
+        key = viewModel
+    ) { command ->
+        when (command) {
+            is ChangePasswordCommand.NavigateToProfile -> onNavigateToProfile()
+            is ChangePasswordCommand.ShowSnackbar -> {
+                showSnackbar(command.message.getString(context))
+            }
+        }
+    }
+
+    ChangePasswordScreen(
+        state = state,
+        onAction = viewModel::onEvent,
+    )
+}
 
 @Composable
 fun ChangePasswordScreen(
     state: ChangePasswordState,
-    onAction: (ChangePasswordAction) -> Unit,
+    onAction: (ChangePasswordEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -84,9 +115,9 @@ fun ChangePasswordScreen(
             error = state.passwordError,
             enabled = !state.isSubmitting,
             imeAction = ImeAction.Next,
-            onValueChange = { onAction(ChangePasswordAction.OnPasswordChanged(it)) },
-            onFocusLost = { onAction(ChangePasswordAction.OnPasswordFocusLost) },
-            onToggleVisibility = { onAction(ChangePasswordAction.OnTogglePasswordVisible) },
+            onValueChange = { onAction(ChangePasswordEvent.OnPasswordChanged(it)) },
+            onFocusLost = { onAction(ChangePasswordEvent.OnPasswordFocusLost) },
+            onToggleVisibility = { onAction(ChangePasswordEvent.OnTogglePasswordVisible) },
         )
 
         PasswordTextField(
@@ -96,16 +127,16 @@ fun ChangePasswordScreen(
             error = state.repeatedPasswordError,
             enabled = !state.isSubmitting,
             imeAction = ImeAction.Done,
-            onValueChange = { onAction(ChangePasswordAction.OnRepeatedPasswordChanged(it)) },
-            onFocusLost = { onAction(ChangePasswordAction.OnRepeatedPasswordFocusLost) },
-            onToggleVisibility = { onAction(ChangePasswordAction.OnToggleRepeatedPasswordVisible) },
+            onValueChange = { onAction(ChangePasswordEvent.OnRepeatedPasswordChanged(it)) },
+            onFocusLost = { onAction(ChangePasswordEvent.OnRepeatedPasswordFocusLost) },
+            onToggleVisibility = { onAction(ChangePasswordEvent.OnToggleRepeatedPasswordVisible) },
             keyboardActions = KeyboardActions(
-                onDone = { onAction(ChangePasswordAction.OnSaveClick) },
+                onDone = { onAction(ChangePasswordEvent.OnSaveClicked) },
             ),
         )
 
         PrimaryButton(
-            onClick = { onAction(ChangePasswordAction.OnSaveClick) },
+            onClick = { onAction(ChangePasswordEvent.OnSaveClicked) },
             enabled = state.isSubmitEnabled && !state.isSubmitting,
             modifier = Modifier
                 .fillMaxWidth()
@@ -209,39 +240,39 @@ fun ChangePasswordScreenPreview_interactivePreview() {
             state = previewState,
             onAction = { action ->
                 previewInput = when (action) {
-                    is ChangePasswordAction.OnPasswordChanged -> {
+                    is ChangePasswordEvent.OnPasswordChanged -> {
                         previewInput.copy(
                             password = action.value,
                             passwordServerError = null,
                         )
                     }
 
-                    is ChangePasswordAction.OnRepeatedPasswordChanged -> {
+                    is ChangePasswordEvent.OnRepeatedPasswordChanged -> {
                         previewInput.copy(
                             repeatedPassword = action.value,
                             passwordServerError = null,
                         )
                     }
 
-                    ChangePasswordAction.OnTogglePasswordVisible -> {
+                    ChangePasswordEvent.OnTogglePasswordVisible -> {
                         previewInput.copy(isPasswordVisible = !previewInput.isPasswordVisible)
                     }
 
-                    ChangePasswordAction.OnToggleRepeatedPasswordVisible -> {
+                    ChangePasswordEvent.OnToggleRepeatedPasswordVisible -> {
                         previewInput.copy(
                             isRepeatedPasswordVisible = !previewInput.isRepeatedPasswordVisible
                         )
                     }
 
-                    ChangePasswordAction.OnPasswordFocusLost -> {
+                    ChangePasswordEvent.OnPasswordFocusLost -> {
                         previewInput.copy(isPasswordTouched = true)
                     }
 
-                    ChangePasswordAction.OnRepeatedPasswordFocusLost -> {
+                    ChangePasswordEvent.OnRepeatedPasswordFocusLost -> {
                         previewInput.copy(isRepeatedPasswordTouched = true)
                     }
 
-                    ChangePasswordAction.OnSaveClick -> {
+                    ChangePasswordEvent.OnSaveClicked -> {
                         previewInput.copy(
                             isPasswordTouched = true,
                             isRepeatedPasswordTouched = true,
@@ -317,5 +348,3 @@ fun ChangePasswordScreenPreviewBlankResetToken() {
         )
     }
 }
-
-

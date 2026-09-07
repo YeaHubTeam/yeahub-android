@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package ru.yeahub.authentication.impl.forgot_password.presentation.email
+package ru.yeahub.authentication.impl.forgot_password.presentation.email.ui
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image

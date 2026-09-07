@@ -14,7 +14,7 @@ import ru.yeahub.authentication.impl.R
 import ru.yeahub.authentication.impl.forgot_password.domain.ChangePasswordUseCase
 import ru.yeahub.authentication.impl.forgot_password.domain.ForgotPasswordResult
 import ru.yeahub.authentication.impl.forgot_password.presentation.change_password.mapper.ChangePasswordStateMapper
-import ru.yeahub.authentication.impl.forgot_password.presentation.change_password.model.ChangePasswordAction
+import ru.yeahub.authentication.impl.forgot_password.presentation.change_password.model.ChangePasswordEvent
 import ru.yeahub.authentication.impl.forgot_password.presentation.change_password.model.ChangePasswordCommand
 import ru.yeahub.core_utils.common.TextOrResource
 
@@ -50,15 +50,15 @@ class ChangePasswordViewModel(
     private val _commands = MutableSharedFlow<ChangePasswordCommand>()
     internal val commands = _commands.asSharedFlow()
 
-    internal fun onAction(action: ChangePasswordAction) {
-        when (action) {
-            is ChangePasswordAction.OnPasswordChanged -> onPasswordChanged(action.value)
-            is ChangePasswordAction.OnRepeatedPasswordChanged -> onRepeatedPasswordChanged(action.value)
-            is ChangePasswordAction.OnPasswordFocusLost -> onPasswordFocusLost()
-            is ChangePasswordAction.OnRepeatedPasswordFocusLost -> onRepeatedPasswordFocusLost()
-            is ChangePasswordAction.OnTogglePasswordVisible -> onTogglePasswordVisible()
-            is ChangePasswordAction.OnToggleRepeatedPasswordVisible -> onToggleRepeatedPasswordVisible()
-            is ChangePasswordAction.OnSaveClick -> onSaveClick()
+    internal fun onEvent(event: ChangePasswordEvent) {
+        when (event) {
+            is ChangePasswordEvent.OnPasswordChanged -> onPasswordChanged(event.value)
+            is ChangePasswordEvent.OnRepeatedPasswordChanged -> onRepeatedPasswordChanged(event.value)
+            is ChangePasswordEvent.OnPasswordFocusLost -> onPasswordFocusLost()
+            is ChangePasswordEvent.OnRepeatedPasswordFocusLost -> onRepeatedPasswordFocusLost()
+            is ChangePasswordEvent.OnTogglePasswordVisible -> onTogglePasswordVisible()
+            is ChangePasswordEvent.OnToggleRepeatedPasswordVisible -> onToggleRepeatedPasswordVisible()
+            is ChangePasswordEvent.OnSaveClicked -> onSaveClick()
         }
     }
 

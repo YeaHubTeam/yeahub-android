@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 import ru.yeahub.authentication.impl.forgot_password.domain.ForgotPasswordResult
 import ru.yeahub.authentication.impl.forgot_password.domain.SendResetLinkUseCase
 import ru.yeahub.authentication.impl.forgot_password.presentation.email.mapper.ForgotPasswordEmailStateMapper
-import ru.yeahub.authentication.impl.forgot_password.presentation.email.model.ForgotPasswordEmailAction
+import ru.yeahub.authentication.impl.forgot_password.presentation.email.model.ForgotPasswordEmailEvent
 import ru.yeahub.authentication.impl.forgot_password.presentation.email.model.ForgotPasswordEmailCommand
 import ru.yeahub.authentication.impl.forgot_password.presentation.email.model.ForgotPasswordEmailState
 import ru.yeahub.core_utils.common.TextOrResource
@@ -46,14 +46,14 @@ class ForgotPasswordEmailViewModel(
             initialValue = mapper.getInitialState()
         )
 
-    internal fun onAction(action: ForgotPasswordEmailAction) {
-        when (action) {
-            is ForgotPasswordEmailAction.OnBackClick -> sendCommand(ForgotPasswordEmailCommand.NavigateBack)
-            is ForgotPasswordEmailAction.OnDismissSuccessDialog -> onDismissSuccessDialog()
-            is ForgotPasswordEmailAction.OnEmailChanged -> onEmailChanged(action.value)
-            is ForgotPasswordEmailAction.OnEmailFocusLost -> onEmailFocusLost()
-            is ForgotPasswordEmailAction.OnResendClick -> onSubmitClick()
-            is ForgotPasswordEmailAction.OnSubmitClick -> onSubmitClick()
+    internal fun onEvent(event: ForgotPasswordEmailEvent) {
+        when (event) {
+            is ForgotPasswordEmailEvent.OnBackClicked -> sendCommand(ForgotPasswordEmailCommand.NavigateBack)
+            is ForgotPasswordEmailEvent.OnSuccessDialogDismissed -> onSuccessDialogDismissed()
+            is ForgotPasswordEmailEvent.OnEmailChanged -> onEmailChanged(event.value)
+            is ForgotPasswordEmailEvent.OnEmailFocusLost -> onEmailFocusLost()
+            is ForgotPasswordEmailEvent.OnResendClicked -> onSubmitClick()
+            is ForgotPasswordEmailEvent.OnSubmitClicked -> onSubmitClick()
         }
     }
 
@@ -70,7 +70,7 @@ class ForgotPasswordEmailViewModel(
         emailFormState.update { it.copy(isEmailTouched = true) }
     }
 
-    private fun onDismissSuccessDialog() {
+    private fun onSuccessDialogDismissed() {
         emailFormState.update { it.copy(isSuccessDialogVisible = false) }
     }
 

@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package ru.yeahub.authentication.impl.forgot_password.presentation.email
+package ru.yeahub.authentication.impl.forgot_password.presentation.email.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -16,13 +16,19 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ru.yeahub.authentication.impl.R
-import ru.yeahub.authentication.impl.forgot_password.presentation.email.model.ForgotPasswordEmailAction
+import ru.yeahub.authentication.impl.forgot_password.presentation.email.ForgotPasswordEmailViewModel
+import ru.yeahub.authentication.impl.forgot_password.presentation.email.model.ForgotPasswordEmailCommand
+import ru.yeahub.authentication.impl.forgot_password.presentation.email.model.ForgotPasswordEmailEvent
 import ru.yeahub.authentication.impl.forgot_password.presentation.email.model.ForgotPasswordEmailState
 import ru.yeahub.core_ui.component.PrimaryButton
 import ru.yeahub.core_ui.component.PrimaryTextField
@@ -31,17 +37,47 @@ import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.core_ui.theme.YeaHubTheme
 import ru.yeahub.core_ui.theme.colors
 import ru.yeahub.core_utils.common.TextOrResource
+import ru.yeahub.core_utils.common.observe
+
+@Composable
+fun ForgotPasswordEmailRoute(
+    viewModel: ForgotPasswordEmailViewModel,
+    onBack: () -> Unit,
+    showSnackbar: suspend (String) -> Unit
+) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
+    val currentContext by rememberUpdatedState(LocalContext.current)
+    val currentOnBack by rememberUpdatedState(onBack)
+    val currentShowSnackbar by rememberUpdatedState(showSnackbar)
+
+    viewModel.commands.observe(
+        key = viewModel
+    ) { command ->
+        when (command) {
+            is ForgotPasswordEmailCommand.NavigateBack -> currentOnBack()
+            is ForgotPasswordEmailCommand.ShowSnackbar -> {
+                currentShowSnackbar(command.message.getString(currentContext))
+            }
+        }
+    }
+
+    ForgotPasswordEmailScreen(
+        state = state,
+        onAction = viewModel::onEvent
+    )
+}
 
 @Composable
 fun ForgotPasswordEmailScreen(
     state: ForgotPasswordEmailState,
-    onAction: (ForgotPasswordEmailAction) -> Unit,
+    onAction: (ForgotPasswordEmailEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
     if (state.isSuccessDialogVisible) {
         InstructionsSentDialog(
-            onDismiss = { onAction(ForgotPasswordEmailAction.OnDismissSuccessDialog) },
-            onResend = { onAction(ForgotPasswordEmailAction.OnResendClick) },
+            onDismiss = { onAction(ForgotPasswordEmailEvent.OnSuccessDialogDismissed) },
+            onResend = { onAction(ForgotPasswordEmailEvent.OnResendClicked) },
             secondsLeft = state.cooldownSecondsLeft
         )
     }
@@ -71,7 +107,7 @@ fun ForgotPasswordEmailScreen(
 
         PrimaryTextField(
             value = state.email,
-            onValueChange = { onAction(ForgotPasswordEmailAction.OnEmailChanged(it)) },
+            onValueChange = { onAction(ForgotPasswordEmailEvent.OnEmailChanged(it)) },
             modifier = Modifier.fillMaxWidth(),
             title = stringResource(R.string.email_title),
             placeholder = stringResource(R.string.email_placeholder),
@@ -80,7 +116,7 @@ fun ForgotPasswordEmailScreen(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             onFocusChanged = { isFocused ->
                 if (!isFocused) {
-                    onAction(ForgotPasswordEmailAction.OnEmailFocusLost)
+                    onAction(ForgotPasswordEmailEvent.OnEmailFocusLost)
                 }
             }
         )
@@ -88,7 +124,7 @@ fun ForgotPasswordEmailScreen(
         Spacer(Modifier.height(20.dp))
 
         PrimaryButton(
-            onClick = { onAction(ForgotPasswordEmailAction.OnSubmitClick) },
+            onClick = { onAction(ForgotPasswordEmailEvent.OnSubmitClicked) },
             enabled = state.isSubmitEnabled && !state.isSubmitting && !state.isCooldownActive,
             modifier = Modifier
                 .fillMaxWidth()
