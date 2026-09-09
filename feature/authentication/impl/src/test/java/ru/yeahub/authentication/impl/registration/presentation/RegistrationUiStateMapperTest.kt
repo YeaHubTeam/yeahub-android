@@ -2,404 +2,935 @@ package ru.yeahub.authentication.impl.registration.presentation
 
 import io.mockk.every
 import io.mockk.mockkObject
-import io.mockk.unmockkAll
-import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.extension.ExtensionContext
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.Arguments
-import org.junit.jupiter.params.provider.ArgumentsProvider
 import org.junit.jupiter.params.provider.ArgumentsSource
 import ru.yeahub.authentication.impl.R
 import ru.yeahub.authentication.impl.registration.domain.entity.RegistrationError
 import ru.yeahub.authentication.impl.registration.domain.entity.RegistrationException
 import ru.yeahub.core_utils.common.TextOrResource
 import ru.yeahub.core_utils.validation.EmailValidator
-import java.util.stream.Stream
+import ru.yeahub.test.TestArgumentsProvider
 
 class RegistrationUiStateMapperTest {
 
     private val mapper = RegistrationUiStateMapper()
 
-    @BeforeEach
-    fun setUp() {
+    /**
+     * Один параметризованный тест покрывает все основные сценарии,
+     * которые умеет обрабатывать RegistrationUiStateMapper:
+     *
+     * - создание начального состояния;
+     * - изменение полей формы;
+     * - изменение focus/touched;
+     * - изменение согласий;
+     * - нажатие SubmitClicked;
+     * - валидацию формы;
+     * - состояние Loading;
+     * - преобразование ошибок регистрации.
+     *
+     * EmailValidator вызывается внутри mapper и использует android.util.Patterns,
+     * поэтому в JVM unit-тесте его необходимо замокировать.
+     */
+    @ParameterizedTest
+    @ArgumentsSource(RegistrationUiStateMapperArgumentsProvider::class)
+    fun `should correctly map registration state`(
+        testCase: RegistrationUiStateMapperTestCase
+    ) {
         mockkObject(EmailValidator)
-        every { EmailValidator.isValid(any()) } returns true
-    }
 
-    @AfterEach
-    fun tearDown() {
-        unmockkAll()
-    }
-
-    @ParameterizedTest
-    @ArgumentsSource(UpdatedStateArgumentsProvider::class)
-    fun `should update form state by action correctly`(testCase: UpdatedStateTestCase) {
-        val initialForm = testCase.setupForm(mapper.getInitialFormState())
-        val currentState = RegistrationUiState.Content(initialForm)
-
-        val result = mapper.mapToUpdatedState(currentState, testCase.action)
-
-        assertEquals(testCase.expectedForm, result.formState)
-    }
-
-    @ParameterizedTest
-    @ArgumentsSource(ValidationArgumentsProvider::class)
-    fun `should validate form and return correct isSubmitEnabled`(testCase: ValidationTestCase) {
+        // isEmailValid — это результат зависимости EmailValidator,
+        // а expectedState — ожидаемый результат работы самого mapper.
         every { EmailValidator.isValid(any()) } returns testCase.isEmailValid
 
-        val form = mapper.getInitialFormState().copy(
-            nickname = testCase.nickname,
-            email = testCase.email,
-            password = testCase.password,
-            confirmPassword = testCase.confirmPassword,
-            isPdAccepted = testCase.isPdAccepted,
-            isOfferAccepted = testCase.isOfferAccepted,
+        val result = when (testCase.scenario) {
+            Scenario.INITIAL -> {
+                mapper.mapToInitialState()
+            }
+
+            Scenario.UPDATE -> {
+                mapper.mapToUpdatedState(
+                    currentState = testCase.currentState!!,
+                    action = testCase.action!!
+                )
+            }
+
+            Scenario.LOADING -> {
+                mapper.mapToLoadingState(
+                    currentState = testCase.currentState!!
+                )
+            }
+
+            Scenario.ERROR -> {
+                mapper.mapToErrorState(
+                    currentState = testCase.currentState!!,
+                    exception = testCase.exception!!
+                )
+            }
+        }
+
+        Assertions.assertEquals(
+            testCase.expectedState,
+            result
         )
-        val currentState = RegistrationUiState.Content(form)
-
-        val result = mapper.mapToUpdatedState(
-            currentState,
-            testCase.action,
-        )
-
-        assertEquals(testCase.expectedSubmitEnabled, result.formState.isSubmitEnabled)
     }
 
-    @ParameterizedTest
-    @ArgumentsSource(ErrorStateArgumentsProvider::class)
-    fun `should map exception to correct error resource`(testCase: ErrorStateTestCase) {
-        val currentState = RegistrationUiState.Content(mapper.getInitialFormState())
-
-        val result = mapper.mapToErrorState(currentState, testCase.exception)
-
-        assertTrue(result is RegistrationUiState.Error)
-        val errorMessage = (result as RegistrationUiState.Error).message as TextOrResource.Resource
-        assertEquals(testCase.expectedErrorRes, errorMessage.resource)
+    /**
+     * Тип сценария определяет, какой публичный метод mapper необходимо вызвать.
+     */
+    enum class Scenario {
+        INITIAL,
+        UPDATE,
+        LOADING,
+        ERROR,
     }
 
-    data class UpdatedStateTestCase(
-        val name: String,
-        val action: RegistrationAction,
-        val setupForm: (RegistrationFormState) -> RegistrationFormState = { it },
-        val expectedForm: RegistrationFormState,
-    ) {
-        override fun toString(): String = name
-    }
+    /**
+     * Все данные одного тестового сценария.
+     *
+     * Не все поля нужны каждому сценарию:
+     *
+     * INITIAL  -> только expectedState
+     * UPDATE   -> currentState + action
+     * LOADING  -> currentState
+     * ERROR    -> currentState + exception
+     *
+     * isEmailValid нужен только потому, что EmailValidator является
+     * внешней зависимостью mapper и в JVM-тесте мы задаём его результат вручную.
+     */
+    data class RegistrationUiStateMapperTestCase(
+        val scenario: Scenario,
+        val currentState: RegistrationUiState? = null,
+        val action: RegistrationAction? = null,
+        val exception: RegistrationException? = null,
+        val isEmailValid: Boolean = true,
+        val expectedState: RegistrationUiState,
+    )
 
-    data class ValidationTestCase(
-        val name: String,
-        val nickname: String,
-        val email: String,
-        val isEmailValid: Boolean,
-        val password: String,
-        val confirmPassword: String,
-        val isPdAccepted: Boolean,
-        val isOfferAccepted: Boolean,
-        val action: RegistrationAction,
-        val expectedSubmitEnabled: Boolean,
-    ) {
-        override fun toString(): String = name
-    }
+    /**
+     * Все 37 сценариев RegistrationUiStateMapper.
+     */
+    class RegistrationUiStateMapperArgumentsProvider :
+        TestArgumentsProvider<RegistrationUiStateMapperTestCase>() {
 
-    data class ErrorStateTestCase(
-        val name: String,
-        val exception: RegistrationException,
-        val expectedErrorRes: Int,
-    ) {
-        override fun toString(): String = name
-    }
+        override fun testCases(): List<RegistrationUiStateMapperTestCase> =
+            listOf(
 
-    class UpdatedStateArgumentsProvider : ArgumentsProvider {
-        override fun provideArguments(context: ExtensionContext?): Stream<out Arguments> {
-            return Stream.of(
-                Arguments.of(
-                    UpdatedStateTestCase(
-                        name = "NicknameChanged обновляет nickname",
-                        action = RegistrationAction.NicknameChanged("John"),
-                        expectedForm = initialFormWith(nickname = "John"),
+                // -----------------------------------------------------------------
+                // 1. INITIAL STATE
+                // -----------------------------------------------------------------
+
+                /**
+                 * Mapper должен создать Content с полностью пустой формой.
+                 */
+                RegistrationUiStateMapperTestCase(
+                    scenario = Scenario.INITIAL,
+                    expectedState = RegistrationUiState.Content(
+                        RegistrationFormState(
+                            nickname = "",
+                            nicknameError = null,
+                            email = "",
+                            emailError = null,
+                            password = "",
+                            passwordError = null,
+                            confirmPassword = "",
+                            confirmPasswordError = null,
+                            isPdAccepted = false,
+                            isOfferAccepted = false,
+                            isMailingAccepted = false,
+                            isPasswordVisible = false,
+                            isConfirmPasswordVisible = false,
+                            isSubmitEnabled = false,
+                            isEmailTouched = false,
+                            isPasswordTouched = false,
+                            isConfirmPasswordTouched = false,
+                        )
                     )
                 ),
-                Arguments.of(
-                    UpdatedStateTestCase(
-                        name = "EmailChanged обновляет email",
-                        action = RegistrationAction.EmailChanged("test@mail.ru"),
-                        expectedForm = initialFormWith(email = "test@mail.ru"),
+
+                // -----------------------------------------------------------------
+                // 2-5. FIELD CHANGES
+                // -----------------------------------------------------------------
+
+                /**
+                 * Изменение nickname должно менять только nickname.
+                 */
+                RegistrationUiStateMapperTestCase(
+                    scenario = Scenario.UPDATE,
+                    currentState = RegistrationUiState.Content(validForm()),
+                    action = RegistrationAction.NicknameChanged("Alex"),
+                    expectedState = RegistrationUiState.Content(
+                        validForm().copy(
+                            nickname = "Alex"
+                        )
                     )
                 ),
-                Arguments.of(
-                    UpdatedStateTestCase(
-                        name = "PasswordChanged обновляет password",
-                        action = RegistrationAction.PasswordChanged("Pass123!"),
-                        expectedForm = initialFormWith(password = "Pass123!"),
+
+                /**
+                 * Изменение email должно менять только email.
+                 */
+                RegistrationUiStateMapperTestCase(
+                    scenario = Scenario.UPDATE,
+                    currentState = RegistrationUiState.Content(validForm()),
+                    action = RegistrationAction.EmailChanged("alex@example.com"),
+                    expectedState = RegistrationUiState.Content(
+                        validForm().copy(
+                            email = "alex@example.com"
+                        )
                     )
                 ),
-                Arguments.of(
-                    UpdatedStateTestCase(
-                        name = "ConfirmPasswordChanged обновляет confirmPassword",
-                        action = RegistrationAction.ConfirmPasswordChanged("Pass123!"),
-                        expectedForm = initialFormWith(confirmPassword = "Pass123!"),
+
+                /**
+                 * Изменение password должно менять только password.
+                 *
+                 * После изменения password пароль подтверждения остаётся
+                 * прежним, поэтому форма становится невалидной.
+                 */
+                RegistrationUiStateMapperTestCase(
+                    scenario = Scenario.UPDATE,
+                    currentState = RegistrationUiState.Content(validForm()),
+                    action = RegistrationAction.PasswordChanged("NewPassword1!"),
+                    expectedState = RegistrationUiState.Content(
+                        validForm().copy(
+                            password = "NewPassword1!",
+                            isSubmitEnabled = false
+                        )
                     )
                 ),
-                Arguments.of(
-                    UpdatedStateTestCase(
-                        name = "EmailFocusChanged(false) при непустом email ставит isEmailTouched = true",
-                        action = RegistrationAction.EmailFocusChanged(false),
-                        setupForm = { it.copy(email = "test@mail.ru") },
-                        expectedForm = initialFormWith(
-                            email = "test@mail.ru",
-                            isEmailTouched = true,
-                        ),
+
+                /**
+                 * Изменение confirmPassword должно менять только confirmPassword.
+                 *
+                 * Здесь значение отличается от password, поэтому submit выключен.
+                 */
+                RegistrationUiStateMapperTestCase(
+                    scenario = Scenario.UPDATE,
+                    currentState = RegistrationUiState.Content(validForm()),
+                    action = RegistrationAction.ConfirmPasswordChanged(
+                        "NewPassword1!"
+                    ),
+                    expectedState = RegistrationUiState.Content(
+                        validForm().copy(
+                            confirmPassword = "NewPassword1!",
+                            isSubmitEnabled = false
+                        )
                     )
                 ),
-                Arguments.of(
-                    UpdatedStateTestCase(
-                        name = "EmailFocusChanged(true) не ставит isEmailTouched",
-                        action = RegistrationAction.EmailFocusChanged(true),
-                        setupForm = { it.copy(email = "test@mail.ru", isEmailTouched = true) },
-                        expectedForm = initialFormWith(email = "test@mail.ru"),
+
+                // -----------------------------------------------------------------
+                // 6-14. FOCUS / TOUCHED
+                // -----------------------------------------------------------------
+
+                /**
+                 * Email был заполнен и потерял focus -> email становится touched.
+                 */
+                RegistrationUiStateMapperTestCase(
+                    scenario = Scenario.UPDATE,
+                    currentState = RegistrationUiState.Content(
+                        validForm().copy(
+                            isEmailTouched = false
+                        )
+                    ),
+                    action = RegistrationAction.EmailFocusChanged(
+                        hasFocus = false
+                    ),
+                    expectedState = RegistrationUiState.Content(
+                        validForm().copy(
+                            isEmailTouched = true
+                        )
                     )
                 ),
-                Arguments.of(
-                    UpdatedStateTestCase(
-                        name = "PasswordFocusChanged(false) при непустом пароле ставит isPasswordTouched = true",
-                        action = RegistrationAction.PasswordFocusChanged(false),
-                        setupForm = { it.copy(password = "Pass123!") },
-                        expectedForm = initialFormWith(
-                            password = "Pass123!",
-                            isPasswordTouched = true,
-                        ),
+
+                /**
+                 * Email получил focus -> touched становится false.
+                 */
+                RegistrationUiStateMapperTestCase(
+                    scenario = Scenario.UPDATE,
+                    currentState = RegistrationUiState.Content(
+                        validForm().copy(
+                            isEmailTouched = true
+                        )
+                    ),
+                    action = RegistrationAction.EmailFocusChanged(
+                        hasFocus = true
+                    ),
+                    expectedState = RegistrationUiState.Content(
+                        validForm().copy(
+                            isEmailTouched = false
+                        )
                     )
                 ),
-                Arguments.of(
-                    UpdatedStateTestCase(
-                        name = "ConfirmPasswordFocusChanged(false) при непустом " +
-                            "пароле ставит isConfirmPasswordTouched = true",
-                        action = RegistrationAction.ConfirmPasswordFocusChanged(false),
-                        setupForm = { it.copy(password = "Pass123!", confirmPassword = "Pass123!") },
-                        expectedForm = initialFormWith(
-                            password = "Pass123!",
-                            confirmPassword = "Pass123!",
+
+                /**
+                 * Пустой email потерял focus.
+                 *
+                 * touched не устанавливается, потому что mapper проверяет
+                 * form.email.isNotEmpty().
+                 */
+                RegistrationUiStateMapperTestCase(
+                    scenario = Scenario.UPDATE,
+                    currentState = RegistrationUiState.Content(
+                        validForm().copy(
+                            email = "",
+                            isEmailTouched = false
+                        )
+                    ),
+                    action = RegistrationAction.EmailFocusChanged(
+                        hasFocus = false
+                    ),
+                    isEmailValid = false,
+                    expectedState = RegistrationUiState.Content(
+                        validForm().copy(
+                            email = "",
+                            isEmailTouched = false,
+                            isSubmitEnabled = false
+                        )
+                    )
+                ),
+
+                /**
+                 * Заполненный password потерял focus -> password touched.
+                 */
+                RegistrationUiStateMapperTestCase(
+                    scenario = Scenario.UPDATE,
+                    currentState = RegistrationUiState.Content(
+                        validForm().copy(
+                            isPasswordTouched = false
+                        )
+                    ),
+                    action = RegistrationAction.PasswordFocusChanged(
+                        hasFocus = false
+                    ),
+                    expectedState = RegistrationUiState.Content(
+                        validForm().copy(
+                            isPasswordTouched = true
+                        )
+                    )
+                ),
+
+                /**
+                 * Password получил focus -> touched false.
+                 */
+                RegistrationUiStateMapperTestCase(
+                    scenario = Scenario.UPDATE,
+                    currentState = RegistrationUiState.Content(
+                        validForm().copy(
+                            isPasswordTouched = true
+                        )
+                    ),
+                    action = RegistrationAction.PasswordFocusChanged(
+                        hasFocus = true
+                    ),
+                    expectedState = RegistrationUiState.Content(
+                        validForm().copy(
+                            isPasswordTouched = false
+                        )
+                    )
+                ),
+
+                /**
+                 * Пустой password потерял focus -> touched остаётся false.
+                 */
+                RegistrationUiStateMapperTestCase(
+                    scenario = Scenario.UPDATE,
+                    currentState = RegistrationUiState.Content(
+                        validForm().copy(
+                            password = "",
+                            isPasswordTouched = false
+                        )
+                    ),
+                    action = RegistrationAction.PasswordFocusChanged(
+                        hasFocus = false
+                    ),
+                    expectedState = RegistrationUiState.Content(
+                        validForm().copy(
+                            password = "",
+                            isPasswordTouched = false,
+                            isSubmitEnabled = false
+                        )
+                    )
+                ),
+
+                /**
+                 * Заполненный confirmPassword потерял focus -> touched.
+                 */
+                RegistrationUiStateMapperTestCase(
+                    scenario = Scenario.UPDATE,
+                    currentState = RegistrationUiState.Content(
+                        validForm().copy(
+                            isConfirmPasswordTouched = false
+                        )
+                    ),
+                    action = RegistrationAction.ConfirmPasswordFocusChanged(
+                        hasFocus = false
+                    ),
+                    expectedState = RegistrationUiState.Content(
+                        validForm().copy(
+                            isConfirmPasswordTouched = true
+                        )
+                    )
+                ),
+
+                /**
+                 * ConfirmPassword получил focus -> touched false.
+                 */
+                RegistrationUiStateMapperTestCase(
+                    scenario = Scenario.UPDATE,
+                    currentState = RegistrationUiState.Content(
+                        validForm().copy(
+                            isConfirmPasswordTouched = true
+                        )
+                    ),
+                    action = RegistrationAction.ConfirmPasswordFocusChanged(
+                        hasFocus = true
+                    ),
+                    expectedState = RegistrationUiState.Content(
+                        validForm().copy(
+                            isConfirmPasswordTouched = false
+                        )
+                    )
+                ),
+
+                /**
+                 * Пустой confirmPassword потерял focus -> touched false.
+                 */
+                RegistrationUiStateMapperTestCase(
+                    scenario = Scenario.UPDATE,
+                    currentState = RegistrationUiState.Content(
+                        validForm().copy(
+                            confirmPassword = "",
+                            isConfirmPasswordTouched = false
+                        )
+                    ),
+                    action = RegistrationAction.ConfirmPasswordFocusChanged(
+                        hasFocus = false
+                    ),
+                    expectedState = RegistrationUiState.Content(
+                        validForm().copy(
+                            confirmPassword = "",
+                            isConfirmPasswordTouched = false,
+                            isSubmitEnabled = false
+                        )
+                    )
+                ),
+
+                // -----------------------------------------------------------------
+                // 15-17. CONSENTS
+                // -----------------------------------------------------------------
+
+                /**
+                 * Согласие на обработку персональных данных включено.
+                 */
+                RegistrationUiStateMapperTestCase(
+                    scenario = Scenario.UPDATE,
+                    currentState = RegistrationUiState.Content(
+                        validForm()
+                    ),
+                    action = RegistrationAction.PdAcceptedChanged(false),
+                    expectedState = RegistrationUiState.Content(
+                        validForm().copy(
+                            isPdAccepted = false,
+                            isSubmitEnabled = false
+                        )
+                    )
+                ),
+
+                /**
+                 * Согласие с офертой выключено.
+                 */
+                RegistrationUiStateMapperTestCase(
+                    scenario = Scenario.UPDATE,
+                    currentState = RegistrationUiState.Content(
+                        validForm()
+                    ),
+                    action = RegistrationAction.OfferAcceptedChanged(false),
+                    expectedState = RegistrationUiState.Content(
+                        validForm().copy(
+                            isOfferAccepted = false,
+                            isSubmitEnabled = false
+                        )
+                    )
+                ),
+
+                /**
+                 * Отказ от рассылки НЕ должен запрещать регистрацию.
+                 *
+                 * Важно: isMailingAccepted отсутствует в условии
+                 * isSubmitEnabled внутри mapper.
+                 */
+                RegistrationUiStateMapperTestCase(
+                    scenario = Scenario.UPDATE,
+                    currentState = RegistrationUiState.Content(
+                        validForm()
+                    ),
+                    action = RegistrationAction.MailingAcceptedChanged(false),
+                    expectedState = RegistrationUiState.Content(
+                        validForm().copy(
+                            isMailingAccepted = false,
+                            isSubmitEnabled = true
+                        )
+                    )
+                ),
+
+                // -----------------------------------------------------------------
+                // 18-19. PASSWORD VISIBILITY
+                // -----------------------------------------------------------------
+
+                /**
+                 * Переключение видимости пароля.
+                 *
+                 * Это техническая ветка mapper, поэтому её можно покрыть,
+                 * даже если с точки зрения бизнес-логики она не является
+                 * отдельным пользовательским сценарием.
+                 */
+                RegistrationUiStateMapperTestCase(
+                    scenario = Scenario.UPDATE,
+                    currentState = RegistrationUiState.Content(
+                        validForm().copy(
+                            isPasswordVisible = false
+                        )
+                    ),
+                    action = RegistrationAction.TogglePasswordVisible,
+                    expectedState = RegistrationUiState.Content(
+                        validForm().copy(
+                            isPasswordVisible = true
+                        )
+                    )
+                ),
+
+                /**
+                 * Переключение видимости подтверждения пароля.
+                 */
+                RegistrationUiStateMapperTestCase(
+                    scenario = Scenario.UPDATE,
+                    currentState = RegistrationUiState.Content(
+                        validForm().copy(
+                            isConfirmPasswordVisible = false
+                        )
+                    ),
+                    action = RegistrationAction.ToggleConfirmPasswordVisible,
+                    expectedState = RegistrationUiState.Content(
+                        validForm().copy(
+                            isConfirmPasswordVisible = true
+                        )
+                    )
+                ),
+
+                // -----------------------------------------------------------------
+                // 20. SUBMIT
+                // -----------------------------------------------------------------
+
+                /**
+                 * Mapper не должен менять форму при SubmitClicked.
+                 *
+                 * Само выполнение регистрации происходит уже во ViewModel,
+                 * а не в mapper.
+                 */
+                RegistrationUiStateMapperTestCase(
+                    scenario = Scenario.UPDATE,
+                    currentState = RegistrationUiState.Content(
+                        validForm()
+                    ),
+                    action = RegistrationAction.SubmitClicked,
+                    expectedState = RegistrationUiState.Content(
+                        validForm()
+                    )
+                ),
+
+                // -----------------------------------------------------------------
+                // 21-28. FORM VALIDATION
+                // -----------------------------------------------------------------
+
+                /**
+                 * Полностью валидная форма -> submit разрешён.
+                 */
+                RegistrationUiStateMapperTestCase(
+                    scenario = Scenario.UPDATE,
+                    currentState = RegistrationUiState.Content(
+                        validForm()
+                    ),
+                    action = RegistrationAction.SubmitClicked,
+                    isEmailValid = true,
+                    expectedState = RegistrationUiState.Content(
+                        validForm()
+                    )
+                ),
+
+                /**
+                 * Пустой nickname -> submit запрещён.
+                 */
+                RegistrationUiStateMapperTestCase(
+                    scenario = Scenario.UPDATE,
+                    currentState = RegistrationUiState.Content(
+                        validForm().copy(
+                            nickname = ""
+                        )
+                    ),
+                    action = RegistrationAction.SubmitClicked,
+                    expectedState = RegistrationUiState.Content(
+                        validForm().copy(
+                            nickname = "",
+                            isSubmitEnabled = false
+                        )
+                    )
+                ),
+
+                /**
+                 * Некорректный email -> submit запрещён.
+                 */
+                RegistrationUiStateMapperTestCase(
+                    scenario = Scenario.UPDATE,
+                    currentState = RegistrationUiState.Content(
+                        validForm()
+                    ),
+                    action = RegistrationAction.SubmitClicked,
+                    isEmailValid = false,
+                    expectedState = RegistrationUiState.Content(
+                        validForm().copy(
+                            isSubmitEnabled = false
+                        )
+                    )
+                ),
+
+                /**
+                 * Слабый password -> submit запрещён.
+                 */
+                RegistrationUiStateMapperTestCase(
+                    scenario = Scenario.UPDATE,
+                    currentState = RegistrationUiState.Content(
+                        validForm().copy(
+                            password = "weak"
+                        )
+                    ),
+                    action = RegistrationAction.SubmitClicked,
+                    expectedState = RegistrationUiState.Content(
+                        validForm().copy(
+                            password = "weak",
+                            isSubmitEnabled = false
+                        )
+                    )
+                ),
+
+                /**
+                 * Пароли не совпадают -> submit запрещён.
+                 *
+                 * Здесь touched = true, чтобы mapper дополнительно показал
+                 * ошибку несовпадения паролей.
+                 */
+                RegistrationUiStateMapperTestCase(
+                    scenario = Scenario.UPDATE,
+                    currentState = RegistrationUiState.Content(
+                        validForm().copy(
+                            confirmPassword = "AnotherPassword1!",
+                            isConfirmPasswordTouched = true
+                        )
+                    ),
+                    action = RegistrationAction.SubmitClicked,
+                    expectedState = RegistrationUiState.Content(
+                        validForm().copy(
+                            confirmPassword = "AnotherPassword1!",
                             isConfirmPasswordTouched = true,
+                            passwordError = TextOrResource.Resource(
+                                R.string.error_passwords_not_match
+                            ),
+                            confirmPasswordError = TextOrResource.Resource(
+                                R.string.error_passwords_not_match
+                            ),
+                            isSubmitEnabled = false
+                        )
+                    )
+                ),
+
+                /**
+                 * Пользователь не принял PD -> submit запрещён.
+                 */
+                RegistrationUiStateMapperTestCase(
+                    scenario = Scenario.UPDATE,
+                    currentState = RegistrationUiState.Content(
+                        validForm().copy(
+                            isPdAccepted = false
+                        )
+                    ),
+                    action = RegistrationAction.SubmitClicked,
+                    expectedState = RegistrationUiState.Content(
+                        validForm().copy(
+                            isPdAccepted = false,
+                            isSubmitEnabled = false
+                        )
+                    )
+                ),
+
+                /**
+                 * Пользователь не принял оферту -> submit запрещён.
+                 */
+                RegistrationUiStateMapperTestCase(
+                    scenario = Scenario.UPDATE,
+                    currentState = RegistrationUiState.Content(
+                        validForm().copy(
+                            isOfferAccepted = false
+                        )
+                    ),
+                    action = RegistrationAction.SubmitClicked,
+                    expectedState = RegistrationUiState.Content(
+                        validForm().copy(
+                            isOfferAccepted = false,
+                            isSubmitEnabled = false
+                        )
+                    )
+                ),
+
+                /**
+                 * Отказ от рассылки не влияет на возможность отправки формы.
+                 */
+                RegistrationUiStateMapperTestCase(
+                    scenario = Scenario.UPDATE,
+                    currentState = RegistrationUiState.Content(
+                        validForm().copy(
+                            isMailingAccepted = false
+                        )
+                    ),
+                    action = RegistrationAction.SubmitClicked,
+                    expectedState = RegistrationUiState.Content(
+                        validForm().copy(
+                            isMailingAccepted = false,
+                            isSubmitEnabled = true
+                        )
+                    )
+                ),
+
+                // -----------------------------------------------------------------
+                // 29-32. PASSWORD ERROR TYPES
+                // -----------------------------------------------------------------
+
+                /**
+                 * Слишком короткий пароль.
+                 */
+                RegistrationUiStateMapperTestCase(
+                    scenario = Scenario.UPDATE,
+                    currentState = RegistrationUiState.Content(
+                        validForm().copy(
+                            password = "Aa1!",
+                            isPasswordTouched = true
+                        )
+                    ),
+                    action = RegistrationAction.SubmitClicked,
+                    expectedState = RegistrationUiState.Content(
+                        validForm().copy(
+                            password = "Aa1!",
+                            isPasswordTouched = true,
+                            passwordError = TextOrResource.Resource(
+                                R.string.error_password_too_short
+                            ),
+                            isSubmitEnabled = false
+                        )
+                    )
+                ),
+
+                /**
+                 * В пароле нет заглавной буквы.
+                 */
+                RegistrationUiStateMapperTestCase(
+                    scenario = Scenario.UPDATE,
+                    currentState = RegistrationUiState.Content(
+                        validForm().copy(
+                            password = "password1!",
+                            isPasswordTouched = true
+                        )
+                    ),
+                    action = RegistrationAction.SubmitClicked,
+                    expectedState = RegistrationUiState.Content(
+                        validForm().copy(
+                            password = "password1!",
+                            isPasswordTouched = true,
+                            passwordError = TextOrResource.Resource(
+                                R.string.error_password_no_uppercase
+                            ),
+                            isSubmitEnabled = false
+                        )
+                    )
+                ),
+
+                /**
+                 * В пароле нет цифры.
+                 */
+                RegistrationUiStateMapperTestCase(
+                    scenario = Scenario.UPDATE,
+                    currentState = RegistrationUiState.Content(
+                        validForm().copy(
+                            password = "Password!",
+                            isPasswordTouched = true
+                        )
+                    ),
+                    action = RegistrationAction.SubmitClicked,
+                    expectedState = RegistrationUiState.Content(
+                        validForm().copy(
+                            password = "Password!",
+                            isPasswordTouched = true,
+                            passwordError = TextOrResource.Resource(
+                                R.string.error_password_no_digit
+                            ),
+                            isSubmitEnabled = false
+                        )
+                    )
+                ),
+
+                /**
+                 * В пароле нет специального символа.
+                 */
+                RegistrationUiStateMapperTestCase(
+                    scenario = Scenario.UPDATE,
+                    currentState = RegistrationUiState.Content(
+                        validForm().copy(
+                            password = "Password1",
+                            isPasswordTouched = true
+                        )
+                    ),
+                    action = RegistrationAction.SubmitClicked,
+                    expectedState = RegistrationUiState.Content(
+                        validForm().copy(
+                            password = "Password1",
+                            isPasswordTouched = true,
+                            passwordError = TextOrResource.Resource(
+                                R.string.error_password_no_special_char
+                            ),
+                            isSubmitEnabled = false
+                        )
+                    )
+                ),
+
+                // -----------------------------------------------------------------
+                // 33. LOADING
+                // -----------------------------------------------------------------
+
+                /**
+                 * Loading должен сохранить текущее состояние формы,
+                 * но изменить UiState на Loading.
+                 */
+                RegistrationUiStateMapperTestCase(
+                    scenario = Scenario.LOADING,
+                    currentState = RegistrationUiState.Content(
+                        validForm()
+                    ),
+                    expectedState = RegistrationUiState.Loading(
+                        validForm()
+                    )
+                ),
+
+                // -----------------------------------------------------------------
+                // 34-37. REGISTRATION ERRORS
+                // -----------------------------------------------------------------
+
+                /**
+                 * Conflict -> пользователь уже существует.
+                 */
+                RegistrationUiStateMapperTestCase(
+                    scenario = Scenario.ERROR,
+                    currentState = RegistrationUiState.Content(
+                        validForm()
+                    ),
+                    exception = RegistrationException(
+                        error = RegistrationError.Conflict
+                    ),
+                    expectedState = RegistrationUiState.Error(
+                        message = TextOrResource.Resource(
+                            R.string.error_user_already_exists
                         ),
+                        formState = validForm()
                     )
                 ),
-                Arguments.of(
-                    UpdatedStateTestCase(
-                        name = "PdAcceptedChanged(true) обновляет isPdAccepted",
-                        action = RegistrationAction.PdAcceptedChanged(true),
-                        expectedForm = initialFormWith(isPdAccepted = true),
-                    )
-                ),
-                Arguments.of(
-                    UpdatedStateTestCase(
-                        name = "OfferAcceptedChanged(true) обновляет isOfferAccepted",
-                        action = RegistrationAction.OfferAcceptedChanged(true),
-                        expectedForm = initialFormWith(isOfferAccepted = true),
-                    )
-                ),
-                Arguments.of(
-                    UpdatedStateTestCase(
-                        name = "MailingAcceptedChanged(true) обновляет isMailingAccepted",
-                        action = RegistrationAction.MailingAcceptedChanged(true),
-                        expectedForm = initialFormWith(isMailingAccepted = true),
-                    )
-                ),
-                Arguments.of(
-                    UpdatedStateTestCase(
-                        name = "TogglePasswordVisible переключает isPasswordVisible на true",
-                        action = RegistrationAction.TogglePasswordVisible,
-                        expectedForm = initialFormWith(isPasswordVisible = true),
-                    )
-                ),
-                Arguments.of(
-                    UpdatedStateTestCase(
-                        name = "ToggleConfirmPasswordVisible переключает isConfirmPasswordVisible на true",
-                        action = RegistrationAction.ToggleConfirmPasswordVisible,
-                        expectedForm = initialFormWith(isConfirmPasswordVisible = true),
-                    )
-                ),
-                Arguments.of(
-                    UpdatedStateTestCase(
-                        name = "SubmitClicked не меняет форму",
-                        action = RegistrationAction.SubmitClicked,
-                        expectedForm = initialFormWith(),
-                    )
-                ),
-            )
-        }
-    }
 
-    class ValidationArgumentsProvider : ArgumentsProvider {
-        override fun provideArguments(context: ExtensionContext?): Stream<out Arguments> {
-            return Stream.of(
-                Arguments.of(
-                    ValidationTestCase(
-                        name = "Все поля валидны — submit разрешён",
-                        nickname = "user",
-                        email = "test@test.com",
-                        isEmailValid = true,
-                        password = "Pass123!",
-                        confirmPassword = "Pass123!",
-                        isPdAccepted = true,
-                        isOfferAccepted = true,
-                        expectedSubmitEnabled = true,
-                        action = RegistrationAction.NicknameChanged("user")
+                /**
+                 * NotFound -> ресурс не найден.
+                 */
+                RegistrationUiStateMapperTestCase(
+                    scenario = Scenario.ERROR,
+                    currentState = RegistrationUiState.Content(
+                        validForm()
+                    ),
+                    exception = RegistrationException(
+                        error = RegistrationError.NotFound
+                    ),
+                    expectedState = RegistrationUiState.Error(
+                        message = TextOrResource.Resource(
+                            R.string.error_resource_not_found
+                        ),
+                        formState = validForm()
                     )
                 ),
-                Arguments.of(
-                    ValidationTestCase(
-                        name = "Пустой nickname — submit запрещён",
-                        nickname = "",
-                        email = "test@test.com",
-                        isEmailValid = true,
-                        password = "Pass123!",
-                        confirmPassword = "Pass123!",
-                        isPdAccepted = true,
-                        isOfferAccepted = true,
-                        expectedSubmitEnabled = false,
-                        action = RegistrationAction.NicknameChanged("")
-                    )
-                ),
-                Arguments.of(
-                    ValidationTestCase(
-                        name = "Невалидный email — submit запрещён",
-                        nickname = "user",
-                        email = "invalid",
-                        isEmailValid = false,
-                        password = "Pass123!",
-                        confirmPassword = "Pass123!",
-                        isPdAccepted = true,
-                        isOfferAccepted = true,
-                        expectedSubmitEnabled = false,
-                        action = RegistrationAction.EmailChanged("user")
-                    )
-                ),
-                Arguments.of(
-                    ValidationTestCase(
-                        name = "Слабый пароль — submit запрещён",
-                        nickname = "user",
-                        email = "test@test.com",
-                        isEmailValid = true,
-                        password = "short",
-                        confirmPassword = "short",
-                        isPdAccepted = true,
-                        isOfferAccepted = true,
-                        expectedSubmitEnabled = false,
-                        action = RegistrationAction.PasswordChanged("1234")
-                    )
-                ),
-                Arguments.of(
-                    ValidationTestCase(
-                        name = "Пароли не совпадают — submit запрещён",
-                        nickname = "user",
-                        email = "test@test.com",
-                        isEmailValid = true,
-                        password = "Pass123!",
-                        confirmPassword = "Mismatch!",
-                        isPdAccepted = true,
-                        isOfferAccepted = true,
-                        expectedSubmitEnabled = false,
-                        action = RegistrationAction.ConfirmPasswordChanged("1234")
-                    )
-                ),
-                Arguments.of(
-                    ValidationTestCase(
-                        name = "ПД не принят — submit запрещён",
-                        nickname = "user",
-                        email = "test@test.com",
-                        isEmailValid = true,
-                        password = "Pass123!",
-                        confirmPassword = "Pass123!",
-                        isPdAccepted = false,
-                        isOfferAccepted = true,
-                        expectedSubmitEnabled = false,
-                        action = RegistrationAction.PdAcceptedChanged(false)
-                    )
-                ),
-                Arguments.of(
-                    ValidationTestCase(
-                        name = "Оферта не принята — submit запрещён",
-                        nickname = "user",
-                        email = "test@test.com",
-                        isEmailValid = true,
-                        password = "Pass123!",
-                        confirmPassword = "Pass123!",
-                        isPdAccepted = true,
-                        isOfferAccepted = false,
-                        expectedSubmitEnabled = false,
-                        action = RegistrationAction.OfferAcceptedChanged(false)
-                    )
-                ),
-            )
-        }
-    }
 
-    class ErrorStateArgumentsProvider : ArgumentsProvider {
-        override fun provideArguments(context: ExtensionContext?): Stream<out Arguments> {
-            return Stream.of(
-                Arguments.of(
-                    ErrorStateTestCase(
-                        name = "Conflict → error_user_already_exists",
-                        exception = RegistrationException(RegistrationError.Conflict),
-                        expectedErrorRes = R.string.error_user_already_exists,
+                /**
+                 * Success в данном mapper не является отдельной веткой:
+                 * всё, что не Conflict и не NotFound, попадает в else
+                 * и получает login_unknown_error.
+                 */
+                RegistrationUiStateMapperTestCase(
+                    scenario = Scenario.ERROR,
+                    currentState = RegistrationUiState.Content(
+                        validForm()
+                    ),
+                    exception = RegistrationException(
+                        error = RegistrationError.Success
+                    ),
+                    expectedState = RegistrationUiState.Error(
+                        message = TextOrResource.Resource(
+                            R.string.login_unknown_error
+                        ),
+                        formState = validForm()
                     )
                 ),
-                Arguments.of(
-                    ErrorStateTestCase(
-                        name = "NotFound → error_resource_not_found",
-                        exception = RegistrationException(RegistrationError.NotFound),
-                        expectedErrorRes = R.string.error_resource_not_found,
+
+                /**
+                 * Ещё один неизвестный тип ошибки также попадает в else.
+                 *
+                 * Если в вашем RegistrationError есть конкретный enum
+                 * для неизвестной ошибки (например UnknownError),
+                 * здесь нужно использовать именно его.
+                 */
+                RegistrationUiStateMapperTestCase(
+                    scenario = Scenario.ERROR,
+                    currentState = RegistrationUiState.Content(
+                        validForm()
+                    ),
+                    exception = RegistrationException(
+                        error = RegistrationError.UnknownError
+                    ),
+                    expectedState = RegistrationUiState.Error(
+                        message = TextOrResource.Resource(
+                            R.string.login_unknown_error
+                        ),
+                        formState = validForm()
                     )
-                ),
-                Arguments.of(
-                    ErrorStateTestCase(
-                        name = "UnknownError → login_unknown_error",
-                        exception = RegistrationException(RegistrationError.UnknownError),
-                        expectedErrorRes = R.string.login_unknown_error,
-                    )
-                ),
+                )
             )
-        }
+
+        /**
+         * Фабрика валидного состояния формы.
+         *
+         * Используется только как тестовый fixture, чтобы не писать
+         * 17 полей RegistrationFormState в каждом сценарии.
+         *
+         * Такая функция не содержит поведения mapper и поэтому не является
+         * отдельным тестируемым сценарием.
+         */
+        private fun validForm(): RegistrationFormState =
+            RegistrationFormState(
+                nickname = "Alex",
+                nicknameError = null,
+                email = "alex@example.com",
+                emailError = null,
+                password = "Password1!",
+                passwordError = null,
+                confirmPassword = "Password1!",
+                confirmPasswordError = null,
+                isPdAccepted = true,
+                isOfferAccepted = true,
+                isMailingAccepted = true,
+                isPasswordVisible = false,
+                isConfirmPasswordVisible = false,
+                isSubmitEnabled = true,
+                isEmailTouched = false,
+                isPasswordTouched = false,
+                isConfirmPasswordTouched = false,
+            )
     }
 }
-
-private fun initialFormWith(
-    nickname: String = "",
-    nicknameError: TextOrResource? = null,
-    email: String = "",
-    emailError: TextOrResource? = null,
-    password: String = "",
-    passwordError: TextOrResource? = null,
-    confirmPassword: String = "",
-    confirmPasswordError: TextOrResource? = null,
-    isPdAccepted: Boolean = false,
-    isOfferAccepted: Boolean = false,
-    isMailingAccepted: Boolean = false,
-    isPasswordVisible: Boolean = false,
-    isConfirmPasswordVisible: Boolean = false,
-    isSubmitEnabled: Boolean = false,
-    isEmailTouched: Boolean = false,
-    isPasswordTouched: Boolean = false,
-    isConfirmPasswordTouched: Boolean = false,
-): RegistrationFormState = RegistrationFormState(
-    nickname = nickname,
-    nicknameError = nicknameError,
-    email = email,
-    emailError = emailError,
-    password = password,
-    passwordError = passwordError,
-    confirmPassword = confirmPassword,
-    confirmPasswordError = confirmPasswordError,
-    isPdAccepted = isPdAccepted,
-    isOfferAccepted = isOfferAccepted,
-    isMailingAccepted = isMailingAccepted,
-    isPasswordVisible = isPasswordVisible,
-    isConfirmPasswordVisible = isConfirmPasswordVisible,
-    isSubmitEnabled = isSubmitEnabled,
-    isEmailTouched = isEmailTouched,
-    isPasswordTouched = isPasswordTouched,
-    isConfirmPasswordTouched = isConfirmPasswordTouched,
-)
