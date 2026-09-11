@@ -80,11 +80,13 @@ dependencies {
 
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    testImplementation(project(":core:test"))
     testImplementation(libs.junit.jupiter)
     testImplementation(platform(libs.junit.bom))
     testRuntimeOnly(libs.junit.platform.launcher)
     implementation(libs.androidx.junit.ktx)
     testImplementation(libs.mockk)
+    testImplementation(libs.kotlinx.coroutines.test)
 }
 tasks.withType<Test> {
     useJUnitPlatform()
