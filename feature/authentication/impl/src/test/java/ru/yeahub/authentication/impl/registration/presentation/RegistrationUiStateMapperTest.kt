@@ -912,7 +912,6 @@ class RegistrationUiStateMapperTest {
          * Такая функция не содержит поведения mapper и поэтому не является
          * отдельным тестируемым сценарием.
          */
-
         private fun validForm(): RegistrationFormState =
             RegistrationFormState(
                 nickname = "Alex",
