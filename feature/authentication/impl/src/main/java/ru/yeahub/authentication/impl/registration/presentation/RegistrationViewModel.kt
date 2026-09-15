@@ -2,117 +2,61 @@ package ru.yeahub.authentication.impl.registration.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import ru.yeahub.authentication.impl.registration.domain.entity.RegistrationError
 import ru.yeahub.authentication.impl.registration.domain.entity.RegistrationException
 import ru.yeahub.authentication.impl.registration.domain.entity.RegistrationModel
 import ru.yeahub.authentication.impl.registration.domain.usecase.RegistrationUseCase
+import ru.yeahub.core_utils.common.TextOrResource
 
-private const val UI_STATE_STOP_TIMEOUT = 5000L
+sealed interface RegistrationCommand {
+    data object NavigateToSuccess : RegistrationCommand
+    data class ShowError(val message: TextOrResource) : RegistrationCommand
+}
 
 class RegistrationViewModel(
     private val registrationUseCase: RegistrationUseCase,
     private val mapper: RegistrationUiStateMapper
 ) : ViewModel() {
 
-    private val formData = MutableStateFlow(mapper.getInitialFormState())
-    private val isLoading = MutableStateFlow(false)
-    private val error = MutableStateFlow<String?>(null)
+    private val _state = MutableStateFlow(mapper.mapToInitialState())
+    val state: StateFlow<RegistrationUiState> = _state.asStateFlow()
 
-    val state: StateFlow<RegistrationUiState> =
-        combine(formData, isLoading, error) { form, loading, err ->
-            mapper.getScreenState(form, loading, err)
-        }
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(UI_STATE_STOP_TIMEOUT),
-                initialValue = mapper.getInitialState()
-            )
+    private val _commands = MutableSharedFlow<RegistrationCommand>()
+    val commands: SharedFlow<RegistrationCommand> = _commands.asSharedFlow()
 
     fun onAction(action: RegistrationAction) {
         when (action) {
-            is RegistrationAction.ConfirmPasswordChanged -> {
-                updateForm { it.copy(confirmPassword = action.value) }
+            RegistrationAction.SubmitClicked -> submitRegistration()
+            else -> {
+                _state.value = mapper.mapToUpdatedState(_state.value, action)
             }
-
-            is RegistrationAction.EmailChanged -> {
-                updateForm { it.copy(email = action.value) }
-            }
-
-            is RegistrationAction.MailingAcceptedChanged -> {
-                updateForm { it.copy(isMailingAccepted = action.value) }
-            }
-
-            is RegistrationAction.NicknameChanged -> {
-                updateForm { it.copy(nickname = action.value) }
-            }
-
-            is RegistrationAction.OfferAcceptedChanged -> {
-                updateForm { it.copy(isOfferAccepted = action.value) }
-            }
-
-            is RegistrationAction.PasswordChanged -> {
-                updateForm { it.copy(password = action.value) }
-            }
-
-            is RegistrationAction.PdAcceptedChanged -> {
-                updateForm { it.copy(isPdAccepted = action.value) }
-            }
-
-            RegistrationAction.SubmitClicked -> {
-                submitRegistration()
-            }
-
-            RegistrationAction.ToggleConfirmPasswordVisible -> {
-                updateForm { it.copy(isConfirmPasswordVisible = !it.isConfirmPasswordVisible) }
-            }
-
-            RegistrationAction.TogglePasswordVisible -> {
-                updateForm { it.copy(isPasswordVisible = !it.isPasswordVisible) }
-            }
-        }
-    }
-
-    private fun updateForm(transform: (RegistrationFormState) -> RegistrationFormState) {
-        formData.update { transform(it) }
-        if (error.value != null) {
-            error.value = null
         }
     }
 
     private fun submitRegistration() {
-        isLoading.value = true
-        error.value = null
+        _state.value = mapper.mapToLoadingState(_state.value)
         viewModelScope.launch {
             try {
-                val currentForm = formData.value
-                val userModel =
-                    RegistrationModel(
-                        nickname = currentForm.nickname,
-                        email = currentForm.email,
-                        password = currentForm.password,
-                        isMailingAccepted = currentForm.isMailingAccepted
-                    )
+                val currentForm = _state.value.formState
+                val userModel = RegistrationModel(
+                    nickname = currentForm.nickname,
+                    email = currentForm.email,
+                    password = currentForm.password,
+                    isMailingAccepted = currentForm.isMailingAccepted
+                )
                 registrationUseCase.invoke(userModel)
-                isLoading.value = false
+                _state.value = mapper.mapToInitialState()
+                _commands.emit(RegistrationCommand.NavigateToSuccess)
             } catch (e: RegistrationException) {
-                val errorMessage =
-                    when (e.error) {
-                        RegistrationError.EmailAlreadyExists -> "Такой Email уже существует"
-                        RegistrationError.NickNameTaken -> "Никнейм занят"
-                        RegistrationError.InvalidCredentials -> "Неверные данные"
-                        RegistrationError.Network -> "Ошибка сети. Проверьте подключение"
-                        RegistrationError.Server, RegistrationError.Unknown ->
-                            "Произошла ошибка на сервере"
-                    }
-                isLoading.value = false
-                error.value = errorMessage
+                val errorResource = mapper.mapExceptionToResource(e)
+                _state.value = mapper.mapToErrorState(_state.value, e)
+                _commands.emit(RegistrationCommand.ShowError(errorResource))
             }
         }
     }

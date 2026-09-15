@@ -6,12 +6,10 @@ data class Failure(
 )
 
 sealed interface RegistrationError {
-    data object EmailAlreadyExists : RegistrationError
-    data object NickNameTaken : RegistrationError
-    data object InvalidCredentials : RegistrationError
-    data object Network : RegistrationError
-    data object Server : RegistrationError
-    data object Unknown : RegistrationError
+    data object Success : RegistrationError
+    data object NotFound : RegistrationError
+    data object Conflict : RegistrationError
+    data object UnknownError : RegistrationError
 }
 
 class RegistrationException(
