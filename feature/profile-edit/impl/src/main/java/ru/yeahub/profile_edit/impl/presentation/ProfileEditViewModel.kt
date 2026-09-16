@@ -74,28 +74,30 @@ internal class ProfileEditViewModel(
     val screenState: StateFlow<ProfileEditState> = loadRetryTrigger
         .flatMapLatest {
             flow {
-                emit(mapper.getScreenState(ProfileEditMapperInput.Loading))
-                val domainData = withContext(Dispatchers.IO) {
-                    getProfile()
+                if (screenState.value !is ProfileEditState.Loaded) {
+                    emit(mapper.getScreenState(ProfileEditMapperInput.Loading))
+                    val domainData = withContext(Dispatchers.IO) {
+                        getProfile()
+                    }
+                    viewModelStaticData = ViewModelStaticData(
+                        initialUserInput = UserInput(
+                            avatarUrl = domainData.avatarUrl,
+                            nickname = domainData.nickname,
+                            specialization = domainData.specialization.orEmpty(),
+                            location = domainData.location,
+                            socialLinks = domainData.socialLinks,
+                            aboutMe = domainData.aboutMe,
+                            selectedSkills = domainData.selectedSkills.toPersistentList(),
+                        ),
+                        staticData = StaticDomainData(
+                            email = domainData.email,
+                            specializationList = domainData.specializationList.toPersistentList(),
+                            isSpecializationEditable = domainData.specialization == null,
+                            allSkills = domainData.allSkills.toPersistentList(),
+                        ),
+                    )
+                    updateMutableState { copy(userInput = viewModelStaticData.initialUserInput) }
                 }
-                viewModelStaticData = ViewModelStaticData(
-                    initialUserInput = UserInput(
-                        avatarUrl = domainData.avatarUrl,
-                        nickname = domainData.nickname,
-                        specialization = domainData.specialization.orEmpty(),
-                        location = domainData.location,
-                        socialLinks = domainData.socialLinks,
-                        aboutMe = domainData.aboutMe,
-                        selectedSkills = domainData.selectedSkills.toPersistentList(),
-                    ),
-                    staticData = StaticDomainData(
-                        email = domainData.email,
-                        specializationList = domainData.specializationList.toPersistentList(),
-                        isSpecializationEditable = domainData.specialization == null,
-                        allSkills = domainData.allSkills.toPersistentList(),
-                    ),
-                )
-                updateMutableState { copy(userInput = viewModelStaticData.initialUserInput) }
                 emitAll(
                     mutableState.filterNotNull().map {
                         mapper.getScreenState(
@@ -112,7 +114,7 @@ internal class ProfileEditViewModel(
             }
         }.stateIn(
             scope = viewModelScopeSafe,
-            started = SharingStarted.Lazily,
+            started = SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS),
             initialValue = ProfileEditState.Loading,
         )
 
@@ -279,6 +281,10 @@ internal class ProfileEditViewModel(
             deleteAvatar()
             updateUserInput { copy(avatarUrl = "") }
         }
+    }
+
+    private companion object {
+        const val STOP_TIMEOUT_MILLIS = 5_000L
     }
 }
 
