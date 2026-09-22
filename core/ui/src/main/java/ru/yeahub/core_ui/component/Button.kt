@@ -9,8 +9,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -37,23 +39,25 @@ fun PrimaryButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    isLoading: Boolean = false,
     colors: YeahubButtonColors = YeahubButtonDefaults.primaryButtonColors(),
     border: BorderStroke? = null,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     shape: Shape = RoundedCornerShape(12.dp),
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
-    content: @Composable RowScope.() -> Unit
+    content: @Composable RowScope.() -> Unit,
 ) {
     DefaultButton(
         onClick = onClick,
         modifier = modifier,
         enabled = enabled,
+        isLoading = isLoading,
         colors = colors,
         border = border,
         interactionSource = interactionSource,
         shape = shape,
         contentPadding = contentPadding,
-        content = content,
+        content = content
     )
 }
 
@@ -62,17 +66,19 @@ fun SecondaryButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    isLoading: Boolean = false,
     colors: YeahubButtonColors = YeahubButtonDefaults.secondaryButtonColors(),
     border: BorderStroke? = null,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     shape: Shape = RoundedCornerShape(12.dp),
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
-    content: @Composable RowScope.() -> Unit
+    content: @Composable RowScope.() -> Unit,
 ) {
     DefaultButton(
         onClick = onClick,
         modifier = modifier,
         enabled = enabled,
+        isLoading = isLoading,
         colors = colors,
         border = border,
         interactionSource = interactionSource,
@@ -87,6 +93,7 @@ fun OutlineButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    isLoading: Boolean = false,
     colors: YeahubButtonColors = YeahubButtonDefaults.outlinedButtonColors(),
     border: BorderStroke = YeahubButtonDefaults.outlineBorderDefaults(),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
@@ -98,12 +105,13 @@ fun OutlineButton(
         onClick = onClick,
         modifier = modifier,
         enabled = enabled,
+        isLoading = isLoading,
         colors = colors,
         border = border,
         interactionSource = interactionSource,
         shape = shape,
         contentPadding = contentPadding,
-        content = content,
+        content = content
     )
 }
 
@@ -112,6 +120,7 @@ private fun DefaultButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    isLoading: Boolean = false,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     colors: YeahubButtonColors = YeahubButtonDefaults.primaryButtonColors(),
     border: BorderStroke? = null,
@@ -119,18 +128,18 @@ private fun DefaultButton(
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     content: @Composable RowScope.() -> Unit
 ) {
-    val contentColor: Color by colors.contentColor(enabled)
-    val containerColor: Color by colors.containerColor(enabled)
+    val contentColor: Color by colors.contentColor(enabled && !isLoading)
+    val containerColor: Color by colors.containerColor(enabled && !isLoading)
 
     Surface(
         onClick = onClick,
         modifier = modifier,
-        enabled = enabled,
+        enabled = enabled && !isLoading,
         shape = shape,
         color = containerColor,
         contentColor = contentColor,
         border = border,
-        interactionSource = interactionSource,
+        interactionSource = interactionSource
     ) {
         CompositionLocalProvider(
             value = LocalContentColor provides contentColor
@@ -139,9 +148,18 @@ private fun DefaultButton(
                 modifier = Modifier
                     .padding(contentPadding),
                 horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically,
-                content = content,
-            )
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                if (isLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(20.dp),
+                        color = contentColor,
+                        strokeWidth = 2.dp
+                    )
+                } else {
+                    content()
+                }
+            }
         }
     }
 }
@@ -158,7 +176,7 @@ object YeahubButtonDefaults {
             contentColor = contentColor,
             containerColor = containerColor,
             disabledContentColor = disabledContentColor,
-            disabledContainerColor = disabledContainerColor,
+            disabledContainerColor = disabledContainerColor
         )
     }
 
@@ -173,7 +191,7 @@ object YeahubButtonDefaults {
             contentColor = contentColor,
             containerColor = containerColor,
             disabledContentColor = disabledContentColor,
-            disabledContainerColor = disabledContainerColor,
+            disabledContainerColor = disabledContainerColor
         )
     }
 
@@ -188,7 +206,7 @@ object YeahubButtonDefaults {
             contentColor = contentColor,
             containerColor = containerColor,
             disabledContentColor = disabledContentColor,
-            disabledContainerColor = disabledContainerColor,
+            disabledContainerColor = disabledContainerColor
         )
     }
 
@@ -203,7 +221,7 @@ object YeahubButtonDefaults {
             contentColor = contentColor,
             containerColor = containerColor,
             disabledContentColor = disabledContentColor,
-            disabledContainerColor = disabledContainerColor,
+            disabledContainerColor = disabledContainerColor
         )
     }
 
@@ -212,13 +230,13 @@ object YeahubButtonDefaults {
         contentColor: Color = Theme.colors.red600,
         containerColor: Color = Color.Transparent,
         disabledContentColor: Color = Theme.colors.red200,
-        disabledContainerColor: Color = Color.Transparent
+        disabledContainerColor: Color = Color.Transparent,
     ): YeahubButtonColors {
         return YeahubButtonColors(
             contentColor = contentColor,
             containerColor = containerColor,
             disabledContentColor = disabledContentColor,
-            disabledContainerColor = disabledContainerColor,
+            disabledContainerColor = disabledContainerColor
         )
     }
 
@@ -229,7 +247,7 @@ object YeahubButtonDefaults {
     ): BorderStroke {
         return BorderStroke(
             width = width,
-            color = borderColor,
+            color = borderColor
         )
     }
 }
@@ -239,7 +257,7 @@ data class YeahubButtonColors(
     private val contentColor: Color,
     private val containerColor: Color,
     private val disabledContentColor: Color,
-    private val disabledContainerColor: Color
+    private val disabledContainerColor: Color,
 ) : ButtonColors {
     @Composable
     override fun containerColor(enabled: Boolean): State<Color> {
@@ -290,7 +308,7 @@ fun ButtonPreviews() {
         }
 
         // Secondary Button
-        Text("Secondary Buttons", style = MaterialTheme.typography.titleMedium)
+        Text("Secondary Buttons", style = MaterialTheme.typography.titleMedium)        
         SecondaryButton(
             onClick = {},
             modifier = Modifier.fillMaxWidth(),

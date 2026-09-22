@@ -7,10 +7,9 @@ class RegistrationDomainToDataMapper {
 
     fun map(model: RegistrationModel): RegistrationRequestDto {
         return RegistrationRequestDto(
-            nickname = model.nickname,
+            username = model.nickname,
             email = model.email,
             password = model.password,
-            isMailingAccepted = model.isMailingAccepted
         )
     }
 }

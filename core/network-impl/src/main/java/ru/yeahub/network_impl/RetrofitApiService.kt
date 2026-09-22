@@ -1,17 +1,28 @@
 package ru.yeahub.network_impl
 
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
 import ru.yeahub.network_api.ApiService
+import ru.yeahub.network_api.models.AuthUserDto
 import ru.yeahub.network_api.models.GetCollectionsResponse
 import ru.yeahub.network_api.models.GetPublicQuestionResponse
 import ru.yeahub.network_api.models.GetPublicQuestionsResponse
 import ru.yeahub.network_api.models.GetSkillsResponse
 import ru.yeahub.network_api.models.GetSpecializationResponse
 import ru.yeahub.network_api.models.GetSpecializationsResponse
+import ru.yeahub.network_api.models.LoginRequestDto
+import ru.yeahub.network_api.models.LoginResponseDto
+import ru.yeahub.network_api.models.RegistrationRequestDto
 
 interface RetrofitApiService : ApiService {
+
+    @POST("auth/signUp")
+    override suspend fun register(
+        @Body request: RegistrationRequestDto
+    )
 
     @GET("questions/public-questions")
     override suspend fun getQuestions(
@@ -61,4 +72,8 @@ interface RetrofitApiService : ApiService {
         @Query("specializations") specializationsId: Long,
         @Query("isFree") isFree: Boolean
     ): GetCollectionsResponse
+
+    // Пустые реализации для ApiService, если они не нужны в Retrofit-слое
+    override suspend fun login(request: LoginRequestDto): LoginResponseDto = TODO("Not required for this feature")
+    override suspend fun getProfile(): AuthUserDto = TODO("Not required for this feature")
 }

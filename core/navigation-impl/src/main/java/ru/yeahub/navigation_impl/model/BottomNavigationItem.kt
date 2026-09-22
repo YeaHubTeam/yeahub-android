@@ -32,6 +32,12 @@ sealed class BottomNavigationItem(
     val label: String,
     @DrawableRes val icon: Int
 ) {
+    data object Profile : BottomNavigationItem(
+        route = FeatureRoute.RegistrationFeature.FEATURE_NAME,
+        label = "Профиль",
+        icon = R.drawable.icon_tab_profile
+    )
+
     data object Collections : BottomNavigationItem(
         route = FeatureRoute.CollectionsFeature.FEATURE_NAME,
         label = "Коллекции",
