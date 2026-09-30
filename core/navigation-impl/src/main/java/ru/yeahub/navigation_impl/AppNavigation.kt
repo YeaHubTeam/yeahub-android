@@ -34,7 +34,6 @@ import androidx.navigation.compose.rememberNavController
 import org.koin.compose.getKoin
 import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.navigation_api.FeatureApi
-import ru.yeahub.navigation_api.FeatureRoute
 import ru.yeahub.navigation_api.NavigationPathManager
 import ru.yeahub.navigation_impl.model.BottomNavigationItem
 import timber.log.Timber
@@ -64,6 +63,7 @@ import timber.log.Timber
  */
 @Composable
 fun AppNavigation(
+    startDestination: String,
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
     pathManager: NavigationPathManager = getKoin().get<NavigationPathManager>(),
@@ -155,7 +155,8 @@ fun AppNavigation(
             AppNavHost(
                 navController = navController,
                 features = features,
-                pathManager = pathManager
+                pathManager = pathManager,
+                startDestination = startDestination,
             )
         }
     }
@@ -168,11 +169,12 @@ fun AppNavigation(
 private fun AppNavHost(
     navController: NavHostController,
     features: Set<FeatureApi>,
-    pathManager: NavigationPathManager
+    pathManager: NavigationPathManager,
+    startDestination: String,
 ) {
     NavHost(
         navController = navController,
-        startDestination = FeatureRoute.HomeFeature.FEATURE_NAME,
+        startDestination = startDestination,
         modifier = Modifier,
     ) {
         registerDynamicNavigation(
@@ -284,4 +286,3 @@ private fun registerChildFeatures(
         }
     }
 }
- 

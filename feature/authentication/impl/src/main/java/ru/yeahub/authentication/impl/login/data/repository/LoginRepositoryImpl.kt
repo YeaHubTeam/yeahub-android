@@ -87,8 +87,9 @@ class LoginRepositoryImpl(
      */
     private fun mapHttpCodeToError(code: Int): LoginError {
         return when (code) {
-            HTTP_BAD_REQUEST,
-            HTTP_UNAUTHORIZED -> LoginError.InvalidCredentials
+            HTTP_BAD_REQUEST -> LoginError.InvalidCredentials
+
+            HTTP_UNAUTHORIZED -> LoginError.InvalidPassword
 
             HTTP_NOT_FOUND -> LoginError.UserNotFound
 

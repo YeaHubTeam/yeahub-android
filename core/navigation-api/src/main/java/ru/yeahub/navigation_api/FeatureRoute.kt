@@ -65,4 +65,9 @@ object FeatureRoute {
     object RegistrationFeature {
         const val FEATURE_NAME = "registration"
     }
+
+    object AuthenticationFeature {
+        const val AUTH_ROUTE = "auth"
+        const val LOGIN_ROUTE = "$AUTH_ROUTE/login"
+    }
 }

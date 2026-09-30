@@ -8,14 +8,17 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.navigation.compose.rememberNavController
 import org.koin.android.ext.android.inject
+import ru.yeahub.authentication.impl.login.domain.usecase.CheckAuthStateUseCase
 import ru.yeahub.core_ui.theme.YeaHubTheme
 import ru.yeahub.navigation_api.NavigationPathManager
 import ru.yeahub.navigation_impl.AppNavigation
 import ru.yeahub.navigation_impl.NotificationNavigationService
+import ru.yeahub.navigation_impl.getStartDestination
 import timber.log.Timber
 
 /**
@@ -51,6 +54,7 @@ import timber.log.Timber
 class MainActivity : ComponentActivity() {
     
     private val pathManager: NavigationPathManager by inject()
+    private val checkAuthStateUseCase: CheckAuthStateUseCase by inject()
     private lateinit var notificationService: NotificationNavigationService
     
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,6 +68,9 @@ class MainActivity : ComponentActivity() {
             YeaHubTheme {
                 val navController = rememberNavController()
                 var pendingIntent by remember { mutableStateOf<Intent?>(null) }
+                val isAuthorized by produceState<Boolean?>(initialValue = null) {
+                    value = checkAuthStateUseCase()
+                }
                 
                 // Обрабатываем intent при создании активности
                 LaunchedEffect(Unit) {
@@ -74,16 +81,26 @@ class MainActivity : ComponentActivity() {
                     }
                 }
                 
-                // Обрабатываем pending intent после инициализации навигации
-                LaunchedEffect(pendingIntent) {
-                    pendingIntent?.let { intentToHandle ->
-                        Timber.d("MainActivity onCreate: Handling pending intent: ${intentToHandle.data}")
-                        notificationService.handleNotificationIntent(intentToHandle, navController)
-                        pendingIntent = null
+                val startDestination = isAuthorized?.let(::getStartDestination)
+
+                startDestination?.let { route ->
+                    AppNavigation(
+                        startDestination = route,
+                        navController = navController,
+                    )
+
+                    // Обрабатываем pending intent после инициализации навигации
+                    LaunchedEffect(pendingIntent) {
+                        pendingIntent?.let { intentToHandle ->
+                            Timber.d(
+                                "MainActivity onCreate: Handling pending intent: " +
+                                    "${intentToHandle.data}"
+                            )
+                            notificationService.handleNotificationIntent(intentToHandle, navController)
+                            pendingIntent = null
+                        }
                     }
                 }
-                
-                AppNavigation(navController = navController)
             }
         }
     }

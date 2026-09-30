@@ -35,6 +35,11 @@ android {
         compose = true
         buildConfig = true
     }
+    testOptions {
+        unitTests.all {
+            it.useJUnitPlatform()
+        }
+    }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.8"
     }
@@ -66,7 +71,10 @@ dependencies {
     implementation(libs.androidx.runtime.android)
     implementation(libs.androidx.icons)
 
-    testImplementation(libs.junit)
+    testImplementation(project(":core:test"))
+    testImplementation(libs.junit.jupiter)
+    testImplementation(platform(libs.junit.bom))
+    testRuntimeOnly(libs.junit.platform.launcher)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     // Timber
