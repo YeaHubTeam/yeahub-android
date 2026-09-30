@@ -73,7 +73,11 @@ interface RetrofitApiService : ApiService {
         @Query("isFree") isFree: Boolean
     ): GetCollectionsResponse
 
+    @POST("auth/login")
+    override suspend fun login(
+        @Body request: LoginRequestDto
+    ): LoginResponseDto
+
     // Пустые реализации для ApiService, если они не нужны в Retrofit-слое
-    override suspend fun login(request: LoginRequestDto): LoginResponseDto = TODO("Not required for this feature")
     override suspend fun getProfile(): AuthUserDto = TODO("Not required for this feature")
 }
