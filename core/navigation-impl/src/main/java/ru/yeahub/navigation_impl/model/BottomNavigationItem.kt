@@ -33,7 +33,7 @@ sealed class BottomNavigationItem(
     @DrawableRes val icon: Int
 ) {
     data object Profile : BottomNavigationItem(
-        route = FeatureRoute.RegistrationFeature.FEATURE_NAME,
+        route = FeatureRoute.AuthenticationFeature.LOGIN_ROUTE,
         label = "Профиль",
         icon = R.drawable.icon_tab_profile
     )
@@ -55,4 +55,4 @@ sealed class BottomNavigationItem(
         label = "Вопросы",
         icon = R.drawable.icon_tab_collections
     )
-} 
+}
