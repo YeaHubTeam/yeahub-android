@@ -1,5 +1,6 @@
 package ru.yeahub.core_ui.component
 
+import android.widget.Toast
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
@@ -24,9 +25,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.integerResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -112,7 +116,7 @@ private fun ExpandedContent(blocks: List<DetailedQuestionAnswerBlock>) {
             }
 
             is DetailedQuestionAnswerBlock.CodeBlock -> {
-                CodeBlockContent(parseHTMLCodeBlock(block.htmlCode))
+                CodeBlockContent(block.htmlCode)
             }
 
             is DetailedQuestionAnswerBlock.ImageBlock -> {
@@ -137,8 +141,7 @@ private fun CollapsedContent(
 
             is DetailedQuestionAnswerBlock.CodeBlock -> {
                 if (remainingChars <= 0) return@forEach
-                val codeText = parseHTMLCodeBlock(block.htmlCode)
-                remainingChars -= showCollapsedCode(codeText, remainingChars)
+                remainingChars -= showCollapsedCode(block.htmlCode, remainingChars)
             }
 
             is DetailedQuestionAnswerBlock.ImageBlock -> {
@@ -163,9 +166,19 @@ private fun TextBlockContent(text: String) {
 }
 
 @Composable
-private fun CodeBlockContent(code: String) {
-    Text(
-        text = code,
+private fun CodeBlockContent(htmlCode: String, maxChars: Int? = null) {
+    val clipboardManager = LocalClipboardManager.current
+    val context = LocalContext.current
+    val copiedMessage = stringResource(R.string.code_copied)
+    val code = parseHTMLCodeBlock(htmlCode)
+    val displayedCode = if (maxChars != null && code.length > maxChars) {
+        code.take(maxChars) + "..."
+    } else {
+        code
+    }
+    val clipboardCode = codeForClipboard(htmlCode, maxChars)
+
+    Column(
         modifier = Modifier
             .background(
                 brush = Brush.verticalGradient(
@@ -177,10 +190,28 @@ private fun CodeBlockContent(code: String) {
                 shape = RoundedCornerShape(12.dp)
             )
             .padding(8.dp)
-            .fillMaxWidth(),
-        color = Theme.colors.purple700,
-        style = Theme.typography.body2Accent
-    )
+            .fillMaxWidth()
+    ) {
+        TextButton(
+            onClick = {
+                clipboardManager.setText(AnnotatedString(clipboardCode))
+                Toast.makeText(context, copiedMessage, Toast.LENGTH_SHORT).show()
+            },
+            enabled = clipboardCode.isNotBlank(),
+            modifier = Modifier.align(Alignment.End)
+        ) {
+            Text(
+                text = stringResource(R.string.copy_code),
+                color = Theme.colors.purple700,
+                style = Theme.typography.body2Accent
+            )
+        }
+        Text(
+            text = displayedCode,
+            color = Theme.colors.purple700,
+            style = Theme.typography.body2Accent
+        )
+    }
 }
 
 @Composable
@@ -208,15 +239,22 @@ private fun showCollapsedText(text: String, remainingChars: Int): Int {
 }
 
 @Composable
-private fun showCollapsedCode(code: String, remainingChars: Int): Int {
-    val codeToShow = if (code.length > remainingChars) {
-        code.take(remainingChars) + "..."
+private fun showCollapsedCode(htmlCode: String, remainingChars: Int): Int {
+    CodeBlockContent(htmlCode, maxChars = remainingChars)
+    return parseHTMLCodeBlock(htmlCode).length
+}
+
+internal fun codeForClipboard(htmlCode: String, maxChars: Int? = null): String {
+    val code = htmlCode
+        .replace(Regex("</?(?:pre|code)(?:\\s[^>]*)?>"), "")
+        .replace(Regex("\\s+"), " ")
+        .trim()
+
+    return if (maxChars != null && code.length > maxChars) {
+        code.take(maxChars) + "..."
     } else {
         code
     }
-
-    CodeBlockContent(codeToShow)
-    return code.length
 }
 
 private fun isContentExpandable(

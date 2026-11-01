@@ -6,6 +6,8 @@
     <string name="previous">Предыдущий</string>
     <string name="next">Следующий</string>
     <string name="expanded_answer_title">Развёрнутый ответ</string>
+    <string name="copy_code">Копировать код</string>
+    <string name="code_copied">Код скопирован</string>
     <string name="expand">Развернуть</string>
     <string name="collapse">Свернуть</string>
     <string name="for_members">Для участников</string>
