@@ -13,7 +13,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.navigation.compose.rememberNavController
 import org.koin.android.ext.android.inject
-import ru.yeahub.authentication.impl.login.domain.usecase.CheckAuthStateUseCase
+import kotlinx.coroutines.flow.collect
+import ru.yeahub.authentication.impl.login.domain.usecase.ObserveAuthStateUseCase
+import ru.yeahub.navigation_api.FeatureRoute
 import ru.yeahub.core_ui.theme.YeaHubTheme
 import ru.yeahub.navigation_api.NavigationPathManager
 import ru.yeahub.navigation_impl.AppNavigation
@@ -52,26 +54,32 @@ import timber.log.Timber
  *    - Используйте NavController для навигации между экранами
  */
 class MainActivity : ComponentActivity() {
-    
+
     private val pathManager: NavigationPathManager by inject()
-    private val checkAuthStateUseCase: CheckAuthStateUseCase by inject()
+    private val observeAuthStateUseCase: ObserveAuthStateUseCase by inject()
     private lateinit var notificationService: NotificationNavigationService
-    
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        
+
         // Инициализируем сервис уведомлений
         notificationService = NotificationNavigationService(pathManager)
-        
+
         setContent {
             YeaHubTheme {
                 val navController = rememberNavController()
                 var pendingIntent by remember { mutableStateOf<Intent?>(null) }
                 val isAuthorized by produceState<Boolean?>(initialValue = null) {
-                    value = checkAuthStateUseCase()
+                    observeAuthStateUseCase().collect { authState ->
+                        value = authState
+                    }
                 }
-                
+
+                var previousAuthState by remember {
+                    mutableStateOf<Boolean?>(null)
+                }
+
                 // Обрабатываем intent при создании активности
                 LaunchedEffect(Unit) {
                     intent?.let { initialIntent ->
@@ -80,7 +88,7 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }
-                
+
                 val startDestination = isAuthorized?.let(::getStartDestination)
 
                 startDestination?.let { route ->
@@ -89,14 +97,35 @@ class MainActivity : ComponentActivity() {
                         navController = navController,
                     )
 
+                    LaunchedEffect(isAuthorized) {
+                        val currentAuthState =
+                            isAuthorized ?: return@LaunchedEffect
+
+                        if (previousAuthState == true && !currentAuthState) {
+                            navController.navigate(
+                                FeatureRoute.AuthenticationFeature.LOGIN_ROUTE,
+                            ) {
+                                popUpTo(navController.graph.id) {
+                                    inclusive = true
+                                }
+                                launchSingleTop = true
+                            }
+                        }
+
+                        previousAuthState = currentAuthState
+                    }
+
                     // Обрабатываем pending intent после инициализации навигации
                     LaunchedEffect(pendingIntent) {
                         pendingIntent?.let { intentToHandle ->
                             Timber.d(
                                 "MainActivity onCreate: Handling pending intent: " +
-                                    "${intentToHandle.data}"
+                                        "${intentToHandle.data}"
                             )
-                            notificationService.handleNotificationIntent(intentToHandle, navController)
+                            notificationService.handleNotificationIntent(
+                                intentToHandle,
+                                navController
+                            )
                             pendingIntent = null
                         }
                     }
@@ -104,12 +133,12 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-    
+
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        
+
         Timber.d("MainActivity onNewIntent: Received intent: ${intent.data}")
-        
+
         // Обрабатываем новый intent, если активность уже запущена
         if (notificationService.canHandleIntent(intent)) {
             // Получаем текущий navController из compose
@@ -117,7 +146,7 @@ class MainActivity : ComponentActivity() {
             this.intent = intent
         }
     }
-    
+
     /**
      * Получает текущий intent для обработки в compose.
      * 
