@@ -1,5 +1,6 @@
 package ru.yeahub.authentication.impl.login.domain.repository
 
+import kotlinx.coroutines.flow.Flow
 import ru.yeahub.datastore_api.TokenStorageResult
 
 /**
@@ -7,6 +8,7 @@ import ru.yeahub.datastore_api.TokenStorageResult
  * - saveAccessToken - сохраняет access token пользователя
  * - getAccessToken - возвращает сохранённый access token
  * - clearTokens - очищает сохранённые токены авторизации
+ * (logout() заменяет старый clearTokens(), потому что теперь выход состоит не только из очистки токена.)
  */
 interface AuthSessionRepository {
 
@@ -14,5 +16,7 @@ interface AuthSessionRepository {
 
     suspend fun getAccessToken(): String?
 
-    suspend fun clearTokens(): TokenStorageResult
+    fun observeAuthState(): Flow<Boolean>
+
+    suspend fun logout(): TokenStorageResult
 }
