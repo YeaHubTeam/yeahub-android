@@ -52,7 +52,7 @@
     <string name="resend">Отправить повторно через %1$d c</string>
     <string name="resend_button">Отправить повторно</string>
     <string name="ok">Хорошо</string>
-    <string name="enter_email_instruction">Для восстановления пароля введите адрес\nэл.почты, на который вы регистрировались.\nМы отправим письмо для восстановления пароля</string>
+    <string name="enter_email_instruction">Для восстановления пароля введите адрес эл.почты, на который вы регистрировались. Мы отправим письмо для восстановления пароля</string>
     <string name="send_button">Отправить</string>
     <string name="cant_send_a_letter">Не удалось отправить письмо</string>
     <string name="login_token_save_error">Не удалось сохранить сессию. Попробуйте войти ещё раз</string>
