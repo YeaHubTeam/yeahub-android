@@ -1,4 +1,4 @@
-package ru.yeahub.authentication.impl.forgotpassword.presentation.ui
+package ru.yeahub.authentication.impl.forgotpassword.presentation
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -37,10 +37,6 @@ import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.compose.koinViewModel
 import ru.yeahub.authentication.impl.R
-import ru.yeahub.authentication.impl.forgotpassword.presentation.model.ForgotPasswordAction
-import ru.yeahub.authentication.impl.forgotpassword.presentation.model.ForgotPasswordCommand
-import ru.yeahub.authentication.impl.forgotpassword.presentation.model.ForgotPasswordState
-import ru.yeahub.authentication.impl.forgotpassword.presentation.viewmodel.ForgotPasswordViewModel
 import ru.yeahub.core_ui.component.PrimaryButton
 import ru.yeahub.core_ui.component.PrimaryTextField
 import ru.yeahub.core_ui.theme.LocalAppTypography

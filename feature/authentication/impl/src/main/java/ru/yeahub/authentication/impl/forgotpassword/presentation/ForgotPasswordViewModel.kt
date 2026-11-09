@@ -1,5 +1,6 @@
-package ru.yeahub.authentication.impl.forgotpassword.presentation.viewmodel
+package ru.yeahub.authentication.impl.forgotpassword.presentation
 
+import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -8,9 +9,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import ru.yeahub.authentication.impl.forgotpassword.presentation.model.ForgotPasswordAction
-import ru.yeahub.authentication.impl.forgotpassword.presentation.model.ForgotPasswordCommand
-import ru.yeahub.authentication.impl.forgotpassword.presentation.model.ForgotPasswordState
 
 class ForgotPasswordViewModel : ViewModel() {
 
@@ -55,6 +53,6 @@ class ForgotPasswordViewModel : ViewModel() {
     }
 
     fun isEmailValid(email: String): Boolean {
-        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+        return Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
 }

@@ -1,4 +1,4 @@
-package ru.yeahub.authentication.impl.forgotpassword.presentation.model
+package ru.yeahub.authentication.impl.forgotpassword.presentation
 
 data class ForgotPasswordState(
     val email: String = "",

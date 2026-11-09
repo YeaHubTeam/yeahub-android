@@ -1,4 +1,4 @@
-package ru.yeahub.authentication.impl.forgotpassword.presentation.model
+package ru.yeahub.authentication.impl.forgotpassword.presentation
 
 /**
  * Одноразовые команды экрана:
