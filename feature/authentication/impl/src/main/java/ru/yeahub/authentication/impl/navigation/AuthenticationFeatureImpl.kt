@@ -7,7 +7,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import org.koin.androidx.compose.koinViewModel
-import ru.yeahub.authentication.impl.forgot_password.presentation.ui.ForgotPasswordScreen
+import ru.yeahub.authentication.impl.forgotpassword.presentation.ui.ForgotPasswordScreen
 import ru.yeahub.authentication.impl.login.presentation.ui.LoginScreen
 import ru.yeahub.authentication.impl.login.presentation.viewmodel.LoginViewModel
 import ru.yeahub.navigation_api.FeatureApi

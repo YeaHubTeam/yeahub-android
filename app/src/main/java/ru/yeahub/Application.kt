@@ -3,7 +3,7 @@ package ru.yeahub
 import android.app.Application
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
-import ru.yeahub.authentication.impl.forgot_password.di.forgotPasswordModule
+import ru.yeahub.authentication.impl.forgotpassword.di.forgotPasswordModule
 import ru.yeahub.authentication.impl.registration.di.registrationFeatureModule
 import ru.yeahub.authentication.impl.navigation.authenticationFeatureModule
 import ru.yeahub.datastore_impl.di.datastoreModule
@@ -61,7 +61,7 @@ class Application : Application() {
                 specializationFeatureModule,
                 registrationFeatureModule,
                 authenticationFeatureModule,
-                forgotPasswordModule
+                forgotPasswordModule,
             )
         }
         // проверка, что модули загружены
