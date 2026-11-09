@@ -35,6 +35,7 @@ class AuthenticationFeatureImpl : FeatureApi {
 
         registerForgotPasswordRoute(
             navGraphBuilder = navGraphBuilder,
+            navController = navController,
             modifier = modifier,
         )
     }
@@ -79,15 +80,16 @@ class AuthenticationFeatureImpl : FeatureApi {
 
     private fun registerForgotPasswordRoute(
         navGraphBuilder: NavGraphBuilder,
+        navController: NavHostController,
         modifier: Modifier
     ) {
         navGraphBuilder.composable(
             route = FeatureRoute.AuthenticationFeature.FORGOT_PASS_ROUTE
         ) {
-//            val viewModel: ForgotPasswordViewModel = koinViewModel()
-//            val state by viewModel.state.collectAsStateWithLifecycle()
-
             ForgotPasswordScreen(
+                onBackToSignIn = {
+                    navController.navigate(FeatureRoute.AuthenticationFeature.LOGIN_ROUTE)
+                },
                 modifier = modifier
             )
         }
