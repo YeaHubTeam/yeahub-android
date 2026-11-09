@@ -5,8 +5,8 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 import ru.yeahub.detail_question.impl.di.detailQuestionFeatureModule
 import ru.yeahub.example_details.impl.detailsFeatureModule
-import ru.yeahub.example_home.impl.data.di.questionsMainFeatureModule
 import ru.yeahub.example_profile.impl.profileFeatureModule
+import ru.yeahub.home.impl.di.homeFeatureModule
 import ru.yeahub.navigation_impl.navigationPathModule
 import ru.yeahub.network_impl.networkModule
 import ru.yeahub.public_collections.impl.di.CollectionsFeatureModule
@@ -47,7 +47,7 @@ class Application : Application() {
                 navigationPathModule,
                 questionsModule,
                 profileFeatureModule,
-                questionsMainFeatureModule,
+                homeFeatureModule,
                 detailsFeatureModule,
                 detailQuestionFeatureModule,
                 CollectionsFeatureModule,

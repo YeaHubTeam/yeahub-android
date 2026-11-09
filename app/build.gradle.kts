@@ -62,6 +62,8 @@ dependencies {
     implementation(project(":core:navigation-api"))
     implementation(project(":core:ui"))
     implementation(project(":core:navigation-impl"))
+    implementation(project(":feature:home:api"))
+    implementation(project(":feature:home:impl"))
 
     //Timber
     implementation(libs.timber)
