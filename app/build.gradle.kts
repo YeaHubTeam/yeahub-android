@@ -1,8 +1,18 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.detekt)
+}
+
+// Секреты для дев-сборки: yeahub.apiToken / yeahub.profileId в local.properties (в git не попадает)
+val localProperties = Properties().apply {
+    val localFile = rootProject.file("local.properties")
+    if (localFile.exists()) {
+        localFile.inputStream().use { load(it) }
+    }
 }
 
 android {
@@ -17,6 +27,17 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField(
+            "String",
+            "YEAHUB_API_TOKEN",
+            "\"${localProperties.getProperty("yeahub.apiToken", "")}\""
+        )
+        buildConfigField(
+            "String",
+            "YEAHUB_PROFILE_ID",
+            "\"${localProperties.getProperty("yeahub.profileId", "")}\""
+        )
     }
 
     packaging {
@@ -60,6 +81,7 @@ android {
 
 dependencies {
     implementation(project(":core:navigation-api"))
+    implementation(project(":core:network-api"))
     implementation(project(":core:ui"))
     implementation(project(":core:navigation-impl"))
     implementation(project(":feature:home:api"))

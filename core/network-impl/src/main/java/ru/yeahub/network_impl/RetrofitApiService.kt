@@ -7,6 +7,7 @@ import ru.yeahub.network_api.ApiService
 import ru.yeahub.network_api.models.GetCollectionsResponse
 import ru.yeahub.network_api.models.GetPublicQuestionResponse
 import ru.yeahub.network_api.models.GetPublicQuestionsResponse
+import ru.yeahub.network_api.models.GetQuestionsForLearnResponse
 import ru.yeahub.network_api.models.GetSkillsResponse
 import ru.yeahub.network_api.models.GetSpecializationResponse
 import ru.yeahub.network_api.models.GetSpecializationsResponse
@@ -61,4 +62,11 @@ interface RetrofitApiService : ApiService {
         @Query("specializations") specializationsId: Long,
         @Query("isFree") isFree: Boolean
     ): GetCollectionsResponse
+
+    @GET("interview-preparation/learn/{profileId}")
+    override suspend fun getQuestionsForLearn(
+        @Path("profileId") profileId: String,
+        @Query("page") page: Int,
+        @Query("limit") limit: Int
+    ): GetQuestionsForLearnResponse
 }

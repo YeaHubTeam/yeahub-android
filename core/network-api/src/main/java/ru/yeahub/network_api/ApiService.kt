@@ -3,6 +3,7 @@ package ru.yeahub.network_api
 import ru.yeahub.network_api.models.GetCollectionsResponse
 import ru.yeahub.network_api.models.GetPublicQuestionResponse
 import ru.yeahub.network_api.models.GetPublicQuestionsResponse
+import ru.yeahub.network_api.models.GetQuestionsForLearnResponse
 import ru.yeahub.network_api.models.GetSkillsResponse
 import ru.yeahub.network_api.models.GetSpecializationResponse
 import ru.yeahub.network_api.models.GetSpecializationsResponse
@@ -51,4 +52,10 @@ interface ApiService {
         specializationsId: Long,
         isFree: Boolean
     ): GetCollectionsResponse
+
+    suspend fun getQuestionsForLearn(
+        profileId: String,
+        page: Int,
+        limit: Int
+    ): GetQuestionsForLearnResponse
 }

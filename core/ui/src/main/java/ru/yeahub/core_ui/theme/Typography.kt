@@ -158,6 +158,25 @@ data class Typography(
         fontSize = 16.sp,
         lineHeight = 21.sp,
     ),
+    // SF Pro
+    val proSb: TextStyle = TextStyle(
+        fontFamily = sfProText,
+        fontWeight = FontWeight.Medium,
+        fontSize = 16.sp,
+        lineHeight = 24.sp,
+    ),
+    val iosMed14: TextStyle = TextStyle(
+        fontFamily = sfProText,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 14.sp,
+        lineHeight = 16.8.sp,
+    ),
+    val webMed16: TextStyle = TextStyle(
+        fontFamily = sfProText,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 16.sp,
+        lineHeight = 20.8.sp,
+    ),
 )
 
 val LocalAppTypography = staticCompositionLocalOf {

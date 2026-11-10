@@ -3,11 +3,15 @@ package ru.yeahub
 import android.app.Application
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
+import org.koin.dsl.module
+import org.koin.dsl.single
 import ru.yeahub.detail_question.impl.di.detailQuestionFeatureModule
 import ru.yeahub.example_details.impl.detailsFeatureModule
 import ru.yeahub.example_profile.impl.profileFeatureModule
 import ru.yeahub.home.impl.di.homeFeatureModule
 import ru.yeahub.navigation_impl.navigationPathModule
+import ru.yeahub.network_api.AuthTokenProvider
+import ru.yeahub.network_api.ProfileIdProvider
 import ru.yeahub.network_impl.networkModule
 import ru.yeahub.public_collections.impl.di.CollectionsFeatureModule
 import ru.yeahub.public_questions.impl.data.di.questionsModule
@@ -43,6 +47,12 @@ class Application : Application() {
             androidContext(this@Application)
             printLogger()              // включаем лог Koin
             modules(
+                // Дев-авторизация: токен и profileId из local.properties через BuildConfig.
+                // TODO: заменить на полноценную сессию (логин + хранение токена)
+                module {
+                    single<AuthTokenProvider> { AuthTokenProvider { BuildConfig.YEAHUB_API_TOKEN } }
+                    single<ProfileIdProvider> { ProfileIdProvider { BuildConfig.YEAHUB_PROFILE_ID } }
+                },
                 networkModule,
                 navigationPathModule,
                 questionsModule,

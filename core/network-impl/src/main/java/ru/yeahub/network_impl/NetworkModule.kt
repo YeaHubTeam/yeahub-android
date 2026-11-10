@@ -6,6 +6,7 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ru.yeahub.network_api.ApiService
+import ru.yeahub.network_api.AuthTokenProvider
 import ru.yeahub.network_api.NetworkProvider
 import java.security.cert.X509Certificate
 import javax.net.ssl.SSLContext
@@ -19,7 +20,7 @@ val networkModule = module {
     single<Retrofit> {
         Retrofit.Builder()
             .baseUrl("https://api.yeatwork.ru")
-            .client(getUnsafeOkHttpClient())
+            .client(getUnsafeOkHttpClient(authTokenProvider = get()))
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
@@ -39,7 +40,7 @@ val networkModule = module {
     }
 }
 
-fun getUnsafeOkHttpClient(): OkHttpClient {
+fun getUnsafeOkHttpClient(authTokenProvider: AuthTokenProvider): OkHttpClient {
     val trustAllCerts = arrayOf<TrustManager>(object : X509TrustManager {
 
         @SuppressLint("TrustAllX509TrustManager")
@@ -62,5 +63,16 @@ fun getUnsafeOkHttpClient(): OkHttpClient {
     return OkHttpClient.Builder()
         .sslSocketFactory(sslContext.socketFactory, trustAllCerts[0] as X509TrustManager)
         .hostnameVerifier { _, _ -> true }
+        .addInterceptor { chain ->
+            val token = authTokenProvider.token()
+            val request = if (token.isNotBlank()) {
+                chain.request().newBuilder()
+                    .header("Authorization", "Bearer $token")
+                    .build()
+            } else {
+                chain.request()
+            }
+            chain.proceed(request)
+        }
         .build()
 }

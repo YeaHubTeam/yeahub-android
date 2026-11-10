@@ -51,6 +51,8 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.runtime.android)
 
+    implementation(libs.compose.shimmer)
+
     implementation(libs.koin.core)
     implementation(libs.koin.android)
     implementation(libs.koin.compose)

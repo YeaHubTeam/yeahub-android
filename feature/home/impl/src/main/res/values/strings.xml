@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="home_header_title">Главная</string>
+    <string name="home_interview_trainer_title">Тренажёр собеседований</string>
+    <string name="home_interview_question_counter">Вопрос викторины %1$d из %2$d</string>
+    <string name="home_interview_pass">Пройти собеседование</string>
+    <string name="home_loading_error">Не удалось загрузить данные</string>
+    <string name="home_retry">Повторить</string>
+</resources>
