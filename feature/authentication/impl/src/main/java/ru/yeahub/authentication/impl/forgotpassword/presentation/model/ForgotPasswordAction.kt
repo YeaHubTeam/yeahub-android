@@ -1,4 +1,4 @@
-package ru.yeahub.authentication.impl.forgotpassword.presentation
+package ru.yeahub.authentication.impl.forgotpassword.presentation.model
 
 sealed interface ForgotPasswordAction {
     data class OnEmailChanged(val email: String) : ForgotPasswordAction

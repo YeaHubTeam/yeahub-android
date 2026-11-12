@@ -48,11 +48,11 @@
     <string name="close">Закрыть</string>
     <string name="letter">Письмо</string>
     <string name="instructions_letter">Мы отправили письмо с инструкциями</string>
-    <string name="instruction">Если вы не получили письмо с инструкциями, проверьте, пожалуйста, папку «Спам» или попробуйте отправить запрос еще раз</string>
+    <string name="instruction">Если вы не получили письмо\n с инструкциями, проверьте, пожалуйста,\n папку «Спам» или попробуйте отправить\n запрос еще раз</string>
     <string name="resend">Отправить повторно через %1$d c</string>
     <string name="resend_button">Отправить повторно</string>
     <string name="ok">Хорошо</string>
-    <string name="enter_email_instruction">Для восстановления пароля введите адрес эл.почты, на который вы регистрировались. Мы отправим письмо для восстановления пароля</string>
+    <string name="enter_email_instruction">Для восстановления пароля введите адрес\n эл.почты, на который вы регистрировались.\n Мы отправим письмо для восстановления пароля</string>
     <string name="send_button">Отправить</string>
     <string name="cant_send_a_letter">Не удалось отправить письмо</string>
     <string name="login_token_save_error">Не удалось сохранить сессию. Попробуйте войти ещё раз</string>
