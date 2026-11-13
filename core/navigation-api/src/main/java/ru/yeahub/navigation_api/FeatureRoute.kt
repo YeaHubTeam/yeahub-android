@@ -69,5 +69,6 @@ object FeatureRoute {
     object AuthenticationFeature {
         const val AUTH_ROUTE = "auth"
         const val LOGIN_ROUTE = "$AUTH_ROUTE/login"
+        const val FORGOT_PASS_ROUTE = "$AUTH_ROUTE/forgot_password"
     }
 }

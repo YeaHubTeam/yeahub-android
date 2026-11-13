@@ -3,8 +3,8 @@ package ru.yeahub
 import android.app.Application
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
-import ru.yeahub.authentication.impl.registration.di.registrationFeatureModule
 import ru.yeahub.authentication.impl.navigation.authenticationFeatureModule
+import ru.yeahub.authentication.impl.registration.di.registrationFeatureModule
 import ru.yeahub.datastore_impl.di.datastoreModule
 import ru.yeahub.detail_question.impl.di.detailQuestionFeatureModule
 import ru.yeahub.example_details.impl.detailsFeatureModule

@@ -7,6 +7,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import org.koin.androidx.compose.koinViewModel
+import ru.yeahub.authentication.impl.forgotpassword.presentation.ui.ForgotPasswordScreen
 import ru.yeahub.authentication.impl.login.presentation.ui.LoginScreen
 import ru.yeahub.authentication.impl.login.presentation.viewmodel.LoginViewModel
 import ru.yeahub.navigation_api.FeatureApi
@@ -27,6 +28,12 @@ class AuthenticationFeatureImpl : FeatureApi {
         modifier: Modifier,
     ) {
         registerLoginRoute(
+            navGraphBuilder = navGraphBuilder,
+            navController = navController,
+            modifier = modifier,
+        )
+
+        registerForgotPasswordRoute(
             navGraphBuilder = navGraphBuilder,
             navController = navController,
             modifier = modifier,
@@ -62,9 +69,31 @@ class AuthenticationFeatureImpl : FeatureApi {
                     }
                 },
                 onNavigateToForgotPassword = {
-                    // TODO: добавить переход после подключения экрана восстановления пароля.
+                    navController.navigate(FeatureRoute.AuthenticationFeature.FORGOT_PASS_ROUTE) {
+                        launchSingleTop = true
+                    }
                 },
                 modifier = modifier,
+            )
+        }
+    }
+
+    private fun registerForgotPasswordRoute(
+        navGraphBuilder: NavGraphBuilder,
+        navController: NavHostController,
+        modifier: Modifier
+    ) {
+        navGraphBuilder.composable(
+            route = FeatureRoute.AuthenticationFeature.FORGOT_PASS_ROUTE
+        ) {
+            ForgotPasswordScreen(
+                onBackToSignIn = {
+                    navController.popBackStack(
+                        route = FeatureRoute.AuthenticationFeature.LOGIN_ROUTE,
+                        inclusive = false
+                    )
+                },
+                modifier = modifier
             )
         }
     }

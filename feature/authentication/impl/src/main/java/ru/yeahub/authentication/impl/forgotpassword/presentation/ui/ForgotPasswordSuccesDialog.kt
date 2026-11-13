@@ -1,0 +1,136 @@
+package ru.yeahub.authentication.impl.forgotpassword.presentation.ui
+
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import ru.yeahub.authentication.impl.R
+import ru.yeahub.authentication.impl.forgotpassword.presentation.model.ForgotPasswordAction
+import ru.yeahub.core_ui.theme.LocalAppTypography
+import ru.yeahub.core_ui.theme.colors
+
+@Composable
+fun ForgotPasswordSuccessDialog(
+    onAction: (ForgotPasswordAction) -> Unit,
+    modifier: Modifier
+) {
+    Dialog(
+        onDismissRequest = {
+            onAction(ForgotPasswordAction.OnBackToAuthClick)
+        }
+    ) {
+        Column(
+            modifier = modifier
+                .fillMaxWidth()
+                .clip(dialogShape)
+                .background(
+                    colors.white900,
+                    dialogShape
+                )
+                .border(
+                    1.dp,
+                    colors.purple700,
+                    dialogShape
+                )
+                .padding(
+                    start = 12.dp,
+                    end = 12.dp,
+                    top = 12.dp,
+                    bottom = 32.dp
+                ),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.CenterEnd
+            ) {
+                IconButton(
+                    onClick = {
+                        onAction(ForgotPasswordAction.OnBackToAuthClick)
+                    }
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.close),
+                        contentDescription = stringResource(R.string.close),
+                        tint = Color.Unspecified
+                    )
+                }
+            }
+
+            Image(
+                painter = painterResource(R.drawable.letter),
+                contentDescription = null,
+                modifier = Modifier.size(
+                    width = 87.dp,
+                    height = 79.dp
+                )
+            )
+
+            Spacer(Modifier.height(16.dp))
+
+            Text(
+                text = stringResource(R.string.instructions_letter),
+                style = LocalAppTypography.current.body5Accent,
+                color = colors.black900,
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(Modifier.height(8.dp))
+
+            Text(
+                text = stringResource(R.string.instruction),
+                style = LocalAppTypography.current.body2,
+                color = colors.black900,
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(Modifier.height(24.dp))
+
+            Text(
+                text = stringResource(R.string.resend_button),
+                style = LocalAppTypography.current.body2Accent,
+                color = colors.purple700,
+                modifier = Modifier.clickable(
+                    role = Role.Button
+                ) {
+                    onAction(ForgotPasswordAction.OnReSendEmailClick)
+                }
+            )
+        }
+    }
+}
+
+@Preview(
+    name = "Password recover dialog",
+    showBackground = true,
+    showSystemUi = true
+)
+@Composable
+fun ForgotPasswordSuccessDialogPreview() {
+    ForgotPasswordSuccessDialog(
+        onAction = {},
+        modifier = Modifier
+    )
+}
