@@ -22,8 +22,11 @@ var a: String? = null
 var b: String? = null
 
 val networkModule = module {
+
     single {
-        AuthCookieJar()
+        AuthCookieJar(
+            authCookieDataStore = get(),
+        )
     }
 
     single<AuthCookieManager> {

@@ -16,5 +16,9 @@ interface TokenDataStore {
 
     fun observeAccessToken(): Flow<String?>
 
+    suspend fun clearTokensIfMatches(
+        expectedToken: String?,
+    ): Boolean
+
     suspend fun clearTokens(): TokenStorageResult
 }

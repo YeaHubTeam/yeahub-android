@@ -14,6 +14,8 @@ import ru.yeahub.datastore_api.TokenDataStore
 import ru.yeahub.datastore_impl.TokenDataStoreImpl
 import ru.yeahub.datastore_impl.crypto.CryptoManager
 import ru.yeahub.datastore_impl.crypto.CryptoManagerImpl
+import ru.yeahub.datastore_api.AuthCookieDataStore
+import ru.yeahub.datastore_impl.AuthCookieDataStoreImpl
 
 /**
  * DI модуль локального хранения:
@@ -43,6 +45,10 @@ val datastoreModule = module {
 
     singleOf(::TokenDataStoreImpl) {
         bind<TokenDataStore>()
+    }
+
+    singleOf(::AuthCookieDataStoreImpl) {
+        bind<AuthCookieDataStore>()
     }
 }
 

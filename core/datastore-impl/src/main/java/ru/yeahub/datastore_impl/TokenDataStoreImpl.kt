@@ -76,6 +76,45 @@ class TokenDataStoreImpl(
             }
     }
 
+    override suspend fun clearTokensIfMatches(
+        expectedToken: String?,
+    ): Boolean {
+        if (expectedToken.isNullOrBlank()) {
+            return false
+        }
+
+        return runCatching {
+            var tokenCleared = false
+
+            dataStore.edit { preferences ->
+                val currentToken = preferences[ACCESS_TOKEN_KEY]
+                    ?.let { encryptedToken ->
+                        runCatching {
+                            cryptoManager.decrypt(encryptedToken)
+                        }.getOrNull()
+                    }
+
+                if (currentToken == expectedToken) {
+                    preferences.remove(ACCESS_TOKEN_KEY)
+                    tokenCleared = true
+                }
+            }
+
+            tokenCleared
+        }.fold(
+            onSuccess = { tokenCleared ->
+                tokenCleared
+            },
+            onFailure = { exception ->
+                if (exception is CancellationException) {
+                    throw exception
+                }
+
+                false
+            },
+        )
+    }
+
     override suspend fun clearTokens(): TokenStorageResult {
         return runCatching {
             dataStore.edit { preferences ->

@@ -11,6 +11,7 @@ import ru.yeahub.datastore_api.TokenStorageResult
 import ru.yeahub.network_impl.cookie.AuthCookieJar
 import ru.yeahub.network_impl.refresh.RefreshTokenService
 import java.io.IOException
+import retrofit2.HttpException
 
 /**
  * Обновляет access token при получении 401 и повторяет исходный запрос.
@@ -38,10 +39,18 @@ class TokenRefreshInterceptor(
             return originalResponse
         }
 
-        val retryRequest = runBlocking {
-            refreshMutex.withLock {
-                createRetryRequest(originalRequest)
+        val retryRequest = try {
+            runBlocking {
+                refreshMutex.withLock {
+                    createRetryRequest(originalRequest)
+                }
             }
+        } catch (exception: IOException) {
+            originalResponse.body()?.close()
+            throw exception
+        } catch (exception: HttpException) {
+            originalResponse.body()?.close()
+            throw exception
         }
 
         return if (retryRequest == null) {
@@ -85,39 +94,48 @@ class TokenRefreshInterceptor(
     private suspend fun refreshAccessToken(
         requestToken: String?,
     ): String? {
-        val refreshedToken = try {
-            val refreshResponse = refreshTokenService
-                .refreshToken()
-                .execute()
+        val refreshResponse = refreshTokenService
+            .refreshToken()
+            .execute()
 
-            if (refreshResponse.isSuccessful) {
-                refreshResponse.body()?.accessToken
-            } else {
-                refreshResponse.errorBody()?.close()
-                null
-            }
-        } catch (_: IOException) {
-            null
-        }
-
-        val savedToken = refreshedToken?.takeIf { accessToken ->
-            tokenDataStore.saveAccessToken(accessToken) ==
-                    TokenStorageResult.Success
-        }
-
-        if (savedToken == null) {
+        if (refreshResponse.code() == HTTP_UNAUTHORIZED) {
+            refreshResponse.errorBody()?.close()
             failedAccessToken = requestToken
-            clearSession()
-        } else {
-            failedAccessToken = null
+            clearSession(requestToken)
+            return null
         }
 
-        return savedToken
+        if (!refreshResponse.isSuccessful) {
+            throw HttpException(refreshResponse)
+        }
+
+        val refreshedToken = refreshResponse.body()?.accessToken
+
+        val isTokenSaved =
+            !refreshedToken.isNullOrBlank() &&
+                    tokenDataStore.saveAccessToken(refreshedToken) ==
+                    TokenStorageResult.Success
+
+        if (!isTokenSaved) {
+            throw IOException(
+                "Refresh token response cannot be saved",
+            )
+        }
+
+        failedAccessToken = null
+        return refreshedToken
     }
 
-    private suspend fun clearSession() {
-        tokenDataStore.clearTokens()
-        authCookieJar.clear()
+    private suspend fun clearSession(
+        requestToken: String?,
+    ) {
+        val tokenCleared = tokenDataStore.clearTokensIfMatches(
+            expectedToken = requestToken,
+        )
+
+        if (tokenCleared) {
+            authCookieJar.clear()
+        }
     }
 
     private companion object {
