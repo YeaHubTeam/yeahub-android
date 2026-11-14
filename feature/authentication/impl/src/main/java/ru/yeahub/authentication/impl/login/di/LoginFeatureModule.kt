@@ -19,6 +19,7 @@ import ru.yeahub.authentication.impl.login.domain.usecase.LoginUseCase
 import ru.yeahub.authentication.impl.login.domain.usecase.LogoutUseCase
 import ru.yeahub.authentication.impl.login.presentation.mapper.LoginStateMapper
 import ru.yeahub.authentication.impl.login.presentation.viewmodel.LoginViewModel
+import ru.yeahub.authentication.impl.login.domain.usecase.ObserveAuthStateUseCase
 
 /**
  * DI модуль авторизации:
@@ -50,6 +51,7 @@ val loginFeatureModule = module {
     factoryOf(::LoginUseCase)
     factoryOf(::CheckAuthStateUseCase)
     factoryOf(::LogoutUseCase)
+    factoryOf(::ObserveAuthStateUseCase)
 
     singleOf(::LoginStateMapper)
     viewModelOf(::LoginViewModel)

@@ -20,6 +20,9 @@ interface ApiService {
      */
     suspend fun login(request: LoginRequestDto): LoginResponseDto
 
+    suspend fun refreshToken(): LoginResponseDto
+
+    suspend fun logout()
     suspend fun getProfile(): AuthUserDto
 
     suspend fun register(request: RegistrationRequestDto)
