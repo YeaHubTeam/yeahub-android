@@ -58,3 +58,5 @@ include(":feature:questions-or-collections")
 include(":feature:questions-or-collections:api")
 include(":feature:questions-or-collections:impl")
 
+include(":feature:home:api")
+include(":feature:home:impl")
