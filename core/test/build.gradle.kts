@@ -14,6 +14,13 @@ android {
         consumerProguardFiles("consumer-rules.pro")
     }
 
+    packaging {
+        resources {
+            // JUnit artifacts contain identical copies of these files.
+            pickFirsts += setOf("META-INF/LICENSE.md", "META-INF/LICENSE-notice.md")
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
