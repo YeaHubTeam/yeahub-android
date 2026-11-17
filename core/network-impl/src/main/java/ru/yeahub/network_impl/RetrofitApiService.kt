@@ -7,6 +7,7 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 import ru.yeahub.network_api.ApiService
 import ru.yeahub.network_api.models.AuthUserDto
+import ru.yeahub.network_api.models.ForgotPasswordResponseDto
 import ru.yeahub.network_api.models.GetCollectionsResponse
 import ru.yeahub.network_api.models.GetPublicQuestionResponse
 import ru.yeahub.network_api.models.GetPublicQuestionsResponse
@@ -77,6 +78,11 @@ interface RetrofitApiService : ApiService {
     override suspend fun login(
         @Body request: LoginRequestDto
     ): LoginResponseDto
+
+    @GET("auth/send-reset-password")
+    override suspend fun resetPassword(
+        @Query("email") email: String
+    ): ForgotPasswordResponseDto
 
     // Пустые реализации для ApiService, если они не нужны в Retrofit-слое
     override suspend fun getProfile(): AuthUserDto = TODO("Not required for this feature")
