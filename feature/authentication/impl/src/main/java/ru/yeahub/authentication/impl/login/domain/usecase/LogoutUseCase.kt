@@ -12,6 +12,6 @@ class LogoutUseCase(
 ) {
 
     suspend operator fun invoke(): TokenStorageResult {
-        return authSessionRepository.clearTokens()
+        return authSessionRepository.logout()
     }
 }
