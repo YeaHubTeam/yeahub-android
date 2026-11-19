@@ -3,6 +3,7 @@ package ru.yeahub.home.impl.presentation.component
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -16,6 +17,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.Dp
 import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.core_ui.theme.YeaHubTheme
 import ru.yeahub.home.impl.presentation.theme.HomeTypography
@@ -25,15 +27,18 @@ import ru.yeahub.ui.R as CoreUiR
 fun TextArrowAction(
     text: String,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(horizontal = 12.dp),
+    verticalOffset: Dp = 0.dp
 ) {
     Row(
         modifier = modifier
-            .offset(y = (-2).dp)
+            .offset(y = verticalOffset)
             .clickable(
                 role = Role.Button,
                 onClick = onClick
-            ),
+            )
+            .padding(contentPadding),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {

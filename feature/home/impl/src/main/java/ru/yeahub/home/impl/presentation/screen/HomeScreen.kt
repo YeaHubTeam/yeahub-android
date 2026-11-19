@@ -14,7 +14,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.progressSemantics
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -25,6 +27,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.draw.dropShadow
+import androidx.compose.ui.graphics.shadow.Shadow
+import androidx.compose.ui.unit.DpOffset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -32,9 +40,22 @@ import ru.yeahub.core_ui.theme.Theme
 import androidx.compose.ui.tooling.preview.Preview
 import ru.yeahub.core_ui.theme.YeaHubTheme
 import ru.yeahub.home.impl.R
+import ru.yeahub.home.impl.presentation.component.InterviewProgressChart
 import ru.yeahub.home.impl.presentation.theme.HomeTypography
 import ru.yeahub.home.impl.presentation.component.TextArrowAction
+import ru.yeahub.home.impl.presentation.model.InterviewStatsUiModel
 
+
+
+object PreviewData {
+    val interviewStats = InterviewStatsUiModel(
+        chartPercent = 0.75f,
+        total = 20,
+        new = 50,
+        inProcess = 120,
+        studied = 12
+    )
+}
 
 @Composable
 fun HomeScreen(modifier: Modifier = Modifier) {
@@ -55,6 +76,10 @@ fun HomeScreen(modifier: Modifier = Modifier) {
 
         item {
             InterviewTrainingCard()
+        }
+
+        item {
+            InterviewStatisticsCard(stats = PreviewData.interviewStats)
         }
 
     }
@@ -93,7 +118,14 @@ fun InterviewTrainingCard(
     onStartInterview: () -> Unit = {}
 ) {
     Card(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .shadow(
+                elevation = 10.dp,
+                shape = RoundedCornerShape(12.dp),
+                spotColor = Theme.colors.mainShadow,
+                ambientColor = Theme.colors.mainShadow
+            ),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
             containerColor = Theme.colors.white900
@@ -102,7 +134,7 @@ fun InterviewTrainingCard(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 14.dp)
         ) {
             Text(
                 text = "Тренажёр собеседований",
@@ -127,8 +159,127 @@ fun InterviewTrainingCard(
             TextArrowAction(
                 "Пройти собеседование",
                 onStartInterview,
+                modifier = Modifier.align(Alignment.End),
+                contentPadding = PaddingValues(0.dp),
+                verticalOffset = (-2).dp
+            )
+        }
+    }
+}
+
+
+@Composable
+fun InterviewStatisticsCard(
+    modifier: Modifier = Modifier,
+    stats: InterviewStatsUiModel,
+    onStartInterview: () -> Unit = {}
+) {
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .shadow(
+                elevation = 10.dp,
+                shape = RoundedCornerShape(12.dp),
+                spotColor = Theme.colors.mainShadow,
+                ambientColor = Theme.colors.mainShadow
+            ),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Theme.colors.white900
+        )
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Text(
+                text = "Статистика собеседований",
+                style = HomeTypography.sectionTitle,
+                color = Theme.colors.black900
+            )
+
+            Spacer(Modifier.height(16.dp))
+
+            InterviewProgressChart(
+                progress = stats.chartPercent,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
+
+            Spacer(Modifier.height(12.dp))
+
+            StatisticsMiniCards(
+                total = stats.total,
+                new = stats.new,
+                inProgress = stats.inProcess,
+                studied = stats.studied
+            )
+
+            Spacer(Modifier.height(16.dp))
+
+            TextArrowAction(
+                "Пройти собеседование",
+                onStartInterview,
                 modifier = Modifier.align(Alignment.End)
             )
+        }
+    }
+}
+
+
+@Composable
+fun StatisticsMiniCards(
+    modifier: Modifier = Modifier,
+    total: Int,
+    new: Int,
+    inProgress: Int,
+    studied: Int
+) {
+    val items = listOf(
+        "Всего" to total,
+        "Новые" to new,
+        "В процессе" to inProgress,
+        "Изучено" to studied
+    )
+
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally)
+    ) {
+        items.forEach { (label, value) ->
+            Card(
+                modifier = Modifier
+                    .widthIn(min = 60.dp)
+                    .height(48.dp)
+                    .dropShadow(
+                        shape = RoundedCornerShape(8.dp),
+                        shadow = Shadow(
+                            radius = 10.dp,
+                            color = Color(0x1A6A6376),
+                            offset = DpOffset(0.dp, 4.dp)
+                        )
+                    ),
+                shape = RoundedCornerShape(8.dp),
+                colors = CardDefaults.cardColors(containerColor = Theme.colors.white900),
+                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+            ) {
+                Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {
+                    Text(
+                        text = label,
+                        style = HomeTypography.statsMiniCardLabel,
+                        color = Theme.colors.black400
+                    )
+
+                    Text(
+                        text = value.toString(),
+                        modifier = Modifier.offset(y = 4.dp),
+                        style = HomeTypography.statsMiniCardLabel.copy(
+                            fontWeight = FontWeight.Normal
+                        ),
+                        color = Theme.colors.black800
+                    )
+                }
+            }
         }
     }
 }
@@ -172,6 +323,22 @@ private fun InterviewProgress(
             text = "Вопрос викторины $currentQuestion из $totalQuestions",
             style = HomeTypography.questionProgressText,
             color = Theme.colors.black500
+        )
+    }
+}
+
+
+@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF, widthDp = 358)
+@Composable
+private fun StatisticsMiniCardsPreview() {
+    YeaHubTheme {
+        val stats = PreviewData.interviewStats
+        StatisticsMiniCards(
+            total = stats.total,
+            new = stats.new,
+            inProgress = stats.inProcess,
+            studied = stats.studied,
+            modifier = Modifier.padding(16.dp)
         )
     }
 }

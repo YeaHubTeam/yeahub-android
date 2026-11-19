@@ -56,6 +56,21 @@ object HomeTypography {
         @Composable
         get() = arrowT
 
+    val progressChartText: TextStyle
+        @Composable
+        get() = arrowT.copy(
+            fontSize = 18.sp,
+            lineHeight = 21.6.sp
+        )
+
+    val statsMiniCardLabel: TextStyle
+        @Composable
+        get() = arrowT.copy(
+            fontSize = 12.sp,
+            lineHeight = 14.4.sp,
+            fontWeight = FontWeight.Medium
+        )
+
 
 
 }
