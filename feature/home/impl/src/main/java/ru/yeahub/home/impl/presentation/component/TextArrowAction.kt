@@ -29,7 +29,7 @@ fun TextArrowAction(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(horizontal = 12.dp),
-    verticalOffset: Dp = 0.dp
+    verticalOffset: Dp = 1.dp
 ) {
     Row(
         modifier = modifier

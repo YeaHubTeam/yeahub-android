@@ -34,15 +34,16 @@ object HomeTypography {
         get() = Theme.typography.head5.copy(
             fontSize = 18.sp,
             lineHeight = 21.6.sp,
-            letterSpacing = 0.sp
+            letterSpacing = 0.10.sp
         )
 
     val questionProgressText: TextStyle
         @Composable
         get() = Theme.typography.body7.copy(
-            fontSize = 16.sp,
+            fontSize = 14.sp,
             lineHeight = 16.8.sp,
-            fontWeight = FontWeight.Medium
+            fontWeight = FontWeight.Medium,
+            letterSpacing = 1.1.sp
         )
 
     val questionTitleLarge: TextStyle
@@ -69,6 +70,25 @@ object HomeTypography {
             fontSize = 12.sp,
             lineHeight = 14.4.sp,
             fontWeight = FontWeight.Medium
+        )
+
+    val questionDataText: TextStyle
+        @Composable
+        get() = Theme.typography.body7.copy(
+            fontSize = 12.sp,
+            lineHeight = 14.4.sp,
+            fontWeight = FontWeight.Normal,
+            letterSpacing = 0.6.sp,
+
+        )
+
+    val questionTitleMedium: TextStyle
+        @Composable
+        get() = Theme.typography.body3.copy(
+            fontSize = 14.sp,
+            lineHeight = 16.8.sp,
+            fontWeight = FontWeight.Medium,
+            letterSpacing = 0.07.sp
         )
 
 

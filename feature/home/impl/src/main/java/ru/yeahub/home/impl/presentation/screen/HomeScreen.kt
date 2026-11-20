@@ -41,10 +41,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import ru.yeahub.core_ui.theme.YeaHubTheme
 import ru.yeahub.home.impl.R
 import ru.yeahub.home.impl.presentation.component.InterviewProgressChart
+import ru.yeahub.home.impl.presentation.component.QuestionCard
 import ru.yeahub.home.impl.presentation.theme.HomeTypography
 import ru.yeahub.home.impl.presentation.component.TextArrowAction
 import ru.yeahub.home.impl.presentation.model.InterviewStatsUiModel
-
+import ru.yeahub.home.impl.presentation.model.QuestionUiModel
 
 
 object PreviewData {
@@ -55,7 +56,14 @@ object PreviewData {
         inProcess = 120,
         studied = 12
     )
+
+    val questionData = QuestionUiModel(
+        question = "Что такое Virtual DOM, и как он работает?",
+        rating = 4,
+        complexity = 10
+    )
 }
+
 
 @Composable
 fun HomeScreen(modifier: Modifier = Modifier) {
@@ -76,10 +84,15 @@ fun HomeScreen(modifier: Modifier = Modifier) {
 
         item {
             InterviewTrainingCard()
+            Spacer(Modifier.height(2.dp))
         }
 
         item {
             InterviewStatisticsCard(stats = PreviewData.interviewStats)
+        }
+
+        item {
+            QuestionsCard(questions = List(3) { PreviewData.questionData })
         }
 
     }
@@ -161,9 +174,52 @@ fun InterviewTrainingCard(
                 onStartInterview,
                 modifier = Modifier.align(Alignment.End),
                 contentPadding = PaddingValues(0.dp),
-                verticalOffset = (-2).dp
+                verticalOffset = (0).dp
             )
         }
+    }
+}
+
+@Composable
+private fun InterviewProgress(
+    currentQuestion: Int,
+    totalQuestions: Int,
+    modifier: Modifier = Modifier
+) {
+    val progress = if (totalQuestions > 0) {
+        (currentQuestion.toFloat() / totalQuestions).coerceIn(0f, 1f)
+    } else {
+        0f
+    }
+
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(8.dp)
+                .clip(RoundedCornerShape(50))
+                .background(Theme.colors.purple300)
+                .progressSemantics(progress)
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(progress)
+                    .fillMaxHeight()
+                    .background(
+                        color = Theme.colors.purple700,
+                        shape = RoundedCornerShape(50)
+                    )
+            )
+        }
+
+        Text(
+            text = "Вопрос викторины $currentQuestion из $totalQuestions",
+            style = HomeTypography.questionProgressText,
+            color = Theme.colors.black500
+        )
     }
 }
 
@@ -226,7 +282,6 @@ fun InterviewStatisticsCard(
     }
 }
 
-
 @Composable
 fun StatisticsMiniCards(
     modifier: Modifier = Modifier,
@@ -272,7 +327,7 @@ fun StatisticsMiniCards(
 
                     Text(
                         text = value.toString(),
-                        modifier = Modifier.offset(y = 4.dp),
+                        modifier = Modifier.offset(x = (-0.5).dp, y = 3.5.dp),
                         style = HomeTypography.statsMiniCardLabel.copy(
                             fontWeight = FontWeight.Normal
                         ),
@@ -285,68 +340,61 @@ fun StatisticsMiniCards(
 }
 
 @Composable
-private fun InterviewProgress(
-    currentQuestion: Int,
-    totalQuestions: Int,
-    modifier: Modifier = Modifier
+fun QuestionsCard(
+    modifier: Modifier = Modifier,
+    questions: List<QuestionUiModel>,
+    onStartStudy: () -> Unit = {}
 ) {
-    val progress = if (totalQuestions > 0) {
-        (currentQuestion.toFloat() / totalQuestions).coerceIn(0f, 1f)
-    } else {
-        0f
-    }
-
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .shadow(
+                elevation = 10.dp,
+                shape = RoundedCornerShape(12.dp),
+                spotColor = Theme.colors.mainShadow,
+                ambientColor = Theme.colors.mainShadow
+            ),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Theme.colors.white900
+        )
     ) {
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(8.dp)
-                .clip(RoundedCornerShape(50))
-                .background(Theme.colors.purple300)
-                .progressSemantics(progress)
+                .padding(16.dp)
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth(progress)
-                    .fillMaxHeight()
-                    .background(
-                        color = Theme.colors.purple700,
-                        shape = RoundedCornerShape(50)
-                    )
+            Text(
+                text = "Список вопросов",
+                style = HomeTypography.sectionTitle,
+                color = Theme.colors.black900
+            )
+
+            Spacer(Modifier.height(16.dp))
+
+            Column(verticalArrangement = Arrangement.spacedBy(9.3.dp)) {
+                questions.take(3).forEach { question ->
+                    QuestionCard(question = question)
+                }
+            }
+
+            Spacer(Modifier.height(16.dp))
+
+            TextArrowAction(
+                "Изучить",
+                onStartStudy,
+                modifier = Modifier.align(Alignment.End),
+                verticalOffset = (-1).dp
             )
         }
-
-        Text(
-            text = "Вопрос викторины $currentQuestion из $totalQuestions",
-            style = HomeTypography.questionProgressText,
-            color = Theme.colors.black500
-        )
     }
 }
 
-
-@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF, widthDp = 358)
-@Composable
-private fun StatisticsMiniCardsPreview() {
-    YeaHubTheme {
-        val stats = PreviewData.interviewStats
-        StatisticsMiniCards(
-            total = stats.total,
-            new = stats.new,
-            inProgress = stats.inProcess,
-            studied = stats.studied,
-            modifier = Modifier.padding(16.dp)
-        )
-    }
-}
 
 @Preview(
     showBackground = true,
     widthDp = 390,
-    heightDp = 800
+    heightDp = 1200
 )
 @Composable
 fun HomeScreenPreview() {

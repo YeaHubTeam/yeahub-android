@@ -92,7 +92,7 @@ fun InterviewProgressChart(
         ) {
             Text(
                 text = "${(fraction * 100).roundToInt()}%",
-                modifier = Modifier.offset(x = (-2).dp),
+                modifier = Modifier.offset(x = (-2.5).dp),
                 style = HomeTypography.progressChartText,
                 color = Theme.colors.black700,
                 textAlign = TextAlign.Center
