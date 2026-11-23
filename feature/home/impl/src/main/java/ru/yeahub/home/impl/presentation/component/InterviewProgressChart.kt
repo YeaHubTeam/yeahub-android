@@ -48,7 +48,7 @@ fun InterviewProgressChart(
                     shape = CircleShape,
                     shadow = Shadow(
                         radius = 10.dp,
-                        color = Color(0x1A6A6376),
+                        color = Theme.colors.mainShadow,
                         offset = DpOffset(0.dp, 4.dp)
                     )
                 )

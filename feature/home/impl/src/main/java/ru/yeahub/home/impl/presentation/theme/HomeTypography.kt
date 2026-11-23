@@ -91,6 +91,33 @@ object HomeTypography {
             letterSpacing = 0.07.sp
         )
 
+    val historyCardDate: TextStyle
+        @Composable
+        get() = Theme.typography.body7.copy(
+            fontSize = 14.sp,
+            lineHeight = 16.8.sp,
+            fontWeight = FontWeight.Normal,
+            letterSpacing = 0.40.sp
+        )
+
+    val historyCardTitle: TextStyle
+        @Composable
+        get() = Theme.typography.body7.copy(
+            fontSize = 16.sp,
+            lineHeight = 20.8.sp,
+            fontWeight = FontWeight.Medium,
+            letterSpacing = 1.13.sp
+        )
+
+    val historyResultText: TextStyle
+        @Composable
+        get() = Theme.typography.body7.copy(
+            fontSize = 14.sp,
+            lineHeight = 16.8.sp,
+            fontWeight = FontWeight.Normal,
+            letterSpacing = 0.98.sp
+        )
+
 
 
 }

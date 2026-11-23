@@ -42,6 +42,8 @@ import ru.yeahub.core_ui.theme.YeaHubTheme
 import ru.yeahub.home.impl.R
 import ru.yeahub.home.impl.presentation.component.InterviewProgressChart
 import ru.yeahub.home.impl.presentation.component.QuestionCard
+import ru.yeahub.home.impl.presentation.component.InterviewHistoryCard
+import ru.yeahub.home.impl.presentation.model.InterviewHistoryUiModel
 import ru.yeahub.home.impl.presentation.theme.HomeTypography
 import ru.yeahub.home.impl.presentation.component.TextArrowAction
 import ru.yeahub.home.impl.presentation.model.InterviewStatsUiModel
@@ -49,6 +51,15 @@ import ru.yeahub.home.impl.presentation.model.QuestionUiModel
 
 
 object PreviewData {
+    val interviewHistory = List(4) { index ->
+        InterviewHistoryUiModel(
+            interviewDate = "15/04/2024",
+            interviewNumber = (index + 1).toString(),
+            positiveCount = 45,
+            negativeCount = 15
+        )
+    }
+
     val interviewStats = InterviewStatsUiModel(
         chartPercent = 0.75f,
         total = 20,
@@ -93,6 +104,10 @@ fun HomeScreen(modifier: Modifier = Modifier) {
 
         item {
             QuestionsCard(questions = List(3) { PreviewData.questionData })
+        }
+
+        item {
+            HistoryCard(interviews = PreviewData.interviewHistory)
         }
 
     }
@@ -391,10 +406,58 @@ fun QuestionsCard(
 }
 
 
+@Composable
+fun HistoryCard(
+    modifier: Modifier = Modifier,
+    interviews: List<InterviewHistoryUiModel>,
+    onShowHistory: () -> Unit = {}
+) {
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .shadow(
+                elevation = 10.dp,
+                shape = RoundedCornerShape(12.dp),
+                spotColor = Theme.colors.mainShadow,
+                ambientColor = Theme.colors.mainShadow
+            ),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = Theme.colors.white900)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth().padding(16.dp)
+        ) {
+            Text(
+                text = "История собеседований",
+                style = HomeTypography.sectionTitle,
+                color = Theme.colors.black900
+            )
+
+            Spacer(Modifier.height(16.dp))
+
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                interviews.take(4).forEach { interview ->
+                    InterviewHistoryCard(interview = interview)
+                }
+            }
+
+            Spacer(Modifier.height(16.dp))
+
+            TextArrowAction(
+                "Подробнее",
+                onShowHistory,
+                modifier = Modifier.align(Alignment.End),
+                verticalOffset = (-0.5).dp
+            )
+        }
+    }
+}
+
+
 @Preview(
     showBackground = true,
     widthDp = 390,
-    heightDp = 1200
+    heightDp = 2000
 )
 @Composable
 fun HomeScreenPreview() {
