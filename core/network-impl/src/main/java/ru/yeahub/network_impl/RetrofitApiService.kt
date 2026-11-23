@@ -84,6 +84,12 @@ interface RetrofitApiService : ApiService {
         @Query("email") email: String
     ): ForgotPasswordResponseDto
 
+    @GET("auth/refresh")
+    override suspend fun refreshToken(): LoginResponseDto
+
+    @GET("auth/logout")
+    override suspend fun logout()
+
     // Пустые реализации для ApiService, если они не нужны в Retrofit-слое
     override suspend fun getProfile(): AuthUserDto = TODO("Not required for this feature")
 }
