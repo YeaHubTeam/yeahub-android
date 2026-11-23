@@ -10,6 +10,7 @@ import ru.yeahub.network_api.models.RegistrationRequestDto
 import ru.yeahub.network_api.models.AuthUserDto
 import ru.yeahub.network_api.models.LoginRequestDto
 import ru.yeahub.network_api.models.LoginResponseDto
+import ru.yeahub.network_api.models.ForgotPasswordResponseDto
 
 interface ApiService {
 
@@ -17,6 +18,8 @@ interface ApiService {
      * API авторизации:
      * - login - выполняет вход по email и паролю
      * - getProfile - получает профиль авторизованного пользователя
+     * - register - регистрирует новый профиль в системе
+     * - resetPassword - отправка письма на почту для восстановления пароля
      */
     suspend fun login(request: LoginRequestDto): LoginResponseDto
 
@@ -26,6 +29,8 @@ interface ApiService {
     suspend fun getProfile(): AuthUserDto
 
     suspend fun register(request: RegistrationRequestDto)
+
+    suspend fun resetPassword(email: String): ForgotPasswordResponseDto
 
     suspend fun getQuestions(
         page: Int,
