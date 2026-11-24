@@ -118,6 +118,42 @@ object HomeTypography {
             letterSpacing = 0.98.sp
         )
 
+    val collectionTags: TextStyle
+        @Composable
+        get() = Theme.typography.body7.copy(
+            fontSize = 12.sp,
+            lineHeight = 14.4.sp,
+            fontWeight = FontWeight.Medium,
+            letterSpacing = 0.98.sp
+        )
+
+    val collectionTitle: TextStyle
+        @Composable
+        get() = arrowT.copy(
+            fontSize = 16.sp,
+            lineHeight = 20.8.sp,
+            fontWeight = FontWeight.Medium,
+            letterSpacing = (-0.14).sp
+        )
+
+    val collectionData: TextStyle
+        @Composable
+        get() = Theme.typography.body7.copy(
+            fontSize = 14.sp,
+            lineHeight = 16.8.sp,
+            fontWeight = FontWeight.Normal,
+            letterSpacing = 0.9.sp
+        )
+
+    val collectionAdditionalTags: TextStyle
+        @Composable
+        get() = Theme.typography.body7.copy(
+            fontSize = 16.sp,
+            lineHeight = 20.8.sp,
+            fontWeight = FontWeight.Normal,
+            letterSpacing = 1.sp
+        )
+
 
 
 }

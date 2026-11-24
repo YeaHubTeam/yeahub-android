@@ -38,10 +38,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import ru.yeahub.core_ui.theme.Theme
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.sp
 import ru.yeahub.core_ui.theme.YeaHubTheme
 import ru.yeahub.home.impl.R
 import ru.yeahub.home.impl.presentation.component.InterviewProgressChart
 import ru.yeahub.home.impl.presentation.component.QuestionCard
+import ru.yeahub.home.impl.presentation.component.CollectionCard
+import ru.yeahub.home.impl.presentation.model.CollectionUiModel
+import ru.yeahub.ui.R as CoreUiR
 import ru.yeahub.home.impl.presentation.component.InterviewHistoryCard
 import ru.yeahub.home.impl.presentation.model.InterviewHistoryUiModel
 import ru.yeahub.home.impl.presentation.theme.HomeTypography
@@ -51,6 +55,15 @@ import ru.yeahub.home.impl.presentation.model.QuestionUiModel
 
 
 object PreviewData {
+    val collectionData = CollectionUiModel(
+        imageRes = CoreUiR.drawable.product_image,
+        tags = listOf("Frontend", "Mobile", "Mobile"),
+        title = "Что такое Virtual DOM, и как он работает? Митап True Tech Go",
+        isForParticipants = true,
+        questionsCount = 30,
+        additionalTags = listOf("Software tester", "Fullstack")
+    )
+
     val interviewHistory = List(4) { index ->
         InterviewHistoryUiModel(
             interviewDate = "15/04/2024",
@@ -107,7 +120,15 @@ fun HomeScreen(modifier: Modifier = Modifier) {
         }
 
         item {
-            HistoryCard(interviews = PreviewData.interviewHistory)
+            HistoryCard(
+                interviews = PreviewData.interviewHistory,
+            )
+        }
+
+        item {
+            CollectionsCard(
+                collections = List(2) { PreviewData.collectionData },
+            )
         }
 
     }
@@ -381,13 +402,14 @@ fun QuestionsCard(
         ) {
             Text(
                 text = "Список вопросов",
+                modifier = Modifier.offset(y = 1.dp),
                 style = HomeTypography.sectionTitle,
                 color = Theme.colors.black900
             )
 
             Spacer(Modifier.height(16.dp))
 
-            Column(verticalArrangement = Arrangement.spacedBy(9.3.dp)) {
+            Column(verticalArrangement = Arrangement.spacedBy(9.7.dp)) {
                 questions.take(3).forEach { question ->
                     QuestionCard(question = question)
                 }
@@ -399,7 +421,7 @@ fun QuestionsCard(
                 "Изучить",
                 onStartStudy,
                 modifier = Modifier.align(Alignment.End),
-                verticalOffset = (-1).dp
+                verticalOffset = 0.dp
             )
         }
     }
@@ -454,10 +476,60 @@ fun HistoryCard(
 }
 
 
+@Composable
+fun CollectionsCard(
+    modifier: Modifier = Modifier,
+    collections: List<CollectionUiModel>,
+    onShowCollections: () -> Unit = {}
+) {
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .shadow(
+                elevation = 10.dp,
+                shape = RoundedCornerShape(12.dp),
+                spotColor = Theme.colors.mainShadow,
+                ambientColor = Theme.colors.mainShadow
+            ),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = Theme.colors.white900)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Text(
+                text = "Коллекции",
+                style = HomeTypography.sectionTitle.copy(
+                    letterSpacing = 0.20.sp
+                ),
+                color = Theme.colors.black900
+            )
+
+            Spacer(Modifier.height(16.dp))
+
+            Column(verticalArrangement = Arrangement.spacedBy(18.dp)) {
+                collections.take(2).forEach { collection ->
+                    CollectionCard(collection = collection)
+                }
+            }
+
+            Spacer(Modifier.height(16.dp))
+
+            TextArrowAction(
+                "Подробнее",
+                onShowCollections,
+                modifier = Modifier.align(Alignment.End),
+            )
+        }
+    }
+}
+
 @Preview(
     showBackground = true,
     widthDp = 390,
-    heightDp = 2000
+    heightDp = 3000
 )
 @Composable
 fun HomeScreenPreview() {

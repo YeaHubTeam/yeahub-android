@@ -64,7 +64,7 @@ fun QuestionCard(
             )
 
             Row(
-                modifier = Modifier.offset(x = 1.dp, y = (-1).dp),
+                modifier = Modifier.offset(x = 1.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 QuestionMetric(
