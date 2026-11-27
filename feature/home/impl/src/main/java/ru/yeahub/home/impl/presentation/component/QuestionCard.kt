@@ -25,8 +25,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.core_ui.theme.YeaHubTheme
+import ru.yeahub.home.impl.presentation.demo.HomeDemoData
 import ru.yeahub.home.impl.presentation.model.QuestionUiModel
-import ru.yeahub.home.impl.presentation.screen.PreviewData
 import ru.yeahub.home.impl.presentation.theme.HomeTypography
 
 @Composable
@@ -121,7 +121,7 @@ private fun QuestionMetric(
 private fun QuestionCardPreview() {
     YeaHubTheme {
         QuestionCard(
-            question = PreviewData.questionData,
+            question = HomeDemoData.questionData,
             modifier = Modifier.padding(16.dp)
         )
     }

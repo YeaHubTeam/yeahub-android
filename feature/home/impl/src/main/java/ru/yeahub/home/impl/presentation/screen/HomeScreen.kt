@@ -47,56 +47,21 @@ import ru.yeahub.home.impl.presentation.component.InterviewHistoryCard
 import ru.yeahub.home.impl.presentation.component.InterviewProgressChart
 import ru.yeahub.home.impl.presentation.component.QuestionCard
 import ru.yeahub.home.impl.presentation.component.TextArrowAction
+import ru.yeahub.home.impl.presentation.demo.HomeDemoData
 import ru.yeahub.home.impl.presentation.model.CollectionUiModel
 import ru.yeahub.home.impl.presentation.model.InterviewHistoryUiModel
 import ru.yeahub.home.impl.presentation.model.InterviewStatsUiModel
+import ru.yeahub.home.impl.presentation.model.InterviewTrainingUiModel
 import ru.yeahub.home.impl.presentation.model.QuestionUiModel
+import ru.yeahub.home.impl.presentation.state.HomeScreenState
 import ru.yeahub.home.impl.presentation.theme.HomeTypography
-import ru.yeahub.ui.R as CoreUiR
 
 private const val MAX_VISIBLE_QUESTIONS = 3
 private const val MAX_VISIBLE_INTERVIEWS = 4
 private const val STATS_CARD_SHADOW_ARGB = 0x1A6A6376
 
-object PreviewData {
-    const val CURRENT_QUIZ_QUESTION = 10
-    const val TOTAL_QUIZ_QUESTIONS = 45
-
-    val collectionData = CollectionUiModel(
-        imageRes = CoreUiR.drawable.product_image,
-        tags = listOf("Frontend", "Mobile", "Mobile"),
-        title = "Что такое Virtual DOM, и как он работает? Митап True Tech Go",
-        isForParticipants = true,
-        questionsCount = 30,
-        additionalTags = listOf("Software tester", "Fullstack")
-    )
-
-    val interviewHistory = List(MAX_VISIBLE_INTERVIEWS) { index ->
-        InterviewHistoryUiModel(
-            interviewDate = "15/04/2024",
-            interviewNumber = (index + 1).toString(),
-            positiveCount = 45,
-            negativeCount = 15
-        )
-    }
-
-    val interviewStats = InterviewStatsUiModel(
-        chartPercent = 0.75f,
-        total = 20,
-        new = 50,
-        inProcess = 120,
-        studied = 12
-    )
-
-    val questionData = QuestionUiModel(
-        question = "Что такое Virtual DOM, и как он работает?",
-        rating = 4,
-        complexity = 10
-    )
-}
-
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier) {
+fun HomeScreen(state: HomeScreenState.Content, modifier: Modifier = Modifier) {
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
@@ -113,27 +78,27 @@ fun HomeScreen(modifier: Modifier = Modifier) {
         }
 
         item {
-            InterviewTrainingCard()
+            InterviewTrainingCard(training = state.training)
             Spacer(Modifier.height(2.dp))
         }
 
         item {
-            InterviewStatisticsCard(stats = PreviewData.interviewStats)
+            InterviewStatisticsCard(stats = state.interviewStats)
         }
 
         item {
-            QuestionsCard(questions = List(MAX_VISIBLE_QUESTIONS) { PreviewData.questionData })
+            QuestionsCard(questions = state.questions)
         }
 
         item {
             HistoryCard(
-                interviews = PreviewData.interviewHistory,
+                interviews = state.interviewHistory,
             )
         }
 
         item {
             CollectionsCard(
-                collections = List(2) { PreviewData.collectionData },
+                collections = state.collections,
             )
         }
     }
@@ -168,6 +133,7 @@ fun HomeHeader() {
 
 @Composable
 fun InterviewTrainingCard(
+    training: InterviewTrainingUiModel,
     modifier: Modifier = Modifier,
     onStartInterview: () -> Unit = {}
 ) {
@@ -198,12 +164,12 @@ fun InterviewTrainingCard(
 
             Spacer(Modifier.height(16.dp))
 
-            InterviewProgress(PreviewData.CURRENT_QUIZ_QUESTION, PreviewData.TOTAL_QUIZ_QUESTIONS)
+            InterviewProgress(training.currentQuestionNumber, training.totalQuestions)
 
             Spacer(Modifier.height(12.dp))
 
             Text(
-                text = "Что такое Virtual DOM, и как он работает?",
+                text = training.questionText,
                 style = HomeTypography.questionTitleLarge,
                 color = Theme.colors.black900
             )
@@ -536,6 +502,6 @@ fun CollectionsCard(
 @Composable
 fun HomeScreenPreview() {
     YeaHubTheme {
-        HomeScreen()
+        HomeScreen(state = HomeDemoData.content)
     }
 }

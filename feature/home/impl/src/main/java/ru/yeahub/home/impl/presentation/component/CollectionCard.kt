@@ -29,8 +29,8 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.core_ui.theme.YeaHubTheme
+import ru.yeahub.home.impl.presentation.demo.HomeDemoData
 import ru.yeahub.home.impl.presentation.model.CollectionUiModel
-import ru.yeahub.home.impl.presentation.screen.PreviewData
 import ru.yeahub.home.impl.presentation.theme.Green900
 import ru.yeahub.home.impl.presentation.theme.HomeTypography
 import ru.yeahub.ui.R as CoreUiR
@@ -163,7 +163,7 @@ private fun CollectionInfo(
 private fun CollectionCardPreview() {
     YeaHubTheme {
         CollectionCard(
-            collection = PreviewData.collectionData,
+            collection = HomeDemoData.collectionData,
             modifier = Modifier.padding(16.dp)
         )
     }

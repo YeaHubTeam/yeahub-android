@@ -26,8 +26,8 @@ import androidx.compose.ui.unit.sp
 import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.core_ui.theme.YeaHubTheme
 import ru.yeahub.home.impl.R
+import ru.yeahub.home.impl.presentation.demo.HomeDemoData
 import ru.yeahub.home.impl.presentation.model.InterviewHistoryUiModel
-import ru.yeahub.home.impl.presentation.screen.PreviewData
 import ru.yeahub.home.impl.presentation.theme.HomeTypography
 
 @Composable
@@ -129,7 +129,7 @@ private fun InterviewResult(
 private fun InterviewHistoryCardPreview() {
     YeaHubTheme {
         InterviewHistoryCard(
-            interview = PreviewData.interviewHistory.first(),
+            interview = HomeDemoData.interviewHistory.first(),
             modifier = Modifier.padding(16.dp)
         )
     }
