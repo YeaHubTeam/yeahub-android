@@ -10,5 +10,3 @@ data class CollectionUiModel(
     val questionsCount: Int,
     val additionalTags: List<String>,
 )
-
-

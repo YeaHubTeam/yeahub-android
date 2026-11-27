@@ -13,12 +13,13 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.progressSemantics
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -27,34 +28,40 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.draw.dropShadow
-import androidx.compose.ui.graphics.shadow.Shadow
-import androidx.compose.ui.unit.DpOffset
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
-import ru.yeahub.core_ui.theme.Theme
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.DpOffset
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.core_ui.theme.YeaHubTheme
 import ru.yeahub.home.impl.R
+import ru.yeahub.home.impl.presentation.component.CollectionCard
+import ru.yeahub.home.impl.presentation.component.InterviewHistoryCard
 import ru.yeahub.home.impl.presentation.component.InterviewProgressChart
 import ru.yeahub.home.impl.presentation.component.QuestionCard
-import ru.yeahub.home.impl.presentation.component.CollectionCard
-import ru.yeahub.home.impl.presentation.model.CollectionUiModel
-import ru.yeahub.ui.R as CoreUiR
-import ru.yeahub.home.impl.presentation.component.InterviewHistoryCard
-import ru.yeahub.home.impl.presentation.model.InterviewHistoryUiModel
-import ru.yeahub.home.impl.presentation.theme.HomeTypography
 import ru.yeahub.home.impl.presentation.component.TextArrowAction
+import ru.yeahub.home.impl.presentation.model.CollectionUiModel
+import ru.yeahub.home.impl.presentation.model.InterviewHistoryUiModel
 import ru.yeahub.home.impl.presentation.model.InterviewStatsUiModel
 import ru.yeahub.home.impl.presentation.model.QuestionUiModel
+import ru.yeahub.home.impl.presentation.theme.HomeTypography
+import ru.yeahub.ui.R as CoreUiR
 
+private const val MAX_VISIBLE_QUESTIONS = 3
+private const val MAX_VISIBLE_INTERVIEWS = 4
+private const val STATS_CARD_SHADOW_ARGB = 0x1A6A6376
 
 object PreviewData {
+    const val CURRENT_QUIZ_QUESTION = 10
+    const val TOTAL_QUIZ_QUESTIONS = 45
+
     val collectionData = CollectionUiModel(
         imageRes = CoreUiR.drawable.product_image,
         tags = listOf("Frontend", "Mobile", "Mobile"),
@@ -64,7 +71,7 @@ object PreviewData {
         additionalTags = listOf("Software tester", "Fullstack")
     )
 
-    val interviewHistory = List(4) { index ->
+    val interviewHistory = List(MAX_VISIBLE_INTERVIEWS) { index ->
         InterviewHistoryUiModel(
             interviewDate = "15/04/2024",
             interviewNumber = (index + 1).toString(),
@@ -87,7 +94,6 @@ object PreviewData {
         complexity = 10
     )
 }
-
 
 @Composable
 fun HomeScreen(modifier: Modifier = Modifier) {
@@ -116,7 +122,7 @@ fun HomeScreen(modifier: Modifier = Modifier) {
         }
 
         item {
-            QuestionsCard(questions = List(3) { PreviewData.questionData })
+            QuestionsCard(questions = List(MAX_VISIBLE_QUESTIONS) { PreviewData.questionData })
         }
 
         item {
@@ -130,7 +136,6 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                 collections = List(2) { PreviewData.collectionData },
             )
         }
-
     }
 }
 
@@ -193,7 +198,7 @@ fun InterviewTrainingCard(
 
             Spacer(Modifier.height(16.dp))
 
-            InterviewProgress(10, 45)
+            InterviewProgress(PreviewData.CURRENT_QUIZ_QUESTION, PreviewData.TOTAL_QUIZ_QUESTIONS)
 
             Spacer(Modifier.height(12.dp))
 
@@ -236,7 +241,7 @@ private fun InterviewProgress(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(8.dp)
-                .clip(RoundedCornerShape(50))
+                .clip(CircleShape)
                 .background(Theme.colors.purple300)
                 .progressSemantics(progress)
         ) {
@@ -246,7 +251,7 @@ private fun InterviewProgress(
                     .fillMaxHeight()
                     .background(
                         color = Theme.colors.purple700,
-                        shape = RoundedCornerShape(50)
+                        shape = CircleShape
                     )
             )
         }
@@ -258,7 +263,6 @@ private fun InterviewProgress(
         )
     }
 }
-
 
 @Composable
 fun InterviewStatisticsCard(
@@ -346,7 +350,7 @@ fun StatisticsMiniCards(
                         shape = RoundedCornerShape(8.dp),
                         shadow = Shadow(
                             radius = 10.dp,
-                            color = Color(0x1A6A6376),
+                            color = Color(STATS_CARD_SHADOW_ARGB),
                             offset = DpOffset(0.dp, 4.dp)
                         )
                     ),
@@ -410,7 +414,7 @@ fun QuestionsCard(
             Spacer(Modifier.height(16.dp))
 
             Column(verticalArrangement = Arrangement.spacedBy(9.7.dp)) {
-                questions.take(3).forEach { question ->
+                questions.take(MAX_VISIBLE_QUESTIONS).forEach { question ->
                     QuestionCard(question = question)
                 }
             }
@@ -426,7 +430,6 @@ fun QuestionsCard(
         }
     }
 }
-
 
 @Composable
 fun HistoryCard(
@@ -458,7 +461,7 @@ fun HistoryCard(
             Spacer(Modifier.height(16.dp))
 
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                interviews.take(4).forEach { interview ->
+                interviews.take(MAX_VISIBLE_INTERVIEWS).forEach { interview ->
                     InterviewHistoryCard(interview = interview)
                 }
             }
@@ -474,7 +477,6 @@ fun HistoryCard(
         }
     }
 }
-
 
 @Composable
 fun CollectionsCard(

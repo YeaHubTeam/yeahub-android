@@ -10,7 +10,6 @@ import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.sp
 import ru.yeahub.core_ui.theme.Theme
 
-
 val sfProText = FontFamily(
     Font(ru.yeahub.home.impl.R.font.sf_pro_text_semibold, FontWeight.SemiBold)
 )
@@ -79,7 +78,6 @@ object HomeTypography {
             lineHeight = 14.4.sp,
             fontWeight = FontWeight.Normal,
             letterSpacing = 0.6.sp,
-
         )
 
     val questionTitleMedium: TextStyle
@@ -153,7 +151,4 @@ object HomeTypography {
             fontWeight = FontWeight.Normal,
             letterSpacing = 1.sp
         )
-
-
-
 }

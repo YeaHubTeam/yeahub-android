@@ -13,22 +13,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.dropShadow
-import androidx.compose.ui.graphics.shadow.Shadow
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import ru.yeahub.core_ui.theme.Theme
-import kotlin.math.roundToInt
 import ru.yeahub.core_ui.theme.YeaHubTheme
 import ru.yeahub.home.impl.presentation.theme.Green900
 import ru.yeahub.home.impl.presentation.theme.HomeTypography
 import ru.yeahub.home.impl.presentation.theme.Yellow600
+import kotlin.math.roundToInt
 
 @Composable
 fun InterviewProgressChart(
@@ -107,6 +107,7 @@ fun InterviewProgressChart(
     }
 }
 
+@Suppress("UnusedPrivateMember")
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable
 private fun InterviewProgressChartPreview() {

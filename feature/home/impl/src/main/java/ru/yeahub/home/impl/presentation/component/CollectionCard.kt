@@ -27,7 +27,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import ru.yeahub.core_ui.theme.Theme
 import ru.yeahub.core_ui.theme.YeaHubTheme
 import ru.yeahub.home.impl.presentation.model.CollectionUiModel
@@ -35,6 +34,8 @@ import ru.yeahub.home.impl.presentation.screen.PreviewData
 import ru.yeahub.home.impl.presentation.theme.Green900
 import ru.yeahub.home.impl.presentation.theme.HomeTypography
 import ru.yeahub.ui.R as CoreUiR
+
+private const val COLLECTION_IMAGE_ASPECT_RATIO = 302f / 303f
 
 @Composable
 fun CollectionCard(
@@ -68,7 +69,7 @@ fun CollectionCard(
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .aspectRatio(302f / 303f)
+                    .aspectRatio(COLLECTION_IMAGE_ASPECT_RATIO)
                     .clip(RoundedCornerShape(18.dp))
             )
 
@@ -156,6 +157,7 @@ private fun CollectionInfo(
     }
 }
 
+@Suppress("UnusedPrivateMember")
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF, widthDp = 358)
 @Composable
 private fun CollectionCardPreview() {

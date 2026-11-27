@@ -18,7 +18,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.dropShadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
@@ -116,6 +115,7 @@ private fun QuestionMetric(
     }
 }
 
+@Suppress("UnusedPrivateMember")
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF, widthDp = 358)
 @Composable
 private fun QuestionCardPreview() {
@@ -126,4 +126,3 @@ private fun QuestionCardPreview() {
         )
     }
 }
-
