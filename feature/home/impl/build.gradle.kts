@@ -28,12 +28,16 @@ android {
 }
 
 dependencies {
+    implementation(project(":core:navigation-api"))
     implementation(project(":core:ui"))
 
     implementation(libs.androidx.appcompat)
-    implementation(libs.androidx.compose.foundation)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation("androidx.compose.foundation:foundation:1.9.0")
     implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.navigation.compose)
     implementation(libs.koin.compose)
+    implementation(libs.koin.core)
     implementation(libs.material)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.ui.tooling.preview)
